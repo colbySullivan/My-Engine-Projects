@@ -68,15 +68,10 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 		unsigned char asKey = (unsigned char)wParam;
 
 		// #SD1ToDo: Tell the App (or InputSystem later) about this key-pressed event...
-		if (asKey == VK_ESCAPE) // #SD1ToDo: move this "check for ESC pressed" code to App
+		if (asKey == 'Q') // #SD1ToDo: move this "check for ESC pressed" code to App
 		{
 			g_isQuitting = true;
 			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
-		}
-		if (asKey == 'Q') // Quit application
-		{
-			g_isQuitting = true;
-			return 0;
 		}
 		if (asKey == 'T') // Slows simulation time to 1/10th the normal rate
 		{
