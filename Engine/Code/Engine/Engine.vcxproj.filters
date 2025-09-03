@@ -16,10 +16,10 @@
     <ClCompile Include="Math\Vec3.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Rgba8.cpp">
+    <ClCompile Include="Core\Rgba8.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
+    <ClCompile Include="Core\Vertex.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,10 +30,10 @@
     <ClInclude Include="Math\Vec3.hpp">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Rgba8.hpp">
+    <ClInclude Include="Core\Rgba8.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.hpp">
+    <ClInclude Include="Core\Vertex.hpp">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
