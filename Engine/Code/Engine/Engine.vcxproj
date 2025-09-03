@@ -167,12 +167,14 @@
     <ClCompile Include="Core\Vertex.cpp" />
     <ClCompile Include="Math\Vec2.cpp" />
     <ClCompile Include="Math\Vec3.cpp" />
+    <ClCompile Include="Renderer\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Rgba8.hpp" />
     <ClInclude Include="Core\Vertex.hpp" />
     <ClInclude Include="Math\Vec2.hpp" />
     <ClInclude Include="Math\Vec3.hpp" />
+    <ClInclude Include="Renderer\Camera.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
