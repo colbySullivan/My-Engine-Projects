@@ -15,17 +15,18 @@ float ConvertRadiansToDegrees(float radians)
 
 float CosDegrees( float degrees )
 {
-    return cosf( degrees );
+    return cosf( ConvertDegreesToRadians( degrees ) );
 }
 
 float SinDegrees(float degrees)
 {
-    return sinf( degrees );
+    return sinf( ConvertDegreesToRadians( degrees ) );
 }
 
 float Atan2Degrees(float y, float x)
 {
-    return atan2f( y, x );
+	float radians = atan2f(y, x);
+	return radians * (180.0f / M_PI);
 }
 
 float GetDistance2D(Vec2 const& positionA, Vec2 const& positionB)
