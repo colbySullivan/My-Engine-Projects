@@ -127,14 +127,13 @@ bool Vec2::operator!=( Vec2 const& compare ) const
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::MakeFromPolarDegrees(float orientationDegrees, float length)
 {
-	float radians = ConvertDegreesToRadians(orientationDegrees);
-	return Vec2(length * CosDegrees(radians), length * SinDegrees(radians));
+	return Vec2(length * CosDegrees(orientationDegrees), length * SinDegrees(orientationDegrees));
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::MakeFromPolarRadians(float orientationRadians, float length)
 {
-	return Vec2(length * CosDegrees(orientationRadians), length * SinDegrees(orientationRadians));
+	return Vec2(length * cosf(orientationRadians), length * sinf(orientationRadians));
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -158,7 +157,7 @@ float Vec2::GetOrientationDegrees() const
 //-----------------------------------------------------------------------------------------------
 float Vec2::GetOrientationRadians() const
 {
-	return Atan2Degrees(y, x);
+	return atan2f(y, x);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -178,20 +177,18 @@ Vec2 const Vec2::GetRotatedByMinus90Degrees() const
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::GetRotatedByDegrees(float rotationDegrees)
 {
-	float radians = ConvertDegreesToRadians(rotationDegrees);
-	float theta = Atan2Degrees(y, x);
+	float thetaDegree = Atan2Degrees(y, x) + rotationDegrees;
 	float R = GetLength();
-	theta += radians;
-	return Vec2(R * CosDegrees(theta), R * SinDegrees(theta));
+	return Vec2(R * CosDegrees(thetaDegree), R * SinDegrees(thetaDegree));
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::GetRotatedByRadians(float rotationRadians)
 {
-	float theta = Atan2Degrees(y, x);
+	float theta = atan2f(y, x);
 	float R = GetLength();
 	theta += rotationRadians;
-	return Vec2(R * CosDegrees(theta), R * SinDegrees(theta));
+	return Vec2(R * cosf(theta), R * sinf(theta));
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -220,29 +217,32 @@ Vec2 const Vec2::GetNormalized() const
 void Vec2::SetOrientationDegrees(float newOrientationDegrees)
 {
 	float length = GetLength();
-	float radians = ConvertDegreesToRadians(newOrientationDegrees);
-	x, y = length * CosDegrees(radians), length* SinDegrees(radians);
+	x = length * CosDegrees(newOrientationDegrees);
+	y = length* SinDegrees(newOrientationDegrees);
 }
 
 //-----------------------------------------------------------------------------------------------
 void Vec2::SetOrientationRadians(float newOrientationRadians)
 {
 	float length = GetLength();
-	x, y = length * CosDegrees(newOrientationRadians), length* SinDegrees(newOrientationRadians);
+	x = length * cosf(newOrientationRadians);
+	y = length* sinf(newOrientationRadians);
 }
 
 //-----------------------------------------------------------------------------------------------
 void Vec2::SetPolarDegrees(float newOrientationDegrees, float newLength)
 {
 	Vec2 degreesChangedVec = MakeFromPolarDegrees( newOrientationDegrees, newLength);
-	x, y = degreesChangedVec.x, degreesChangedVec.y;
+	x = degreesChangedVec.x;
+	y = degreesChangedVec.y;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Vec2::SetPolarRadians(float newOrientationRadians, float newLength)
 {
 	Vec2 radiansChangedVec = MakeFromPolarRadians(newOrientationRadians, newLength);
-	x, y = (radiansChangedVec.x, radiansChangedVec.y);
+	x = radiansChangedVec.x;
+	y = radiansChangedVec.y;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -250,7 +250,8 @@ void Vec2::Normalize()
 {
 	float length = GetLength();
 	float scale = 1.f / length;
-	x, y = (scale * x, scale * y);
+	x = scale * x;
+	y = scale * y;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -281,14 +282,16 @@ void Vec2::RotateMinus90Degrees()
 void Vec2::RotateDegrees(float rotationDegrees)
 {
 	Vec2 degreeRotatedVec = GetRotatedByDegrees(rotationDegrees);
-	x, y = degreeRotatedVec.x, degreeRotatedVec.y;
+	x = degreeRotatedVec.x;
+	y = degreeRotatedVec.y;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Vec2::RotateRadians(float rotationRadians)
 {
 	Vec2 degreeRotatedVec = GetRotatedByRadians(rotationRadians);
-	x, y = degreeRotatedVec.x, degreeRotatedVec.y;
+	x = degreeRotatedVec.x;
+	y = degreeRotatedVec.y;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -309,5 +312,6 @@ void Vec2::SetLength(float newLength)
 void Vec2::ClampLength(float maxLength)
 {
 	Vec2 clampedVec = GetClamped(maxLength);
-	x, y = clampedVec.x, clampedVec.y;
+	x = clampedVec.x;
+	y = clampedVec.y;
 }
