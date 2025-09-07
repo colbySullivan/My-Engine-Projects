@@ -21,5 +21,8 @@
     <ClInclude Include="PlayerShip.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
+    <ClInclude Include="GameCommon.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

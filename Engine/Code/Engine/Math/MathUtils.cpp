@@ -30,8 +30,6 @@ float Atan2Degrees(float y, float x)
 
 float GetDistance2D(Vec2 const& positionA, Vec2 const& positionB)
 {
-   /*return sqrt((( positionB.x - positionA.x ) * ( positionB.x - positionA.x )) 
-              + (( positionB.y - positionA.y ) * ( positionB.y - positionA.y )));*/
     return sqrtf(GetDistanceSquared2D( positionA, positionB ));
 }
 
@@ -78,34 +76,11 @@ bool DoSpheresOverlap(Vec3 const& centerA, float radiusA, Vec3 const& centerB, f
     return distance <= radiusSum;
 }
 
-// ToDo rewrite this
 void TransformPosition2D(Vec2& posToTransform, float uniformScale, float rotationDegrees, Vec2 const& translation)
 {
-    // Step 1: Apply uniform scale
-    posToTransform.x *= uniformScale;
-    posToTransform.y *= uniformScale;
-
-    // Step 2: Apply rotation
-    if (rotationDegrees != 0.0f)
-    {
-        // Convert degrees to radians
-        float rotationRadians = rotationDegrees * (3.14159265359f / 180.0f);
-
-        // Calculate sin and cos
-        float cosTheta = cosf(rotationRadians);
-        float sinTheta = sinf(rotationRadians);
-
-        // Apply rotation matrix
-        float newX = posToTransform.x * cosTheta - posToTransform.y * sinTheta;
-        float newY = posToTransform.x * sinTheta + posToTransform.y * cosTheta;
-
-        posToTransform.x = newX;
-        posToTransform.y = newY;
-    }
-
-    // Step 3: Apply translation
-    posToTransform.x += translation.x;
-    posToTransform.y += translation.y;
+    posToTransform *= uniformScale;
+    posToTransform.RotateDegrees(rotationDegrees);
+    posToTransform += translation;
 }
 
 void TransformPositionXY3D(Vec3& posToTransform, float xyScale, float zRotationDegrees, Vec2 const& xyTranslation)

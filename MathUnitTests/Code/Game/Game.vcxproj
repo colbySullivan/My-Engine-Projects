@@ -185,11 +185,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="UnitTests_Custom.cpp" />
     <ClCompile Include="UnitTests_MP1A01.cpp" />
+    <ClCompile Include="UnitTests_MP1A02.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp" />
+    <ClInclude Include="UnitTests_Custom.hpp" />
     <ClInclude Include="UnitTests_MP1A01.hpp" />
+    <ClInclude Include="UnitTests_MP1A02.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Engine\Code\Engine\Engine.vcxproj">

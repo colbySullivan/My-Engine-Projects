@@ -1,5 +1,5 @@
 #pragma once
-
+#define _USE_MATH_DEFINES // Used for PI
 
 //-----------------------------------------------------------------------------------------------
 struct Vec3
@@ -35,6 +35,19 @@ public:
 
 	// Standalone "friend" functions that are conceptually, but not actually, part of Vec3::
 	friend Vec3 const operator*( float uniformScale, Vec3 const& vecToScale );	// float * Vec3
+
+	// Accessors (const methods)
+	float		GetLength() const;
+	float		GetLengthXY() const;
+	float		GetLengthSquared() const;
+	float		GetLengthXYSquared() const;
+	float		GetOrientationAboutZDegrees() const;
+	float		GetOrientationAboutZRadians() const;
+	Vec3 const	GetRotatedAboutZDegrees(float rotationDegreesAboutZ) const;
+	Vec3 const	GetRotatedAboutZRadians(float rotationRadiansAboutZ) const;
+	Vec3 const	GetClampedToMaxLength(float maxLength) const;
+	Vec3 const	GetNormalized() const;
+
 };
 
 

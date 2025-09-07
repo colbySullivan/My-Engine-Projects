@@ -1,4 +1,6 @@
 #include "Engine/Math/Vec3.hpp"
+#include<math.h>
+#include "MathUtils.hpp"
 //#include "Engine/Math/MathUtils.hpp"
 //#include "Engine/Core/EngineCommon.hpp"
 
@@ -128,4 +130,66 @@ bool Vec3::operator!=( Vec3 const& compare ) const
 	return  x != compare.x || y != compare.y || z != compare.z ;
 }
 
+float Vec3::GetLength() const
+{
+	return sqrtf(GetLengthSquared());
+}
 
+float Vec3::GetLengthXY() const
+{
+	return sqrtf(GetLengthXYSquared());
+}
+
+float Vec3::GetLengthXYSquared() const
+{
+	return (x * x) + (y * y);
+}
+
+float Vec3::GetLengthSquared() const
+{
+	return (x * x) + (y * y) + (z * z);
+}
+
+float Vec3::GetOrientationAboutZDegrees() const
+{
+	return ConvertRadiansToDegrees(Atan2Degrees(y, x));
+}
+
+float Vec3::GetOrientationAboutZRadians() const
+{
+	return Atan2Degrees(y, x);
+}
+
+Vec3 const Vec3::GetRotatedAboutZDegrees(float rotationDegreesAboutZ) const
+{
+	float radians = ConvertDegreesToRadians(rotationDegreesAboutZ);
+	float cosTheta = CosDegrees(radians);
+	float sinTheta = SinDegrees(radians);
+	return Vec3((x*cosTheta)-(y*sinTheta),(x*sinTheta)+(y*cosTheta),z);
+}
+
+Vec3 const Vec3::GetRotatedAboutZRadians(float rotationRadiansAboutZ) const
+{
+	float cosTheta = CosDegrees(rotationRadiansAboutZ);
+	float sinTheta = SinDegrees(rotationRadiansAboutZ);
+	return Vec3((x * cosTheta) - (y * sinTheta), (x * sinTheta) + (y * cosTheta), z);
+}
+
+Vec3 const Vec3::GetClampedToMaxLength(float maxLength) const
+{
+	float length = GetLength();
+	if (length > maxLength)
+	{
+		float scale = maxLength / length;
+		return Vec3((x * scale), (y * scale), (z * scale));
+	}
+	return Vec3(x, y, z);
+}
+
+Vec3 const Vec3::GetNormalized() const
+{
+	float length = GetLength();
+	if (length == 0)
+		return Vec3(0, 0, 0);
+	return Vec3(x / length, y / length, z / length);
+}
