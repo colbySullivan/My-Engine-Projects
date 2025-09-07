@@ -152,26 +152,25 @@ float Vec3::GetLengthSquared() const
 
 float Vec3::GetOrientationAboutZDegrees() const
 {
-	return ConvertRadiansToDegrees(Atan2Degrees(y, x));
+	return ConvertRadiansToDegrees(GetOrientationAboutZRadians());
 }
 
 float Vec3::GetOrientationAboutZRadians() const
 {
-	return Atan2Degrees(y, x);
+	return atan2f(y, x);
 }
 
 Vec3 const Vec3::GetRotatedAboutZDegrees(float rotationDegreesAboutZ) const
 {
-	float radians = ConvertDegreesToRadians(rotationDegreesAboutZ);
-	float cosTheta = CosDegrees(radians);
-	float sinTheta = SinDegrees(radians);
+	float cosTheta = CosDegrees(rotationDegreesAboutZ);
+	float sinTheta = SinDegrees(rotationDegreesAboutZ);
 	return Vec3((x*cosTheta)-(y*sinTheta),(x*sinTheta)+(y*cosTheta),z);
 }
 
 Vec3 const Vec3::GetRotatedAboutZRadians(float rotationRadiansAboutZ) const
 {
-	float cosTheta = CosDegrees(rotationRadiansAboutZ);
-	float sinTheta = SinDegrees(rotationRadiansAboutZ);
+	float cosTheta = cosf(rotationRadiansAboutZ);
+	float sinTheta = sinf(rotationRadiansAboutZ);
 	return Vec3((x * cosTheta) - (y * sinTheta), (x * sinTheta) + (y * cosTheta), z);
 }
 
