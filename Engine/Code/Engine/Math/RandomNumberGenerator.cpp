@@ -1,21 +1,27 @@
 #include "RandomNumberGenerator.hpp"
+#include <stdlib.h>
 
 int RandomNumberGenerator::RollRandomIntLessThan(int maxNotInclusive)
 {
-	return 0;
+	int randInRangeLessThan = rand() % maxNotInclusive;
+	return randInRangeLessThan;
 }
 
 int RandomNumberGenerator::RollRandomIntInRange(int minInclusive, int maxInclusive)
 {
-	return 0;
+	int range = maxInclusive - minInclusive + 1;
+	int randIntInBetween = rand() % range + minInclusive;
+	return randIntInBetween;
 }
 
 float RandomNumberGenerator::RollRandomFloatZeroToOne()
 {
-	return 0.0f;
+	float randFloatZeroToOne = (float)rand() / RAND_MAX;
+	return randFloatZeroToOne;
 }
 
 float RandomNumberGenerator::RollRandomFloatInRange(float minInclusive, float maxInclusive)
 {
-	return 0.0f;
+	float randFloatInRangeBetween = RollRandomFloatZeroToOne() * (maxInclusive - minInclusive) + minInclusive;
+	return randFloatInRangeBetween;
 }
