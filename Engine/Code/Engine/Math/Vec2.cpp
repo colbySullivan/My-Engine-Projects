@@ -175,7 +175,7 @@ Vec2 const Vec2::GetRotatedByMinus90Degrees() const
 // ToDo might need to take out theta += radians and then add to SetOrientationDegrees
 // Todo test
 //-----------------------------------------------------------------------------------------------
-Vec2 const Vec2::GetRotatedByDegrees(float rotationDegrees)
+Vec2 const Vec2::GetRotatedByDegrees(float rotationDegrees) const
 {
 	float thetaDegree = Atan2Degrees(y, x) + rotationDegrees;
 	float R = GetLength();
@@ -183,7 +183,7 @@ Vec2 const Vec2::GetRotatedByDegrees(float rotationDegrees)
 }
 
 //-----------------------------------------------------------------------------------------------
-Vec2 const Vec2::GetRotatedByRadians(float rotationRadians)
+Vec2 const Vec2::GetRotatedByRadians(float rotationRadians) const
 {
 	float theta = atan2f(y, x);
 	float R = GetLength();

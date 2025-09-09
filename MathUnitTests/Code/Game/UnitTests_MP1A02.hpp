@@ -85,14 +85,14 @@ void RunTests_MP1A02();
 #define Vec2_Normalize						Normalize
 #define Vec2_NormalizeAndGetLength			NormalizeAndGetPreviousLength
 
-//#define Vec3_GetLength						GetLength
-//#define Vec3_GetLengthXY					GetLengthXY
-//#define Vec3_GetLengthSquared				GetLengthSquared
-//#define Vec3_GetLengthXYSquared				GetLengthXYSquared
-//#define Vec3_GetOrientationAboutZDegrees	GetOrientationAboutZDegrees
-//#define Vec3_GetOrientationAboutZRadians	GetOrientationAboutZRadians
-//#define Vec3_GetRotatedAboutZDegrees		GetRotatedAboutZDegrees
-//#define Vec3_GetRotatedAboutZRadians		GetRotatedAboutZRadians
+#define Vec3_GetLength						GetLength
+#define Vec3_GetLengthXY					GetLengthXY
+#define Vec3_GetLengthSquared				GetLengthSquared
+#define Vec3_GetLengthXYSquared				GetLengthXYSquared
+#define Vec3_GetOrientationAboutZDegrees	GetOrientationAboutZDegrees
+#define Vec3_GetOrientationAboutZRadians	GetOrientationAboutZRadians
+#define Vec3_GetRotatedAboutZDegrees		GetRotatedAboutZDegrees
+#define Vec3_GetRotatedAboutZRadians		GetRotatedAboutZRadians
 
 #define Rng_RollRandomIntLessThan			RollRandomIntLessThan
 #define Rng_RollRandomIntInRange			RollRandomIntInRange

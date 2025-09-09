@@ -46,8 +46,8 @@ public:
     float               GetOrientationRadians() const;
     Vec2 const          GetRotatedBy90Degrees() const;
     Vec2 const          GetRotatedByMinus90Degrees() const;
-    Vec2 const          GetRotatedByDegrees(float rotationDegrees);
-    Vec2 const          GetRotatedByRadians(float rotationRadians);
+    Vec2 const          GetRotatedByDegrees(float rotationDegrees) const;
+    Vec2 const          GetRotatedByRadians(float rotationRadians) const; 
     Vec2 const          GetClamped(float maxLength) const;
     Vec2 const          GetNormalized() const;
     // Mutators (non-const methods)

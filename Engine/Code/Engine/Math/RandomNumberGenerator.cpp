@@ -3,25 +3,20 @@
 
 int RandomNumberGenerator::RollRandomIntLessThan(int maxNotInclusive)
 {
-	int randInRangeLessThan = rand() % maxNotInclusive;
-	return randInRangeLessThan;
+	return  rand() % maxNotInclusive;
 }
 
 int RandomNumberGenerator::RollRandomIntInRange(int minInclusive, int maxInclusive)
 {
-	int range = maxInclusive - minInclusive + 1;
-	int randIntInBetween = rand() % range + minInclusive;
-	return randIntInBetween;
+	return  rand() % ( maxInclusive - minInclusive + 1 ) + minInclusive;
 }
 
 float RandomNumberGenerator::RollRandomFloatZeroToOne()
 {
-	float randFloatZeroToOne = (float)rand() / RAND_MAX;
-	return randFloatZeroToOne;
+	return (float)rand() / RAND_MAX;
 }
 
 float RandomNumberGenerator::RollRandomFloatInRange(float minInclusive, float maxInclusive)
 {
-	float randFloatInRangeBetween = RollRandomFloatZeroToOne() * (maxInclusive - minInclusive) + minInclusive;
-	return randFloatInRangeBetween;
+	return RollRandomFloatZeroToOne() * (maxInclusive - minInclusive) + minInclusive;
 }
