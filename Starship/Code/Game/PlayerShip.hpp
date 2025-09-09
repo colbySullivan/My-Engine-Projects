@@ -12,4 +12,5 @@ public:
 	PlayerShip(Vec2 const& startPosition, Vec2 const& startingVelocity);
 	~PlayerShip() = default;
 	void Update(float deltaSeconds);
+	void Render() const;
 };

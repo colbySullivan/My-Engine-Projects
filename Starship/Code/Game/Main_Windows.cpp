@@ -18,6 +18,7 @@ PlayerShip* g_ship3 = nullptr;
 #pragma comment( lib, "opengl32" )	// Link in the OpenGL32.lib static library
 #include <Engine/Math/Vec2.hpp>
 #include <Engine/Core/Vertex.hpp>
+#include "App.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // #SD1ToDo: Later we will move this useful macro to a more central place, e.g. Engine/Core/EngineCommon.hpp
@@ -37,13 +38,10 @@ constexpr float CLIENT_ASPECT = 2.0f; // We are requesting a 1:1 aspect (square)
 bool g_isQuitting = false;							// ...becomes App::m_isQuitting instead
 HWND g_hWnd = nullptr;								// ...becomes void* Window::m_windowHandle
 HDC g_displayDeviceContext = nullptr;				// ...becomes void* Window::m_displayContext
-HGLRC g_openGLRenderingContext = nullptr;			// ...becomes void* Renderer::m_apiRenderingContext
-char const* APP_NAME = "Windows OpenGL Test App";	// ...becomes ??? (Change this per project!)
+//HGLRC g_openGLRenderingContext = nullptr;			// ...becomes void* Renderer::m_apiRenderingContext
+char const* APP_NAME = "SD1-A02: Starship Prototype";	// ...becomes ??? (Change this per project!)
 
-bool g_isSlowed = false;							// Slow mode for T press
-bool g_isPaused = false;							// Pauses game
-bool g_hasOneRun = false;							// Binary lock value for simulation step
-
+App* g_theApp = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // Handles Windows (Win32) messages/events; i.e. the OS is trying to tell us something happened.
@@ -58,7 +56,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
 	case WM_CLOSE:
 	{
-		g_isQuitting = true;
+		g_theApp->SetIsQuitting();
 		return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 	}
 
@@ -66,40 +64,15 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 	case WM_KEYDOWN:
 	{
 		unsigned char asKey = (unsigned char)wParam;
+		g_theApp->OnKeyDown(asKey);
 
-		// #SD1ToDo: Tell the App (or InputSystem later) about this key-pressed event...
-		if (asKey == 'Q') // #SD1ToDo: move this "check for ESC pressed" code to App
-		{
-			g_isQuitting = true;
-			return 0; // "Consumes" this message (tells Windows "okay, we handled it")
-		}
-		if (asKey == 'T') // Slows simulation time to 1/10th the normal rate
-		{
-			g_isSlowed = true;
-		}
-		if (asKey == 'P') // Pauses game
-		{
-			g_isPaused = !g_isPaused; // Switch pause
-		}
-		if (asKey == 'O') // Runs a single unpaused Update (simulation step) and then pauses.
-		{
-			g_isPaused = true;
-			g_hasOneRun = true; // Consumed to false after one run of update
-		}
-		break;
 	}
 
 	// Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
 	case WM_KEYUP:
 	{
 		unsigned char asKey = (unsigned char)wParam;
-
-		if (asKey == 'T') // T no longer pressed so no longer slowed
-		{
-			g_isSlowed = false;
-		}
-		// #SD1ToDo: Tell the App (or InputSystem later) about this key-released event...
-		break;
+		g_theApp->OnKeyUp(asKey);
 	}
 	}
 
@@ -194,37 +167,6 @@ void CreateOSWindow(void* applicationInstanceHandle, float clientAspect)
 }
 
 
-//------------------------------------------------------------------------------------------------
-// Given an existing OS Window, create a Rendering Context (RC) for OpenGL or DirectX to draw to it.
-// #SD1ToDo: Move this to become Renderer::CreateRenderingContext() in Engine/Renderer/Renderer.cpp
-// #SD1ToDo: By the end of SD1-A1, this function will be called from the function Renderer::Startup
-//
-void CreateRenderingContext()
-{
-	// Creates an OpenGL rendering context (RC) and binds it to the current window's device context (DC)
-	PIXELFORMATDESCRIPTOR pixelFormatDescriptor;
-	memset(&pixelFormatDescriptor, 0, sizeof(pixelFormatDescriptor));
-	pixelFormatDescriptor.nSize = sizeof(pixelFormatDescriptor);
-	pixelFormatDescriptor.nVersion = 1;
-	pixelFormatDescriptor.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pixelFormatDescriptor.iPixelType = PFD_TYPE_RGBA;
-	pixelFormatDescriptor.cColorBits = 24;
-	pixelFormatDescriptor.cDepthBits = 24;
-	pixelFormatDescriptor.cAccumBits = 0;
-	pixelFormatDescriptor.cStencilBits = 8;
-
-	// These two OpenGL-like functions (wglCreateContext and wglMakeCurrent) will remain here for now.
-	int pixelFormatCode = ChoosePixelFormat(g_displayDeviceContext, &pixelFormatDescriptor);
-	SetPixelFormat(g_displayDeviceContext, pixelFormatCode, &pixelFormatDescriptor);
-	g_openGLRenderingContext = wglCreateContext(g_displayDeviceContext);
-	wglMakeCurrent(g_displayDeviceContext, g_openGLRenderingContext);
-
-	// #SD1ToDo: move all OpenGL functions (including those below) to Renderer.cpp (only!)
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-
 
 //-----------------------------------------------------------------------------------------------
 // Processes all Windows messages (WM_xxx) for this app that have queued up since last frame.
@@ -257,146 +199,35 @@ void App_Constructor(void* applicationInstanceHandle, char const* commandLineStr
 {
 	UNUSED(commandLineString);
 	CreateOSWindow(applicationInstanceHandle, CLIENT_ASPECT);	// #SD1ToDo: this will eventually move to Window.cpp
-	CreateRenderingContext();									// #SD1ToDo: this will move to Renderer.cpp, called by Renderer::Startup
-	g_ship1 = new PlayerShip(Vec2(0.f, 30.f), Vec2(12.f, 0.f));
-	g_ship2 = new PlayerShip(Vec2(0.f, 50.f), Vec2(20.f, 0.f));
-	g_ship3 = new PlayerShip(Vec2(0.f, 70.f), Vec2(15.f, 0.f));
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Move this function to Game/App.cpp and rename it to the App::~App() destructor function
-//
-void App_Destructor()
+//------------------------------------------------------------------------------
+int WINAPI WinMain(HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int)
 {
-	delete g_ship1;   g_ship1 = nullptr;
-	delete g_ship2;   g_ship2 = nullptr;
-	delete g_ship3;   g_ship3 = nullptr;
-}
+	UNUSED(applicationInstanceHandle);
+	UNUSED(commandLineString);
 
+	CreateOSWindow(applicationInstanceHandle, CLIENT_ASPECT);
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: This will become  App::Update( float deltaSeconds )
-void App_Update(float fakeDeltaSeconds)
-{
-	if (g_isSlowed) // T pressed
-		fakeDeltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+	g_theApp = new App();
 
-	if (!g_isPaused || g_hasOneRun) // P not pressed or has a run after O is pressed
-	{
-		g_ship1->Update(fakeDeltaSeconds);
-		g_ship2->Update(fakeDeltaSeconds);
-		g_ship3->Update(fakeDeltaSeconds);
-		g_hasOneRun = false; // Reset run token for simulation step
-	}
-}
-
-// Draws the vertices based on values in the ship's Vertex structure
-void DrawVertexArray(int numVertexes, Vertex const* vertexArray)
-{
-	for (int i = 0; i < numVertexes; ++i)
-	{
-		Vertex const& vert = vertexArray[i];
-		if (vert.m_position.x < 200)	// Ship exits screen
-		{
-			glColor4ub(vert.m_color.r, vert.m_color.g, vert.m_color.b, vert.m_color.a);
-			glTexCoord2f(vert.m_uvTexCoords.x, vert.m_uvTexCoords.y);
-			glVertex3f(vert.m_position.x, vert.m_position.y, vert.m_position.z);
-		}
-		else
-			g_isQuitting = true;		// Quit app when ship crosses threshhold right
-	}
-}
-// Constructs an array ofthe three vectors needed for each ship using Vertex structure
-void RenderShip(PlayerShip* ship)
-{
-	Vertex shipVerts[3] = {
-		Vertex(Vec3(ship->m_position.x + 4.f, ship->m_position.y, 0.f), Rgba8(255, 255, 255, 255), Vec2(0.0f, 0.0f)),		// Ship 1 - Nose
-		Vertex(Vec3(ship->m_position.x + -2.f, ship->m_position.y + 2.f, 0.f), Rgba8(0, 127, 255, 255), Vec2(0.0f, 0.0f)),	// Ship 1 - Left Wing 
-		Vertex(Vec3(ship->m_position.x + -2.f, ship->m_position.y + -2.f, 0.f), Rgba8(0, 0, 0, 255), Vec2(0.0f, 0.0f))		// Ship 1 - Right Wing
-	};
-	DrawVertexArray(3, shipVerts);
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: This will become  App::Render() const
-//
-// Some simple OpenGL example drawing code.
-// This is the graphical equivalent of printing "Hello, world."
-// #SD1ToDo: Move this function to Game/App.cpp and rename it to  App::Render() const
-// #SD1ToDo: Move *ALL* OpenGL code to Renderer.cpp (only).
-//
-// Ultimately this function (App::Render) will only call methods on Renderer (like Renderer::DrawVertexArray)
-//	to draw things, never calling OpenGL (nor DirectX) functions directly.
-//
-void App_Render()
-{
-	// Establish a 2D (orthographic) drawing coordinate system: (0,0) bottom-left to (10,10) top-right
-	// #SD1ToDo: This will be replaced by a call to g_renderer->BeginView( m_worldView ); or similar
-	glLoadIdentity();
-	glOrtho(0.f, 200.f, 0.f, 100.f, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
-
-	// Clear all screen (backbuffer) pixels to medium-blue
-	// #SD1ToDo: This will become g_renderer->ClearColor( Rgba8( 0, 0, 127, 255 ) );
-	// (100/255, 50/255, 0)
-	glClearColor(0.39215686274f, 0.19607843137f, 0.f, 1.f); // Note; glClearColor takes colors as floats in [0,1], not bytes in [0,255]
-	glClear(GL_COLOR_BUFFER_BIT); // ALWAYS clear the screen at the top of each frame's Render()!	
-
-	// Draw some triangles (provide 3 vertexes each)
-	// #SD1ToDo: Move all OpenGL code into Renderer.cpp (only); call g_renderer->DrawVertexArray() instead
-	glBegin(GL_TRIANGLES);
-	{
-		RenderShip( g_ship1 );
-		RenderShip( g_ship2 );
-		RenderShip( g_ship3 );
-	}
-	glEnd();
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: This will become  App::Run()
-void App_Run()
-{
 	// Program main loop; keep running frames until it's time to quit
-	while (!g_isQuitting)			// #SD1ToDo: ...becomes:  !g_theApp->IsQuitting()
+	while (!g_theApp->IsQuitting())
 	{
-		// #SD1ToDo: This call will move to Window::BeginFrame() once we have a Window engine system
 		// Process OS messages (keyboard/mouse button clicked, application lost/gained focus, etc.)
 		RunMessagePump(); // calls our own WindowsMessageHandlingProcedure() function for us!
 
-		float fakeDeltaSeconds = 1.f / 60.f;
-
-		// One "frame" of the game.  Generally: Input, Update, Render.  We call this 60+ times per second.
-		// g_engine->BeginFrame(); // Allow engine subsystems to do pre-frame stuff
-		App_Update(fakeDeltaSeconds);		// #SD1ToDo: ...becomes just Update();		once this function becomes App::Run()
-		App_Render();		// #SD1ToDo: ...becomes just Render();		once this function becomes App::Run()
-		// g_engine->EndFrame(); // Allow engine subsystems to do post-frame stuff
+		g_theApp->RunFrame();
 
 		Sleep(16); // Temporary code to "slow down" our app to ~60Hz until we have proper frame timing in
 
-		// #SD1ToDo: This call will move to Renderer::EndFrame() once we complete our Window refactor
 		// "Present" the backbuffer by swapping the front (visible) and back (working) screen buffers
 		SwapBuffers(g_displayDeviceContext); // Note: call this only once at the very end of each frame
 	}
-}
 
-
-//-----------------------------------------------------------------------------------------------
-int WINAPI WinMain(HINSTANCE applicationInstanceHandle, HINSTANCE, LPSTR commandLineString, int)
-{
-	UNUSED(commandLineString);
-
-	App_Constructor(applicationInstanceHandle, commandLineString); // This will get replaced with:
-	// #SD1ToDo: g_theApp = new App();
-
-	App_Run(); // This will get replaced with:
-	// #SD1ToDo: g_theApp->Run();
-
-	App_Destructor(); // This will get replaced with:
-	// #SD1ToDo:	delete g_theApp;
-	// #SD1ToDo:	g_theApp = nullptr;
+	delete g_theApp;
+	g_theApp = nullptr;
 
 	return 0;
 }
