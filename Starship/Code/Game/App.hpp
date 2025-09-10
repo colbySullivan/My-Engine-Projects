@@ -1,6 +1,5 @@
 #pragma once
-#include "Engine/Core/Engine.hpp"
-#include "Engine/Renderer/Camera.hpp"
+#include <Engine/Renderer/Camera.hpp>
 
 //------------------------------------------------------------------------------
 class PlayerShip;
@@ -25,12 +24,18 @@ public:
 	void OnKeyDown(unsigned char keyCode);
 	void OnKeyUp(unsigned char keyCode);
 
+	bool isKeyDown( unsigned char keyCode );
+	bool isKeyJustPressed( unsigned char keyCode );
+	bool wasKeyJustPressed( unsigned char keyCode );
+
 public:
-	PlayerShip* m_ship1 = nullptr;
-	PlayerShip* m_ship2 = nullptr;
-	PlayerShip* m_ship3 = nullptr;
+	PlayerShip* m_ship1 = nullptr; // Move these to game.hpp
+	PlayerShip* m_ship2 = nullptr; // Move these to game.hpp
+	PlayerShip* m_ship3 = nullptr; // Move these to game.hpp
 	Camera          m_gameCamera;
 
+private:
+	//Game*			m_game = nullptr;
 	bool            m_isQuitting = false;
 	bool            m_isPaused = false;
 	bool            m_isSlowMo = false;

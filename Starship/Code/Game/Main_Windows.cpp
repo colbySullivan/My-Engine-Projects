@@ -65,7 +65,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 	{
 		unsigned char asKey = (unsigned char)wParam;
 		g_theApp->OnKeyDown(asKey);
-
+		break;
 	}
 
 	// Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
@@ -73,6 +73,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 	{
 		unsigned char asKey = (unsigned char)wParam;
 		g_theApp->OnKeyUp(asKey);
+		break;
 	}
 	}
 

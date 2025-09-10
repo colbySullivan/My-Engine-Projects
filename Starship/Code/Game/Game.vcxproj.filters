@@ -19,6 +19,9 @@
     <ClCompile Include="App.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="GameCommon.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayerShip.hpp">

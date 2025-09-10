@@ -2,12 +2,16 @@
 #include "PlayerShip.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
+#include "Engine/Renderer/Camera.hpp"
+
 
 App* g_app = nullptr;
+Camera m_gameCamera;
 
 App::App()
 {
 	g_engine = new Engine;
+	//m_gameCamera
 	//m_game = new Game;
 	m_ship1 = new PlayerShip(Vec2(0.f, 30.f), Vec2(12.f, 0.f));
 	m_ship2 = new PlayerShip(Vec2(0.f, 50.f), Vec2(20.f, 0.f));
@@ -48,13 +52,16 @@ void App::Update(float deltaSeconds)
 
 void App::Render() const
 {
-	g_engine->BeginFrame();
+	g_engine->BeginFrame(); // Todo Do BeginCamera instead
 	//g_engine->m_render->Startup();
-	//g_engine->m_render->BeginCamera(m_gameCamera);
+	//g_engine->m_render->BeginCamera(*m_gameCamera);
 	m_ship1->Render();
 	m_ship2->Render();
 	m_ship3->Render();
-	g_engine->EndFrame();
+
+	// Todo Render asteroids next
+
+	g_engine->EndFrame(); // Todo Do EndCamera instead
 }
 
 void App::SetIsQuitting()
@@ -69,6 +76,7 @@ bool App::IsQuitting() const
 
 void App::OnKeyDown(unsigned char keyCode)
 {
+	//m_isKeyDownArray[ keyCode ] = true;
 	// #SD1ToDo: Tell the App (or InputSystem later) about this key-pressed event...
 	if (keyCode == 'Q') // #SD1ToDo: move this "check for ESC pressed" code to App
 	{
@@ -91,9 +99,27 @@ void App::OnKeyDown(unsigned char keyCode)
 
 void App::OnKeyUp(unsigned char keyCode)
 {
-	//Todo this is broken
+	//m_isKeyDownArray[ keyCode ] = false;
 	if (keyCode == 'T') // T no longer pressed so no longer slowed
 	{
 		m_isSlowMo = false;
 	}
+}
+
+bool App::isKeyDown(unsigned char keyCode)
+{
+	//return m_isKeyDownArray[ keyCode ];
+	return true;
+}
+
+bool App::isKeyJustPressed(unsigned char keyCode)
+{
+	//return m_isKeyDownArray[ keyCode ] && !m_wasKeyDownPrevArray[keyCode];
+	return true;
+}
+
+bool App::wasKeyJustPressed(unsigned char keyCode)
+{
+	//return m_isKeyDownArray[ keyCode ] && m_wasKeyDownPrevArray[keyCode];
+	return true;
 }

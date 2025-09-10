@@ -14,6 +14,14 @@ PlayerShip::PlayerShip(Vec2 const& startPosition, Vec2 const& startingVelocity)
 void PlayerShip::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
+	if (g_theApp->wasKeyJustPressed(' '))
+	{
+		//FireBullet();
+	}
+	if (g_theApp->wasKeyJustPressed('A'))
+	{
+		//m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
+	}
 }
 
 void PlayerShip::Render() const
