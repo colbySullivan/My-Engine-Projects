@@ -17,7 +17,13 @@ Bullet::~Bullet()
 
 void Bullet::Update(float deltaSeconds)
 {
-	m_position += (m_velocity * deltaSeconds);
+	m_position += m_velocity * deltaSeconds;
+
+	if (IsOffscreen())
+	{
+		m_isDead = true;
+		m_isGarbage = true;
+	}
 }
 
 void Bullet::Render() const

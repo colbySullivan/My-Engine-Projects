@@ -35,7 +35,7 @@ public:
 	PlayerShip* m_ship1 = nullptr; // Move these to game.hpp
 	PlayerShip* m_ship2 = nullptr; // Move these to game.hpp
 	PlayerShip* m_ship3 = nullptr; // Move these to game.hpp
-	Camera          m_gameCamera;
+	Camera*          m_gameCamera = nullptr;
 
 private:
 	Game*			m_game = nullptr;

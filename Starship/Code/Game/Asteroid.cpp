@@ -7,7 +7,8 @@
 Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
-
+	InitializeLocalVerts();
+	//RandomNumberGenerator g_rng = new RandomNumberGenerator;
 }
 
 Asteroid::~Asteroid()
@@ -18,6 +19,12 @@ Asteroid::~Asteroid()
 void Asteroid::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
+	m_orientationDegrees += (m_angularVelocity * deltaSeconds);
+	if (IsOffscreen())
+	{
+		m_isDead = true;
+		m_isGarbage = true;
+	}
 }
 
 void Asteroid::Render() const
@@ -39,6 +46,7 @@ void Asteroid::InitializeLocalVerts()
 	for (int sideNum = 0; sideNum < NUM_ASTEROID_SIDES; ++sideNum)
 	{
 		//asteroidRadii[sideNum] = g_rng.GetRandomFloatInRange(m_physicsRadius, m_cosmeticRadius);
+		asteroidRadii[sideNum] = 6.5f;
 	}
 
 	// Precompute 2D vertex offsets

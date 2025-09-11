@@ -532,18 +532,18 @@ int TestSet_MP1A02_Vec3_Methods()
 	Vector3Class vec3a( 0.2f, -0.3f, 0.6f ); // Length of 0.7
 	Vector3Class vec3b( -1.1f, 4.4f, -8.8f ); // Length of 9.9
 
-	VerifyTestResult( IsMostlyEqual( vec3a.GetLength(), 0.7f ),						"Vec3::GetLength() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3b.GetLength(), 9.9f ),						"Vec3::GetLength() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3a.GetLengthXY(), 0.360555f ),					"Vec3::GetLengthXY() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3b.GetLengthXY(), 4.535416f ),					"Vec3::GetLengthXY() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3a.GetLengthSquared(), 0.49f ),				"Vec3::GetLengthSquared() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3b.GetLengthSquared(), 98.01f ),				"Vec3::GetLengthSquared() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3a.GetLengthXYSquared(), 0.13f ),				"Vec3::GetLengthXYSquared() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3b.GetLengthXYSquared(), 20.57f ),				"Vec3::GetLengthXYSquared() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3a.GetOrientationAboutZDegrees(), -56.309932f ),	"Vec3::GetOrientationAboutZDegrees() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3b.GetOrientationAboutZDegrees(), 104.036240f ),	"Vec3::GetOrientationAboutZDegrees() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3a.GetOrientationAboutZRadians(), -0.982793748f ),	"Vec3::GetOrientationAboutZRadians() was incorrect" );
-	VerifyTestResult( IsMostlyEqual( vec3b.GetOrientationAboutZRadians(), 1.81577504f ),	"Vec3::GetOrientationAboutZRadians() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3a.Vec3_GetLength(), 0.7f ),						"Vec3::GetLength() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3b.Vec3_GetLength(), 9.9f ),						"Vec3::GetLength() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3a.Vec3_GetLengthXY(), 0.360555f ),					"Vec3::GetLengthXY() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3b.Vec3_GetLengthXY(), 4.535416f ),					"Vec3::GetLengthXY() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3a.Vec3_GetLengthSquared(), 0.49f ),				"Vec3::GetLengthSquared() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3b.Vec3_GetLengthSquared(), 98.01f ),				"Vec3::GetLengthSquared() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3a.Vec3_GetLengthXYSquared(), 0.13f ),				"Vec3::GetLengthXYSquared() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3b.Vec3_GetLengthXYSquared(), 20.57f ),				"Vec3::GetLengthXYSquared() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3a.Vec3_GetOrientationAboutZDegrees(), -56.309932f ),	"Vec3::GetOrientationAboutZDegrees() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3b.Vec3_GetOrientationAboutZDegrees(), 104.036240f ),	"Vec3::GetOrientationAboutZDegrees() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3a.Vec3_GetOrientationAboutZRadians(), -0.982793748f ),	"Vec3::GetOrientationAboutZRadians() was incorrect" );
+	VerifyTestResult( IsMostlyEqual( vec3b.Vec3_GetOrientationAboutZRadians(), 1.81577504f ),	"Vec3::GetOrientationAboutZRadians() was incorrect" );
 
 	Vector3Class vec3c = vec3a.GetRotatedAboutZRadians( 1.f );
 	Vector3Class vec3d = vec3b.GetRotatedAboutZRadians( -12.345f );

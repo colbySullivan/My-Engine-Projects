@@ -2,6 +2,9 @@
 #include "GameCommon.hpp"
 #include "PlayerShip.hpp"
 #include <Engine/Core/Engine.hpp>
+#include <Engine/Core/ErrorWarningAssert.hpp>
+#include "Bullet.hpp"
+#include "Asteroid.hpp"
 
 Game::Game(App* owner)
 	: m_app( owner )
@@ -38,10 +41,7 @@ void Game::Update(float deltaSeconds)
 
 void Game::Render() const
 {
-	g_engine->BeginFrame(); // Todo Do BeginCamera instead
-	RenderEntities();
-	g_engine->EndFrame(); // Todo Do EndCamera instead
-	
+	RenderEntities();	
 }
 
 void Game::Shutdown()
@@ -49,10 +49,41 @@ void Game::Shutdown()
 
 }
 
-//Asteroid* Game::SpawnRandomAsteroid()
-//{
-//
-//}
+Asteroid* Game::SpawnRandomAsteroid()
+{
+	for (int astroidIndex = 0; astroidIndex < MAX_BULLETS; ++astroidIndex)
+	{
+		Asteroid*& asteroid = m_asteroid[astroidIndex];
+		if (!asteroid)
+		{
+			asteroid = new Asteroid(this, Vec2(50,50)); // Todo change this
+			//asteroid->m_orientationDegrees = forwardDegrees;
+			//asteroid->m_velocity.x = ASTEROID_SPEED * CosDegrees(forwardDegrees);
+			//asteroid->m_velocity.y = ASTEROID_SPEED * SinDegrees(forwardDegrees);
+			return asteroid;
+		}
+	}
+
+	ERROR_AND_DIE("Cannot spawn a new bullet; all slots are full");
+}
+
+Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
+{
+	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+        {
+           Bullet * &bullet = m_bullets[bulletIndex];
+            if (!bullet)
+            {
+                bullet = new Bullet(this, pos);
+                bullet->m_orientationDegrees = forwardDegrees;
+                bullet->m_velocity.x = BULLET_SPEED * CosDegrees(forwardDegrees);
+                bullet->m_velocity.y = BULLET_SPEED * SinDegrees(forwardDegrees);
+                return bullet;
+            }
+        }
+
+        ERROR_AND_DIE("Cannot spawn a new bullet; all slots are full");
+}
 
 void Game::RenderEntities() const
 {
@@ -64,6 +95,14 @@ void Game::RenderEntities() const
 			bullet->Render();
 		}
 	}*/
+	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
+	{
+		Asteroid const* astroid = m_asteroid[astroidIndex];
+		if (astroid)
+		{
+			astroid->Render();
+		}
+	}
 
 	if (m_playerShip)
 	{

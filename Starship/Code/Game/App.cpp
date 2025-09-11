@@ -7,13 +7,11 @@
 
 
 App* g_app = nullptr;
-Camera m_gameCamera;
 
 App::App()
 {
 	g_engine = new Engine;
 	g_app = this;
-	//m_gameCamera
 	m_game = new Game(g_app);
 	m_game->Startup();
 }
@@ -29,38 +27,27 @@ App::~App()
 void App::RunFrame()
 {
 	float fakeDeltaSeconds = 1.f / 60.f;
-	m_game->Update(fakeDeltaSeconds);
-	m_game->Render();
-	/*Update*/(fakeDeltaSeconds);
-	//Render();
+	Render();
+	Update(fakeDeltaSeconds);
 }
 
 void App::Update(float deltaSeconds)
 {
+	m_game->Update(deltaSeconds);
 	if (m_isSlowMo) // T pressed
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
 
-	if (!m_isPaused || m_pauseAfterNextUpdate) // P not pressed or has a run after O is pressed
-	{
-		//m_ship1->Update(deltaSeconds);
-		//m_ship2->Update(deltaSeconds);
-		//m_ship3->Update(deltaSeconds);
-		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
-	}
+	//if (!m_isPaused || m_pauseAfterNextUpdate) // P not pressed or has a run after O is pressed
+	//{
+	//	m_pauseAfterNextUpdate = false; // Reset run token for simulation step
+	//}
 }
 
 void App::Render() const
 {
-	//g_engine->BeginFrame(); // Todo Do BeginCamera instead
-	//g_engine->m_render->Startup();
-	//g_engine->m_render->BeginCamera(*m_gameCamera);
-	/*m_ship1->Render();
-	m_ship2->Render();
-	m_ship3->Render();*/
-
-	// Todo Render asteroids next
-
-	//g_engine->EndFrame(); // Todo Do EndCamera instead
+	g_engine->m_render->BeginCamera(*m_gameCamera);
+	g_engine->m_render->ClearScreen(Rgba8(0.39215686274f, 0.19607843137f, 0.f, 1.f));
+	m_game->Render();
 }
 
 void App::SetIsQuitting()
@@ -94,6 +81,10 @@ void App::OnKeyDown(unsigned char keyCode)
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
+	//if (keyCode == ' ') // Runs a single unpaused Update (simulation step) and then pauses.
+	//{
+	//	m_game->SpawnBullet();
+	//}
 }
 
 void App::OnKeyUp(unsigned char keyCode)
