@@ -4,7 +4,7 @@
 #include <Engine/Core/Vertex.hpp>
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
-#include "App.hpp";
+#include "App.hpp"
 
 void GameCommon::DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color)
 {

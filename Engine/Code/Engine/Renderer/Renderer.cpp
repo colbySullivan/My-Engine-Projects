@@ -2,6 +2,7 @@
 #include "Renderer.hpp";
 #include "Engine/Core/Vertex.hpp";
 #include <gl/GL.h>
+
 #pragma comment(lib, "opengl32")
 
 HGLRC g_openGLRenderingContext = nullptr; 
@@ -33,13 +34,11 @@ void Renderer::BeginFrame()
 	glOrtho(0.f, 200.f, 0.f, 100.f, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
 
 	ClearScreen(Rgba8(0.39215686274f, 0.19607843137f, 0.f, 1.f));
-
-	glBegin(GL_TRIANGLES);
 }
 
 void Renderer::EndFrame()
 {
-	glEnd();
+	
 }
 
 void Renderer::CreateRenderingContext()
@@ -84,17 +83,21 @@ void Renderer::BeginCamera(Camera const& camera)
 
 void Renderer::EndCamera(Camera const& camera)
 {
-
+	//UNUSED(camera);
 }
 
 void Renderer::DrawVertexArray(int numVertexes, Vertex const* vertexes)
 {
-	for (int i = 0; i < numVertexes; ++i)
+	glBegin(GL_TRIANGLES);
+	{
+		for (int i = 0; i < numVertexes; ++i)
 		{
-		Vertex const& vert = vertexes[i];
-		glColor4ub(vert.m_color.r, vert.m_color.g, vert.m_color.b, vert.m_color.a);
-		glTexCoord2f(vert.m_uvTexCoords.x, vert.m_uvTexCoords.y);
-		glVertex3f(vert.m_position.x, vert.m_position.y, vert.m_position.z);
+			Vertex const& vert = vertexes[i];
+			glColor4ub(vert.m_color.r, vert.m_color.g, vert.m_color.b, vert.m_color.a);
+			glTexCoord2f(vert.m_uvTexCoords.x, vert.m_uvTexCoords.y);
+			glVertex3f(vert.m_position.x, vert.m_position.y, vert.m_position.z);
 		}
+	}
+	glEnd();
 }
 

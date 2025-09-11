@@ -1,20 +1,61 @@
-// Game.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#include "Game.hpp"
+#include "GameCommon.hpp"
+#include "PlayerShip.hpp"
 
-#include <iostream>
-
-int main()
+Game::Game(App* owner)
+	: m_app( owner )
 {
-    std::cout << "Hello World!\n";
+
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+Game::~Game()
+{
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+}
+
+void Game::Startup()
+{
+	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
+	m_playerShip = new PlayerShip(this, worldCenter);
+
+	/*for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
+	{
+		SpawnRandomAsteroid();
+	}*/
+}
+
+void Game::Update(float deltaSeconds)
+{
+
+}
+
+void Game::Render() const
+{
+	RenderEntities();
+}
+
+void Game::Shutdown()
+{
+
+}
+
+//Asteroid* Game::SpawnRandomAsteroid()
+//{
+//
+//}
+
+void Game::RenderEntities() const
+{
+	/*for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+	{
+		Bullet const* bullet = m_bullets[bulletIndex];
+		if (bullet)
+		{
+			bullet->Render();
+		}
+	}*/
+
+	if (m_playerShip)
+		m_playerShip->Render();
+}
+

@@ -1,9 +1,12 @@
 #pragma once
 #include <Engine/Renderer/Camera.hpp>
+#include "Game.hpp"
+
 
 //------------------------------------------------------------------------------
 class PlayerShip;
 class App;
+class Game;
 
 //------------------------------------------------------------------------------
 extern App* g_theApp;
@@ -35,7 +38,7 @@ public:
 	Camera          m_gameCamera;
 
 private:
-	//Game*			m_game = nullptr;
+	Game*			m_game = nullptr;
 	bool            m_isQuitting = false;
 	bool            m_isPaused = false;
 	bool            m_isSlowMo = false;
