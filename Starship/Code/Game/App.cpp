@@ -16,27 +16,22 @@ App::App()
 	//m_gameCamera
 	m_game = new Game(g_app);
 	m_game->Startup();
-	//m_ship1 = new PlayerShip(m_game, Vec2(12.f, 0.f));
-	//m_ship2 = new PlayerShip(Vec2(0.f, 50.f), Vec2(20.f, 0.f));
-	//m_ship3 = new PlayerShip(Vec2(0.f, 70.f), Vec2(15.f, 0.f));
 }
 
 App::~App()
 {
-	g_engine = nullptr; 
+	g_engine = nullptr;
 	delete g_engine;
 	m_game = nullptr;
 	delete m_game;
-	/*delete m_ship1;   m_ship1 = nullptr;
-	delete m_ship2;   m_ship2 = nullptr;
-	delete m_ship3;   m_ship3 = nullptr;*/
 }
 
 void App::RunFrame()
 {
 	float fakeDeltaSeconds = 1.f / 60.f;
+	m_game->Update(fakeDeltaSeconds);
 	m_game->Render();
-	//Update(fakeDeltaSeconds);
+	/*Update*/(fakeDeltaSeconds);
 	//Render();
 }
 
@@ -47,16 +42,16 @@ void App::Update(float deltaSeconds)
 
 	if (!m_isPaused || m_pauseAfterNextUpdate) // P not pressed or has a run after O is pressed
 	{
-		/*m_ship1->Update(deltaSeconds);
-		m_ship2->Update(deltaSeconds);
-		m_ship3->Update(deltaSeconds);*/
+		//m_ship1->Update(deltaSeconds);
+		//m_ship2->Update(deltaSeconds);
+		//m_ship3->Update(deltaSeconds);
 		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 	}
 }
 
 void App::Render() const
 {
-	g_engine->BeginFrame(); // Todo Do BeginCamera instead
+	//g_engine->BeginFrame(); // Todo Do BeginCamera instead
 	//g_engine->m_render->Startup();
 	//g_engine->m_render->BeginCamera(*m_gameCamera);
 	/*m_ship1->Render();
@@ -65,7 +60,7 @@ void App::Render() const
 
 	// Todo Render asteroids next
 
-	g_engine->EndFrame(); // Todo Do EndCamera instead
+	//g_engine->EndFrame(); // Todo Do EndCamera instead
 }
 
 void App::SetIsQuitting()

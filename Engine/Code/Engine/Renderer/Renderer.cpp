@@ -2,6 +2,7 @@
 #include "Renderer.hpp";
 #include "Engine/Core/Vertex.hpp";
 #include <gl/GL.h>
+#include <Game/GameCommon.hpp>
 
 #pragma comment(lib, "opengl32")
 
@@ -31,7 +32,7 @@ void Renderer::BeginFrame()
 {
 	// Todo Need to move this back into Begin camera
 	glLoadIdentity();
-	glOrtho(0.f, 200.f, 0.f, 100.f, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
+	glOrtho(0.f, WORLD_SIZE_X, 0.f, WORLD_SIZE_Y, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
 
 	ClearScreen(Rgba8(0.39215686274f, 0.19607843137f, 0.f, 1.f));
 }
