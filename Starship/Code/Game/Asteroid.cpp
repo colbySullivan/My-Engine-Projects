@@ -55,7 +55,6 @@ void Asteroid::InitializeLocalVerts()
 	for (int sideNum = 0; sideNum < NUM_ASTEROID_SIDES; ++sideNum)
 	{
 		asteroidRadii[sideNum] = g_rng.RollRandomFloatInRange(m_physicsRadius, m_cosmeticRadius);
-		//asteroidRadii[sideNum] = 6.5f;
 	}
 
 	// Precompute 2D vertex offsets

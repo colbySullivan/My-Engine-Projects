@@ -1,5 +1,7 @@
 #include "Bullet.hpp"
 #include <Engine/Core/VertexUtils.hpp>
+#include "Engine/Core/Engine.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 
 
 Bullet::Bullet(Game* owner, Vec2 const& startPos)
@@ -7,6 +9,7 @@ Bullet::Bullet(Game* owner, Vec2 const& startPos)
 {
 	m_physicsRadius = BULLET_PHYSICS_RADIUS;
 	m_cosmeticRadius = BULLET_COSMETIC_RADIUS;
+	m_velocity = GetForwardNormal() * BULLET_SPEED;
 	InitializeLocalVerts();
 }
 
@@ -34,7 +37,7 @@ void Bullet::Render() const
 		tempWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
 	TransformVertexArrayXY3D(NUM_BULLET_VERTS, tempWorldVerts, 1.f, m_orientationDegrees, m_position);
-	g_theApp->Render();
+	g_engine->m_render->DrawVertexArray(NUM_BULLET_VERTS, tempWorldVerts);
 }
 
 void Bullet::InitializeLocalVerts()

@@ -26,25 +26,6 @@ void PlayerShip::Update(float deltaSeconds)
 	UpdateFromKeyboard(deltaSeconds);
 	BounceOffWalls();
 	m_position += m_velocity * deltaSeconds;
-	if (g_theApp->wasKeyJustPressed(' '))
-	{
-		//FireBullet();
-	}
-	if (g_theApp->wasKeyJustPressed('S'))
-	{
-		m_isTurningLeft = true;
-		m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
-	}
-	if (g_theApp->wasKeyJustPressed('F'))
-	{
-		m_isTurningRight = true;
-		m_orientationDegrees -= PLAYER_SHIP_TURN_SPEED * deltaSeconds;
-	}
-	if (g_theApp->isKeyDown('E'))
-	{
-		Vec2 forwardVec = GetForwardNormal();
-		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * deltaSeconds;
-	}
 }
 
 void PlayerShip::Render() const
@@ -60,7 +41,7 @@ void PlayerShip::Render() const
 
 	TransformVertexArrayXY3D(NUM_SHIP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
-	DebugRender();
+	//DebugRender();
 }
 
 void PlayerShip::InitializeLocalVerts()
@@ -98,7 +79,25 @@ void PlayerShip::InitializeLocalVerts()
 
 void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 {
-
+	if (g_theApp->wasKeyJustPressed(' '))
+	{
+		m_game->SpawnBullet(m_position, m_orientationDegrees);
+	}
+	if (g_theApp->wasKeyJustPressed('S'))
+	{
+		m_isTurningLeft = true;
+		m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
+	}
+	if (g_theApp->wasKeyJustPressed('F'))
+	{
+		m_isTurningRight = true;
+		m_orientationDegrees -= PLAYER_SHIP_TURN_SPEED * deltaSeconds;
+	}
+	if (g_theApp->isKeyDown('E'))
+	{
+		Vec2 forwardVec = GetForwardNormal();
+		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * deltaSeconds;
+	}
 }
 
 void PlayerShip::BounceOffWalls()

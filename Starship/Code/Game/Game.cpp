@@ -70,23 +70,26 @@ Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
 {
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
         {
-           Bullet* &bullet = m_bullets[bulletIndex];
-            if (!bullet)
+           // Bullet* bullet = m_bullets[bulletIndex];
+            if (m_bullets[bulletIndex] == nullptr)
             {
-                bullet = new Bullet(this, pos);
-                bullet->m_orientationDegrees = forwardDegrees;
-                bullet->m_velocity.x = BULLET_SPEED * CosDegrees(forwardDegrees);
-                bullet->m_velocity.y = BULLET_SPEED * SinDegrees(forwardDegrees);
-                return bullet;
+				m_bullets[bulletIndex] = new Bullet(this, pos);
+				m_bullets[bulletIndex]->m_orientationDegrees = forwardDegrees;
+				m_bullets[bulletIndex]->m_velocity.x = BULLET_SPEED * CosDegrees(forwardDegrees);
+				m_bullets[bulletIndex]->m_velocity.y = BULLET_SPEED * SinDegrees(forwardDegrees);
+                //return bullet;
+				return m_bullets[bulletIndex];
             }
         }
 
-        ERROR_AND_DIE("Cannot spawn a new bullet; all slots are full");
+		ERROR_RECOVERABLE("Cannot spawn a new bullet; all slots are full");
+		return nullptr;
 }
 
 void Game::UpdateEntities(float deltaSeconds)
 {
 	m_playerShip->Update(deltaSeconds);
+
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
 		Asteroid* astroid = m_asteroid[astroidIndex];
@@ -95,18 +98,27 @@ void Game::UpdateEntities(float deltaSeconds)
 			astroid->Update(deltaSeconds);
 		}
 	}
+
+ 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+	{
+		Bullet* bullet = m_bullets[bulletIndex];
+		if (bullet)
+		{
+			bullet->Update(deltaSeconds);
+		}
+	}
 }
 
 void Game::RenderEntities() const
 {
-	/*for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
 	{
 		Bullet const* bullet = m_bullets[bulletIndex];
 		if (bullet)
 		{
 			bullet->Render();
 		}
-	}*/
+	}
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
 		Asteroid const* astroid = m_asteroid[astroidIndex];

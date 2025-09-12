@@ -43,6 +43,7 @@ void App::Update(float deltaSeconds)
 	//}
 	
 	// Todo for loop for inputs
+
 }
 
 void App::Render() const
