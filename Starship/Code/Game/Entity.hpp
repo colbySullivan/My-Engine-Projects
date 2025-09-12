@@ -19,6 +19,7 @@ public:
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;
 
+
 public:
 	Game*		m_game = nullptr;
 	Vec2        m_position;

@@ -40,7 +40,6 @@ private:
 	Bullet*			m_bullets[MAX_BULLETS] = {};
 	Asteroid*		m_asteroid[MAX_ASTEROIDS] = {};
 	PlayerShip*		m_playerShip = nullptr; // Just one player ship (for now...)
-	GameCommon*		m_gameCommon = nullptr;
 
 	Camera*			m_gameCamera = nullptr;
 };

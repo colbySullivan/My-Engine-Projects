@@ -20,7 +20,5 @@ constexpr float PLAYER_SHIP_ACCELERATION = 30.f;
 constexpr float PLAYER_SHIP_TURN_SPEED = 300.f;
 constexpr float PLAYER_SHIP_PHYSICS_RADIUS = 1.75f;
 constexpr float PLAYER_SHIP_COSMETIC_RADIUS = 2.25f;
-class GameCommon
-{
-	void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);
-};
+
+void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

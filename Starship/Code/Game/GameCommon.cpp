@@ -6,7 +6,7 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "App.hpp"
 
-void GameCommon::DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color)
+void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color)
 {
 	float halfThickness = 0.5f * thickness;
 	float innerRadius = radius - halfThickness;

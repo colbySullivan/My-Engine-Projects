@@ -1,4 +1,6 @@
 #include "Entity.hpp"
+#include "Game/GameCommon.hpp"
+#include "Engine/Core/Rgba8.hpp"
 
 Entity::Entity(Game* owner, Vec2 const& startPos )
 {
@@ -25,7 +27,9 @@ void Entity::Render() const
 
 void Entity::DebugRender() const
 {
-
+	//DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color)
+	DebugDrawRing(m_position, m_physicsRadius, 0.2f, Rgba8(255,0,255)); // Outer
+	DebugDrawRing(m_position, m_cosmeticRadius, 0.2f, Rgba8(0,255,255)); // Outer
 }
 
 bool Entity::IsOffscreen() const

@@ -60,6 +60,7 @@ void PlayerShip::Render() const
 
 	TransformVertexArrayXY3D(NUM_SHIP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
+	DebugRender();
 }
 
 void PlayerShip::InitializeLocalVerts()
