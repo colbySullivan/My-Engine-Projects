@@ -28,4 +28,5 @@ private:
 
 private:
 	Vertex m_localVerts[NUM_ASTEROID_TRIS];
+	//RandomNumberGenerator g_rng;
 };

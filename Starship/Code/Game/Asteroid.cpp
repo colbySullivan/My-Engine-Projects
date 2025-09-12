@@ -2,13 +2,13 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
+#include <Engine/Math/RandomNumberGenerator.hpp>
 
 
 Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
 	InitializeLocalVerts();
-	//RandomNumberGenerator g_rng = new RandomNumberGenerator;
 }
 
 Asteroid::~Asteroid()

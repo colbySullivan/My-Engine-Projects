@@ -81,10 +81,17 @@ void App::OnKeyDown(unsigned char keyCode)
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
+	if (keyCode == 'A') // Runs a single unpaused Update (simulation step) and then pauses.
+	{
+		
+	}
 	//if (keyCode == ' ') // Runs a single unpaused Update (simulation step) and then pauses.
 	//{
 	//	m_game->SpawnBullet();
 	//}
+	m_isKeyDownArray[ keyCode ] = true;
+	if(m_isKeyDownArray[ keyCode ])
+		m_wasKeyDownPrevArray[ keyCode ] = true;
 }
 
 void App::OnKeyUp(unsigned char keyCode)
@@ -94,22 +101,22 @@ void App::OnKeyUp(unsigned char keyCode)
 	{
 		m_isSlowMo = false;
 	}
+	m_isKeyDownArray[ keyCode ] = false;
+	if(m_isKeyDownArray[ keyCode ] = false)
+		m_wasKeyDownPrevArray[ keyCode ] = false;
 }
 
 bool App::isKeyDown(unsigned char keyCode)
 {
-	//return m_isKeyDownArray[ keyCode ];
-	return true;
+	return m_isKeyDownArray[ keyCode ];
 }
 
 bool App::isKeyJustPressed(unsigned char keyCode)
 {
-	//return m_isKeyDownArray[ keyCode ] && !m_wasKeyDownPrevArray[keyCode];
-	return true;
+	return m_isKeyDownArray[ keyCode ] && !m_wasKeyDownPrevArray[keyCode];
 }
 
 bool App::wasKeyJustPressed(unsigned char keyCode)
 {
-	//return m_isKeyDownArray[ keyCode ] && m_wasKeyDownPrevArray[keyCode];
-	return true;
+	return m_isKeyDownArray[ keyCode ] && m_wasKeyDownPrevArray[keyCode];
 }

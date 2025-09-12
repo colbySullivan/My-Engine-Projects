@@ -30,9 +30,20 @@ void PlayerShip::Update(float deltaSeconds)
 	{
 		//FireBullet();
 	}
-	if (g_theApp->wasKeyJustPressed('A'))
+	if (g_theApp->wasKeyJustPressed('S'))
 	{
-		//m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
+		m_isTurningLeft = true;
+		m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
+	}
+	if (g_theApp->wasKeyJustPressed('F'))
+	{
+		m_isTurningRight = true;
+		m_orientationDegrees -= PLAYER_SHIP_TURN_SPEED * deltaSeconds;
+	}
+	if (g_theApp->isKeyDown('E'))
+	{
+		Vec2 forwardVec = GetForwardNormal();
+		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * deltaSeconds;
 	}
 }
 

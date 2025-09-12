@@ -33,6 +33,6 @@ bool Entity::IsOffscreen() const
 
 Vec2 Entity::GetForwardNormal() const
 {
-	return Vec2(0, 0);
+	return Vec2(CosDegrees(m_orientationDegrees), SinDegrees(m_orientationDegrees));
 }
 
