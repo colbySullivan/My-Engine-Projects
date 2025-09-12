@@ -30,6 +30,7 @@ public:
 	bool isKeyDown( unsigned char keyCode );
 	bool isKeyJustPressed( unsigned char keyCode );
 	bool wasKeyJustPressed( unsigned char keyCode );
+	// Todo update fromKeyBoard void
 
 public:
 	PlayerShip* m_ship1 = nullptr; // Move these to game.hpp

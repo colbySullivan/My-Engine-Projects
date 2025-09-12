@@ -41,12 +41,15 @@ void App::Update(float deltaSeconds)
 	//{
 	//	m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 	//}
+	
+	// Todo for loop for inputs
 }
 
 void App::Render() const
 {
 	g_engine->m_render->BeginCamera(*m_gameCamera);
-	g_engine->m_render->ClearScreen(Rgba8(0.39215686274f, 0.19607843137f, 0.f, 1.f));
+	Rgba8 backgroundColor = Rgba8(0.39215686274f, 0.19607843137f, 0.f, 1.f);
+	g_engine->m_render->ClearScreen(backgroundColor);
 	m_game->Render();
 }
 
@@ -81,10 +84,6 @@ void App::OnKeyDown(unsigned char keyCode)
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
-	if (keyCode == 'A') // Runs a single unpaused Update (simulation step) and then pauses.
-	{
-		
-	}
 	//if (keyCode == ' ') // Runs a single unpaused Update (simulation step) and then pauses.
 	//{
 	//	m_game->SpawnBullet();
@@ -102,8 +101,11 @@ void App::OnKeyUp(unsigned char keyCode)
 		m_isSlowMo = false;
 	}
 	m_isKeyDownArray[ keyCode ] = false;
-	if(m_isKeyDownArray[ keyCode ] = false)
+	if (!m_isKeyDownArray[keyCode])
+	{
 		m_wasKeyDownPrevArray[ keyCode ] = false;
+	}
+		
 }
 
 bool App::isKeyDown(unsigned char keyCode)

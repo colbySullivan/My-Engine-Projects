@@ -2,12 +2,20 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
-#include <Engine/Math/RandomNumberGenerator.hpp>
+#include "Game/GameCommon.hpp"
 
 
 Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
+	m_position.x = g_rng.RollRandomFloatInRange(0,WORLD_SIZE_X);
+	m_position.y = g_rng.RollRandomFloatInRange(0,WORLD_SIZE_Y);
+	m_angularVelocity = g_rng.RollRandomFloatInRange(-200,200);
+	m_cosmeticRadius = ASTEROID_COSMETIC_RADIUS;
+	m_physicsRadius = ASTEROID_PHYSICS_RADIUS;
+	m_orientationDegrees = g_rng.RollRandomFloatInRange(0.1f,360.f);
+	m_velocity = GetForwardNormal() * ASTEROID_SPEED;
+
 	InitializeLocalVerts();
 }
 
@@ -45,8 +53,8 @@ void Asteroid::InitializeLocalVerts()
 	float asteroidRadii[NUM_ASTEROID_SIDES] = {};
 	for (int sideNum = 0; sideNum < NUM_ASTEROID_SIDES; ++sideNum)
 	{
-		//asteroidRadii[sideNum] = g_rng.GetRandomFloatInRange(m_physicsRadius, m_cosmeticRadius);
-		asteroidRadii[sideNum] = 6.5f;
+		asteroidRadii[sideNum] = g_rng.RollRandomFloatInRange(m_physicsRadius, m_cosmeticRadius);
+		//asteroidRadii[sideNum] = 6.5f;
 	}
 
 	// Precompute 2D vertex offsets

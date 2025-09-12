@@ -10,5 +10,5 @@ public:
 
 public:
 	Rgba8() {}																												// default constructor (do nothing)
-	explicit Rgba8(unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte);		// explicit constructor (from x, y)
+	explicit Rgba8(unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte=255);		// explicit constructor (from x, y)
 };

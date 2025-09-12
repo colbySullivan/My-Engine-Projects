@@ -1,10 +1,10 @@
-#include "Game.hpp"
-#include "GameCommon.hpp"
-#include "PlayerShip.hpp"
+#include "Game/Game.hpp"
+#include "Game/GameCommon.hpp"
+#include "Game/PlayerShip.hpp"
 #include <Engine/Core/Engine.hpp>
 #include <Engine/Core/ErrorWarningAssert.hpp>
-#include "Bullet.hpp"
-#include "Asteroid.hpp"
+#include "Game/Bullet.hpp"
+#include "Game/Asteroid.hpp"
 
 Game::Game(App* owner)
 	: m_app( owner )
@@ -22,10 +22,10 @@ void Game::Startup()
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_playerShip = new PlayerShip(this, worldCenter);
 
-	/*for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
+	for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
 	{
 		SpawnRandomAsteroid();
-	}*/
+	}
 }
 
 void Game::Update(float deltaSeconds)
@@ -36,7 +36,10 @@ void Game::Update(float deltaSeconds)
 	//{
 	//	m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 	//}
-	m_playerShip->Update(deltaSeconds);
+	UpdateEntities(deltaSeconds);
+	// m_playerShip
+	// g_drawDebug = !g_drawDebug;
+	DestroyGarbageEntities();
 }
 
 void Game::Render() const
@@ -51,27 +54,23 @@ void Game::Shutdown()
 
 Asteroid* Game::SpawnRandomAsteroid()
 {
-	for (int astroidIndex = 0; astroidIndex < MAX_BULLETS; ++astroidIndex)
+	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
-		Asteroid*& asteroid = m_asteroid[astroidIndex];
-		if (!asteroid)
+		if (m_asteroid[astroidIndex] == nullptr)
 		{
-			asteroid = new Asteroid(this, Vec2(50,50)); // Todo change this
-			//asteroid->m_orientationDegrees = forwardDegrees;
-			//asteroid->m_velocity.x = ASTEROID_SPEED * CosDegrees(forwardDegrees);
-			//asteroid->m_velocity.y = ASTEROID_SPEED * SinDegrees(forwardDegrees);
-			return asteroid;
+			m_asteroid[astroidIndex] = new Asteroid(this, Vec2(0,0)); //Position will be randomly chosen in astroid class
+			return m_asteroid[astroidIndex];
 		}
 	}
-
-	ERROR_AND_DIE("Cannot spawn a new bullet; all slots are full");
+	ERROR_RECOVERABLE("Cannot spawn a new bullet; all array slots are full");
+	return nullptr;
 }
 
 Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
 {
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
         {
-           Bullet * &bullet = m_bullets[bulletIndex];
+           Bullet* &bullet = m_bullets[bulletIndex];
             if (!bullet)
             {
                 bullet = new Bullet(this, pos);
@@ -83,6 +82,19 @@ Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
         }
 
         ERROR_AND_DIE("Cannot spawn a new bullet; all slots are full");
+}
+
+void Game::UpdateEntities(float deltaSeconds)
+{
+	m_playerShip->Update(deltaSeconds);
+	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
+	{
+		Asteroid* astroid = m_asteroid[astroidIndex];
+		if (astroid)
+		{
+			astroid->Update(deltaSeconds);
+		}
+	}
 }
 
 void Game::RenderEntities() const
@@ -109,5 +121,10 @@ void Game::RenderEntities() const
 		m_playerShip->Render();
 	}
 		
+}
+
+void Game::DestroyGarbageEntities()
+{
+	
 }
 
