@@ -41,7 +41,8 @@ void PlayerShip::Render() const
 
 	TransformVertexArrayXY3D(NUM_SHIP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
-	//DebugRender();
+	if(g_theApp->g_drawDebug)
+		DebugRender();
 }
 
 void PlayerShip::InitializeLocalVerts()
@@ -79,16 +80,16 @@ void PlayerShip::InitializeLocalVerts()
 
 void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 {
-	if (g_theApp->wasKeyJustPressed(' '))
+	if (g_theApp->isKeyJustPressed(' '))
 	{
 		m_game->SpawnBullet(m_position, m_orientationDegrees);
 	}
-	if (g_theApp->wasKeyJustPressed('S'))
+	if (g_theApp->isKeyDown('S') && !m_isTurningRight)
 	{
 		m_isTurningLeft = true;
 		m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
 	}
-	if (g_theApp->wasKeyJustPressed('F'))
+	if (g_theApp->isKeyDown('F') && !m_isTurningLeft)
 	{
 		m_isTurningRight = true;
 		m_orientationDegrees -= PLAYER_SHIP_TURN_SPEED * deltaSeconds;
@@ -97,6 +98,11 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	{
 		Vec2 forwardVec = GetForwardNormal();
 		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * deltaSeconds;
+	}
+	else
+	{
+		m_isTurningLeft = false;
+		m_isTurningRight = false;
 	}
 }
 

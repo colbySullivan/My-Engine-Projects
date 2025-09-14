@@ -30,12 +30,6 @@ void Game::Startup()
 
 void Game::Update(float deltaSeconds)
 {
-	//if (m_isSlowMo) // T pressed
-	//	deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
-	//if (!m_isPaused || m_pauseAfterNextUpdate) // P not pressed or has a run after O is pressed
-	//{
-	//	m_pauseAfterNextUpdate = false; // Reset run token for simulation step
-	//}
 	UpdateEntities(deltaSeconds);
 	// m_playerShip
 	// g_drawDebug = !g_drawDebug;
@@ -95,7 +89,15 @@ void Game::UpdateEntities(float deltaSeconds)
 		Asteroid* astroid = m_asteroid[astroidIndex];
 		if (astroid)
 		{
-			astroid->Update(deltaSeconds);
+			if (astroid->m_isDead)
+			{
+				m_asteroid[astroidIndex] = nullptr;
+			}
+			else
+			{
+				astroid->Update(deltaSeconds);
+			}
+			
 		}
 	}
 
@@ -104,8 +106,16 @@ void Game::UpdateEntities(float deltaSeconds)
 		Bullet* bullet = m_bullets[bulletIndex];
 		if (bullet)
 		{
-			bullet->Update(deltaSeconds);
+			if (bullet->m_isDead)
+			{
+				m_bullets[bulletIndex] = nullptr;
+			}
+			else
+			{
+				bullet->Update(deltaSeconds);
+			}
 		}
+		
 	}
 }
 
