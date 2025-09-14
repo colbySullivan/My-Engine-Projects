@@ -31,8 +31,8 @@ void Game::Startup()
 void Game::Update(float deltaSeconds)
 {
 	UpdateEntities(deltaSeconds);
-	// m_playerShip
-	// g_drawDebug = !g_drawDebug;
+	CheckBulletsVsAsteroids();
+	CheckAsteroidsVsShips();
 	DestroyGarbageEntities();
 }
 
@@ -119,6 +119,57 @@ void Game::UpdateEntities(float deltaSeconds)
 	}
 }
 
+void Game::CheckBulletsVsAsteroids()
+{
+	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
+	{
+		Asteroid* astroid = m_asteroid[astroidIndex];
+		if (astroid)
+		{
+			for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+			{
+				Bullet* bullet = m_bullets[bulletIndex];
+				if (bullet)
+				{
+					CheckBulletsVsAsteroid(*bullet, *astroid);
+				}
+
+			}
+
+		}
+	}
+}
+
+void Game::CheckBulletsVsAsteroid(Bullet& bullet, Asteroid& asteroid)
+{
+	if (DoDiscsOverlap(asteroid.m_position, asteroid.m_physicsRadius, bullet.m_position, bullet.m_physicsRadius))
+	{
+		/*asteroid.m_isDead = true;*/
+		asteroid.m_health -= 1;
+		bullet.m_isDead = true;
+	}
+}
+
+void Game::CheckAsteroidsVsShips()
+{
+	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
+	{
+		Asteroid* astroid = m_asteroid[astroidIndex];
+		if (astroid)
+		{
+			CheckAsteroidVsShip(*astroid, *m_playerShip);
+		}
+	}
+}
+
+void Game::CheckAsteroidVsShip(Asteroid& asteroid, PlayerShip& ship)
+{
+	if (DoDiscsOverlap(asteroid.m_position, asteroid.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
+	{
+		ship.m_health -= 1;
+	}
+}
+
 void Game::RenderEntities() const
 {
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
@@ -147,6 +198,23 @@ void Game::RenderEntities() const
 
 void Game::DestroyGarbageEntities()
 {
-	
+	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+	{
+		Bullet const* bullet = m_bullets[bulletIndex];
+		if (bullet && bullet->m_isGarbage)
+		{
+			delete bullet;
+			m_bullets[bulletIndex] = nullptr;
+		}
+	}
+	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
+	{
+		Asteroid const* astroid = m_asteroid[astroidIndex];
+		if (astroid && astroid->m_isGarbage)
+		{
+			delete astroid;
+			m_asteroid[astroidIndex] = nullptr;
+		}
+	}
 }
 

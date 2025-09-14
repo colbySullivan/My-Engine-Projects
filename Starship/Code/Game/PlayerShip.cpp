@@ -23,6 +23,12 @@ PlayerShip::~PlayerShip()
 
 void PlayerShip::Update(float deltaSeconds)
 {
+	if (IsOffscreen() || m_health == 0)
+	{
+		m_isDead = true;
+		m_isGarbage = true;
+	}
+
 	UpdateFromKeyboard(deltaSeconds);
 	BounceOffWalls();
 	m_position += m_velocity * deltaSeconds;

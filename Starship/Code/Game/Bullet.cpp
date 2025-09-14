@@ -31,6 +31,9 @@ void Bullet::Update(float deltaSeconds)
 
 void Bullet::Render() const
 {
+	if (m_isDead)
+		return;
+
 	Vertex tempWorldVerts[NUM_BULLET_VERTS];
 	for (int vertIndex = 0; vertIndex < NUM_BULLET_VERTS; ++vertIndex)
 	{

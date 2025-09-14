@@ -15,6 +15,7 @@ Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	m_physicsRadius = ASTEROID_PHYSICS_RADIUS;
 	m_orientationDegrees = g_rng.RollRandomFloatInRange(0.1f,360.f);
 	m_velocity = GetForwardNormal() * ASTEROID_SPEED;
+	m_health = 3;
 
 	InitializeLocalVerts();
 }
@@ -28,7 +29,7 @@ void Asteroid::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
 	m_orientationDegrees += (m_angularVelocity * deltaSeconds);
-	if (IsOffscreen())
+	if (IsOffscreen() || m_health == 0)
 	{
 		m_isDead = true;
 		m_isGarbage = true;
@@ -37,6 +38,8 @@ void Asteroid::Update(float deltaSeconds)
 
 void Asteroid::Render() const
 {
+	if (m_isDead)
+		return;
 	Vertex tempShipWorldVerts[NUM_ASTEROID_VERTS];
 	for (int vertIndex = 0; vertIndex < NUM_ASTEROID_VERTS; ++vertIndex)
 	{
