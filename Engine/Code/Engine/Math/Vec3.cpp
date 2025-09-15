@@ -43,7 +43,6 @@ Vec3 const Vec3::operator-() const
 	return Vec3( -x , -y , -z);
 }
 
-// ToDo one of these multiplies is incorrect
 //-----------------------------------------------------------------------------------------------
 Vec3 const Vec3::operator*( float uniformScale ) const
 {

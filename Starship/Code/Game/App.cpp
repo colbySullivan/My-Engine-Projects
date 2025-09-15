@@ -10,6 +10,7 @@ App* g_app = nullptr;
 
 App::App()
 {
+	m_gameCamera = new Camera;
 	g_engine = new Engine;
 	g_app = this;
 	m_game = new Game(g_app);
@@ -94,13 +95,13 @@ void App::Update(float deltaSeconds)
 	{
 		m_wasKeyDownPrevArray[i] = m_isKeyDownArray[i];
 	}
-		
+	m_gameCamera->SetOrthoView(Vec2(0.f,0.f),Vec2(200.f, 100.f));
 }
 
 void App::Render() const
 {
 	g_engine->m_render->BeginCamera(*m_gameCamera);
-	Rgba8 backgroundColor = Rgba8(255.f, 255.f, 255.f, 255.f);
+	Rgba8 backgroundColor = Rgba8(0.f, 0.f, 0.f, 255.f);
 	g_engine->m_render->ClearScreen(backgroundColor);
 	m_game->Render();
 }

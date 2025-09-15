@@ -42,5 +42,5 @@ private:
 	Asteroid*		m_asteroid[MAX_ASTEROIDS] = {};
 	
 
-	Camera*			m_gameCamera = nullptr;
+	//Camera*			m_gameCamera = nullptr;
 };

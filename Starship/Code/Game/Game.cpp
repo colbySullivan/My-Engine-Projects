@@ -9,7 +9,6 @@
 Game::Game(App* owner)
 	: m_app( owner )
 {
-
 }
 
 Game::~Game()
@@ -139,7 +138,7 @@ void Game::CheckAsteroidsVsShips()
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
 		Asteroid* astroid = m_asteroid[astroidIndex];
-		if (astroid)
+		if (astroid && !m_playerShip->m_isDead)
 		{
 			CheckAsteroidVsShip(*astroid, *m_playerShip);
 		}

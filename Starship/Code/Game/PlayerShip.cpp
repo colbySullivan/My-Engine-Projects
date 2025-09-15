@@ -40,9 +40,6 @@ void PlayerShip::Update(float deltaSeconds)
 
 void PlayerShip::Render() const
 {
-	if (m_isDead)
-		return;
-
 	Vertex tempShipWorldVerts[NUM_SHIP_VERTS];
 	for (int vertIndex = 0; vertIndex < NUM_SHIP_VERTS; ++vertIndex)
 	{
@@ -50,7 +47,8 @@ void PlayerShip::Render() const
 	}
 
 	TransformVertexArrayXY3D(NUM_SHIP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
-	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
+	if (!m_isDead)
+		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
 	if(g_theApp->g_drawDebug)
 		DebugRender();
 }
@@ -96,12 +94,10 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	}
 	if (g_theApp->isKeyDown('S') && !m_isTurningRight)
 	{
-		m_isTurningLeft = true;
 		m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
 	}
 	if (g_theApp->isKeyDown('F') && !m_isTurningLeft)
 	{
-		m_isTurningRight = true;
 		m_orientationDegrees -= PLAYER_SHIP_TURN_SPEED * deltaSeconds;
 	}
 	if (g_theApp->isKeyDown('E'))
@@ -136,5 +132,6 @@ void PlayerShip::Respawn()
 		m_velocity = Vec2(0, 0);
 		m_orientationDegrees = 0.f;
 		m_isDead = false;
+		m_health = 3;
 	}
 }

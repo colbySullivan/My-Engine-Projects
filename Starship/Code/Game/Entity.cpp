@@ -40,7 +40,7 @@ void Entity::DebugRender() const
 	DebugDrawLine(playerShipPos, m_position, 0.2f, Rgba8(50, 50, 50)); // Line to entities
 	DebugDrawLine(m_position, forwardDebugLine, 0.2f, Rgba8(255, 0, 0)); // Forward line
 	DebugDrawLine(m_position, rotatedDebugLine, 0.2f, Rgba8(0, 255, 0)); // Right line
-	DebugDrawLine(m_position, velocityDebugLine, 0.2f, Rgba8(0, 255, 0)); // Velocity line
+	DebugDrawLine(m_position, velocityDebugLine, 0.2f, Rgba8(255,255,0)); // Velocity line
 
 
 }

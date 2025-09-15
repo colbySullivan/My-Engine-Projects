@@ -42,7 +42,6 @@ Vec2 const Vec2::operator-() const
 	return Vec2( -x , -y );
 }
 
-// ToDo one of these multiplies is incorrect
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::operator*( float uniformScale ) const
 {
@@ -172,8 +171,6 @@ Vec2 const Vec2::GetRotatedByMinus90Degrees() const
 	return Vec2( y, -x );
 }
 
-// ToDo might need to take out theta += radians and then add to SetOrientationDegrees
-// Todo test
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::GetRotatedByDegrees(float rotationDegrees) const
 {
