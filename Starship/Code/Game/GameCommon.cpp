@@ -58,3 +58,36 @@ void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 cons
 	}
 	g_engine->m_render->DrawVertexArray(NUM_VERTS, verts);
 }
+
+void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickness, Rgba8 const& color)
+{
+	float halfThickness = 0.5f * thickness;
+	Vec2 direction = entity1Pos - entity2Pos;
+
+	Vec2 leftNormalizeDirection = direction.GetNormalized().GetRotatedBy90Degrees();
+	Vec2 halfThicknessOffset = leftNormalizeDirection * halfThickness;
+
+	Vec2 bottomLeft = entity1Pos - halfThicknessOffset;
+	Vec2 topLeft = entity1Pos + halfThicknessOffset;
+	Vec2 topRight = entity2Pos + halfThicknessOffset;
+	Vec2 bottomRight = entity2Pos - halfThicknessOffset;
+
+	Vertex verts[NUM_VERTS];
+
+	// First triangle
+	verts[0].m_position = Vec3(bottomLeft.x, bottomLeft.y, 0.0f);
+	verts[1].m_position = Vec3(topLeft.x, topLeft.y, 0.0f);
+	verts[2].m_position = Vec3(topRight.x, topRight.y, 0.0f);
+
+	// Second triangle
+	verts[3].m_position = Vec3(bottomLeft.x, bottomLeft.y, 0.0f);
+	verts[4].m_position = Vec3(topRight.x, topRight.y, 0.0f);
+	verts[5].m_position = Vec3(bottomRight.x, bottomRight.y, 0.0f);
+
+	for (int vertIndex = 0; vertIndex < NUM_VERTS; ++vertIndex)
+	{
+		verts[vertIndex].m_color = color;
+	}
+
+	g_engine->m_render->DrawVertexArray(NUM_VERTS, verts);
+}

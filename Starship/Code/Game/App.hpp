@@ -32,14 +32,11 @@ public:
 	bool wasKeyJustPressed( unsigned char keyCode );
 
 public:
-	PlayerShip* m_ship1 = nullptr; // Move these to game.hpp
-	PlayerShip* m_ship2 = nullptr; // Move these to game.hpp
-	PlayerShip* m_ship3 = nullptr; // Move these to game.hpp
 	Camera*     m_gameCamera = nullptr;
 	bool		g_drawDebug = false;
+	Game*		m_game = nullptr;
 
 private:
-	Game*			m_game = nullptr;
 	bool            m_isQuitting = false;
 	bool            m_isPaused = false;
 	bool            m_isSlowMo = false;

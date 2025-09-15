@@ -71,7 +71,7 @@ void Renderer::CreateRenderingContext()
 void Renderer::ClearScreen(Rgba8 const& clearColor)
 {
 	UNUSED(clearColor); // Todo fix this
-	glClearColor(0.39215686274f, 0.19607843137f, 0.f, 1.f); // Note; glClearColor takes colors as floats in [0,1], not bytes in [0,255]
+	glClearColor(0.f, 0.f, 0.f, 255.f); // Note; glClearColor takes colors as floats in [0,1], not bytes in [0,255]
 	//glClearColor(*clearColor);
 	glClear(GL_COLOR_BUFFER_BIT); // ALWAYS clear the screen at the top of each frame's Render()!	
 }

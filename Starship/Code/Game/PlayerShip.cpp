@@ -28,8 +28,12 @@ void PlayerShip::Update(float deltaSeconds)
 		m_isDead = true;
 		m_isGarbage = true;
 	}
-
-	UpdateFromKeyboard(deltaSeconds);
+	if (g_theApp->isKeyJustPressed('N')) // F8
+	{
+		Respawn();
+	}
+	if(!m_isDead)
+		UpdateFromKeyboard(deltaSeconds);
 	BounceOffWalls();
 	m_position += m_velocity * deltaSeconds;
 }
@@ -114,10 +118,23 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 
 void PlayerShip::BounceOffWalls()
 {
-
+	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius || m_position.x < 0 + m_cosmeticRadius)
+	{
+		m_velocity.x = -m_velocity.x;
+	}
+	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius || m_position.y < 0 + m_cosmeticRadius)
+	{
+		m_velocity.y = -m_velocity.y;
+	}
 }
 
 void PlayerShip::Respawn()
 {
-
+	if (m_isDead)
+	{
+		m_position = Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
+		m_velocity = Vec2(0, 0);
+		m_orientationDegrees = 0.f;
+		m_isDead = false;
+	}
 }

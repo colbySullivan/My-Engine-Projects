@@ -45,7 +45,7 @@ void App::Update(float deltaSeconds)
 	{
 		m_isQuitting = true;
 	}
-	if (isKeyJustPressed('T')) // Slows simulation time to 1/10th the normal rate
+	if (isKeyDown('T')) // Slows simulation time to 1/10th the normal rate
 	{
 		m_isSlowMo = !m_isSlowMo;
 	}
@@ -64,14 +64,17 @@ void App::Update(float deltaSeconds)
 		m_game->SpawnRandomAsteroid();
 	}
 
-	if (isKeyJustPressed('112')) // F1
+	if (isKeyJustPressed(112)) // F1
 	{
 		g_drawDebug = !g_drawDebug;
 	}
 
-	if (isKeyJustPressed('119')) // F8
+	if (isKeyJustPressed(119)) // F8
 	{
-		g_drawDebug = !g_drawDebug;
+		m_game = nullptr;
+		delete m_game;
+		m_game = new Game(g_app);
+		m_game->Startup();
 	}
 
 	if (m_isSlowMo) // T pressed
@@ -97,7 +100,7 @@ void App::Update(float deltaSeconds)
 void App::Render() const
 {
 	g_engine->m_render->BeginCamera(*m_gameCamera);
-	Rgba8 backgroundColor = Rgba8(0.39215686274f, 0.19607843137f, 0.f, 1.f);
+	Rgba8 backgroundColor = Rgba8(255.f, 255.f, 255.f, 255.f);
 	g_engine->m_render->ClearScreen(backgroundColor);
 	m_game->Render();
 }

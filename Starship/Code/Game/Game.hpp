@@ -26,6 +26,7 @@ public:
 	
 	Asteroid* SpawnRandomAsteroid();
 	Bullet* SpawnBullet(Vec2 const& pos, float forwardDegrees);
+	PlayerShip*		m_playerShip = nullptr;
 
 private:
 	void UpdateEntities(float deltaSeconds);
@@ -39,7 +40,7 @@ private:
 	App*			m_app;
 	Bullet*			m_bullets[MAX_BULLETS] = {};
 	Asteroid*		m_asteroid[MAX_ASTEROIDS] = {};
-	PlayerShip*		m_playerShip = nullptr; // Just one player ship (for now...)
+	
 
 	Camera*			m_gameCamera = nullptr;
 };

@@ -71,7 +71,6 @@ Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
 				m_bullets[bulletIndex]->m_orientationDegrees = forwardDegrees;
 				m_bullets[bulletIndex]->m_velocity.x = BULLET_SPEED * CosDegrees(forwardDegrees);
 				m_bullets[bulletIndex]->m_velocity.y = BULLET_SPEED * SinDegrees(forwardDegrees);
-                //return bullet;
 				return m_bullets[bulletIndex];
             }
         }
@@ -89,15 +88,7 @@ void Game::UpdateEntities(float deltaSeconds)
 		Asteroid* astroid = m_asteroid[astroidIndex];
 		if (astroid)
 		{
-			if (astroid->m_isDead)
-			{
-				m_asteroid[astroidIndex] = nullptr;
-			}
-			else
-			{
-				astroid->Update(deltaSeconds);
-			}
-			
+			astroid->Update(deltaSeconds);
 		}
 	}
 
@@ -106,14 +97,7 @@ void Game::UpdateEntities(float deltaSeconds)
 		Bullet* bullet = m_bullets[bulletIndex];
 		if (bullet)
 		{
-			if (bullet->m_isDead)
-			{
-				m_bullets[bulletIndex] = nullptr;
-			}
-			else
-			{
-				bullet->Update(deltaSeconds);
-			}
+			bullet->Update(deltaSeconds);
 		}
 		
 	}
@@ -144,9 +128,9 @@ void Game::CheckBulletsVsAsteroid(Bullet& bullet, Asteroid& asteroid)
 {
 	if (DoDiscsOverlap(asteroid.m_position, asteroid.m_physicsRadius, bullet.m_position, bullet.m_physicsRadius))
 	{
-		/*asteroid.m_isDead = true;*/
-		asteroid.m_health -= 1;
 		bullet.m_isDead = true;
+		bullet.m_isGarbage = true;
+		asteroid.m_health -= 1;
 	}
 }
 
@@ -167,6 +151,7 @@ void Game::CheckAsteroidVsShip(Asteroid& asteroid, PlayerShip& ship)
 	if (DoDiscsOverlap(asteroid.m_position, asteroid.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
 	{
 		ship.m_health -= 1;
+		asteroid.m_health -= 1;
 	}
 }
 
