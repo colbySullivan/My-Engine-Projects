@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Engine/Renderer/Camera.hpp"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <gl/GL.h>
@@ -70,22 +71,21 @@ void Renderer::CreateRenderingContext()
 
 void Renderer::ClearScreen(Rgba8 const& clearColor)
 {
-	UNUSED(clearColor); // Todo fix this
-	glClearColor(0.f, 0.f, 0.f, 255.f); // Note; glClearColor takes colors as floats in [0,1], not bytes in [0,255]
-	//glClearColor(*clearColor);
+	glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a); // Note; glClearColor takes colors as floats in [0,1], not bytes in [0,255]
 	glClear(GL_COLOR_BUFFER_BIT); // ALWAYS clear the screen at the top of each frame's Render()!	
 }
 
 void Renderer::BeginCamera(Camera const& camera)
 {
-	UNUSED(camera); // this will be removed later
 	glLoadIdentity();
-	glOrtho(0.f, WORLD_SIZE_X, 0.f, WORLD_SIZE_Y, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
+	Vec2 bottomLeft = camera.GetOrthoBottomLeft();
+	Vec2 topLeft = camera.GetOrthoTopRight();
+	glOrtho(bottomLeft.x, topLeft.x, bottomLeft.y, topLeft.y, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
 }
 
-void Renderer::EndCamera(Camera const& camera)
+void Renderer::EndCamera( [[maybe_unused]] Camera const& camera)
 {
-	UNUSED(camera);
+
 }
 
 void Renderer::DrawVertexArray(int numVertexes, Vertex const* vertexes)

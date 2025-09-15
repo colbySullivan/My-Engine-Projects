@@ -1,5 +1,5 @@
-#include "Engine.hpp";
-#include "Engine/Renderer/Renderer.hpp";
+#include "Engine.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 
 Engine* g_engine = nullptr;
 Renderer* m_render;
