@@ -17,9 +17,9 @@ Entity::~Entity()
 
 }
 
-void Entity::Update(float deltaSeconds)
+void Entity::Update( [[maybe_unused]] float deltaSeconds)
 {
-
+	
 }
 
 void Entity::Render() const

@@ -5,12 +5,12 @@
 
 float ConvertDegreesToRadians(float degrees)
 {
-    return degrees * ( M_PI / 180.f );
+    return degrees * static_cast<float>( M_PI / 180.f );
 }
 
 float ConvertRadiansToDegrees(float radians)
 {
-    return radians * ( 180.f / M_PI );;
+    return radians *  static_cast<float>( 180.f / M_PI );;
 }
 
 float CosDegrees( float degrees )
@@ -26,7 +26,7 @@ float SinDegrees(float degrees)
 float Atan2Degrees(float y, float x)
 {
 	float radians = atan2f(y, x);
-	return radians * (180.0f / M_PI);
+	return radians *  static_cast<float>(180.0f / M_PI);
 }
 
 float GetDistance2D(Vec2 const& positionA, Vec2 const& positionB)

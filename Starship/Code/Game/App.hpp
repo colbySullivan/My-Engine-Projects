@@ -31,6 +31,7 @@ public:
 	bool isKeyJustPressed( unsigned char keyCode );
 	bool wasKeyJustPressed( unsigned char keyCode );
 
+
 public:
 	Camera*     m_gameCamera = nullptr;
 	bool		g_drawDebug = false;

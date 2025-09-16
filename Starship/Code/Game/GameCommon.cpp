@@ -13,8 +13,8 @@ void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 cons
 	float outerRadius = radius + halfThickness;
 	constexpr int NUM_SIDES = 32;
 	constexpr int NUM_TRIS = 2 * NUM_SIDES;
-	constexpr int NUM_VERTS = 3 * NUM_TRIS;
-	Vertex verts[NUM_VERTS];
+	constexpr int RING_NUM_VERTS  = 3 * NUM_TRIS; // Renamed to suppress mulitple decleration error
+	Vertex verts[RING_NUM_VERTS ];
 	constexpr float DEGREES_PER_SIDE = 360.f / static_cast<float>( NUM_SIDES );
 	for (int sideNum = 0; sideNum < NUM_SIDES; ++sideNum)
 	{
@@ -56,7 +56,7 @@ void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 cons
 		verts[vertIndexE].m_color = color;
 		verts[vertIndexF].m_color = color;
 	}
-	g_engine->m_render->DrawVertexArray(NUM_VERTS, verts);
+	g_engine->m_render->DrawVertexArray(RING_NUM_VERTS , verts);
 }
 
 void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickness, Rgba8 const& color)

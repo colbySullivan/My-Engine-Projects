@@ -46,10 +46,8 @@ void App::Update(float deltaSeconds)
 	{
 		m_isQuitting = true;
 	}
-	if (isKeyDown('T')) // Slows simulation time to 1/10th the normal rate
-	{
-		m_isSlowMo = !m_isSlowMo;
-	}
+	m_isSlowMo = isKeyDown('T');  // Slows simulation time to 1/10th the normal rate
+
 	if (isKeyJustPressed('P')) // Pauses game
 	{
 		m_isPaused = !m_isPaused; // Switch pause
@@ -101,7 +99,7 @@ void App::Update(float deltaSeconds)
 void App::Render() const
 {
 	g_engine->m_render->BeginCamera(*m_gameCamera);
-	Rgba8 backgroundColor = Rgba8(0.f, 0.f, 0.f, 255.f);
+	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
 	m_game->Render();
 }
