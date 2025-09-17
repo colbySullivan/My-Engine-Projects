@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 //------------------------------------------------------------------------------
 
 struct IntVec2
@@ -23,8 +21,8 @@ public:
 	int             GetLengthSquared() const;
 	float           GetOrientationRadians() const;
 	float           GetOrientationDegrees() const;
-	IntVec2 const   GetRotated90Degrees() const;
-	IntVec2 const   GetRotatedMinus90Degrees() const;
+	IntVec2 const   GetRotatedBy90Degrees() const;
+	IntVec2 const   GetRotatedByMinus90Degrees() const;
 
 	// Mutators (non-const methods)
 	void            Rotate90Degrees();
