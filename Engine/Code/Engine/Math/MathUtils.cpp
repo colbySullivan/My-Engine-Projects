@@ -3,6 +3,53 @@
 #include "Vec3.hpp"
 #include<math.h>
 
+float GetClamped(float value, float minValue, float maxValue)
+{
+    if(value <= minValue)
+        return minValue;
+	if (value >= maxValue)
+		return maxValue;
+    return value;
+}
+
+float GetClampedZeroToOne(float value)
+{
+	if (value <= 0)
+		return 0;
+	if (value >= 1)
+		return 1;
+	return value;
+}
+
+float Interpolate(float start, float end, float fractionTowardEnd)
+{
+    return ((1-fractionTowardEnd) * start) + (fractionTowardEnd * end);
+}
+
+float GetFractionWithinRange(float value, float rangeStart, float rangeEnd)
+{
+    if(rangeStart == rangeEnd)
+        return 0.5f;
+
+    return (value - rangeStart) / (rangeEnd - rangeStart);
+}
+
+float RangeMap(float inValue, float inStart, float inEnd, float outStart, float outEnd)
+{
+    return Interpolate(outStart, outEnd, GetFractionWithinRange(inValue, inStart, inEnd));
+}
+
+float RangeMapClamped(float inValue, float inStart, float inEnd, float outStart, float outEnd)
+{
+    float clampedFraction = GetClampedZeroToOne(GetFractionWithinRange(inValue, inStart, inEnd));
+    return Interpolate(outStart, outEnd, clampedFraction);
+}
+
+int RoundDownToInt(float value)
+{
+    return floorf(value);
+}
+
 float ConvertDegreesToRadians(float degrees)
 {
     return degrees * static_cast<float>( M_PI / 180.f );
