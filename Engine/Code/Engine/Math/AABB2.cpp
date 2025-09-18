@@ -1,4 +1,5 @@
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 AABB2::AABB2(AABB2 const& copyFrom)
 	: m_mins(copyFrom.m_mins)
@@ -21,7 +22,7 @@ AABB2::AABB2(Vec2 const& mins, Vec2 const& maxs)
 
 bool AABB2::IsPointInside(Vec2 const& point) const
 {
-	return true; // TODO
+	return (point.x > m_mins.x && point.x < m_maxs.x && point.y > m_mins.y && point.y < m_maxs.y);
 }
 
 Vec2 const AABB2::GetCenter() const
@@ -40,17 +41,33 @@ Vec2 const AABB2::GetDimensions() const
 
 Vec2 const AABB2::GetNearestPoint(Vec2 const& referencePosition) const
 {
-	return referencePosition; // TODO
+	float xNearest = referencePosition.x;
+	float yNearest = referencePosition.y;
+	if (IsPointInside(referencePosition))
+		return referencePosition;
+	if (referencePosition.x < m_mins.x)
+		xNearest = m_mins.x;
+	if (referencePosition.x > m_maxs.x)
+		xNearest = m_maxs.x;
+	if (referencePosition.y < m_mins.y)
+		yNearest = m_mins.y;
+	if (referencePosition.y > m_maxs.y)
+		yNearest = m_maxs.y;
+	
+	return Vec2(xNearest, yNearest);
 }
 
 Vec2 const AABB2::GetPointAtUV(Vec2 const& uv) const
 {
-	return uv; // TODO
+	return Vec2(Interpolate(m_mins.x, m_maxs.x, uv.x), Interpolate(m_mins.y, m_maxs.y, uv.y));
 }
 
 Vec2 const AABB2::GetUVForPoint(Vec2 const& point) const
 {
-	return point; // TODO
+	/*float xFraction = GetFractionWithinRange(point.x, m_mins.x, m_maxs.x);
+	float yFraction = GetFractionWithinRange(point.y, m_mins.y, m_maxs.y);*/
+	// TODO one case is incorrect
+	return Vec2(RangeMapClamped(point.x, m_mins.x, m_maxs.x, 0.f, 1.f), RangeMapClamped(point.y, m_mins.y, m_maxs.y, 0.f, 1.f));
 }
 
 void AABB2::Translate(Vec2 const& translationToApply)
@@ -60,16 +77,38 @@ void AABB2::Translate(Vec2 const& translationToApply)
 
 void AABB2::SetCenter(Vec2 const& newCenter)
 {
-
+	Vec2 currentDimensions = GetDimensions();
+	float xOffset = currentDimensions.x * 0.5;
+	float yOffset = currentDimensions.y * 0.5;
+	m_mins.x = newCenter.x - xOffset;
+	m_mins.y = newCenter.y - yOffset;
+	m_maxs.x = xOffset + newCenter.x;
+	m_maxs.y = yOffset + newCenter.y;
 }
 
 void AABB2::SetDimensions(Vec2 const& newDimensions)
 {
-
+	Vec2 centerBuffer = GetCenter();
+	float xOffset = newDimensions.x * 0.5;
+	float yOffset = newDimensions.y * 0.5;
+	m_mins.x = centerBuffer.x - xOffset;
+	m_mins.y = centerBuffer.y - yOffset;
+	m_maxs.x = xOffset + centerBuffer.x;
+	m_maxs.y = yOffset + centerBuffer.y;
 }
 
 void AABB2::StretchToIncludePoint(Vec2 const& point)
 {
-
+	if (!IsPointInside(point))
+	{
+		if (point.x <= m_mins.x)
+			m_mins.x = point.x;
+		if (point.x >= m_maxs.x)
+			m_maxs.x = point.x;
+		if (point.y <= m_mins.y)
+			m_mins.y = point.x;
+		if (point.y >= m_maxs.y)
+			m_maxs.y = point.x;
+	}
 }
 

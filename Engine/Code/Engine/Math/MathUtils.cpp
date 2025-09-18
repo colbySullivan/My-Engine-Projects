@@ -76,6 +76,21 @@ float Atan2Degrees(float y, float x)
 	return radians *  static_cast<float>(180.0f / M_PI);
 }
 
+float GetShortestAngularDispDegrees(float startDegrees, float endDegrees)
+{
+    return 0.0f; //TODO
+}
+
+float GetTurnedTowardDegrees(float currentDegrees, float goalDegrees, float maxDeltaDegrees)
+{
+    return 0.0f; //TODO
+}
+
+float DotProduct2D(Vec2 const& a, Vec2 const& b)
+{
+    return 0.0f; //TODO
+}
+
 float GetDistance2D(Vec2 const& positionA, Vec2 const& positionB)
 {
     return sqrtf(GetDistanceSquared2D( positionA, positionB ));

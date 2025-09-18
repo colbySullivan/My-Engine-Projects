@@ -38,10 +38,11 @@ public:
 	Game*		m_game = nullptr;
 
 private:
-	bool            m_isQuitting = false;
+	bool            m_isQuitting = false; // TODO move these 4 to game.hpp
 	bool            m_isPaused = false;
 	bool            m_isSlowMo = false;
 	bool            m_pauseAfterNextUpdate = false;
+
 	bool			m_isKeyDownArray[256];
 	bool			m_wasKeyDownPrevArray[256];
 };
