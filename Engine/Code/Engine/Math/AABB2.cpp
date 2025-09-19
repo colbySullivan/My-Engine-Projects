@@ -64,15 +64,14 @@ Vec2 const AABB2::GetPointAtUV(Vec2 const& uv) const
 
 Vec2 const AABB2::GetUVForPoint(Vec2 const& point) const
 {
-	/*float xFraction = GetFractionWithinRange(point.x, m_mins.x, m_maxs.x);
-	float yFraction = GetFractionWithinRange(point.y, m_mins.y, m_maxs.y);*/
 	// TODO one case is incorrect
-	return Vec2(RangeMapClamped(point.x, m_mins.x, m_maxs.x, 0.f, 1.f), RangeMapClamped(point.y, m_mins.y, m_maxs.y, 0.f, 1.f));
+	return Vec2(RangeMap(point.x, m_mins.x, m_maxs.x, 0.f, 1.f), RangeMap(point.y, m_mins.y, m_maxs.y, 0.f, 1.f));
 }
 
 void AABB2::Translate(Vec2 const& translationToApply)
 {
-
+	m_mins += translationToApply;
+	m_maxs += translationToApply;
 }
 
 void AABB2::SetCenter(Vec2 const& newCenter)
@@ -106,9 +105,9 @@ void AABB2::StretchToIncludePoint(Vec2 const& point)
 		if (point.x >= m_maxs.x)
 			m_maxs.x = point.x;
 		if (point.y <= m_mins.y)
-			m_mins.y = point.x;
+			m_mins.y = point.y;
 		if (point.y >= m_maxs.y)
-			m_maxs.y = point.x;
+			m_maxs.y = point.y;
 	}
 }
 
