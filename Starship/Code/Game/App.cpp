@@ -24,7 +24,7 @@ App::~App()
 void App::RunFrame()
 {
 	float fakeDeltaSeconds = 1.f / 60.f;
-	//g_engine->BeginFrame();
+	g_engine->BeginFrame();
 	Render();
 	Update(fakeDeltaSeconds);
 }

@@ -2,6 +2,24 @@
 #include <Windows.h> 
 #include <stdio.h>
 
+unsigned char const KEYCODE_F1 = 0x70;
+unsigned char const KEYCODE_F2 = 0x71;
+unsigned char const KEYCODE_F3 = 0x72;
+unsigned char const KEYCODE_F4 = 0x73;
+unsigned char const KEYCODE_F5 = 0x74;
+unsigned char const KEYCODE_F6 = 0x75;
+unsigned char const KEYCODE_F7 = 0x76;
+unsigned char const KEYCODE_F8 = 0x77;
+unsigned char const KEYCODE_F9 = 0x78;
+unsigned char const KEYCODE_F10 = 0x79;
+unsigned char const KEYCODE_F11 = 0x7A;
+unsigned char const KEYCODE_F12 = 0x7B;
+unsigned char const KEYCODE_ESC = 0x1B;
+unsigned char const KEYCODE_DOWNARROW = 0x28;
+unsigned char const KEYCODE_UPARROW = 0x26;
+unsigned char const KEYCODE_LEFTARROW = 0x25;
+unsigned char const KEYCODE_RIGHTARROW = 0x27;
+
 InputSystem::InputSystem()
 {
 	m_input = this;
@@ -14,10 +32,10 @@ InputSystem::~InputSystem()
 
 void InputSystem::Startup()
 {
-	for (int i = 0; i < 256; ++i)
+	for (int i = 0; i < NUM_KEYCODES; ++i)
 	{
-		m_isKeyDownArray[i] = false;
-		m_wasKeyDownPrevArray[i] = false;
+		m_keyStates[i].m_isPressed = false;
+		m_keyStates[i].m_wasPressedLastFrame = false;
 	}
 }
 
@@ -28,38 +46,38 @@ void InputSystem::Shutdown()
 
 void InputSystem::BeginFrame()
 {
-	for (int i = 0; i < 256; ++i)
-	{
-		m_wasKeyDownPrevArray[i] = m_isKeyDownArray[i];
-	}
+	
 }
 
 void InputSystem::EndFrame()
 {
-
+	for (int i = 0; i < NUM_KEYCODES; ++i)
+	{
+		m_keyStates[i].m_wasPressedLastFrame = m_keyStates[i].m_isPressed;
+	}
 }
 
 bool InputSystem::WasKeyJustPressed(unsigned char keyCode)
 {
-	return m_isKeyDownArray[keyCode] &&  !m_wasKeyDownPrevArray[keyCode];
+	return m_keyStates[keyCode].m_isPressed && !m_keyStates[keyCode].m_wasPressedLastFrame;
 }
 
 bool InputSystem::WasKeyJustReleased(unsigned char keyCode)
 {
-	return !m_isKeyDownArray[keyCode] && m_wasKeyDownPrevArray[keyCode];
+	return !m_keyStates[keyCode].m_isPressed && m_keyStates[keyCode].m_wasPressedLastFrame;
 }
 
 bool InputSystem::IsKeyDown(unsigned char keyCode)
 {
-	return m_isKeyDownArray[keyCode];
+	return m_keyStates[keyCode].m_isPressed;
 }
 
 void InputSystem::HandleKeyPressed(unsigned char keyCode)
 {
-	m_isKeyDownArray[ keyCode ] = true;
+	m_keyStates[keyCode].m_isPressed = true;
 }
 
 void InputSystem::HandleKeyReleased(unsigned char keyCode)
 {
-	m_isKeyDownArray[ keyCode ] = false;
+	m_keyStates[keyCode].m_isPressed = false;
 }

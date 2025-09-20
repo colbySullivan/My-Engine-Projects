@@ -1,5 +1,12 @@
 #pragma once
+#include "Engine/Input/KeyButtonState.hpp"
 
+extern unsigned char const KEYCODE_F1;
+extern unsigned char const KEYCODE_F2;
+extern unsigned char const KEYCODE_F3;
+extern unsigned char const KEYCODE_F4;
+extern unsigned char const KEYCODE_F5;
+extern unsigned char const KEYCODE_F6;
 extern unsigned char const KEYCODE_F7;
 extern unsigned char const KEYCODE_F8;
 extern unsigned char const KEYCODE_F9;
@@ -33,12 +40,9 @@ public:
 	void HandleKeyReleased(unsigned char keyCode);
 	//XboxController const& GetController(int controllerID) const;
 
-	bool			m_isKeyDownArray[256];
-	bool			m_wasKeyDownPrevArray[256];
-
 	InputSystem*	m_input;
 
 protected:
-	/*KeyButtonState m_keyStates[NUM_KEYCODES];
-	XboxController m_controllers[NUM_XBOX_CONTROLLERS];*/
+	KeyButtonState m_keyStates[NUM_KEYCODES];
+	//XboxController m_controllers[NUM_XBOX_CONTROLLERS];
 };

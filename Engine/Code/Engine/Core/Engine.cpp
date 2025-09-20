@@ -3,8 +3,6 @@
 #include <Engine/Input/InputSystem.hpp>
 
 Engine* g_engine = nullptr;
-Renderer* m_render;
-InputSystem* m_input;
 
 Engine::Engine()
 {
@@ -16,9 +14,10 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	m_input->Shutdown();
 	m_render->Shutdown();
-	delete m_render;
 	delete m_input;
+	delete m_render;
 }
 
 void Engine::BeginFrame()
@@ -29,5 +28,6 @@ void Engine::BeginFrame()
 
 void Engine::EndFrame()
 {
+	m_input->EndFrame();
 	m_render->EndFrame();
 }

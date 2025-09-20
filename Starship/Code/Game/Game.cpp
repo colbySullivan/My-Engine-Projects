@@ -19,8 +19,8 @@ Game::Game(App* owner)
 
 Game::~Game()
 {
-	g_engine = nullptr;
 	delete g_engine;
+	g_engine = nullptr;
 }
 
 void Game::Startup()
@@ -37,8 +37,6 @@ void Game::Startup()
 
 void Game::Update(float deltaSeconds)
 {
-	g_engine->BeginFrame();
-
 	if (m_isAttractMode)
 	{
 		RenderAttractMode();
@@ -58,12 +56,12 @@ void Game::Update(float deltaSeconds)
 		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 	}
 
-	//if(g_engine->m_input->WasKeyJustPressed('ESC')) 
+	//if(g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)) 
 	//{
 	//	m_isAttractMode = true;
 	//}
 
-	if (g_engine->m_input->WasKeyJustPressed('Q'))
+	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC))
 	{
 		m_isQuitting = true;
 	}
@@ -84,12 +82,12 @@ void Game::Update(float deltaSeconds)
 		SpawnRandomAsteroid();
 	}
 
-	if (g_engine->m_input->WasKeyJustPressed(112)) // F1
+	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
 		g_drawDebug = !g_drawDebug;
 	}
 
-	if (g_engine->m_input->IsKeyDown(119)) // F1
+	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
 	{
 		g_drawDebug = !g_drawDebug; // TODO restart game
 	}
@@ -108,7 +106,7 @@ void Game::Update(float deltaSeconds)
 	{
 		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 	}
-
+	g_engine->m_input->EndFrame();
 	m_gameCamera->SetOrthoView(Vec2(0.f,0.f),Vec2(200.f, 100.f));
 	DestroyGarbageEntities();
 }
