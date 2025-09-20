@@ -8,8 +8,7 @@
 Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
-	m_position.x = g_rng.RollRandomFloatInRange(0,WORLD_SIZE_X);
-	m_position.y = g_rng.RollRandomFloatInRange(0,WORLD_SIZE_Y);
+	spawnRandomEdge();
 	m_angularVelocity = g_rng.RollRandomFloatInRange(-200,200);
 	m_cosmeticRadius = ASTEROID_COSMETIC_RADIUS;
 	m_physicsRadius = ASTEROID_PHYSICS_RADIUS;
@@ -29,10 +28,14 @@ void Asteroid::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
 	m_orientationDegrees += (m_angularVelocity * deltaSeconds);
-	if (IsOffscreen() || m_health == 0)
+	if (m_health == 0)
 	{
 		m_isDead = true;
 		m_isGarbage = true;
+	}
+	if (IsOffscreen())
+	{
+		WrapAroundScreen();
 	}
 }
 
@@ -91,6 +94,56 @@ void Asteroid::InitializeLocalVerts()
 	for (int vertIndex = 0; vertIndex < NUM_ASTEROID_VERTS; ++vertIndex)
 	{
 		m_localVerts[vertIndex].m_color = Rgba8(100, 100, 100, 255);
+	}
+}
+
+void Asteroid::WrapAroundScreen()
+{
+	if (m_position.x > WORLD_SIZE_X + m_cosmeticRadius)
+	{
+		m_position.x = -m_cosmeticRadius;
+	}
+	else if (m_position.x < -m_cosmeticRadius)
+	{
+		m_position.x = WORLD_SIZE_X + m_cosmeticRadius;
+	}
+
+	// Wrap vertically
+	if (m_position.y > WORLD_SIZE_Y + m_cosmeticRadius)
+	{
+		m_position.y = -m_cosmeticRadius;
+	}
+	else if (m_position.y < -m_cosmeticRadius)
+	{
+		m_position.y = WORLD_SIZE_Y + m_cosmeticRadius;
+	}
+}
+
+void Asteroid::spawnRandomEdge()
+{
+	int spawnEdge = g_rng.RollRandomIntInRange(0, 3);
+
+	switch (spawnEdge)
+	{
+	case 0: // Left edge
+		m_position.x = -m_cosmeticRadius;
+		m_position.y = g_rng.RollRandomFloatInRange(0, WORLD_SIZE_Y);
+		break;
+
+	case 1: // Right edge
+		m_position.x = WORLD_SIZE_X + m_cosmeticRadius;
+		m_position.y = g_rng.RollRandomFloatInRange(0, WORLD_SIZE_Y);
+		break;
+
+	case 2: // Top edge
+		m_position.x = g_rng.RollRandomFloatInRange(0, WORLD_SIZE_X);
+		m_position.y = WORLD_SIZE_Y + m_cosmeticRadius;
+		break;
+
+	case 3: // Bottom edge
+		m_position.x = g_rng.RollRandomFloatInRange(0, WORLD_SIZE_X);
+		m_position.y = -m_cosmeticRadius;
+		break;
 	}
 }
 
