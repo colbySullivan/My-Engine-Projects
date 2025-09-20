@@ -20,6 +20,8 @@ public:
 	virtual void Update(float deltaSeconds) override;
 	virtual void Render() const override;
 
+	static void InitializeLocalPlayerShipsVerts( Vertex* vertArray );
+
 private:
 	void InitializeLocalVerts();
 	void UpdateFromKeyboard(float deltaSeconds);

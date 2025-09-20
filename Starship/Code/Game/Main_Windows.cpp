@@ -19,6 +19,8 @@ PlayerShip* g_ship3 = nullptr;
 #include <Engine/Math/Vec2.hpp>
 #include <Engine/Core/Vertex.hpp>
 #include "App.hpp"
+#include <Engine/Core/Engine.hpp>
+#include "Engine/Input/InputSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // #SD1ToDo: Later we will move this useful macro to a more central place, e.g. Engine/Core/EngineCommon.hpp
@@ -35,7 +37,6 @@ constexpr float CLIENT_ASPECT = 2.0f; // We are requesting a 1:1 aspect (square)
 //-----------------------------------------------------------------------------------------------
 // #SD1ToDo: We will move each of these items to its proper place, once that place is established later on
 // 
-bool g_isQuitting = false;							// ...becomes App::m_isQuitting instead
 HWND g_hWnd = nullptr;								// ...becomes void* Window::m_windowHandle
 HDC g_displayDeviceContext = nullptr;				// ...becomes void* Window::m_displayContext
 //HGLRC g_openGLRenderingContext = nullptr;			// ...becomes void* Renderer::m_apiRenderingContext
@@ -64,7 +65,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 	case WM_KEYDOWN:
 	{
 		unsigned char asKey = (unsigned char)wParam;
-		g_theApp->OnKeyDown(asKey);
+		g_engine->m_input->HandleKeyPressed(asKey);
 		break;
 	}
 
@@ -72,7 +73,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure(HWND windowHandle, UINT wmMessa
 	case WM_KEYUP:
 	{
 		unsigned char asKey = (unsigned char)wParam;
-		g_theApp->OnKeyUp(asKey);
+		g_engine->m_input->HandleKeyReleased(asKey);
 		break;
 	}
 	}

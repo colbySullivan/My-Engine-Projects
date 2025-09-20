@@ -48,7 +48,7 @@ void Asteroid::Render() const
 
 	TransformVertexArrayXY3D(NUM_ASTEROID_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_ASTEROID_VERTS, tempShipWorldVerts);
-	if (g_theApp->g_drawDebug)
+	if (m_game->g_drawDebug)
 		DebugRender();
 }
 

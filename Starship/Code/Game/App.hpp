@@ -24,24 +24,17 @@ public:
 
 	void SetIsQuitting();
 	bool IsQuitting() const;
-	void OnKeyDown(unsigned char keyCode);
-	void OnKeyUp(unsigned char keyCode);
-
-	bool isKeyDown( unsigned char keyCode );
-	bool isKeyJustPressed( unsigned char keyCode );
-	bool wasKeyJustPressed( unsigned char keyCode );
 
 
 public:
-	Camera*     m_gameCamera = nullptr;
-	bool		g_drawDebug = false;
+	//Camera*     m_gameCamera = nullptr;
 	Game*		m_game = nullptr;
 
 private:
-	bool            m_isQuitting = false; // TODO move these 4 to game.hpp
-	bool            m_isPaused = false;
-	bool            m_isSlowMo = false;
-	bool            m_pauseAfterNextUpdate = false;
+	//bool            m_isQuitting = false;
+	//bool            m_isPaused = false;
+	//bool            m_isSlowMo = false;
+	//bool            m_pauseAfterNextUpdate = false;
 
 	bool			m_isKeyDownArray[256];
 	bool			m_wasKeyDownPrevArray[256];

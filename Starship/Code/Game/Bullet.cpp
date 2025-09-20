@@ -42,7 +42,7 @@ void Bullet::Render() const
 	TransformVertexArrayXY3D(NUM_BULLET_VERTS, tempWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_BULLET_VERTS, tempWorldVerts);
 
-	if (g_theApp->g_drawDebug)
+	if (m_game->g_drawDebug)
 		DebugRender();
 }
 
