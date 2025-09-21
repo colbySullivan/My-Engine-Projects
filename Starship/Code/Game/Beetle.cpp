@@ -12,7 +12,7 @@ Beetle::Beetle(Game* owner, Vec2 const& startPos)
 {
 	
 	m_cosmeticRadius = ASTEROID_COSMETIC_RADIUS;
-	m_physicsRadius = ASTEROID_PHYSICS_RADIUS;
+	m_physicsRadius = BEETLE_PHYSICS_RADIUS;
 	m_health = 3;
 	InitializeLocalVerts();
 	spawnRandomEdge();
@@ -53,7 +53,7 @@ void Beetle::Render() const
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D(NUM_BEETLE_VERTS, tempShipWorldVerts, 2.f, m_orientationDegrees, m_position);
+	TransformVertexArrayXY3D(NUM_BEETLE_VERTS, tempShipWorldVerts, 3.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_BEETLE_VERTS, tempShipWorldVerts);
 	if (m_game->g_drawDebug)
 		DebugRender();

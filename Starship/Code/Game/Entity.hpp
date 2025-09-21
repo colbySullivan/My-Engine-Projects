@@ -1,10 +1,12 @@
 #pragma once
 #include <Engine/Math/Vec2.hpp>
 #include "Game/Game.hpp"
-
+#include "Engine/Math/RandomNumberGenerator.hpp"
 
 
 //------------------------------------------------------------------------------
+
+class RandomNumberGenerator;
 
 class Entity
 {
@@ -19,6 +21,7 @@ public:
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;
 
+	RandomNumberGenerator g_rng;
 
 public:
 	Game*		m_game = nullptr;
