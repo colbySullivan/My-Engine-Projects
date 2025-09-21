@@ -11,6 +11,7 @@ constexpr float WORLD_SIZE_Y = 100.f;
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;
 constexpr float WORLD_CENTER_Y = WORLD_SIZE_Y / 2.f;
 constexpr float ASTEROID_SPEED = 10.f;
+constexpr float BEETLE_SPEED = 12.f;
 constexpr float ASTEROID_PHYSICS_RADIUS = 1.6f;
 constexpr float ASTEROID_COSMETIC_RADIUS = 2.0f;
 constexpr float BULLET_LIFETIME_SECONDS = 2.0f;

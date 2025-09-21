@@ -42,10 +42,10 @@ public:
 
 private:
 	void UpdateEntities(float deltaSeconds);
-	void CheckBulletsVsAsteroids();
-	void CheckBulletsVsAsteroid(Bullet& bullet, Asteroid& asteroid);
-	void CheckAsteroidsVsShips();
-	void CheckAsteroidVsShip(Asteroid& asteroid, PlayerShip& ship);
+	void CheckBulletsVsEnemies();
+	void CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy);
+	void CheckEnemiesVsShips();
+	void CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship);
 	void RenderEntities() const;
 	void DestroyGarbageEntities();
 	void UpdateAttractMode(float deltaSeconds);

@@ -28,7 +28,7 @@ void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_playerShip = new PlayerShip(this, worldCenter);
-	m_beetle = new Beetle(this, Vec2(50.f, 50.f));
+
 
 	/*for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
 	{
@@ -76,8 +76,8 @@ void Game::Update(float deltaSeconds)
 	if (!m_isPaused || m_pauseAfterNextUpdate)
 	{
 		UpdateEntities(deltaSeconds);
-		CheckBulletsVsAsteroids();
-		CheckAsteroidsVsShips();
+		CheckBulletsVsEnemies();
+		CheckEnemiesVsShips();
 	}
 
 	if (!m_isPaused || m_pauseAfterNextUpdate) // P not pressed or has a run after O is pressed
@@ -157,7 +157,6 @@ Beetle* Game::SpawnBeetle()
 void Game::UpdateEntities(float deltaSeconds)
 {
 	m_playerShip->Update(deltaSeconds);
-	m_beetle->Update(deltaSeconds);
 
  	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
  	{
@@ -188,7 +187,7 @@ void Game::UpdateEntities(float deltaSeconds)
 	}
 }
 
-void Game::CheckBulletsVsAsteroids()
+void Game::CheckBulletsVsEnemies()
 {
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
@@ -200,41 +199,66 @@ void Game::CheckBulletsVsAsteroids()
 				Bullet* bullet = m_bullets[bulletIndex];
 				if (bullet)
 				{
-					CheckBulletsVsAsteroid(*bullet, *astroid);
+					CheckBulletsVsEnemies(*bullet, *astroid);
+				}
+			}
+		}
+	}
+
+	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
+	{
+		Beetle* beetle = m_beetles[beetleIndex];
+		if (beetle)
+		{
+			for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+			{
+				Bullet* bullet = m_bullets[bulletIndex];
+				if (bullet)
+				{
+					CheckBulletsVsEnemies(*bullet, *beetle);
 				}
 			}
 		}
 	}
 }
 
-void Game::CheckBulletsVsAsteroid(Bullet& bullet, Asteroid& asteroid)
+void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 {
-	if (DoDiscsOverlap(asteroid.m_position, asteroid.m_physicsRadius, bullet.m_position, bullet.m_physicsRadius))
+	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, bullet.m_position, bullet.m_physicsRadius))
 	{
 		bullet.m_isDead = true;
 		bullet.m_isGarbage = true;
-		asteroid.m_health -= 1;
+		enemy.m_health -= 1;
 	}
 }
 
-void Game::CheckAsteroidsVsShips()
+void Game::CheckEnemiesVsShips()
 {
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
 		Asteroid* astroid = m_asteroid[astroidIndex];
 		if (astroid && !m_playerShip->m_isDead)
 		{
-			CheckAsteroidVsShip(*astroid, *m_playerShip);
+			CheckEnemiesVsShip(*astroid, *m_playerShip);
+		}
+	}
+
+	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
+	{
+		Beetle* beetle = m_beetles[beetleIndex];
+		if (beetle && !m_playerShip->m_isDead)
+		{
+			CheckEnemiesVsShip(*beetle, *m_playerShip);
 		}
 	}
 }
 
-void Game::CheckAsteroidVsShip(Asteroid& asteroid, PlayerShip& ship)
+void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 {
-	if (DoDiscsOverlap(asteroid.m_position, asteroid.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
+	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
 	{
 		ship.m_health -= 1;
-		asteroid.m_health -= 1;
+		enemy.m_health -= 1;
 	}
 }
 

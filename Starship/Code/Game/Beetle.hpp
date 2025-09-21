@@ -10,9 +10,9 @@
 
 //------------------------------------------------------------------------------
 
-constexpr int NUM_BEETLE_SIDES = 16;
+constexpr int NUM_BEETLE_SIDES = 4;
 constexpr int NUM_BEETLE_TRIS = NUM_BEETLE_SIDES;
-constexpr int NUM_BEETLE_VERTS = 8;
+constexpr int NUM_BEETLE_VERTS = 6;
 
 class RandomNumberGenerator;
 
