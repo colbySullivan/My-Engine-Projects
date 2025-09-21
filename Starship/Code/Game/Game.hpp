@@ -10,6 +10,7 @@ class Asteroid;
 class Bullet;
 class Entity;
 class InputSystem;
+class Beetle;
 
 
 //------------------------------------------------------------------------------
@@ -26,11 +27,13 @@ public:
 	bool isAlive(Entity* entity) const;
 
 	
-	Asteroid* SpawnRandomAsteroid();
+	Asteroid* SpawnRandomAsteroids();
 	Bullet* SpawnBullet(Vec2 const& pos, float forwardDegrees);
+	Beetle* SpawnBeetle();
 	PlayerShip*		m_playerShip = nullptr;
+	Beetle*			m_beetle = nullptr;
 
-	bool			m_isAttractMode = false;
+	bool			m_isAttractMode = true;
 	bool			m_isQuitting = false;
 	bool            m_isPaused = false;
 	bool            m_isSlowMo = false;
@@ -47,10 +50,12 @@ private:
 	void DestroyGarbageEntities();
 	void UpdateAttractMode(float deltaSeconds);
 	void RenderAttractMode() const;
+	void KeyboardInput();
 
 	App*			m_app;
 	Bullet*			m_bullets[MAX_BULLETS] = {};
 	Asteroid*		m_asteroid[MAX_ASTEROIDS] = {};
+	Beetle*			m_beetles[MAX_BEETLES] = {};
 	
 
 	Camera*			m_gameCamera = nullptr;
@@ -58,4 +63,5 @@ private:
 	int GetNumLivingEnemies() const;
 	bool IsReadyToStartNextWave() const;
 	void UpdateWaves();
+	void CleanupGameEntities();
 };

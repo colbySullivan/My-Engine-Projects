@@ -5,6 +5,7 @@
 constexpr int NUM_STARTING_ASTEROIDS = 6;
 constexpr int MAX_ASTEROIDS = 12;
 constexpr int MAX_BULLETS = 20;
+constexpr int MAX_BEETLES = 2;
 constexpr float WORLD_SIZE_X = 200.f;
 constexpr float WORLD_SIZE_Y = 100.f;
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;
