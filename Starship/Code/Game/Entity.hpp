@@ -17,6 +17,7 @@ public:
 	virtual void Update(float deltaSeconds) = 0;
 	virtual void Render() const = 0;
 	virtual void DebugRender() const;
+	virtual void createDebris(int numDebrisToCreate, Vec2 velocity);
 
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;
@@ -32,6 +33,8 @@ public:
 	float       m_physicsRadius = 5.f;
 	float       m_cosmeticRadius = 10.f;
 	int         m_health = 1;
+	int			m_debrisAmount = 3;
 	bool        m_isDead = false;  // gameplay idea
 	bool        m_isGarbage = false;  // code idea
+	Rgba8		m_entityColor = Rgba8(200, 200, 200, 127);
 };

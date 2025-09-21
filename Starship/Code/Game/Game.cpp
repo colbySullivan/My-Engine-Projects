@@ -9,6 +9,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Game/Beetle.hpp"
+#include "Game/Debris.hpp"
+#include "Game/Entity.hpp"
 
 
 Game::Game(App* owner)
@@ -107,6 +109,15 @@ bool Game::isAlive(Entity* entity) const
 	return (entity && !entity->m_isDead);
 }
 
+void Game::HandleHealthAndDebris(Entity& entity)
+{
+	entity.m_health -= 1;
+	if (entity.m_health <= 0 || entity.m_isDead)
+	{
+		SpawnDebris(entity, entity.m_debrisAmount);
+	}
+}
+
 Asteroid* Game::SpawnRandomAsteroids()
 {
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
@@ -154,6 +165,19 @@ Beetle* Game::SpawnBeetle()
 	return nullptr;
 }
 
+void Game::SpawnDebris(Entity& entity, int debrisAmount)
+{
+	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
+	{
+		if (m_debris[debrisIndex] == nullptr)
+		{
+			m_debris[debrisIndex] = new Debris(this, entity.m_position);
+			//m_debris[debrisIndex]->m_velocity = entity.m_velocity;
+			m_debris[debrisIndex]->m_entityColor = Rgba8(200, 200, 200, 127);
+		}
+	}
+}
+
 void Game::UpdateEntities(float deltaSeconds)
 {
 	m_playerShip->Update(deltaSeconds);
@@ -183,6 +207,15 @@ void Game::UpdateEntities(float deltaSeconds)
 		if (beetle)
 		{
 			beetle->Update(deltaSeconds);
+		}
+	}
+
+	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
+	{
+		Debris* debris = m_debris[debrisIndex];
+		if (debris)
+		{
+			debris->Update(deltaSeconds);
 		}
 	}
 }
@@ -228,7 +261,8 @@ void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 	{
 		bullet.m_isDead = true;
 		bullet.m_isGarbage = true;
-		enemy.m_health -= 1;
+		HandleHealthAndDebris(enemy);
+		HandleHealthAndDebris(bullet);
 	}
 }
 
@@ -257,8 +291,8 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 {
 	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
 	{
-		ship.m_health -= 1;
-		enemy.m_health -= 1;
+		HandleHealthAndDebris(ship);
+		HandleHealthAndDebris(enemy);
 	}
 }
 
@@ -294,6 +328,15 @@ void Game::RenderEntities() const
 			beetle->Render();
 		}
 	}
+
+	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
+	{
+		Debris* debris = m_debris[debrisIndex];
+		if (debris)
+		{
+			debris->Render();
+		}
+	}
 		
 }
 
@@ -324,6 +367,15 @@ void Game::DestroyGarbageEntities()
 		{
 			delete beetle;
 			m_beetles[beetleIndex] = nullptr;
+		}
+	}
+	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
+	{
+		Debris const* debris = m_debris[debrisIndex];
+		if (debris && debris->m_isGarbage)
+		{
+			delete debris;
+			m_debris[debrisIndex] = nullptr;
 		}
 	}
 }
@@ -430,6 +482,7 @@ void Game::UpdateWaves()
 			
 	}
 }
+
 void Game::CleanupGameEntities()
 {
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
@@ -456,6 +509,15 @@ void Game::CleanupGameEntities()
 		{
 			m_beetles[beetlesIndex]->m_isDead = true;
 			m_beetles[beetlesIndex]->m_isGarbage = true;
+		}
+	}
+
+	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
+	{
+		if (m_debris[debrisIndex])
+		{
+			m_debris[debrisIndex]->m_isDead = true;
+			m_debris[debrisIndex]->m_isGarbage = true;
 		}
 	}
 

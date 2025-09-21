@@ -37,6 +37,9 @@
     <ClCompile Include="Beetle.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
+    <ClCompile Include="Debris.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayerShip.hpp">
@@ -61,6 +64,9 @@
       <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="Beetle.hpp">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Debris.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>

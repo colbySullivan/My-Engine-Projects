@@ -3,6 +3,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Game/App.hpp"
 #include "Game/PlayerShip.hpp"
+#include "Game/Debris.hpp"
 
 Entity::Entity(Game* owner, Vec2 const& startPos )
 {
@@ -43,6 +44,16 @@ void Entity::DebugRender() const
 	DebugDrawLine(m_position, velocityDebugLine, 0.2f, Rgba8(255,255,0)); // Velocity line
 
 
+}
+
+void Entity::createDebris(int numDebrisToCreate, Vec2 velocity)
+{
+	for (int debrisIndex = 0; debrisIndex < numDebrisToCreate; ++debrisIndex)
+	{
+		Vec2 debrisVelocity = GetForwardNormal().GetRotatedByDegrees(g_rng.RollRandomFloatInRange(-45.f, 45.f)) * velocity;
+		Debris* debris = new Debris(m_game, m_position);
+		debris->m_velocity = debrisVelocity;
+	}
 }
 
 bool Entity::IsOffscreen() const
