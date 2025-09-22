@@ -28,11 +28,7 @@ void Asteroid::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
 	m_orientationDegrees += (m_angularVelocity * deltaSeconds);
-	if (m_health == 0)
-	{
-		m_isDead = true;
-		m_isGarbage = true;
-	}
+	Entity::Update(deltaSeconds);
 	if (IsOffscreen())
 	{
 		WrapAroundScreen();

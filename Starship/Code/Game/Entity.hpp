@@ -17,7 +17,7 @@ public:
 	virtual void Update(float deltaSeconds) = 0;
 	virtual void Render() const = 0;
 	virtual void DebugRender() const;
-	virtual void createDebris(int numDebrisToCreate, Vec2 velocity);
+	virtual void Die();
 
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;

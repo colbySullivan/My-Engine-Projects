@@ -14,6 +14,7 @@ Wasp::Wasp(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = WASP_COSMETIC_RADIUS;
 	m_physicsRadius = WASP_PHYSICS_RADIUS;
 	m_health = 3;
+	m_entityColor = Rgba8(255, 153, 204, 255);
 	InitializeLocalVerts();
 	spawnRandomEdge();
 }
@@ -29,18 +30,24 @@ void Wasp::Update(float deltaSeconds)
 	Vec2 directionToPlayer = toPlayerPos.GetNormalized();
 
 	m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f; //TODO offset of trapezoid
-	m_velocity = directionToPlayer * WASP_SPEED;
-	m_position += m_velocity * deltaSeconds;
+	//m_velocity = directionToPlayer * WASP_SPEED;
+	//m_position += m_velocity * deltaSeconds;
 
-	if (m_health == 0)
+	m_velocity += directionToPlayer * (WASP_ACCELERATION * deltaSeconds);
+	m_velocity.x = GetClamped(m_velocity.x, -WASP_MAX_SPEED, WASP_MAX_SPEED);
+	m_velocity.y = GetClamped(m_velocity.y, -WASP_MAX_SPEED, WASP_MAX_SPEED);
+	m_position += (m_velocity * deltaSeconds);
+
+	if (m_health == 0 && !m_isDead)
 	{
 		m_isDead = true;
 		m_isGarbage = true;
+		Die();
 	}
-	if (IsOffscreen())
-	{
-		WrapAroundScreen();
-	}
+	//if (IsOffscreen())
+	//{
+	//	WrapAroundScreen();
+	//}
 }
 
 void Wasp::Render() const
@@ -72,7 +79,7 @@ void Wasp::InitializeLocalVerts()
 
 	for (int vertIndex = 0; vertIndex < NUM_WASP_VERTS; ++vertIndex)
 	{
-		m_localVerts[vertIndex].m_color = Rgba8(255, 153, 204, 255);
+		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, m_entityColor.r);
 	}
 }
 

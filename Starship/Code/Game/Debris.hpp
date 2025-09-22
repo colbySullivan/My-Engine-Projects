@@ -32,4 +32,5 @@ private:
 
 private:
 	Vertex m_localVerts[NUM_DEBRIS_VERTS];
+	float m_alphaFloat;
 };

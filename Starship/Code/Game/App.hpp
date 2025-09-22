@@ -38,4 +38,5 @@ private:
 
 	bool			m_isKeyDownArray[256];
 	bool			m_wasKeyDownPrevArray[256];
+	float           m_lastFrameTime = 0.f;
 };

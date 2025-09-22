@@ -1,9 +1,9 @@
 #include "PlayerShip.hpp"
-#include <Engine/Core/Vertex.hpp>
+#include "Engine/Core/Vertex.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
 #include "App.hpp"
-#include <Engine/Core/VertexUtils.hpp>
+#include "Engine/Core/VertexUtils.hpp"
 #include "GameCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -26,11 +26,7 @@ PlayerShip::~PlayerShip()
 
 void PlayerShip::Update(float deltaSeconds)
 {
-	if (IsOffscreen() || m_health == 0)
-	{
-		m_isDead = true;
-		m_isGarbage = true;
-	}
+	Entity::Update(deltaSeconds);
 	if (g_engine->m_input->WasKeyJustPressed('N')) // F8
 	{
 		Respawn();

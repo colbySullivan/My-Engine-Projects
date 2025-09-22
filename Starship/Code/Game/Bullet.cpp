@@ -21,18 +21,24 @@ Bullet::~Bullet()
 void Bullet::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
+	Entity::Update(deltaSeconds);
 
 	if (IsOffscreen())
 	{
 		m_isDead = true;
 		m_isGarbage = true;
 	}
+	if(m_isDead)
+		Die();
 }
 
 void Bullet::Render() const
 {
 	if (m_isDead)
+	{
 		return;
+	}
+		
 
 	Vertex tempWorldVerts[NUM_BULLET_VERTS];
 	for (int vertIndex = 0; vertIndex < NUM_BULLET_VERTS; ++vertIndex)

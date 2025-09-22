@@ -27,14 +27,14 @@ public:
 	void Render() const;
 	void Shutdown();
 	bool isAlive(Entity* entity) const;
-	void HandleHealthAndDebris(Entity& entity);
+	void SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount);
 
 	
 	Asteroid* SpawnRandomAsteroids();
 	Bullet* SpawnBullet(Vec2 const& pos, float forwardDegrees);
-	Beetle* SpawnBeetle();
-	Wasp* SpawnWasp();
-	void SpawnDebris(Entity& entity, int debrisAmount);
+	Beetle* SpawnNewRandomBeetle();
+	Wasp* SpawnNewRandomWasp();
+	Debris* SpawnNewDebris(Vec2 pos, Rgba8 color);
 	PlayerShip* m_playerShip = nullptr;
 	Beetle*			m_beetle = nullptr;
 

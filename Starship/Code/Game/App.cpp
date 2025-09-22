@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Renderer/Camera.hpp"
 #include "Game.hpp"
+#include "Engine/Core/Time.hpp"
 
 
 App* g_app = nullptr;
@@ -23,10 +24,13 @@ App::~App()
 
 void App::RunFrame()
 {
-	float fakeDeltaSeconds = 1.f / 60.f;
+	float timeNow = (float)GetCurrentTimeSeconds();
+	float deltaSeconds = timeNow - m_lastFrameTime;
+	m_lastFrameTime = timeNow;
+
 	g_engine->BeginFrame();
 	Render();
-	Update(fakeDeltaSeconds);
+	Update(deltaSeconds);
 }
 
 void App::Update(float deltaSeconds)

@@ -13,8 +13,7 @@ Debris::Debris(Game* owner, Vec2 const& startPos)
 	m_physicsRadius = DEBRIS_PHYSICS_RADIUS;
 	m_orientationDegrees = g_rng.RollRandomFloatInRange(0.1f, 360.f);
 	m_position = startPos;
-	m_health = 3;
-	int randomVelocity = g_rng.RollRandomFloatInRange(2.1f, 5.f);
+	float randomVelocity = g_rng.RollRandomFloatInRange(2.1f, 5.f);
 	m_velocity.x = randomVelocity * CosDegrees(m_orientationDegrees);
 	m_velocity.y = randomVelocity * SinDegrees(m_orientationDegrees);
 
@@ -35,17 +34,15 @@ void Debris::Update(float deltaSeconds)
 
 	m_timeoutTimer -= deltaSeconds;
 
-	if (m_timeoutTimer > 0.0f)
-	{
-		unsigned char alpha = 127; // TODO Use functions in mathutil to fade
+	m_alphaFloat = RangeMapClamped(m_timeoutTimer, DEBRIS_LIFETIME_SECONDS, 0.0f, 127.f, 0.0f);
 
-		for (int vertIndex = 0; vertIndex < NUM_DEBRIS_VERTS; ++vertIndex)
-		{
-			m_localVerts[vertIndex].m_color = Rgba8(100, 100, 100, alpha);
-		}
+	for (int vertIndex = 0; vertIndex < NUM_DEBRIS_VERTS; ++vertIndex)
+	{
+		//m_localVerts[vertIndex].m_color = Rgba8(200, 200, 200, 255);
+		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, (unsigned char)m_alphaFloat);
 	}
 
-	if (m_health == 0 || m_timeoutTimer <= 0.0f)
+	if (m_timeoutTimer <= 0.0f)
 	{
 		m_isDead = true;
 		m_isGarbage = true;
@@ -101,12 +98,6 @@ void Debris::InitializeLocalVerts()
 		m_localVerts[firstVertIndex].m_position = Vec3(0.f, 0.f, 0.f);
 		m_localVerts[secondVertIndex].m_position = Vec3(secondVertOfs.x, secondVertOfs.y, 0.f);
 		m_localVerts[thirdVertIndex].m_position = Vec3(thirdVertOfs.x, thirdVertOfs.y, 0.f);
-	}
-
-	// Set colors
-	for (int vertIndex = 0; vertIndex < NUM_DEBRIS_VERTS; ++vertIndex)
-	{
-		m_localVerts[vertIndex].m_color = Rgba8(100, 100, 100, 127);
 	}
 }
 

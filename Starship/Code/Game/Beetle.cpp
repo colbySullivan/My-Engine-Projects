@@ -32,15 +32,7 @@ void Beetle::Update(float deltaSeconds)
 	m_velocity = directionToPlayer * BEETLE_SPEED;
 	m_position += m_velocity * deltaSeconds;
 
-	if (m_health == 0)
-	{
-		m_isDead = true;
-		m_isGarbage = true;
-	}
-	if (IsOffscreen())
-	{
-		WrapAroundScreen();
-	}
+	Entity::Update(deltaSeconds);
 }
 
 void Beetle::Render() const

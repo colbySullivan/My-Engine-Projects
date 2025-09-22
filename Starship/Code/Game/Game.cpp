@@ -110,12 +110,11 @@ bool Game::isAlive(Entity* entity) const
 	return (entity && !entity->m_isDead);
 }
 
-void Game::HandleHealthAndDebris(Entity& entity)
+void Game::SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount)
 {
-	entity.m_health -= 1;
-	if (entity.m_health <= 0 || entity.m_isDead)
+	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
 	{
-		SpawnDebris(entity, entity.m_debrisAmount);
+		SpawnNewDebris(pos, entityColor);
 	}
 }
 
@@ -152,7 +151,7 @@ Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
 		return nullptr;
 }
 
-Beetle* Game::SpawnBeetle()
+Beetle* Game::SpawnNewRandomBeetle()
 {
 	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
 	{
@@ -166,7 +165,7 @@ Beetle* Game::SpawnBeetle()
 	return nullptr;
 }
 
-Wasp* Game::SpawnWasp()
+Wasp* Game::SpawnNewRandomWasp()
 {
 	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
 	{
@@ -180,18 +179,23 @@ Wasp* Game::SpawnWasp()
 	return nullptr;
 }
 
-void Game::SpawnDebris(Entity& entity, int debrisAmount)
+Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color)
 {
-	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
+	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
 	{
 		if (m_debris[debrisIndex] == nullptr)
 		{
-			m_debris[debrisIndex] = new Debris(this, entity.m_position);
-			//m_debris[debrisIndex]->m_velocity = entity.m_velocity;
-			m_debris[debrisIndex]->m_entityColor = Rgba8(200, 200, 200, 127);
+			m_debris[debrisIndex] = new Debris(this, pos);
+			m_debris[debrisIndex]->m_entityColor = Rgba8(color.r, color.g, color.b, 127);
+			
+			return m_debris[debrisIndex];
 		}
 	}
+	ERROR_RECOVERABLE("Cannot spawn new debris; all array slots are full");
+	return nullptr;
 }
+
+
 
 void Game::UpdateEntities(float deltaSeconds)
 {
@@ -301,8 +305,8 @@ void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 	{
 		bullet.m_isDead = true;
 		bullet.m_isGarbage = true;
-		HandleHealthAndDebris(enemy);
-		HandleHealthAndDebris(bullet);
+		bullet.Die();
+		enemy.m_health -= 1;
 	}
 }
 
@@ -339,8 +343,8 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 {
 	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
 	{
-		HandleHealthAndDebris(ship);
-		HandleHealthAndDebris(enemy);
+		ship.m_health -= 1;
+		enemy.m_health -= 1;
 	}
 }
 
@@ -544,8 +548,8 @@ void Game::UpdateWaves()
 		{
 			SpawnRandomAsteroids();
 		}
-		SpawnBeetle();
-		SpawnWasp();
+		SpawnNewRandomBeetle();
+		SpawnNewRandomWasp();
 			
 	}
 }

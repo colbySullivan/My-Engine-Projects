@@ -20,7 +20,11 @@ Entity::~Entity()
 
 void Entity::Update( [[maybe_unused]] float deltaSeconds)
 {
-	
+	if (m_health == 0 && !m_isDead)
+	{
+		m_isGarbage = true;
+		Die();
+	}
 }
 
 void Entity::Render() const
@@ -46,14 +50,11 @@ void Entity::DebugRender() const
 
 }
 
-void Entity::createDebris(int numDebrisToCreate, Vec2 velocity)
+void Entity::Die()
 {
-	for (int debrisIndex = 0; debrisIndex < numDebrisToCreate; ++debrisIndex)
-	{
-		Vec2 debrisVelocity = GetForwardNormal().GetRotatedByDegrees(g_rng.RollRandomFloatInRange(-45.f, 45.f)) * velocity;
-		Debris* debris = new Debris(m_game, m_position);
-		debris->m_velocity = debrisVelocity;
-	}
+	m_isDead = true;
+	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount);
+	
 }
 
 bool Entity::IsOffscreen() const
