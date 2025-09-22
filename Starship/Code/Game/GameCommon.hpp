@@ -2,21 +2,25 @@
 #include <Engine/Math/MathUtils.hpp>
 #include <Engine/Core/Rgba8.hpp>
 
-constexpr int NUM_STARTING_ASTEROIDS = 6;
-constexpr int MAX_ASTEROIDS = 12;
-constexpr int MAX_BULLETS = 20;
-constexpr int MAX_BEETLES = 2;
-constexpr int MAX_DEBRIS = 50;
+constexpr int	NUM_STARTING_ASTEROIDS = 6;
+constexpr int	MAX_ASTEROIDS = 12;
+constexpr int	MAX_BULLETS = 20;
+constexpr int	MAX_BEETLES = 12;
+constexpr int	MAX_WASP = 12;
+constexpr int	MAX_DEBRIS = 50;
 constexpr float WORLD_SIZE_X = 200.f;
 constexpr float WORLD_SIZE_Y = 100.f;
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;
 constexpr float WORLD_CENTER_Y = WORLD_SIZE_Y / 2.f;
 constexpr float ASTEROID_SPEED = 10.f;
 constexpr float BEETLE_SPEED = 12.f;
+constexpr float WASP_SPEED = 12.f;
 constexpr float ASTEROID_PHYSICS_RADIUS = 1.6f;
 constexpr float ASTEROID_COSMETIC_RADIUS = 2.0f;
 constexpr float BEETLE_PHYSICS_RADIUS = 1.2f;
 constexpr float BEETLE_COSMETIC_RADIUS = 2.0f;
+constexpr float WASP_PHYSICS_RADIUS = 1.2f;
+constexpr float WASP_COSMETIC_RADIUS = 2.0f;
 constexpr float DEBRIS_PHYSICS_RADIUS = 1.6f;
 constexpr float DEBRIS_COSMETIC_RADIUS = 2.0f;
 constexpr float DEBRIS_LIFETIME_SECONDS = 2.0f;
@@ -28,7 +32,7 @@ constexpr float PLAYER_SHIP_ACCELERATION = 30.f;
 constexpr float PLAYER_SHIP_TURN_SPEED = 300.f;
 constexpr float PLAYER_SHIP_PHYSICS_RADIUS = 1.75f;
 constexpr float PLAYER_SHIP_COSMETIC_RADIUS = 2.25f;
-constexpr int NUM_VERTS = 6;
+constexpr int	NUM_VERTS = 6;
 
 
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

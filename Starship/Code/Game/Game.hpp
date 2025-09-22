@@ -12,6 +12,7 @@ class Entity;
 class InputSystem;
 class Beetle;
 class Debris;
+class Wasp;
 
 
 //------------------------------------------------------------------------------
@@ -32,6 +33,7 @@ public:
 	Asteroid* SpawnRandomAsteroids();
 	Bullet* SpawnBullet(Vec2 const& pos, float forwardDegrees);
 	Beetle* SpawnBeetle();
+	Wasp* SpawnWasp();
 	void SpawnDebris(Entity& entity, int debrisAmount);
 	PlayerShip* m_playerShip = nullptr;
 	Beetle*			m_beetle = nullptr;
@@ -60,6 +62,7 @@ private:
 	Asteroid*		m_asteroid[MAX_ASTEROIDS] = {};
 	Beetle*			m_beetles[MAX_BEETLES] = {};
 	Debris*			m_debris[MAX_DEBRIS] = {};
+	Wasp*			m_wasp[MAX_DEBRIS] = {};
 	
 
 	Camera*			m_gameCamera = nullptr;

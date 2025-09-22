@@ -11,6 +11,7 @@
 #include "Game/Beetle.hpp"
 #include "Game/Debris.hpp"
 #include "Game/Entity.hpp"
+#include "Game/Wasp.hpp"
 
 
 Game::Game(App* owner)
@@ -165,6 +166,20 @@ Beetle* Game::SpawnBeetle()
 	return nullptr;
 }
 
+Wasp* Game::SpawnWasp()
+{
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		if (m_wasp[waspIndex] == nullptr)
+		{
+			m_wasp[waspIndex] = new Wasp(this, Vec2(0, 0)); //Position will be randomly chosen in astroid class
+			return m_wasp[waspIndex];
+		}
+	}
+	ERROR_RECOVERABLE("Cannot spawn a new beetle; all array slots are full");
+	return nullptr;
+}
+
 void Game::SpawnDebris(Entity& entity, int debrisAmount)
 {
 	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
@@ -207,6 +222,15 @@ void Game::UpdateEntities(float deltaSeconds)
 		if (beetle)
 		{
 			beetle->Update(deltaSeconds);
+		}
+	}
+
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		Wasp* wasp = m_wasp[waspIndex];
+		if (wasp)
+		{
+			wasp->Update(deltaSeconds);
 		}
 	}
 
@@ -253,6 +277,22 @@ void Game::CheckBulletsVsEnemies()
 			}
 		}
 	}
+
+	for (int waspIndex = 0; waspIndex < MAX_BEETLES; ++waspIndex)
+	{
+		Wasp* wasp = m_wasp[waspIndex];
+		if (wasp)
+		{
+			for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
+			{
+				Bullet* bullet = m_bullets[bulletIndex];
+				if (bullet)
+				{
+					CheckBulletsVsEnemies(*bullet, *wasp);
+				}
+			}
+		}
+	}
 }
 
 void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
@@ -283,6 +323,14 @@ void Game::CheckEnemiesVsShips()
 		if (beetle && !m_playerShip->m_isDead)
 		{
 			CheckEnemiesVsShip(*beetle, *m_playerShip);
+		}
+	}
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		Wasp* wasp = m_wasp[waspIndex];
+		if (wasp && !m_playerShip->m_isDead)
+		{
+			CheckEnemiesVsShip(*wasp, *m_playerShip);
 		}
 	}
 }
@@ -329,6 +377,15 @@ void Game::RenderEntities() const
 		}
 	}
 
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		Wasp* wasp = m_wasp[waspIndex];
+		if (wasp)
+		{
+			wasp->Render();
+		}
+	}
+
 	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
 	{
 		Debris* debris = m_debris[debrisIndex];
@@ -367,6 +424,15 @@ void Game::DestroyGarbageEntities()
 		{
 			delete beetle;
 			m_beetles[beetleIndex] = nullptr;
+		}
+	}
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		Wasp const* wasp = m_wasp[waspIndex];
+		if (wasp && wasp->m_isGarbage)
+		{
+			delete wasp;
+			m_wasp[waspIndex] = nullptr;
 		}
 	}
 	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
@@ -479,6 +545,7 @@ void Game::UpdateWaves()
 			SpawnRandomAsteroids();
 		}
 		SpawnBeetle();
+		SpawnWasp();
 			
 	}
 }
@@ -509,6 +576,15 @@ void Game::CleanupGameEntities()
 		{
 			m_beetles[beetlesIndex]->m_isDead = true;
 			m_beetles[beetlesIndex]->m_isGarbage = true;
+		}
+	}
+
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		if (m_wasp[waspIndex])
+		{
+			m_wasp[waspIndex]->m_isDead = true;
+			m_wasp[waspIndex]->m_isGarbage = true;
 		}
 	}
 

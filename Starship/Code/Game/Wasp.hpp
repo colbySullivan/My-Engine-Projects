@@ -8,19 +8,19 @@
 
 //------------------------------------------------------------------------------
 
-constexpr int NUM_BEETLE_SIDES = 4;
-constexpr int NUM_BEETLE_TRIS = NUM_BEETLE_SIDES;
-constexpr int NUM_BEETLE_VERTS = 6;
+constexpr int NUM_WASP_SIDES = 4;
+constexpr int NUM_WASP_TRIS = NUM_WASP_SIDES;
+constexpr int NUM_WASP_VERTS = 6;
 
 class RandomNumberGenerator;
 
 //------------------------------------------------------------------------------
 
-class Beetle : public Entity
+class Wasp : public Entity
 {
 public:
-	Beetle(Game* owner, Vec2 const& startPos);
-	~Beetle();
+	Wasp(Game* owner, Vec2 const& startPos);
+	~Wasp();
 
 	RandomNumberGenerator g_rng;
 
@@ -33,5 +33,5 @@ private:
 	void spawnRandomEdge();
 
 private:
-	Vertex m_localVerts[NUM_BEETLE_VERTS];
+	Vertex m_localVerts[NUM_WASP_VERTS];
 };
