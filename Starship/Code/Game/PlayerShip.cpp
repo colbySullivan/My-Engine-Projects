@@ -126,6 +126,7 @@ void PlayerShip::Respawn()
 		m_velocity = Vec2(0, 0);
 		m_orientationDegrees = 0.f;
 		m_isDead = false;
-		m_health = 3;
+		m_health = 1;
+		m_lives -= 1;
 	}
 }

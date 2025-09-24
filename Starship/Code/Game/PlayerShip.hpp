@@ -22,6 +22,8 @@ public:
 
 	static void InitializeLocalPlayerShipsVerts( Vertex* vertArray );
 
+	int m_lives = 4;
+
 private:
 	void InitializeLocalVerts();
 	void UpdateFromKeyboard(float deltaSeconds);

@@ -53,7 +53,7 @@ void Entity::DebugRender() const
 void Entity::Die()
 {
 	m_isDead = true;
-	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount);
+	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_cosmeticRadius);
 	
 }
 

@@ -62,6 +62,12 @@ void Game::Update(float deltaSeconds)
 	{
 		return;
 	}
+	RenderShipLives();
+	if (IsReadyToStartNextWave())
+	{
+		m_roundNumber++;
+		UpdateWaves();
+	}
 
 	if (m_isSlowMo) // T pressed
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
@@ -108,14 +114,6 @@ void Game::Shutdown()
 bool Game::isAlive(Entity* entity) const
 {
 	return (entity && !entity->m_isDead);
-}
-
-void Game::SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount)
-{
-	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
-	{
-		SpawnNewDebris(pos, entityColor);
-	}
 }
 
 Asteroid* Game::SpawnRandomAsteroids()
@@ -179,7 +177,15 @@ Wasp* Game::SpawnNewRandomWasp()
 	return nullptr;
 }
 
-Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color)
+void Game::SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size)
+{
+	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
+	{
+		SpawnNewDebris(pos, entityColor, velocity, size);
+	}
+}
+
+Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 {
 	for (int debrisIndex = 0; debrisIndex < MAX_DEBRIS; ++debrisIndex)
 	{
@@ -187,7 +193,17 @@ Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color)
 		{
 			m_debris[debrisIndex] = new Debris(this, pos);
 			m_debris[debrisIndex]->m_entityColor = Rgba8(color.r, color.g, color.b, 127);
-			
+			/*m_debris[debrisIndex]->m_velocity.x = g_rng.RollRandomFloatInRange(2.1f, 5.f) * CosDegrees(m_debris[debrisIndex]->m_orientationDegrees);
+			m_debris[debrisIndex]->m_velocity.y = g_rng.RollRandomFloatInRange(2.1f, 5.f) * SinDegrees(m_debris[debrisIndex]->m_orientationDegrees);
+			*/
+			m_debris[debrisIndex]->m_cosmeticRadius = size;
+
+			float heading = g_rng.RollRandomFloatInRange(0.f, 360.0f);
+			float speed = g_rng.RollRandomFloatInRange(10.f, 100.f);
+			Vec2 localVelocity = Vec2::MakeFromPolarDegrees( heading, speed );
+			//Vec2 worldVelocity = velocity + localVelocity;
+			m_debris[debrisIndex]->m_velocity = velocity + localVelocity;
+
 			return m_debris[debrisIndex];
 		}
 	}
@@ -515,18 +531,26 @@ void Game::KeyboardInput()
 int Game::GetNumLivingEnemies() const
 {
 	int numLivingEnemies = 0;
-	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
+	/*for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
 		Asteroid* astroid = m_asteroid[astroidIndex];
 		if (isAlive( astroid ))
 		{
 			++ numLivingEnemies;
 		}
-	}
+	}*/
 	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
 	{
 		Beetle* beetle = m_beetles[beetleIndex];
 		if (isAlive(beetle))
+		{
+			++numLivingEnemies;
+		}
+	}
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
+	{
+		Wasp* wasp = m_wasp[waspIndex];
+		if (isAlive(wasp))
 		{
 			++numLivingEnemies;
 		}
@@ -548,8 +572,11 @@ void Game::UpdateWaves()
 		{
 			SpawnRandomAsteroids();
 		}
-		SpawnNewRandomBeetle();
-		SpawnNewRandomWasp();
+		for (int i = 0; i < g_rng.RollRandomIntInRange(1, m_roundNumber); ++i)
+			SpawnNewRandomBeetle();
+
+		for (int i = 0; i < g_rng.RollRandomIntInRange(1, m_roundNumber); ++i)
+			SpawnNewRandomWasp();
 			
 	}
 }
@@ -610,4 +637,21 @@ void Game::CleanupGameEntities()
 	}
 
 	DestroyGarbageEntities();
+}
+
+void Game::RenderShipLives() const
+{
+	Camera attractCamera;
+	attractCamera.SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
+
+	g_engine->m_render->BeginCamera(attractCamera);
+	for (int i = 1; i < m_playerShip->m_lives; ++i)
+	{
+		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
+		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
+		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 0.f, Vec2(0.2f + (i*0.5), 9.6f));
+		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
+	}
+
+	g_engine->m_render->EndCamera(attractCamera);
 }

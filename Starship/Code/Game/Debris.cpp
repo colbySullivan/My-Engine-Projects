@@ -8,14 +8,14 @@
 Debris::Debris(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
-	m_angularVelocity = g_rng.RollRandomFloatInRange(-200, 200);
+	//m_angularVelocity = g_rng.RollRandomFloatInRange(-200, 200);
 	m_cosmeticRadius = DEBRIS_COSMETIC_RADIUS;
 	m_physicsRadius = DEBRIS_PHYSICS_RADIUS;
 	m_orientationDegrees = g_rng.RollRandomFloatInRange(0.1f, 360.f);
 	m_position = startPos;
 	float randomVelocity = g_rng.RollRandomFloatInRange(2.1f, 5.f);
-	m_velocity.x = randomVelocity * CosDegrees(m_orientationDegrees);
-	m_velocity.y = randomVelocity * SinDegrees(m_orientationDegrees);
+	//m_velocity.x = randomVelocity * CosDegrees(m_orientationDegrees);
+	//m_velocity.y = randomVelocity * SinDegrees(m_orientationDegrees);
 
 	InitializeLocalVerts();
 }

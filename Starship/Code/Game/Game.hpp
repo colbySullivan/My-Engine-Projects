@@ -1,6 +1,7 @@
 #pragma once
 #include "App.hpp"
 #include "GameCommon.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -13,6 +14,7 @@ class InputSystem;
 class Beetle;
 class Debris;
 class Wasp;
+class RandomNumberGenerator;
 
 
 //------------------------------------------------------------------------------
@@ -27,16 +29,17 @@ public:
 	void Render() const;
 	void Shutdown();
 	bool isAlive(Entity* entity) const;
-	void SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount);
+	void SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size);
 
 	
 	Asteroid* SpawnRandomAsteroids();
 	Bullet* SpawnBullet(Vec2 const& pos, float forwardDegrees);
 	Beetle* SpawnNewRandomBeetle();
 	Wasp* SpawnNewRandomWasp();
-	Debris* SpawnNewDebris(Vec2 pos, Rgba8 color);
+	Debris* SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size);
 	PlayerShip* m_playerShip = nullptr;
 	Beetle*			m_beetle = nullptr;
+	RandomNumberGenerator g_rng;
 
 	bool			m_isAttractMode = true;
 	bool			m_isQuitting = false;
@@ -44,6 +47,8 @@ public:
 	bool            m_isSlowMo = false;
 	bool            m_pauseAfterNextUpdate = false;
 	bool			g_drawDebug = false;
+
+	int				m_roundNumber = 1;
 
 private:
 	void UpdateEntities(float deltaSeconds);
@@ -71,4 +76,5 @@ private:
 	bool IsReadyToStartNextWave() const;
 	void UpdateWaves();
 	void CleanupGameEntities();
+	void RenderShipLives() const;
 };

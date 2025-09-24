@@ -29,9 +29,7 @@ void Wasp::Update(float deltaSeconds)
 	Vec2 toPlayerPos = m_game->m_playerShip->m_position - m_position;
 	Vec2 directionToPlayer = toPlayerPos.GetNormalized();
 
-	m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f; //TODO offset of trapezoid
-	//m_velocity = directionToPlayer * WASP_SPEED;
-	//m_position += m_velocity * deltaSeconds;
+	m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f;
 
 	m_velocity += directionToPlayer * (WASP_ACCELERATION * deltaSeconds);
 	m_velocity.x = GetClamped(m_velocity.x, -WASP_MAX_SPEED, WASP_MAX_SPEED);
@@ -44,10 +42,6 @@ void Wasp::Update(float deltaSeconds)
 		m_isGarbage = true;
 		Die();
 	}
-	//if (IsOffscreen())
-	//{
-	//	WrapAroundScreen();
-	//}
 }
 
 void Wasp::Render() const
