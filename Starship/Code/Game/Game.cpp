@@ -36,12 +36,11 @@ void Game::Startup()
 
 void Game::Update(float deltaSeconds)
 {
-	
-	if (m_isAttractMode && (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)))
+	/*if (m_isAttractMode && (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)))
 	{
 		m_isQuitting = true;
 		return;
-	}
+	}*/
 
 	if (m_isAttractMode)
 	{
@@ -53,19 +52,27 @@ void Game::Update(float deltaSeconds)
 		else
 		{
 			CleanupGameEntities();
-			RenderAttractMode();
+			UpdateAttractMode(deltaSeconds);
 		}
 	}
 
 	// Check if we are still in attract mode
 	if (m_isAttractMode)
 	{
-		g_drawDebug = false;
 		return;
 	}
 
-	if (m_roundNumber > 5 || m_playerShip->m_lives == 0)
+	KeyboardInput();
+
+	if (m_roundNumber > 5)
 		m_isAttractMode = true;
+
+	if (m_playerShip->m_lives == 1 && m_playerShip->m_isDead)
+	{
+		m_roundEndTimer -= deltaSeconds;
+		if(m_roundEndTimer <= 0)
+			m_isAttractMode = true;
+	}
 
 	RenderShipLives();
 	if (IsReadyToStartNextWave())
@@ -77,7 +84,6 @@ void Game::Update(float deltaSeconds)
 	if (m_isSlowMo) // T pressed
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
 
-	KeyboardInput();
 
 	if (!m_isPaused || m_pauseAfterNextUpdate)
 	{
@@ -455,21 +461,54 @@ void Game::DestroyGarbageEntities()
 
 void Game::UpdateAttractMode(float deltaSeconds)
 {
+	float alpha = 255;
+	if(m_alphaTimer < 3)
+		m_alphaTimer -= deltaSeconds;
+	else
+		m_alphaTimer += deltaSeconds;
 
+	alpha = RangeMapClamped(m_alphaTimer, 3, 0.0f, 255.f, 127.0f);
+	RenderAttractMode(alpha);
 }
 
-void Game::RenderAttractMode() const
+void Game::RenderAttractMode(float playButtonAlpha) const
 {
 	Camera attractCamera;
 	attractCamera.SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
 
 	g_engine->m_render->BeginCamera( attractCamera );
-	DebugDrawLine(Vec2(1.f, 1.f), Vec2(19.f, 9.f), 1.f, Rgba8(255,0,0));
+	
+	for (int renderedShipsLocationOffset = 0; renderedShipsLocationOffset < 2; ++renderedShipsLocationOffset)
+	{
+		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
+		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
+		TransformVertexArrayXY3D(
+			NUM_SHIP_VERTS,
+			fakePlayerShipVerts,
+			1.0f,
+			(0.f + renderedShipsLocationOffset * 180),
+			Vec2(5.f + (renderedShipsLocationOffset * 10), 5.f));
+		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
+	}
 
-	Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
-	PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
-	TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.5f, 30.f, Vec2(10.f, 5.f));
-	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
+	Vertex playButton[3];
+	playButton[0].m_position = Vec3(0.f, 0.f, 0.f);
+	playButton[1].m_position = Vec3(0.f, 1.f, 0.f);
+	playButton[2].m_position = Vec3(1.f, 0.5f, 0.f);
+
+	for (int vertIndex = 0; vertIndex < 3; ++vertIndex)
+	{
+		playButton[vertIndex].m_color = Rgba8(0, 255, 0, playButtonAlpha);
+	}
+
+	TransformVertexArrayXY3D(
+		3,
+		playButton,
+		2.0f,
+		0.f,
+		Vec2(9.f, 4.f));
+	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, playButton);
+
 
 	g_engine->m_render->EndCamera( attractCamera );
 }
@@ -615,7 +654,7 @@ void Game::CleanupGameEntities()
 	{
 		Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 		m_playerShip->m_position = worldCenter;
-		m_playerShip->m_isDead = false;
+		m_playerShip->m_isDead = true;
 		m_playerShip->m_isGarbage = false;
 	}
 
@@ -628,11 +667,11 @@ void Game::RenderShipLives() const
 	attractCamera.SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
 
 	g_engine->m_render->BeginCamera(attractCamera);
-	for (int i = 1; i < m_playerShip->m_lives; ++i)
+	for (int shipLives = 1; shipLives < m_playerShip->m_lives; ++shipLives)
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
 		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
-		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(0.2f + (i*0.5), 9.6f));
+		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(0.2f + (shipLives*0.5), 9.6f));
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 

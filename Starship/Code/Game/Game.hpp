@@ -49,6 +49,8 @@ public:
 	bool			g_drawDebug = false;
 
 	int				m_roundNumber = 1;
+	float			m_alphaTimer = 3;
+	float			m_roundEndTimer = 3;
 
 private:
 	void UpdateEntities(float deltaSeconds);
@@ -59,7 +61,7 @@ private:
 	void RenderEntities() const;
 	void DestroyGarbageEntities();
 	void UpdateAttractMode(float deltaSeconds);
-	void RenderAttractMode() const;
+	void RenderAttractMode(float playButtonAlpha) const;
 	void KeyboardInput();
 
 	App*			m_app;
