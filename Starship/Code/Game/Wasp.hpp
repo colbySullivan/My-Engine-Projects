@@ -8,9 +8,7 @@
 
 //------------------------------------------------------------------------------
 
-constexpr int NUM_WASP_SIDES = 4;
-constexpr int NUM_WASP_TRIS = NUM_WASP_SIDES;
-constexpr int NUM_WASP_VERTS = 6;
+constexpr int NUM_WASP_VERTS = 9;
 
 class RandomNumberGenerator;
 

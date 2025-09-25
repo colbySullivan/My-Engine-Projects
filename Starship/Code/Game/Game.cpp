@@ -197,7 +197,7 @@ Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 			float heading = g_rng.RollRandomFloatInRange(0.f, 360.0f);
 			float speed = g_rng.RollRandomFloatInRange(10.f, 100.f);
 			Vec2 localVelocity = Vec2::MakeFromPolarDegrees( heading, speed );
-			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.1;
+			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.3;
 
 			return m_debris[debrisIndex];
 		}
