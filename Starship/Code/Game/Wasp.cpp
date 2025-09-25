@@ -57,7 +57,7 @@ void Wasp::Render() const
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D(NUM_WASP_VERTS, tempShipWorldVerts, 3.f, m_orientationDegrees, m_position);
+	TransformVertexArrayXY3D(NUM_WASP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_WASP_VERTS, tempShipWorldVerts);
 	if (m_game->g_drawDebug)
 		DebugRender();
@@ -65,13 +65,21 @@ void Wasp::Render() const
 
 void Wasp::InitializeLocalVerts()
 {
-	m_localVerts[0].m_position = Vec3(-0.25f, 0.375f, 0.f);
-	m_localVerts[1].m_position = Vec3(-0.5f, -0.375f, 0.f);
-	m_localVerts[2].m_position = Vec3(0.25f, 0.375f, 0.f);
+	m_localVerts[0].m_position = Vec3(-2.f, -2.f, 0.f);
+	m_localVerts[1].m_position = Vec3(-1.f, 0.f, 0.f);
+	m_localVerts[2].m_position = Vec3(0.f, -2.f, 0.f);
 
-	m_localVerts[3].m_position = Vec3(-0.5f, -0.375f, 0.f);
-	m_localVerts[4].m_position = Vec3(0.5f, -0.375f, 0.f);
-	m_localVerts[5].m_position = Vec3(0.25f, 0.375f, 0.f);
+	m_localVerts[3].m_position = Vec3(-1.f, -2.f, 0.f);
+	m_localVerts[4].m_position = Vec3(0.f, 1.f, 0.f);
+	m_localVerts[5].m_position = Vec3(1.f, -2.f, 0.f);
+
+	m_localVerts[6].m_position = Vec3(0.f, -2.f, 0.f);
+	m_localVerts[7].m_position = Vec3(1.f, 0.f, 0.f);
+	m_localVerts[8].m_position = Vec3(2.f, -2.f, 0.f);
+
+	//m_localVerts[9].m_position = Vec3(0.f, 1.5f, 0.f);
+	//m_localVerts[10].m_position = Vec3(0.f, -1.5f, 0.f);
+	//m_localVerts[11].m_position = Vec3(1.5f, 0.f, 0.f);
 
 
 	for (int vertIndex = 0; vertIndex < NUM_WASP_VERTS; ++vertIndex)
