@@ -22,7 +22,7 @@ class RandomNumberGenerator;
 class Game
 {
 public:
-	Game(App* owner);
+	Game();
 	~Game();
 	void Startup();
 	void Update(float deltaSeconds);

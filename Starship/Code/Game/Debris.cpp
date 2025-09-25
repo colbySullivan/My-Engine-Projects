@@ -9,14 +9,13 @@ Debris::Debris(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
 	//m_angularVelocity = g_rng.RollRandomFloatInRange(-200, 200);
-	m_cosmeticRadius = DEBRIS_COSMETIC_RADIUS;
+	/*m_cosmeticRadius = DEBRIS_COSMETIC_RADIUS;*/
 	m_physicsRadius = DEBRIS_PHYSICS_RADIUS;
 	m_orientationDegrees = g_rng.RollRandomFloatInRange(0.1f, 360.f);
 	m_position = startPos;
 	float randomVelocity = g_rng.RollRandomFloatInRange(2.1f, 5.f);
 	//m_velocity.x = randomVelocity * CosDegrees(m_orientationDegrees);
 	//m_velocity.y = randomVelocity * SinDegrees(m_orientationDegrees);
-
 	InitializeLocalVerts();
 }
 
@@ -59,7 +58,7 @@ void Debris::Render() const
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D(NUM_DEBRIS_VERTS, tempShipWorldVerts, 0.5f, m_orientationDegrees, m_position);
+	TransformVertexArrayXY3D(NUM_DEBRIS_VERTS, tempShipWorldVerts, m_size, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_DEBRIS_VERTS, tempShipWorldVerts);
 	if (m_game->g_drawDebug)
 		DebugRender();

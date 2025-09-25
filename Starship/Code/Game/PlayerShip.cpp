@@ -15,7 +15,7 @@ PlayerShip::PlayerShip( Game* owner, Vec2 const& startPos)
 	m_physicsRadius = PLAYER_SHIP_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_SHIP_COSMETIC_RADIUS;
 	m_entityColor = Rgba8(102, 153, 204, 255);
-	m_debrisAmount = 12;
+	m_debrisAmount = 25;
 	InitializeLocalPlayerShipsVerts(m_localVerts);
 }
 

@@ -25,11 +25,13 @@ Beetle::~Beetle()
 
 void Beetle::Update(float deltaSeconds)
 {
-	Vec2 toPlayerPos = m_game->m_playerShip->m_position - m_position;
-	Vec2 directionToPlayer = toPlayerPos.GetNormalized();
-
-	m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f; //TODO offset of trapezoid
-	m_velocity = directionToPlayer * BEETLE_SPEED;
+	if (!m_game->m_playerShip->m_isDead)
+	{
+		Vec2 toPlayerPos = m_game->m_playerShip->m_position - m_position;
+		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
+		m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f; //TODO offset of trapezoid
+		m_velocity = directionToPlayer * BEETLE_SPEED;
+	}
 	m_position += m_velocity * deltaSeconds;
 
 	Entity::Update(deltaSeconds);

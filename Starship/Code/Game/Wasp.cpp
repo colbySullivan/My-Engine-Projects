@@ -26,14 +26,17 @@ Wasp::~Wasp()
 
 void Wasp::Update(float deltaSeconds)
 {
-	Vec2 toPlayerPos = m_game->m_playerShip->m_position - m_position;
-	Vec2 directionToPlayer = toPlayerPos.GetNormalized();
+	if (!m_game->m_playerShip->m_isDead)
+	{
+		Vec2 toPlayerPos = m_game->m_playerShip->m_position - m_position;
+		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
 
-	m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f;
+		m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f;
 
-	m_velocity += directionToPlayer * (WASP_ACCELERATION * deltaSeconds);
-	m_velocity.x = GetClamped(m_velocity.x, -WASP_MAX_SPEED, WASP_MAX_SPEED);
-	m_velocity.y = GetClamped(m_velocity.y, -WASP_MAX_SPEED, WASP_MAX_SPEED);
+		m_velocity += directionToPlayer * (WASP_ACCELERATION * deltaSeconds);
+		m_velocity.x = GetClamped(m_velocity.x, -WASP_MAX_SPEED, WASP_MAX_SPEED);
+		m_velocity.y = GetClamped(m_velocity.y, -WASP_MAX_SPEED, WASP_MAX_SPEED);
+	}
 	m_position += (m_velocity * deltaSeconds);
 
 	if (m_health == 0 && !m_isDead)
@@ -74,28 +77,6 @@ void Wasp::InitializeLocalVerts()
 	for (int vertIndex = 0; vertIndex < NUM_WASP_VERTS; ++vertIndex)
 	{
 		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, m_entityColor.r);
-	}
-}
-
-void Wasp::WrapAroundScreen()
-{
-	if (m_position.x > WORLD_SIZE_X + m_cosmeticRadius)
-	{
-		m_position.x = -m_cosmeticRadius;
-	}
-	else if (m_position.x < -m_cosmeticRadius)
-	{
-		m_position.x = WORLD_SIZE_X + m_cosmeticRadius;
-	}
-
-	// Wrap vertically
-	if (m_position.y > WORLD_SIZE_Y + m_cosmeticRadius)
-	{
-		m_position.y = -m_cosmeticRadius;
-	}
-	else if (m_position.y < -m_cosmeticRadius)
-	{
-		m_position.y = WORLD_SIZE_Y + m_cosmeticRadius;
 	}
 }
 

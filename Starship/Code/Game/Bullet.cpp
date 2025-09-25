@@ -9,6 +9,7 @@ Bullet::Bullet(Game* owner, Vec2 const& startPos)
 {
 	m_physicsRadius = BULLET_PHYSICS_RADIUS;
 	m_cosmeticRadius = BULLET_COSMETIC_RADIUS;
+	m_debrisSize = 0.05;
 	m_velocity = GetForwardNormal() * BULLET_SPEED;
 	InitializeLocalVerts();
 }
@@ -28,8 +29,6 @@ void Bullet::Update(float deltaSeconds)
 		m_isDead = true;
 		m_isGarbage = true;
 	}
-	if(m_isDead)
-		Die();
 }
 
 void Bullet::Render() const
@@ -68,4 +67,3 @@ void Bullet::InitializeLocalVerts()
 	m_localVerts[4].m_color = Rgba8(255, 0, 0, 255);
 	m_localVerts[5].m_color = Rgba8(255, 0, 0, 0);
 }
-

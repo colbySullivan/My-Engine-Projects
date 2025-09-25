@@ -22,7 +22,6 @@ void Entity::Update( [[maybe_unused]] float deltaSeconds)
 {
 	if (m_health == 0 && !m_isDead)
 	{
-		m_isGarbage = true;
 		Die();
 	}
 }
@@ -52,8 +51,9 @@ void Entity::DebugRender() const
 
 void Entity::Die()
 {
+	m_isGarbage = true;
 	m_isDead = true;
-	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_cosmeticRadius);
+	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize);
 	
 }
 

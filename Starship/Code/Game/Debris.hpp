@@ -26,6 +26,8 @@ public:
 	virtual void Update(float deltaSeconds) override;
 	virtual void Render() const override;
 
+	float m_size;
+
 private:
 	void InitializeLocalVerts();
 	float	m_timeoutTimer = DEBRIS_LIFETIME_SECONDS;

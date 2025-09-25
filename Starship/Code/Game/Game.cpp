@@ -14,8 +14,7 @@
 #include "Game/Wasp.hpp"
 
 
-Game::Game(App* owner)
-	: m_app( owner )
+Game::Game()
 {
 	m_gameCamera = new Camera;
 	g_engine = new Engine;
@@ -37,15 +36,19 @@ void Game::Startup()
 
 void Game::Update(float deltaSeconds)
 {
-	if(m_roundNumber > 5 || m_playerShip->m_lives == 0)
-		m_isAttractMode = true;
+	
+	if (m_isAttractMode && (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)))
+	{
+		m_isQuitting = true;
+		return;
+	}
 
 	if (m_isAttractMode)
 	{
 		if (g_engine->m_input->WasKeyJustPressed(' ') || g_engine->m_input->WasKeyJustPressed('N'))
 		{
-			Startup();
 			m_isAttractMode = false;
+			Startup();
 		}
 		else
 		{
@@ -57,8 +60,12 @@ void Game::Update(float deltaSeconds)
 	// Check if we are still in attract mode
 	if (m_isAttractMode)
 	{
+		g_drawDebug = false;
 		return;
 	}
+
+	if (m_roundNumber > 5 || m_playerShip->m_lives == 0)
+		m_isAttractMode = true;
 
 	RenderShipLives();
 	if (IsReadyToStartNextWave())
@@ -180,16 +187,11 @@ Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 		{
 			m_debris[debrisIndex] = new Debris(this, pos);
 			m_debris[debrisIndex]->m_entityColor = Rgba8(color.r, color.g, color.b, 127);
-			/*m_debris[debrisIndex]->m_velocity.x = g_rng.RollRandomFloatInRange(2.1f, 5.f) * CosDegrees(m_debris[debrisIndex]->m_orientationDegrees);
-			m_debris[debrisIndex]->m_velocity.y = g_rng.RollRandomFloatInRange(2.1f, 5.f) * SinDegrees(m_debris[debrisIndex]->m_orientationDegrees);
-			*/
-			m_debris[debrisIndex]->m_cosmeticRadius = size;
-
+			m_debris[debrisIndex]->m_size = size;
 			float heading = g_rng.RollRandomFloatInRange(0.f, 360.0f);
 			float speed = g_rng.RollRandomFloatInRange(10.f, 100.f);
 			Vec2 localVelocity = Vec2::MakeFromPolarDegrees( heading, speed );
-			//Vec2 worldVelocity = velocity + localVelocity;
-			m_debris[debrisIndex]->m_velocity = velocity + localVelocity;
+			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.1;
 
 			return m_debris[debrisIndex];
 		}
@@ -306,8 +308,6 @@ void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 {
 	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, bullet.m_position, bullet.m_physicsRadius))
 	{
-		bullet.m_isDead = true;
-		bullet.m_isGarbage = true;
 		bullet.Die();
 		enemy.m_health -= 1;
 	}
@@ -479,6 +479,7 @@ void Game::KeyboardInput()
 	if (m_isAttractMode && (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)))
 	{
 		m_isQuitting = true;
+		return;
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC) && !m_isAttractMode)
@@ -507,11 +508,6 @@ void Game::KeyboardInput()
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
 		g_drawDebug = !g_drawDebug;
-	}
-
-	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
-	{
-		g_drawDebug = !g_drawDebug; // TODO restart game
 	}
 }
 
@@ -636,7 +632,7 @@ void Game::RenderShipLives() const
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
 		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
-		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 0.f, Vec2(0.2f + (i*0.5), 9.6f));
+		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(0.2f + (i*0.5), 9.6f));
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 
