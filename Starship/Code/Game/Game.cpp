@@ -31,19 +31,21 @@ void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_playerShip = new PlayerShip(this, worldCenter);
+	m_roundNumber = 1;
+	m_roundEndTimer = 3;
 	UpdateWaves();
 }
 
 void Game::Update(float deltaSeconds)
 {
-	/*if (m_isAttractMode && (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)))
-	{
-		m_isQuitting = true;
-		return;
-	}*/
-
 	if (m_isAttractMode)
 	{
+		if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC))
+		{
+			m_isQuitting = true;
+			return;
+		}
+
 		if (g_engine->m_input->WasKeyJustPressed(' ') || g_engine->m_input->WasKeyJustPressed('N'))
 		{
 			m_isAttractMode = false;
@@ -56,9 +58,9 @@ void Game::Update(float deltaSeconds)
 		}
 	}
 
-	// Check if we are still in attract mode
 	if (m_isAttractMode)
 	{
+		g_engine->m_input->EndFrame();
 		return;
 	}
 
@@ -67,7 +69,7 @@ void Game::Update(float deltaSeconds)
 	if (m_roundNumber > 5)
 		m_isAttractMode = true;
 
-	if (m_playerShip->m_lives == 1 && m_playerShip->m_isDead)
+	if (m_playerShip->m_lives <= 1 && m_playerShip->m_isDead)
 	{
 		m_roundEndTimer -= deltaSeconds;
 		if(m_roundEndTimer <= 0)
@@ -197,7 +199,7 @@ Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 			float heading = g_rng.RollRandomFloatInRange(0.f, 360.0f);
 			float speed = g_rng.RollRandomFloatInRange(10.f, 100.f);
 			Vec2 localVelocity = Vec2::MakeFromPolarDegrees( heading, speed );
-			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.3;
+			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.3f;
 
 			return m_debris[debrisIndex];
 		}
@@ -461,13 +463,19 @@ void Game::DestroyGarbageEntities()
 
 void Game::UpdateAttractMode(float deltaSeconds)
 {
-	float alpha = 255;
-	if(m_alphaTimer < 3)
-		m_alphaTimer -= deltaSeconds;
-	else
-		m_alphaTimer += deltaSeconds;
+	m_alphaTimer += deltaSeconds;
+	float normalizedTime = fmodf(m_alphaTimer, 3.0f);
+	float alpha;
 
-	alpha = RangeMapClamped(m_alphaTimer, 3, 0.0f, 255.f, 127.0f);
+	if (normalizedTime <= 3.0f)
+	{
+		alpha = RangeMapClamped(normalizedTime, 0.0f, 1.5f, 60.0f, 255.0f);
+	}
+	else
+	{
+		alpha = RangeMapClamped(normalizedTime, 1.5f, 3.0f, 255.0f, 60.0f);
+	}
+
 	RenderAttractMode(alpha);
 }
 
@@ -498,7 +506,7 @@ void Game::RenderAttractMode(float playButtonAlpha) const
 
 	for (int vertIndex = 0; vertIndex < 3; ++vertIndex)
 	{
-		playButton[vertIndex].m_color = Rgba8(0, 255, 0, playButtonAlpha);
+		playButton[vertIndex].m_color = Rgba8(0, 255, 0, static_cast<unsigned char>(playButtonAlpha));
 	}
 
 	TransformVertexArrayXY3D(
@@ -515,12 +523,6 @@ void Game::RenderAttractMode(float playButtonAlpha) const
 
 void Game::KeyboardInput()
 {
-	if (m_isAttractMode && (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC)))
-	{
-		m_isQuitting = true;
-		return;
-	}
-
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC) && !m_isAttractMode)
 	{
 		m_isAttractMode = true;
@@ -671,7 +673,7 @@ void Game::RenderShipLives() const
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
 		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
-		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(0.2f + (shipLives*0.5), 9.6f));
+		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(0.2f + (shipLives*0.5f), 9.6f));
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 

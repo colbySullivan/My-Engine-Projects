@@ -9,7 +9,7 @@ Bullet::Bullet(Game* owner, Vec2 const& startPos)
 {
 	m_physicsRadius = BULLET_PHYSICS_RADIUS;
 	m_cosmeticRadius = BULLET_COSMETIC_RADIUS;
-	m_debrisSize = 0.05;
+	m_debrisSize = 0.05f;
 	m_velocity = GetForwardNormal() * BULLET_SPEED;
 	InitializeLocalVerts();
 }

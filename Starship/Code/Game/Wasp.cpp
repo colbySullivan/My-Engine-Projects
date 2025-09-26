@@ -14,7 +14,7 @@ Wasp::Wasp(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = WASP_COSMETIC_RADIUS;
 	m_physicsRadius = WASP_PHYSICS_RADIUS;
 	m_health = 3;
-	m_entityColor = Rgba8(255, 153, 204, 255);
+	m_entityColor = Rgba8(10, 255, 10, 255);
 	InitializeLocalVerts();
 	spawnRandomEdge();
 }
@@ -70,7 +70,7 @@ void Wasp::InitializeLocalVerts()
 	m_localVerts[2].m_position = Vec3(0.f, -2.f, 0.f);
 
 	m_localVerts[3].m_position = Vec3(-1.f, -2.f, 0.f);
-	m_localVerts[4].m_position = Vec3(0.f, 1.f, 0.f);
+	m_localVerts[4].m_position = Vec3(0.f, 2.f, 0.f);
 	m_localVerts[5].m_position = Vec3(1.f, -2.f, 0.f);
 
 	m_localVerts[6].m_position = Vec3(0.f, -2.f, 0.f);
@@ -84,7 +84,7 @@ void Wasp::InitializeLocalVerts()
 
 	for (int vertIndex = 0; vertIndex < NUM_WASP_VERTS; ++vertIndex)
 	{
-		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, m_entityColor.r);
+		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, m_entityColor.a);
 	}
 }
 

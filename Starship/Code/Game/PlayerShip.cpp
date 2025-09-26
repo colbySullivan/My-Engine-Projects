@@ -120,7 +120,7 @@ void PlayerShip::BounceOffWalls()
 
 void PlayerShip::Respawn()
 {
-	if (m_isDead)
+	if (m_isDead && (m_lives > 0))
 	{
 		m_position = Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 		m_velocity = Vec2(0, 0);
