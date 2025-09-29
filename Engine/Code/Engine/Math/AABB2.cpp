@@ -27,9 +27,9 @@ bool AABB2::IsPointInside(Vec2 const& point) const
 
 Vec2 const AABB2::GetCenter() const
 {
-	float xCenter = (m_mins.x + m_maxs.x) * 0.5;
-	float yCenter = (m_mins.y + m_maxs.y) * 0.5;
-	return Vec2(xCenter,yCenter);
+	/*float xCenter = (m_mins.x + m_maxs.x) * 0.5;
+	float yCenter = (m_mins.y + m_maxs.y) * 0.5;*/
+	return Vec2( (m_mins.x + m_maxs.x) * 0.5f, (m_mins.y + m_maxs.y) * 0.5f );
 }
 
 Vec2 const AABB2::GetDimensions() const
@@ -64,7 +64,6 @@ Vec2 const AABB2::GetPointAtUV(Vec2 const& uv) const
 
 Vec2 const AABB2::GetUVForPoint(Vec2 const& point) const
 {
-	// TODO one case is incorrect
 	return Vec2(RangeMap(point.x, m_mins.x, m_maxs.x, 0.f, 1.f), RangeMap(point.y, m_mins.y, m_maxs.y, 0.f, 1.f));
 }
 
@@ -77,8 +76,8 @@ void AABB2::Translate(Vec2 const& translationToApply)
 void AABB2::SetCenter(Vec2 const& newCenter)
 {
 	Vec2 currentDimensions = GetDimensions();
-	float xOffset = currentDimensions.x * 0.5;
-	float yOffset = currentDimensions.y * 0.5;
+	float xOffset = currentDimensions.x * 0.5f;
+	float yOffset = currentDimensions.y * 0.5f;
 	m_mins.x = newCenter.x - xOffset;
 	m_mins.y = newCenter.y - yOffset;
 	m_maxs.x = xOffset + newCenter.x;
@@ -88,8 +87,8 @@ void AABB2::SetCenter(Vec2 const& newCenter)
 void AABB2::SetDimensions(Vec2 const& newDimensions)
 {
 	Vec2 centerBuffer = GetCenter();
-	float xOffset = newDimensions.x * 0.5;
-	float yOffset = newDimensions.y * 0.5;
+	float xOffset = newDimensions.x * 0.5f;
+	float yOffset = newDimensions.y * 0.5f;
 	m_mins.x = centerBuffer.x - xOffset;
 	m_mins.y = centerBuffer.y - yOffset;
 	m_maxs.x = xOffset + centerBuffer.x;

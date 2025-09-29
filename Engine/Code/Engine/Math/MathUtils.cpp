@@ -47,7 +47,7 @@ float RangeMapClamped(float inValue, float inStart, float inEnd, float outStart,
 
 int RoundDownToInt(float value)
 {
-    return floorf(value);
+    return static_cast<int>(floorf(value));
 }
 
 float ConvertDegreesToRadians(float degrees)
@@ -78,17 +78,38 @@ float Atan2Degrees(float y, float x)
 
 float GetShortestAngularDispDegrees(float startDegrees, float endDegrees)
 {
-    return 0.0f; //TODO
+	float angularDisp = endDegrees - startDegrees;
+
+	while (angularDisp > 180.0f) {
+		angularDisp -= 360.0f;
+	}
+	while (angularDisp <= -180.0f) { // (-180.f,180.f]
+		angularDisp += 360.0f;
+	}
+
+	return angularDisp;
 }
 
 float GetTurnedTowardDegrees(float currentDegrees, float goalDegrees, float maxDeltaDegrees)
 {
-    return 0.0f; //TODO
+	float angularDisp = GetShortestAngularDispDegrees(currentDegrees, goalDegrees);
+	float clampedDisp = GetClamped(angularDisp, -maxDeltaDegrees, maxDeltaDegrees);
+	float result = currentDegrees + clampedDisp;
+
+	while (result >= 360.0f) {
+		result -= 360.0f;
+	}
+	while (result < 0.0f) {
+		result += 360.0f;
+	}
+
+	return result;
+
 }
 
 float DotProduct2D(Vec2 const& a, Vec2 const& b)
 {
-    return 0.0f; //TODO
+    return (a.x * b.x) + (a.y * b.y);
 }
 
 float GetDistance2D(Vec2 const& positionA, Vec2 const& positionB)
