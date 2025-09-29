@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Input/KeyButtonState.hpp"
+#include "Engine/Input/XboxController.hpp"
 
 extern unsigned char const KEYCODE_F1;
 extern unsigned char const KEYCODE_F2;
@@ -38,11 +39,16 @@ public:
 	bool IsKeyDown(unsigned char keyCode);
 	void HandleKeyPressed(unsigned char keyCode);
 	void HandleKeyReleased(unsigned char keyCode);
-	//XboxController const& GetController(int controllerID) const;
+	XboxController const& GetController(int controllerID) const;
 
 	InputSystem*	m_input;
 
 protected:
 	KeyButtonState m_keyStates[NUM_KEYCODES];
-	//XboxController m_controllers[NUM_XBOX_CONTROLLERS];
+	XboxController m_controllers[NUM_XBOX_CONTROLLERS] = 
+	{	XboxController(0), 
+		XboxController(1), 
+		XboxController(2), 
+		XboxController(3) 
+	};
 };

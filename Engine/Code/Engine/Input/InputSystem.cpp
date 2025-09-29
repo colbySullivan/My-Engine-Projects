@@ -46,7 +46,10 @@ void InputSystem::Shutdown()
 
 void InputSystem::BeginFrame()
 {
-	
+	for ( int controllerID = 0; controllerID < NUM_XBOX_CONTROLLERS; ++controllerID )
+	{
+		m_controllers[controllerID].RefreshStatus();
+	}
 }
 
 void InputSystem::EndFrame()
@@ -80,4 +83,9 @@ void InputSystem::HandleKeyPressed(unsigned char keyCode)
 void InputSystem::HandleKeyReleased(unsigned char keyCode)
 {
 	m_keyStates[keyCode].m_isPressed = false;
+}
+
+XboxController const& InputSystem::GetController(int controllerID) const
+{
+	return m_controllers[controllerID];
 }

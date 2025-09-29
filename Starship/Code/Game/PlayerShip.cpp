@@ -7,6 +7,7 @@
 #include "GameCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Input/XboxController.hpp"
 
 
 PlayerShip::PlayerShip( Game* owner, Vec2 const& startPos)
@@ -128,5 +129,38 @@ void PlayerShip::Respawn()
 		m_isDead = false;
 		m_health = 1;
 		m_lives -= 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
+{
+	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
+	g_engine->m_input->GetController(0);
+
+	// Respawn
+	if( m_isDead )
+	{
+		if( controller.WasButtonJustPressed( XboxButtonID::START ) && m_lives > 0 )
+		{
+			Respawn();
+		}
+		return;
+	}
+
+	// Drive
+	float leftStickMagnitude = controller.GetLeftStick().GetMagnitude();
+	if( leftStickMagnitude > 0.f )
+	{
+		m_thrustFraction = leftStickMagnitude;
+		m_orientationDegrees = controller.GetLeftStick().GetOrientationDegrees();
+	}
+
+	// Shoot
+	if( controller.WasButtonJustPressed( XboxButtonID::A ) )
+	{
+		Vec2 forwardNormal = GetForwardNormal();
+		Vec2 nosePosition = m_position + (forwardNormal * 1.f);
+		m_game->SpawnBullet( nosePosition, m_orientationDegrees );
 	}
 }
