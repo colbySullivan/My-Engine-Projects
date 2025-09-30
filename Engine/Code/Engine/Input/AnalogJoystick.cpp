@@ -70,9 +70,12 @@ void AnalogJoystick::UpdatePosition(float rawNormalizedX, float rawNormalizedY)
 	}
 	else
 	{
-		float correctedR = RangeMapClamped(r, m_innerDeadZoneFraction, m_outerDeadZoneFraction, 0.0f, 1.0f);
+		if (r > m_outerDeadZoneFraction)
+			r = 1.0f;
+		else
+			r = RangeMapClamped(r, m_innerDeadZoneFraction, m_outerDeadZoneFraction, 0.0f, 1.0f);
 
 		// XYCorrected
-		m_correctedPosition = Vec2::MakeFromPolarRadians(theta, correctedR);
+		m_correctedPosition = Vec2::MakeFromPolarRadians(theta, r);
 	}
 }
