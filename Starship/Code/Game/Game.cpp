@@ -38,15 +38,16 @@ void Game::Startup()
 
 void Game::Update(float deltaSeconds)
 {
+	XboxController const& controller = g_engine->m_input->GetController(0);
 	if (m_isAttractMode)
 	{
-		if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC))
+		if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC) || controller.WasButtonJustPressed( XboxButtonID::BACK ))
 		{
 			m_isQuitting = true;
 			return;
 		}
 
-		if (g_engine->m_input->WasKeyJustPressed(' ') || g_engine->m_input->WasKeyJustPressed('N'))
+		if (g_engine->m_input->WasKeyJustPressed(' ') || g_engine->m_input->WasKeyJustPressed('N') || controller.WasButtonJustPressed( XboxButtonID::START ))
 		{
 			m_isAttractMode = false;
 			Startup();
@@ -63,7 +64,10 @@ void Game::Update(float deltaSeconds)
 		g_engine->m_input->EndFrame();
 		return;
 	}
-
+	if ((g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC) || controller.WasButtonJustPressed(XboxButtonID::BACK)) && !m_isAttractMode)
+	{
+		m_isAttractMode = true;
+	}
 	KeyboardInput();
 
 	if (m_roundNumber > 5)
@@ -199,7 +203,7 @@ Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 			float heading = g_rng.RollRandomFloatInRange(0.f, 360.0f);
 			float speed = g_rng.RollRandomFloatInRange(10.f, 100.f);
 			Vec2 localVelocity = Vec2::MakeFromPolarDegrees( heading, speed );
-			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.3f;
+			m_debris[debrisIndex]->m_velocity = (velocity + localVelocity) * 0.5f;
 
 			return m_debris[debrisIndex];
 		}
@@ -523,12 +527,6 @@ void Game::RenderAttractMode(float playButtonAlpha) const
 
 void Game::KeyboardInput()
 {
-	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_ESC) && !m_isAttractMode)
-	{
-		m_isAttractMode = true;
-		return;
-	}
-
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
 
 	if (g_engine->m_input->WasKeyJustPressed('P')) // Pauses game
@@ -673,7 +671,7 @@ void Game::RenderShipLives() const
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
 		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
-		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(0.2f + (shipLives*0.5f), 9.6f));
+		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(shipLives * 0.5f, 9.6f));
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 

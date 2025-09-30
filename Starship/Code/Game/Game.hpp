@@ -15,6 +15,7 @@ class Beetle;
 class Debris;
 class Wasp;
 class RandomNumberGenerator;
+class XboxController;
 
 
 //------------------------------------------------------------------------------
