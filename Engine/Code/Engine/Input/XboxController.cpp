@@ -1,24 +1,16 @@
 #include "Engine/Input/XboxController.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // must #include Windows.h before #including Xinput.h
 #include <Xinput.h> // include the Xinput API header file (interface)
 #pragma comment( lib, "xinput" ) // Link in the xinput.lib static library
 
-constexpr short XBOX_STICK_MAX = 32767;
-constexpr short XBOX_STICK_MIN = -32768;
-constexpr unsigned char XBOX_TRIGGER_MAX = 255;
-
-constexpr float LEFT_STICK_INNER_DEADZONE = 0.3f;
-constexpr float LEFT_STICK_OUTER_DEADZONE = 0.9f;
-constexpr float RIGHT_STICK_INNER_DEADZONE = 0.3f;
-constexpr float RIGHT_STICK_OUTER_DEADZONE = 0.9f;
-
 //------------------------------------------------------------------------------
 XboxController::XboxController( int controllerID )
     : m_id ( controllerID )
 {
-    m_leftStick.SetDeadZoneThresholds(LEFT_STICK_INNER_DEADZONE, LEFT_STICK_OUTER_DEADZONE);
-    m_rightStick.SetDeadZoneThresholds(RIGHT_STICK_INNER_DEADZONE, RIGHT_STICK_OUTER_DEADZONE);
+    m_leftStick.SetDeadZoneThresholds(m_leftStick.GetInnerDeadZoneFraction(), m_leftStick.GetOuterDeadZoneFraction());
+    m_rightStick.SetDeadZoneThresholds(m_rightStick.GetInnerDeadZoneFraction(), m_rightStick.GetOuterDeadZoneFraction());
 }
 
 //------------------------------------------------------------------------------
@@ -150,13 +142,15 @@ void XboxController::Reset()
 //------------------------------------------------------------------------------
 void XboxController::UpdateJoystick(AnalogJoystick& out_joystick, short rawX, short rawY)
 {
-
+	float normalizedX = RangeMapClamped(static_cast<float>(rawX), XBOX_STICK_MIN, XBOX_STICK_MAX, -1.0f, 1.0f);
+	float normalizedY = RangeMapClamped(static_cast<float>(rawY), XBOX_STICK_MIN, XBOX_STICK_MAX, -1.0f, 1.0f);
+	out_joystick.UpdatePosition(normalizedX, normalizedY);
 }
 
 //------------------------------------------------------------------------------
 void XboxController::UpdateTrigger(float& out_triggerValue, unsigned char rawValue)
 {
-
+	out_triggerValue = RangeMapClamped(static_cast<float>(rawValue), 0.0f, XBOX_TRIGGER_MAX, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------

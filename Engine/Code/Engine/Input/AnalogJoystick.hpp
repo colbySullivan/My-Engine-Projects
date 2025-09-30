@@ -22,7 +22,7 @@ public:
 protected:
     Vec2    m_rawPosition;                      // Flaky; doesn't rest at zero (or consistently snap to rest position)
     Vec2    m_correctedPosition;                // Mathematically-corrected position
-    float   m_innerDeadZoneFraction    = 0.00f; // if 0 < this%, R = 0; "input range start" for corrective range map
-    float   m_outerDeadZoneFraction    = 1.00f; // if R > this%, R = 1; "input range end" for corrective range map
+    float   m_innerDeadZoneFraction    = 0.30f; // if 0 < this%, R = 0; "input range start" for corrective range map
+    float   m_outerDeadZoneFraction    = 0.95f; // if R > this%, R = 1; "input range end" for corrective range map
    
 };

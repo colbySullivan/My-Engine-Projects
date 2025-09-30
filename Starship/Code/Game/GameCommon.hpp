@@ -3,11 +3,11 @@
 #include <Engine/Core/Rgba8.hpp>
 
 constexpr int	NUM_STARTING_ASTEROIDS = 6;
-constexpr int	MAX_ASTEROIDS = 64;
-constexpr int	MAX_BULLETS = 20;
-constexpr int	MAX_BEETLES = 12;
-constexpr int	MAX_WASP = 12;
-constexpr int	MAX_DEBRIS = 256;
+constexpr int	MAX_ASTEROIDS = 32;
+constexpr int	MAX_BULLETS = 100;
+constexpr int	MAX_BEETLES = 20;
+constexpr int	MAX_WASP = 20;
+constexpr int	MAX_DEBRIS = 500;
 constexpr float WORLD_SIZE_X = 200.f;
 constexpr float WORLD_SIZE_Y = 100.f;
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;

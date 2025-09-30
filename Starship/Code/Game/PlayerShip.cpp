@@ -139,6 +139,9 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
 	g_engine->m_input->GetController(0);
 
+	if (controller.GetRightTrigger() == 0)
+		m_canTriggerShoot = true;
+
 	// Respawn
 	if( m_isDead )
 	{
@@ -155,13 +158,18 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	{
 		m_thrustFraction = leftStickMagnitude;
 		m_orientationDegrees = controller.GetLeftStick().GetOrientationDegrees();
+
+		Vec2 forwardVec = GetForwardNormal();
+		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * m_thrustFraction * deltaSeconds;
 	}
 
 	// Shoot
-	if( controller.WasButtonJustPressed( XboxButtonID::A ) )
+	if( controller.WasButtonJustPressed( XboxButtonID::A ) || (controller.GetRightTrigger() != 0 && m_canTriggerShoot))
 	{
 		Vec2 forwardNormal = GetForwardNormal();
 		Vec2 nosePosition = m_position + (forwardNormal * 1.f);
 		m_game->SpawnBullet( nosePosition, m_orientationDegrees );
+
+		m_canTriggerShoot = false;
 	}
 }

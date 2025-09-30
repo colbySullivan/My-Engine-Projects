@@ -38,4 +38,5 @@ private:
 	bool        m_isTurningRight = false;
 	bool        m_isThrusting = false;
 	float		m_thrustFraction;
+	bool		m_canTriggerShoot = false; // Handle delayed shoot
 };

@@ -23,6 +23,11 @@ enum class XboxButtonID {
 
     NUM = 16
 };
+//------------------------------------------------------------------------------
+
+constexpr short XBOX_STICK_MAX = 32767;
+constexpr short XBOX_STICK_MIN = -32768;
+constexpr unsigned char XBOX_TRIGGER_MAX = 255;
 
 //------------------------------------------------------------------------------
 class XboxController
