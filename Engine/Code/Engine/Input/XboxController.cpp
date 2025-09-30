@@ -77,7 +77,7 @@ bool XboxController::IsButtonDown(XboxButtonID buttonID) const
 //------------------------------------------------------------------------------
 bool XboxController::WasButtonJustPressed(XboxButtonID buttonID) const
 {
-    return m_buttons[(int) buttonID].m_wasPressedLastFrame;
+    return (!m_buttons[(int) buttonID].m_wasPressedLastFrame) && (m_buttons[(int) buttonID].m_isPressed);
 }
 
 //------------------------------------------------------------------------------
@@ -89,41 +89,62 @@ bool XboxController::WasButtonJustReleased(XboxButtonID buttonID) const
 //------------------------------------------------------------------------------
 void XboxController::RefreshStatus()
 {
-    XINPUT_STATE xboxControllerState = {}; // Clear (zero-out) the controller state structure
-    for (int controllerNumber = 0; controllerNumber < 3; ++controllerNumber)
-    {
-        DWORD errorCode = XInputGetState( controllerNumber, &xboxControllerState ); // Get fresh state info
-        if( errorCode == ERROR_SUCCESS ){ // Result if the controller is connected (error code is SUCCESS)
-            bool isButtonADown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_A) == XINPUT_GAMEPAD_A;
-            bool isButtonBDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_B) == XINPUT_GAMEPAD_B;
-            bool isButtonXDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_X) == XINPUT_GAMEPAD_X;
-            bool isButtonYDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_Y) == XINPUT_GAMEPAD_Y;
-            bool isButtonBackDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) == XINPUT_GAMEPAD_BACK;
-            bool isButtonStartDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_START) == XINPUT_GAMEPAD_START;
-            bool isButtonLeftThumbDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) == XINPUT_GAMEPAD_LEFT_THUMB;
-            bool isButtonRightThumbDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) == XINPUT_GAMEPAD_RIGHT_THUMB;
-            bool isButtonLeftShoulderDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) == XINPUT_GAMEPAD_LEFT_SHOULDER;
-            bool isButtonRightShoulderDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) == XINPUT_GAMEPAD_RIGHT_SHOULDER;
-            bool isButtonDPadUpDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) == XINPUT_GAMEPAD_DPAD_UP;
-            bool isButtonDPadDownDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) == XINPUT_GAMEPAD_DPAD_DOWN;
-            bool isButtonDPadLeftDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) == XINPUT_GAMEPAD_DPAD_LEFT;
-            bool isButtonDPadRightDown = (xboxControllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) == XINPUT_GAMEPAD_DPAD_RIGHT;
-        }
-        else
-        {
-            if (m_isConnected)
-            {
-                Reset();
-            }
-            m_isConnected = false;
-        }
-    }
+	XINPUT_STATE xboxControllerState = {};
+	DWORD errorCode = XInputGetState(m_id, &xboxControllerState);
+
+	if (errorCode == ERROR_SUCCESS)
+	{
+		m_isConnected = true;
+
+		unsigned short buttons = xboxControllerState.Gamepad.wButtons;
+
+		UpdateButton(XboxButtonID::A, buttons, XINPUT_GAMEPAD_A);                      // 0
+		UpdateButton(XboxButtonID::B, buttons, XINPUT_GAMEPAD_B);                      // 1
+		UpdateButton(XboxButtonID::X, buttons, XINPUT_GAMEPAD_X);                      // 2
+		UpdateButton(XboxButtonID::Y, buttons, XINPUT_GAMEPAD_Y);                      // 3
+		UpdateButton(XboxButtonID::LEFT_BUMPER, buttons, XINPUT_GAMEPAD_LEFT_SHOULDER);  
+		UpdateButton(XboxButtonID::RIGHT_BUMPER, buttons, XINPUT_GAMEPAD_RIGHT_SHOULDER);
+		UpdateButton(XboxButtonID::BACK, buttons, XINPUT_GAMEPAD_BACK);
+		UpdateButton(XboxButtonID::START, buttons, XINPUT_GAMEPAD_START);
+		UpdateButton(XboxButtonID::LEFT_STICK, buttons, XINPUT_GAMEPAD_LEFT_THUMB);
+		UpdateButton(XboxButtonID::RIGHT_STICK, buttons, XINPUT_GAMEPAD_RIGHT_THUMB);
+		UpdateButton(XboxButtonID::DPAD_UP, buttons, XINPUT_GAMEPAD_DPAD_UP);
+		UpdateButton(XboxButtonID::DPAD_DOWN, buttons, XINPUT_GAMEPAD_DPAD_DOWN);
+		UpdateButton(XboxButtonID::DPAD_LEFT, buttons, XINPUT_GAMEPAD_DPAD_LEFT);
+		UpdateButton(XboxButtonID::DPAD_RIGHT, buttons, XINPUT_GAMEPAD_DPAD_RIGHT);
+
+		UpdateJoystick(m_leftStick, xboxControllerState.Gamepad.sThumbLX, xboxControllerState.Gamepad.sThumbLY);
+		UpdateJoystick(m_rightStick, xboxControllerState.Gamepad.sThumbRX, xboxControllerState.Gamepad.sThumbRY);
+		UpdateTrigger(m_leftTrigger, xboxControllerState.Gamepad.bLeftTrigger);
+		UpdateTrigger(m_rightTrigger, xboxControllerState.Gamepad.bRightTrigger);
+	}
+	else
+	{
+		if (m_isConnected)
+		{
+			Reset();
+		}
+		m_isConnected = false;
+	}
+
+
 }
 
 //------------------------------------------------------------------------------
 void XboxController::Reset()
 {
+	m_isConnected = false;
+	m_leftTrigger = 0.f;
+	m_rightTrigger = 0.f;
 
+	for (int button = 0; button < (int)XboxButtonID::NUM; button++)
+	{
+		m_buttons[button].m_isPressed = false;
+		m_buttons[button].m_wasPressedLastFrame = false;
+	}
+
+	m_leftStick.Reset();
+	m_rightStick.Reset();
 }
 
 //------------------------------------------------------------------------------
@@ -141,5 +162,7 @@ void XboxController::UpdateTrigger(float& out_triggerValue, unsigned char rawVal
 //------------------------------------------------------------------------------
 void XboxController::UpdateButton(XboxButtonID buttonID, unsigned short buttonFlags, unsigned short buttonFlag)
 {
-
+	KeyButtonState& button = m_buttons[(int)buttonID];
+	button.m_wasPressedLastFrame = button.m_isPressed;
+	button.m_isPressed = (buttonFlags & buttonFlag) == buttonFlag;
 }

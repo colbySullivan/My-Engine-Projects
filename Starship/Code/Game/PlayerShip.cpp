@@ -34,6 +34,7 @@ void PlayerShip::Update(float deltaSeconds)
 	}
 	if (!m_isDead)
 		UpdateFromKeyboard(deltaSeconds);
+	UpdateFromController(deltaSeconds);
 	BounceOffWalls();
 	m_position += m_velocity * deltaSeconds;
 }
