@@ -4,7 +4,7 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Game/GameCommon.hpp"
 
-
+//-----------------------------------------------------------------------------------------------
 Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
@@ -19,11 +19,13 @@ Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	InitializeLocalVerts();
 }
 
+//-----------------------------------------------------------------------------------------------
 Asteroid::~Asteroid()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void Asteroid::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
@@ -35,6 +37,7 @@ void Asteroid::Update(float deltaSeconds)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Asteroid::Render() const
 {
 	if (m_isDead)
@@ -51,6 +54,7 @@ void Asteroid::Render() const
 		DebugRender();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Asteroid::InitializeLocalVerts()
 {
 	// Precompute random radii along each triangle-seam (at each outer vertex)
@@ -93,6 +97,7 @@ void Asteroid::InitializeLocalVerts()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Asteroid::WrapAroundScreen()
 {
 	if (m_position.x > WORLD_SIZE_X + m_cosmeticRadius)
@@ -115,6 +120,7 @@ void Asteroid::WrapAroundScreen()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Asteroid::spawnRandomEdge()
 {
 	int spawnEdge = g_rng.RollRandomIntInRange(0, 3);

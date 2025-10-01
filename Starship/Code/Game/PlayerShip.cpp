@@ -20,11 +20,13 @@ PlayerShip::PlayerShip( Game* owner, Vec2 const& startPos)
 	InitializeLocalPlayerShipsVerts(m_localVerts);
 }
 
+//-----------------------------------------------------------------------------------------------
 PlayerShip::~PlayerShip()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::Update(float deltaSeconds)
 {
 	Entity::Update(deltaSeconds);
@@ -39,6 +41,7 @@ void PlayerShip::Update(float deltaSeconds)
 	m_position += m_velocity * deltaSeconds;
 }
 
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::Render() const
 {
 	Vertex tempShipWorldVerts[NUM_SHIP_VERTS];
@@ -54,6 +57,7 @@ void PlayerShip::Render() const
 		DebugRender();
 }
 
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::InitializeLocalPlayerShipsVerts(Vertex* vertArray)
 {
 	// Nose cone
@@ -87,6 +91,7 @@ void PlayerShip::InitializeLocalPlayerShipsVerts(Vertex* vertArray)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 {
 	if (g_engine->m_input->WasKeyJustPressed(' '))
@@ -108,6 +113,7 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::BounceOffWalls()
 {
 	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius || m_position.x < 0 + m_cosmeticRadius)
@@ -120,6 +126,7 @@ void PlayerShip::BounceOffWalls()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::Respawn()
 {
 	if (m_isDead && (m_lives > 0))
@@ -133,7 +140,7 @@ void PlayerShip::Respawn()
 	}
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?

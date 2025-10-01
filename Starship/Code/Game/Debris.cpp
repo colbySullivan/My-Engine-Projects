@@ -16,11 +16,13 @@ Debris::Debris(Game* owner, Vec2 const& startPos)
 	InitializeLocalVerts();
 }
 
+//-----------------------------------------------------------------------------------------------
 Debris::~Debris()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void Debris::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
@@ -45,6 +47,7 @@ void Debris::Update(float deltaSeconds)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Debris::Render() const
 {
 	if (m_isDead)
@@ -61,6 +64,7 @@ void Debris::Render() const
 		DebugRender();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Debris::InitializeLocalVerts()
 {
 	// Precompute random radii along each triangle-seam (at each outer vertex)

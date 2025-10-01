@@ -27,15 +27,9 @@ public:
 
 
 public:
-	//Camera*     m_gameCamera = nullptr;
 	Game*		m_game = nullptr;
 
 private:
-	//bool            m_isQuitting = false;
-	//bool            m_isPaused = false;
-	//bool            m_isSlowMo = false;
-	//bool            m_pauseAfterNextUpdate = false;
-
 	bool			m_isKeyDownArray[256];
 	bool			m_wasKeyDownPrevArray[256];
 	float           m_lastFrameTime = 0.f;

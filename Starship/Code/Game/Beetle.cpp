@@ -18,11 +18,13 @@ Beetle::Beetle(Game* owner, Vec2 const& startPos)
 	spawnRandomEdge();
 }
 
+//-----------------------------------------------------------------------------------------------
 Beetle::~Beetle()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void Beetle::Update(float deltaSeconds)
 {
 	if (!m_game->m_playerShip->m_isDead)
@@ -37,6 +39,7 @@ void Beetle::Update(float deltaSeconds)
 	Entity::Update(deltaSeconds);
 }
 
+//-----------------------------------------------------------------------------------------------
 void Beetle::Render() const
 {
 	if (m_isDead)
@@ -53,6 +56,7 @@ void Beetle::Render() const
 		DebugRender();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Beetle::InitializeLocalVerts()
 {
 	m_localVerts[0].m_position = Vec3(-0.25f, 0.375f, 0.f);
@@ -70,6 +74,7 @@ void Beetle::InitializeLocalVerts()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Beetle::WrapAroundScreen()
 {
 	if (m_position.x > WORLD_SIZE_X + m_cosmeticRadius)
@@ -92,6 +97,7 @@ void Beetle::WrapAroundScreen()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Beetle::spawnRandomEdge()
 {
 	int spawnEdge = g_rng.RollRandomIntInRange(0, 3);

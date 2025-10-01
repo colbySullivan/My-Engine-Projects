@@ -25,11 +25,13 @@ InputSystem::InputSystem()
 	m_input = this;
 }
 
+//-----------------------------------------------------------------------------------------------
 InputSystem::~InputSystem()
 {
 	
 }
 
+//-----------------------------------------------------------------------------------------------
 void InputSystem::Startup()
 {
 	for (int i = 0; i < NUM_KEYCODES; ++i)
@@ -39,11 +41,13 @@ void InputSystem::Startup()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void InputSystem::Shutdown()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void InputSystem::BeginFrame()
 {
 	for ( int controllerID = 0; controllerID < NUM_XBOX_CONTROLLERS; ++controllerID )
@@ -52,6 +56,7 @@ void InputSystem::BeginFrame()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void InputSystem::EndFrame()
 {
 	for (int i = 0; i < NUM_KEYCODES; ++i)
@@ -60,31 +65,37 @@ void InputSystem::EndFrame()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::WasKeyJustPressed(unsigned char keyCode)
 {
 	return m_keyStates[keyCode].m_isPressed && !m_keyStates[keyCode].m_wasPressedLastFrame;
 }
 
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::WasKeyJustReleased(unsigned char keyCode)
 {
 	return !m_keyStates[keyCode].m_isPressed && m_keyStates[keyCode].m_wasPressedLastFrame;
 }
 
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::IsKeyDown(unsigned char keyCode)
 {
 	return m_keyStates[keyCode].m_isPressed;
 }
 
+//-----------------------------------------------------------------------------------------------
 void InputSystem::HandleKeyPressed(unsigned char keyCode)
 {
 	m_keyStates[keyCode].m_isPressed = true;
 }
 
+//-----------------------------------------------------------------------------------------------
 void InputSystem::HandleKeyReleased(unsigned char keyCode)
 {
 	m_keyStates[keyCode].m_isPressed = false;
 }
 
+//-----------------------------------------------------------------------------------------------
 XboxController const& InputSystem::GetController(int controllerID) const
 {
 	return m_controllers[controllerID];

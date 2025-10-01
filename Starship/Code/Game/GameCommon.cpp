@@ -59,6 +59,7 @@ void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 cons
 	g_engine->m_render->DrawVertexArray(RING_NUM_VERTS , verts);
 }
 
+//-----------------------------------------------------------------------------------------------
 void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickness, Rgba8 const& color)
 {
 	float halfThickness = 0.5f * thickness;

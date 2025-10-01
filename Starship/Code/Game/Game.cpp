@@ -21,12 +21,14 @@ Game::Game()
 	m_roundNumber = 1;
 }
 
+//-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
 	delete g_engine;
 	g_engine = nullptr;
 }
 
+//-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
@@ -36,6 +38,7 @@ void Game::Startup()
 	UpdateWaves();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Game::Update(float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController(0);
@@ -104,6 +107,8 @@ void Game::Update(float deltaSeconds)
 	DestroyGarbageEntities();
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::Render() const
 {
 	g_engine->m_render->BeginCamera(*m_gameCamera);
@@ -112,15 +117,21 @@ void Game::Render() const
 	RenderEntities();
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::Shutdown()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
+
 bool Game::isAlive(Entity* entity) const
 {
 	return (entity && !entity->m_isDead);
 }
+
+//-----------------------------------------------------------------------------------------------
 
 Asteroid* Game::SpawnRandomAsteroids()
 {
@@ -135,6 +146,8 @@ Asteroid* Game::SpawnRandomAsteroids()
 	ERROR_RECOVERABLE("Cannot spawn a new asteroid; all array slots are full");
 	return nullptr;
 }
+
+//-----------------------------------------------------------------------------------------------
 
 Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
 {
@@ -155,6 +168,8 @@ Bullet* Game::SpawnBullet(Vec2 const& pos, float forwardDegrees)
 		return nullptr;
 }
 
+//-----------------------------------------------------------------------------------------------
+
 Beetle* Game::SpawnNewRandomBeetle()
 {
 	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
@@ -168,6 +183,8 @@ Beetle* Game::SpawnNewRandomBeetle()
 	ERROR_RECOVERABLE("Cannot spawn a new beetle; all array slots are full");
 	return nullptr;
 }
+
+//-----------------------------------------------------------------------------------------------
 
 Wasp* Game::SpawnNewRandomWasp()
 {
@@ -183,6 +200,8 @@ Wasp* Game::SpawnNewRandomWasp()
 	return nullptr;
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size)
 {
 	for (int debrisIndex = 0; debrisIndex < debrisAmount; ++debrisIndex)
@@ -190,6 +209,8 @@ void Game::SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int de
 		SpawnNewDebris(pos, entityColor, velocity, size);
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
 
 Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 {
@@ -212,7 +233,7 @@ Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 	return nullptr;
 }
 
-
+//-----------------------------------------------------------------------------------------------
 
 void Game::UpdateEntities(float deltaSeconds)
 {
@@ -265,6 +286,8 @@ void Game::UpdateEntities(float deltaSeconds)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::CheckBulletsVsEnemies()
 {
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
@@ -316,6 +339,8 @@ void Game::CheckBulletsVsEnemies()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 {
 	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, bullet.m_position, bullet.m_physicsRadius))
@@ -324,6 +349,8 @@ void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 		enemy.m_health -= 1;
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
 
 void Game::CheckEnemiesVsShips()
 {
@@ -354,6 +381,8 @@ void Game::CheckEnemiesVsShips()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 {
 	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
@@ -362,6 +391,8 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 		enemy.m_health -= 1;
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
 
 void Game::RenderEntities() const
 {
@@ -416,6 +447,8 @@ void Game::RenderEntities() const
 		
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::DestroyGarbageEntities()
 {
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
@@ -465,6 +498,8 @@ void Game::DestroyGarbageEntities()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::UpdateAttractMode(float deltaSeconds)
 {
 	m_alphaTimer += deltaSeconds;
@@ -482,6 +517,8 @@ void Game::UpdateAttractMode(float deltaSeconds)
 
 	RenderAttractMode(alpha);
 }
+
+//-----------------------------------------------------------------------------------------------
 
 void Game::RenderAttractMode(float playButtonAlpha) const
 {
@@ -525,6 +562,8 @@ void Game::RenderAttractMode(float playButtonAlpha) const
 	g_engine->m_render->EndCamera( attractCamera );
 }
 
+//-----------------------------------------------------------------------------------------------
+
 void Game::KeyboardInput()
 {
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
@@ -549,6 +588,8 @@ void Game::KeyboardInput()
 		g_drawDebug = !g_drawDebug;
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
 
 int Game::GetNumLivingEnemies() const
 {
@@ -580,11 +621,15 @@ int Game::GetNumLivingEnemies() const
 	return numLivingEnemies;
 }
 
+//-----------------------------------------------------------------------------------------------
+
 bool Game::IsReadyToStartNextWave() const
 {
 	int numLivingEnemies = GetNumLivingEnemies();
 	return numLivingEnemies == 0;
 }
+
+//-----------------------------------------------------------------------------------------------
 
 void Game::UpdateWaves()
 {
@@ -602,6 +647,8 @@ void Game::UpdateWaves()
 			
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
 
 void Game::CleanupGameEntities()
 {
@@ -660,6 +707,8 @@ void Game::CleanupGameEntities()
 
 	DestroyGarbageEntities();
 }
+
+//-----------------------------------------------------------------------------------------------
 
 void Game::RenderShipLives() const
 {

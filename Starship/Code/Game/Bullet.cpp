@@ -14,11 +14,13 @@ Bullet::Bullet(Game* owner, Vec2 const& startPos)
 	InitializeLocalVerts();
 }
 
+//-----------------------------------------------------------------------------------------------
 Bullet::~Bullet()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void Bullet::Update(float deltaSeconds)
 {
 	m_position += m_velocity * deltaSeconds;
@@ -31,6 +33,7 @@ void Bullet::Update(float deltaSeconds)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Bullet::Render() const
 {
 	if (m_isDead)
@@ -38,7 +41,6 @@ void Bullet::Render() const
 		return;
 	}
 		
-
 	Vertex tempWorldVerts[NUM_BULLET_VERTS];
 	for (int vertIndex = 0; vertIndex < NUM_BULLET_VERTS; ++vertIndex)
 	{
@@ -51,6 +53,7 @@ void Bullet::Render() const
 		DebugRender();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Bullet::InitializeLocalVerts()
 {
 	m_localVerts[0].m_position = Vec3(0.5f, 0.0f, 0.0f);

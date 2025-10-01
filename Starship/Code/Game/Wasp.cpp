@@ -19,11 +19,13 @@ Wasp::Wasp(Game* owner, Vec2 const& startPos)
 	spawnRandomEdge();
 }
 
+//-----------------------------------------------------------------------------------------------
 Wasp::~Wasp()
 {
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void Wasp::Update(float deltaSeconds)
 {
 	if (!m_game->m_playerShip->m_isDead)
@@ -47,6 +49,7 @@ void Wasp::Update(float deltaSeconds)
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Wasp::Render() const
 {
 	if (m_isDead)
@@ -63,6 +66,7 @@ void Wasp::Render() const
 		DebugRender();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Wasp::InitializeLocalVerts()
 {
 	m_localVerts[0].m_position = Vec3(-2.f, -2.f, 0.f);
@@ -88,6 +92,7 @@ void Wasp::InitializeLocalVerts()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Wasp::spawnRandomEdge()
 {
 	int spawnEdge = g_rng.RollRandomIntInRange(0, 3);
