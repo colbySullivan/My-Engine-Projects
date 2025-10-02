@@ -7,8 +7,10 @@ float GetClamped(float value, float minValue, float maxValue)
 {
     if(value <= minValue)
         return minValue;
+
 	if (value >= maxValue)
 		return maxValue;
+
     return value;
 }
 
@@ -17,8 +19,10 @@ float GetClampedZeroToOne(float value)
 {
 	if (value <= 0)
 		return 0;
+
 	if (value >= 1)
 		return 1;
+
 	return value;
 }
 
@@ -92,10 +96,13 @@ float GetShortestAngularDispDegrees(float startDegrees, float endDegrees)
 {
 	float angularDisp = endDegrees - startDegrees;
 
-	while (angularDisp > 180.0f) {
+	while (angularDisp > 180.0f) 
+    {
 		angularDisp -= 360.0f;
 	}
-	while (angularDisp <= -180.0f) { // (-180.f,180.f]
+
+	while (angularDisp <= -180.0f) 
+    { // (-180.f,180.f]
 		angularDisp += 360.0f;
 	}
 
@@ -109,10 +116,13 @@ float GetTurnedTowardDegrees(float currentDegrees, float goalDegrees, float maxD
 	float clampedDisp = GetClamped(angularDisp, -maxDeltaDegrees, maxDeltaDegrees);
 	float result = currentDegrees + clampedDisp;
 
-	while (result >= 360.0f) {
+	while (result >= 360.0f) 
+    {
 		result -= 360.0f;
 	}
-	while (result < 0.0f) {
+
+	while (result < 0.0f) 
+    {
 		result += 360.0f;
 	}
 

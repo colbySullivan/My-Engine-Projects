@@ -27,8 +27,6 @@ public:
 
 private:
 	void InitializeLocalVerts();
-	void WrapAroundScreen();
-	void spawnRandomEdge();
 
 private:
 	Vertex m_localVerts[NUM_WASP_VERTS];

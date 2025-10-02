@@ -22,6 +22,8 @@ public:
 
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;
+	void		WrapAroundScreen();
+	void		spawnRandomEdge();
 
 	RandomNumberGenerator g_rng;
 

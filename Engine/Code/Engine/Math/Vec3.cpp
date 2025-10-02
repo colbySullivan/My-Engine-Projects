@@ -189,5 +189,6 @@ Vec3 const Vec3::GetNormalized() const
 	float length = GetLength();
 	if (length == 0)
 		return Vec3(0, 0, 0);
+
 	return Vec3(x / length, y / length, z / length);
 }

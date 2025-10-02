@@ -49,12 +49,16 @@ Vec2 const AABB2::GetNearestPoint(Vec2 const& referencePosition) const
 	float yNearest = referencePosition.y;
 	if (IsPointInside(referencePosition))
 		return referencePosition;
+
 	if (referencePosition.x < m_mins.x)
 		xNearest = m_mins.x;
+
 	if (referencePosition.x > m_maxs.x)
 		xNearest = m_maxs.x;
+
 	if (referencePosition.y < m_mins.y)
 		yNearest = m_mins.y;
+
 	if (referencePosition.y > m_maxs.y)
 		yNearest = m_maxs.y;
 	
@@ -111,10 +115,13 @@ void AABB2::StretchToIncludePoint(Vec2 const& point)
 	{
 		if (point.x <= m_mins.x)
 			m_mins.x = point.x;
+
 		if (point.x >= m_maxs.x)
 			m_maxs.x = point.x;
+
 		if (point.y <= m_mins.y)
 			m_mins.y = point.y;
+
 		if (point.y >= m_maxs.y)
 			m_maxs.y = point.y;
 	}
