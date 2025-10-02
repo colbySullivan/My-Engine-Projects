@@ -14,7 +14,7 @@ void RunTests_MP1A04();
 // For every assignment submission, all test sets must be enabled.
 //
 //#define ENABLE_TestSet_MP1A04_PushOutOf
-//#define ENABLE_TestSet_MP1A04_ProjectAndReflect
+#define ENABLE_TestSet_MP1A04_ProjectAndReflect
 //#define ENABLE_TestSet_MP1A04_TransformUsingIJ
 //#define ENABLE_TestSet_MP1A04_MiscGeometricUtilities
 

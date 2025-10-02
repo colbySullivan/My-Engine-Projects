@@ -63,4 +63,7 @@ public:
     void                ClampLength(float maxLength);
     void                Normalize();
     float               NormalizeAndGetPreviousLength();
+
+    Vec2 const          GetReflected( Vec2 const& normalOfSurfaceToReflectOffOf ) const;
+    void                Reflect( Vec2 const& normalOfSurfaceToReflectOffOf );
 };

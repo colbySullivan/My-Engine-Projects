@@ -260,6 +260,18 @@ float Vec2::NormalizeAndGetPreviousLength()
 }
 
 //-----------------------------------------------------------------------------------------------
+Vec2 const Vec2::GetReflected( Vec2 const& normalOfSurfaceToReflectOffOf ) const
+{
+	return Vec2(0,0); //TODO
+}
+
+//-----------------------------------------------------------------------------------------------
+void Vec2::Reflect( Vec2 const& normalOfSurfaceToReflectOffOf )
+{
+	//TODO
+}
+
+//-----------------------------------------------------------------------------------------------
 void Vec2::Rotate90Degrees()
 {
 	float buffer = x;

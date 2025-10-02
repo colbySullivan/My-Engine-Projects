@@ -130,6 +130,11 @@ float GetTurnedTowardDegrees(float currentDegrees, float goalDegrees, float maxD
 
 }
 
+float GetAngleDegreesBetweenVectors2D( Vec2 const& a, Vec2 const& b )
+{
+    return 0.0f; //TODO
+}
+
 //-----------------------------------------------------------------------------------------------
 float DotProduct2D(Vec2 const& a, Vec2 const& b)
 {
@@ -174,6 +179,19 @@ float GetDistanceXYSquared3D(Vec3 const& positionA, Vec3 const& positionB)
 {
     return ((positionB.x - positionA.x) * (positionB.x - positionA.x))
         + ((positionB.y - positionA.y) * (positionB.y - positionA.y));
+}
+
+//-----------------------------------------------------------------------------------------------
+float GetProjectedLength2D( Vec2 const& vectorToProject, Vec2 const& vectorToProjectOnto )
+{
+    return DotProduct2D( vectorToProject, vectorToProjectOnto.GetNormalized() );
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec2 GetProjectedVector2D( Vec2 const& vectorToProject, Vec2 const& vectorToProjectOnto )
+{
+    float projectedLength = GetProjectedLength2D( vectorToProject, vectorToProjectOnto );
+    return ( vectorToProjectOnto.GetNormalized() * projectedLength );
 }
 
 //-----------------------------------------------------------------------------------------------
