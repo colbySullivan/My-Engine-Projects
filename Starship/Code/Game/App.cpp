@@ -5,6 +5,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Game/Game.hpp"
 
 

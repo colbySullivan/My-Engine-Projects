@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"
-#include <Engine/Input/InputSystem.hpp>
+#include "Engine/Input/InputSystem.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 
 Engine* g_engine = nullptr;
 
@@ -10,6 +11,8 @@ Engine::Engine()
 	m_render->Startup();
 	m_input = new InputSystem();
 	m_input->Startup();
+	m_audio = new AudioSystem();
+	m_audio->Startup();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -17,8 +20,10 @@ Engine::~Engine()
 {
 	m_input->Shutdown();
 	m_render->Shutdown();
+	m_audio->Shutdown();
 	delete m_input;
 	delete m_render;
+	delete m_audio;
 }
 
 void Engine::BeginFrame()

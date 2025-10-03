@@ -4,6 +4,7 @@
 class Engine;   // Forward declaration; simply states that "an Engine class exists"
 class Renderer; // Forward declaration; simply states that "a Renderer class exists"
 class InputSystem; // Forward declaration; simply states that "an InputSystem class exists" 
+class AudioSystem;
 
 //------------------------------------------------------------------------------
 extern Engine* g_engine; // Advertisement that this global exists, so external people can use it
@@ -20,4 +21,5 @@ public:
 public:
     Renderer*   m_render    = nullptr; // Legal because of line 5
 	InputSystem* m_input = nullptr; // Legal because of line 6  
+    AudioSystem* m_audio = nullptr;
 };

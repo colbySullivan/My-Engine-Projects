@@ -7,6 +7,7 @@
 #include "GameCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Input/XboxController.hpp"
 
 

@@ -8,6 +8,7 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Game/Beetle.hpp"
 #include "Game/Debris.hpp"
 #include "Game/Entity.hpp"
@@ -53,6 +54,8 @@ void Game::Update(float deltaSeconds)
 		if (g_engine->m_input->WasKeyJustPressed(' ') || g_engine->m_input->WasKeyJustPressed('N') || controller.WasButtonJustPressed( XboxButtonID::START ))
 		{
 			m_isAttractMode = false;
+			SoundID testSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
+			g_engine->m_audio->StartSound( testSound );
 			Startup();
 		}
 		else
