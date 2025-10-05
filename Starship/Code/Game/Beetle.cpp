@@ -70,7 +70,7 @@ void Beetle::InitializeLocalVerts()
 
 	for (int vertIndex = 0; vertIndex < NUM_BEETLE_VERTS; ++vertIndex)
 	{
-		m_localVerts[vertIndex].m_color = Rgba8(102, 153, 204, 255);
+		m_localVerts[vertIndex].m_color = Rgba8(255, 191, 0, 255);
 	}
 }
 
