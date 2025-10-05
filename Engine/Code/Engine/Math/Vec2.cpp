@@ -262,13 +262,17 @@ float Vec2::NormalizeAndGetPreviousLength()
 //-----------------------------------------------------------------------------------------------
 Vec2 const Vec2::GetReflected( Vec2 const& normalOfSurfaceToReflectOffOf ) const
 {
-	return Vec2(0,0); //TODO
+	Vec2 toBeReflectedVectorV = Vec2(x, y);
+	float projectedLength = DotProduct2D( toBeReflectedVectorV, normalOfSurfaceToReflectOffOf );
+	Vec2 normalVector = projectedLength * normalOfSurfaceToReflectOffOf; // V_N
+	Vec2 tangentVector = toBeReflectedVectorV - normalVector; // V_T
+	return ( tangentVector + ( -1.0f * normalVector ) ); // R = V_T + (-V_N)
 }
 
 //-----------------------------------------------------------------------------------------------
 void Vec2::Reflect( Vec2 const& normalOfSurfaceToReflectOffOf )
 {
-	//TODO
+	*this = GetReflected( normalOfSurfaceToReflectOffOf );
 }
 
 //-----------------------------------------------------------------------------------------------

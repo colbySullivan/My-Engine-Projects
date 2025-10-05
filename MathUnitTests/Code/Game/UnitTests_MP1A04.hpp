@@ -13,7 +13,7 @@ void RunTests_MP1A04();
 // YOU MAY COMMENT THESE OUT TEMPORARILY to disable certain test sets while you work.
 // For every assignment submission, all test sets must be enabled.
 //
-//#define ENABLE_TestSet_MP1A04_PushOutOf
+#define ENABLE_TestSet_MP1A04_PushOutOf
 #define ENABLE_TestSet_MP1A04_ProjectAndReflect
 //#define ENABLE_TestSet_MP1A04_TransformUsingIJ
 //#define ENABLE_TestSet_MP1A04_MiscGeometricUtilities

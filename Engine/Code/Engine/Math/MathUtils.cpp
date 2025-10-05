@@ -1,6 +1,7 @@
 #include "MathUtils.hpp"
-#include "Vec2.hpp"
-#include "Vec3.hpp"
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include<math.h>
 
 float GetClamped(float value, float minValue, float maxValue)
@@ -208,6 +209,83 @@ bool DoSpheresOverlap(Vec3 const& centerA, float radiusA, Vec3 const& centerB, f
     float distance = GetDistanceSquared3D(centerA, centerB);
     float radiusSum = (radiusA + radiusB) * (radiusA + radiusB);
     return distance <= radiusSum;
+}
+
+bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius )
+{
+    return true; //TODO
+}
+
+bool IsPointInsideOrientedSector2D( Vec2 const& point, Vec2 const& sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius )
+{
+    return true; //TODO
+}
+
+bool IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Vec2 const& sectorFwdNormal, float sectorApertureDegrees, float sectorRadius )
+{
+    return true; //TODO
+}
+
+Vec2 GetNearestPointOnDisc2D( Vec2 const& referencePos, Vec2 const& discCenter, float discRadius )
+{
+    return Vec2(0,0); //TODO
+}
+
+bool PushDiscOutOfFixedPoint2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint )
+{
+	Vec2 centerToPoint = mobileDiscCenter - fixedPoint;
+	float overlapDist = discRadius - centerToPoint.GetLength();
+
+	if ( overlapDist > 0 )
+	{
+        mobileDiscCenter += centerToPoint.GetNormalized() * overlapDist;
+		return true;
+	}
+
+	return false;
+}
+
+bool PushDiscOutOfFixedDisc2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedDiscCenter, float fixedDiscRadius )
+{
+	Vec2 centerToCenter = mobileDiscCenter - fixedDiscCenter;
+	float centerToCenterLength = centerToCenter.GetLength();
+	float discSeparation = discRadius + fixedDiscRadius;
+	float overlapDist = discSeparation - centerToCenterLength;
+
+	if ( overlapDist > 0 )
+	{
+		mobileDiscCenter += centerToCenter.GetNormalized() * overlapDist;
+		return true;
+	}
+
+	return false;
+}
+
+bool PushDiscsOutOfEachOther2D( Vec2& aCenter, float aRadius, Vec2& bCenter, float bRadius )
+{
+	Vec2 centerToCenter = bCenter - aCenter;
+	float centerToCenterLength = centerToCenter.GetLength();
+	float discSepDist = aRadius + bRadius;
+	float overlapDist = discSepDist - centerToCenterLength;
+
+	if ( overlapDist > 0 )
+	{
+		Vec2 pushDirection = centerToCenter.GetNormalized();
+		float halfOverlap = overlapDist * 0.5f;
+
+		aCenter -= pushDirection * halfOverlap;  // Push A away from B
+		bCenter += pushDirection * halfOverlap;  // Push B away from A
+
+		return true;
+	}
+
+	return false;
+}
+
+bool PushDiscOutOfFixedAABB2D( Vec2& mobileDiscCenter, float discRadius, AABB2 const& fixedBox )
+{
+	Vec2 nearestPoint = fixedBox.GetNearestPoint( mobileDiscCenter );
+	return PushDiscOutOfFixedPoint2D( mobileDiscCenter, discRadius, nearestPoint );
 }
 
 //-----------------------------------------------------------------------------------------------

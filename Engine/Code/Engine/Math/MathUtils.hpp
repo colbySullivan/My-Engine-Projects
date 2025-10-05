@@ -55,8 +55,8 @@ bool	IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Ve
 Vec2	GetNearestPointOnDisc2D( Vec2 const& referencePos, Vec2 const& discCenter, float discRadius );
 bool	PushDiscOutOfFixedPoint2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint );
 bool	PushDiscOutOfFixedDisc2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedDiscCenter, float fixedDiscRadius );
-bool	PushDiscOutOfEachOther2D( Vec2& aCenter, float aRadius, Vec2& bCenter, float bRadius );
-bool	PushDiscOutOfFixedAABB2D( Vec2 mobileDiscCenter, float discRadius, AABB2 const& fixedBox );
+bool	PushDiscsOutOfEachOther2D( Vec2& aCenter, float aRadius, Vec2& bCenter, float bRadius );
+bool	PushDiscOutOfFixedAABB2D( Vec2& mobileDiscCenter, float discRadius, AABB2 const& fixedBox );
 
 //-----------------------------------------------------------------------------------
 // Transform utilities
