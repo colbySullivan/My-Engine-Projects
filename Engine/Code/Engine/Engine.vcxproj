@@ -183,6 +183,7 @@
     <ClCompile Include="Math\Vec3.cpp" />
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
+    <ClCompile Include="Renderer\SimpleTriangleFont.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ThirdParty\fmod\fmod.h" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Math\Vec3.hpp" />
     <ClInclude Include="Renderer\Camera.hpp" />
     <ClInclude Include="Renderer\Renderer.hpp" />
+    <ClInclude Include="Renderer\SimpleTriangleFont.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

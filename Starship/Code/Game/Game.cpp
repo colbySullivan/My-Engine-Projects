@@ -17,7 +17,9 @@
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
-	m_gameCamera = new Camera;
+	//m_gameCamera = new Camera;
+	m_worldCamera = new Camera;
+	m_screenCamera = new Camera;
 	g_engine = new Engine;
 	m_roundNumber = 1;
 }
@@ -26,7 +28,11 @@ Game::Game()
 Game::~Game()
 {
 	delete g_engine;
+	delete m_worldCamera;
+	delete m_screenCamera;
 	g_engine = nullptr;
+	m_worldCamera = nullptr;
+	m_screenCamera = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -53,16 +59,20 @@ void Game::Update(float deltaSeconds)
 	if(AttractModeExitEnter( deltaSeconds, controller ))
 		return;
 
+	//CameraShake( deltaSeconds );
+	UpdateCameras( deltaSeconds );
 	KeyboardInput( deltaSeconds, controller );
 
-	m_gameCamera->SetOrthoView(Vec2(0.f,0.f),Vec2(200.f, 100.f));
+	//m_gameCamera->SetOrthoView(Vec2(0.f,0.f),Vec2(200.f, 100.f));
 	DestroyGarbageEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	g_engine->m_render->BeginCamera(*m_gameCamera);
+	//TODO begin and end world cam then b and e screen
+	// TODO Attract can use screenCamera
+	g_engine->m_render->BeginCamera(*m_screenCamera);
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
 	RenderEntities();
@@ -334,6 +344,7 @@ void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 	{
 		bullet.Die();
 		enemy.m_health -= 1;
+		m_camShakeAmount = SHAKE_TRAUMA_AMOUNT / 2; //TODO
 	}
 }
 
@@ -374,6 +385,7 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 	{
 		ship.m_health -= 1;
 		enemy.m_health -= 1;
+		m_camShakeAmount = SHAKE_TRAUMA_AMOUNT; //TODO
 	}
 }
 
@@ -468,6 +480,21 @@ void Game::RenderShipLives() const
 	}
 
 	g_engine->m_render->EndCamera(attractCamera);
+}
+
+void Game::UpdateCameras( float deltaSeconds )
+{
+	// Random camera shake
+	float shakeHorizontal = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
+	float shakeVertical = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
+	
+
+	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y));
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X + shakeHorizontal, SCREEN_SIZE_Y + shakeVertical ) );
+
+	if ( m_camShakeAmount > 0 )
+		m_camShakeAmount -= deltaSeconds;
+
 }
 
 //-----------------------------------------------------------------------------------------------

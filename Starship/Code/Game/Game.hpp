@@ -50,10 +50,12 @@ public:
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
 
-	// Round Management
+	// Utility
 	int					m_roundNumber = 1;
 	float				m_alphaTimer = 3;
 	float				m_roundEndTimer = 3;
+	float				m_camShakeAmount;
+
 
 	// Audio
 	SoundPlaybackID		m_musicPlaybackID = MISSING_SOUND_ID;
@@ -72,6 +74,7 @@ private:
 
 	void RenderEntities() const;
 	void RenderShipLives() const;
+	void UpdateCameras( float deltaSeconds );
 
 	bool AttractModeExitEnter( float deltaSeconds,  XboxController const& controller );
 	void UpdateAttractMode( float deltaSeconds );
@@ -85,7 +88,9 @@ private:
 	void CleanupGameEntities();
 
 	App* m_app;
-	Camera* m_gameCamera = nullptr;
+	//Camera* m_gameCamera = nullptr;
+	Camera* m_worldCamera = nullptr;
+	Camera* m_screenCamera = nullptr;
 
 	// Entity Arrays
 	Bullet* m_bullets[MAX_BULLETS] = {};
