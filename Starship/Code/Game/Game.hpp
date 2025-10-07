@@ -74,6 +74,7 @@ private:
 
 	void RenderEntities() const;
 	void RenderShipLives() const;
+	void RenderText();
 	void UpdateCameras( float deltaSeconds );
 
 	bool AttractModeExitEnter( float deltaSeconds,  XboxController const& controller );

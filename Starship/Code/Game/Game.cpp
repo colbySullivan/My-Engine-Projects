@@ -1,14 +1,15 @@
-#include "Game/Game.hpp"
-#include "Game/GameCommon.hpp"
-#include "Game/PlayerShip.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Game/Bullet.hpp"
-#include "Game/Asteroid.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Game/Game.hpp"
+#include "Game/GameCommon.hpp"
+#include "Game/PlayerShip.hpp"
+#include "Game/Bullet.hpp"
+#include "Game/Asteroid.hpp"
+#include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Game/Beetle.hpp"
 #include "Game/Debris.hpp"
 #include "Game/Entity.hpp"
@@ -61,6 +62,7 @@ void Game::Update(float deltaSeconds)
 
 	//CameraShake( deltaSeconds );
 	UpdateCameras( deltaSeconds );
+	RenderText();
 	KeyboardInput( deltaSeconds, controller );
 
 	//m_gameCamera->SetOrthoView(Vec2(0.f,0.f),Vec2(200.f, 100.f));
@@ -72,7 +74,7 @@ void Game::Render() const
 {
 	//TODO begin and end world cam then b and e screen
 	// TODO Attract can use screenCamera
-	g_engine->m_render->BeginCamera(*m_screenCamera);
+	g_engine->m_render->BeginCamera(*m_worldCamera);
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
 	RenderEntities();
@@ -467,10 +469,10 @@ void Game::RenderEntities() const
 //-----------------------------------------------------------------------------------------------
 void Game::RenderShipLives() const
 {
-	Camera attractCamera;
-	attractCamera.SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
+	//Camera attractCamera;
+	m_worldCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
 
-	g_engine->m_render->BeginCamera(attractCamera);
+	g_engine->m_render->BeginCamera( *m_worldCamera );
 	for (int shipLives = 1; shipLives < m_playerShip->m_lives; ++shipLives)
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
@@ -479,7 +481,17 @@ void Game::RenderShipLives() const
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 
-	g_engine->m_render->EndCamera(attractCamera);
+	g_engine->m_render->EndCamera( *m_worldCamera );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderText()
+{
+	std::vector<Vertex> textVerts;
+	//AddVertsForTextTriangles2D( textVerts, "Hello, world!", Vec2( SCREEN_SIZE_X / 2, SCREEN_SIZE_Y / 2 ), 0.7f, Rgba8( 255, 150, 50 ) );
+	AddVertsForTextTriangles2D( textVerts, "These letters are more square-ish!", Vec2( 1.f, 4.f ), 0.2f, Rgba8( 50, 150, 255 ), 1.f );
+	//AddVertsForTextTriangles2D( textVerts, "These are skinny but widely spaced!", Vec2( 0.2f, 2.f ), 0.5f, Rgba8( 150, 255, 150 ), 0.25f, false, 1.f );
+	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }
 
 void Game::UpdateCameras( float deltaSeconds )
@@ -489,8 +501,8 @@ void Game::UpdateCameras( float deltaSeconds )
 	float shakeVertical = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
 	
 
-	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y));
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X + shakeHorizontal, SCREEN_SIZE_Y + shakeVertical ) );
+	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X + shakeHorizontal, WORLD_SIZE_Y + shakeVertical ) );
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 
 	if ( m_camShakeAmount > 0 )
 		m_camShakeAmount -= deltaSeconds;
@@ -571,46 +583,38 @@ void Game::UpdateAttractMode(float deltaSeconds)
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderAttractMode(float playButtonAlpha) const
+void Game::RenderAttractMode( float playButtonAlpha ) const
 {
-	Camera attractCamera;
-	attractCamera.SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
-
-	g_engine->m_render->BeginCamera( attractCamera );
-
-	for (int renderedShipsLocationOffset = 0; renderedShipsLocationOffset < 2; ++renderedShipsLocationOffset)
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	g_engine->m_render->BeginCamera( *m_screenCamera );
+	for ( int renderedShipsLocationOffset = 0; renderedShipsLocationOffset < 2; ++renderedShipsLocationOffset )
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
-		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
+		PlayerShip::InitializeLocalPlayerShipsVerts( fakePlayerShipVerts );
 		TransformVertexArrayXY3D(
 			NUM_SHIP_VERTS,
 			fakePlayerShipVerts,
-			1.0f,
-			(0.f + renderedShipsLocationOffset * 180),
-			Vec2(5.f + (renderedShipsLocationOffset * 10), 5.f));
-		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
+			100.0f,
+			( 0.f + renderedShipsLocationOffset * 180 ),
+			Vec2( 300.f + ( renderedShipsLocationOffset * 1000 ), 400.f ) );
+		g_engine->m_render->DrawVertexArray( NUM_SHIP_VERTS, fakePlayerShipVerts );
 	}
-
 	Vertex playButton[3];
-	playButton[0].m_position = Vec3(0.f, 0.f, 0.f);
-	playButton[1].m_position = Vec3(0.f, 1.f, 0.f);
-	playButton[2].m_position = Vec3(1.f, 0.5f, 0.f);
-
-	for (int vertIndex = 0; vertIndex < 3; ++vertIndex)
+	playButton[0].m_position = Vec3( 0.f, 0.f, 0.f );
+	playButton[1].m_position = Vec3( 0.f, 1.f, 0.f );
+	playButton[2].m_position = Vec3( 1.f, 0.5f, 0.f );
+	for ( int vertIndex = 0; vertIndex < 3; ++vertIndex )
 	{
-		playButton[vertIndex].m_color = Rgba8(0, 255, 0, static_cast<unsigned char>(playButtonAlpha));
+		playButton[vertIndex].m_color = Rgba8( 0, 255, 0, static_cast< unsigned char >( playButtonAlpha ) );
 	}
-
 	TransformVertexArrayXY3D(
 		3,
 		playButton,
-		2.0f,
+		300.0f,
 		0.f,
-		Vec2(9.f, 4.f));
-	g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, playButton);
-
-
-	g_engine->m_render->EndCamera( attractCamera );
+		Vec2( 650.f, 250.f ) );
+	g_engine->m_render->DrawVertexArray( NUM_SHIP_VERTS, playButton );
+	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
