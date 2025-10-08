@@ -41,7 +41,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // SoundID = 0
+	LoadSounds();
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_playerShip = new PlayerShip(this, worldCenter);
 	m_roundNumber = 1;
@@ -54,26 +54,26 @@ void Game::Update(float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
+	if ( m_currentGameState != m_nextGameState )
+	{
+		m_currentGameState = m_nextGameState;
+	}
+
 	if ( m_isSlowMo ) // T pressed
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
 
 	if(AttractModeExitEnter( deltaSeconds, controller ))
 		return;
 
-	//CameraShake( deltaSeconds );
 	UpdateCameras( deltaSeconds );
 	RenderText();
 	KeyboardInput( deltaSeconds, controller );
-
-	//m_gameCamera->SetOrthoView(Vec2(0.f,0.f),Vec2(200.f, 100.f));
 	DestroyGarbageEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	//TODO begin and end world cam then b and e screen
-	// TODO Attract can use screenCamera
 	g_engine->m_render->BeginCamera(*m_worldCamera);
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
@@ -91,9 +91,9 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 {
-	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && !m_isAttractMode )
+	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
-		m_isAttractMode = true;
+		m_nextGameState = GAMESTATE_ATTRACT;
 	}
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
@@ -119,13 +119,13 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	}
 
 	if ( m_roundNumber > 5 )
-		m_isAttractMode = true;
+		m_currentGameState = GAMESTATE_ATTRACT;
 
 	if ( m_playerShip->m_lives <= 1 && m_playerShip->m_isDead )
 	{
 		m_roundEndTimer -= deltaSeconds;
 		if ( m_roundEndTimer <= 0 )
-			m_isAttractMode = true;
+			m_currentGameState = GAMESTATE_ATTRACT;
 	}
 
 	g_engine->m_input->EndFrame();
@@ -512,7 +512,7 @@ void Game::UpdateCameras( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& controller )
 {
-	if ( m_isAttractMode )
+	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 		{
@@ -522,11 +522,11 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 
 		if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
 		{
-			m_isAttractMode = false;
-			//SoundID testSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
-			m_musicPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // Allows you to stop instance;
-			//g_engine->m_audio->StartSound( 0 );
-			g_engine->m_audio->StartSound( m_musicPlaybackID );
+			m_nextGameState = GAMESTATE_PLAY;
+			////SoundID testSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
+			//m_musicPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // Allows you to stop instance;
+			g_engine->m_audio->StartSound( 0 );
+			//g_engine->m_audio->StartSound( m_musicPlaybackID );
 
 			Startup();
 		}
@@ -537,7 +537,7 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 		}
 	}
 
-	if ( m_isAttractMode )
+	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		g_engine->m_input->EndFrame();
 		return true;
@@ -785,3 +785,13 @@ bool Game::isAlive(Entity* entity) const
 {
 	return (entity && !entity->m_isDead);
 }
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadSounds()
+{
+	//SoundID startSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
+	//m_musicPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // Allows you to stop instance;
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // SoundID = 0 | Boot Sound
+
+}
+

@@ -31,6 +31,7 @@ PlayerShip::~PlayerShip()
 void PlayerShip::Update(float deltaSeconds)
 {
 	Entity::Update(deltaSeconds);
+	m_isThrusting = false;
 	if (g_engine->m_input->WasKeyJustPressed('N')) // F8
 	{
 		Respawn();
@@ -40,20 +41,38 @@ void PlayerShip::Update(float deltaSeconds)
 	UpdateFromController(deltaSeconds);
 	BounceOffWalls();
 	m_position += m_velocity * deltaSeconds;
+
+	RenderThrust( m_localThrustVerts );
+
+	/*if ( m_velocity == Vec2( 0, 0 ) )
+		m_isThrusting = false;
+	else
+		m_isThrusting = true;*/
 }
 
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::Render() const
 {
 	Vertex tempShipWorldVerts[NUM_SHIP_VERTS];
-	for (int vertIndex = 0; vertIndex < NUM_SHIP_VERTS; ++vertIndex)
+	for ( int vertIndex = 0; vertIndex < NUM_SHIP_VERTS; ++vertIndex )
 	{
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
 
+	Vertex tempThrustWorldVerts[NUM_SHIP_VERTS];
+	for ( int vertIndex = 0; vertIndex < NUM_THRUST_VERTS; ++vertIndex )
+	{
+		tempThrustWorldVerts[vertIndex] = m_localThrustVerts[vertIndex];
+	}
+
 	TransformVertexArrayXY3D(NUM_SHIP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
+	TransformVertexArrayXY3D(NUM_THRUST_VERTS, tempThrustWorldVerts, 1.f, m_orientationDegrees, m_position);
 	if (!m_isDead)
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
+
+	if (!m_isDead && m_isThrusting)
+		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempThrustWorldVerts);
+
 	if(m_game->g_drawDebug)
 		DebugRender();
 }
@@ -111,6 +130,7 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	{
 		Vec2 forwardVec = GetForwardNormal();
 		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * deltaSeconds;
+		m_isThrusting = true;
 	}
 }
 
@@ -142,6 +162,25 @@ void PlayerShip::Respawn()
 }
 
 //-----------------------------------------------------------------------------------------------
+void PlayerShip::RenderThrust(  Vertex* vertThrustArray )
+{
+	for ( int vertIndex = 0; vertIndex < NUM_THRUST_VERTS - 2; ++vertIndex )
+	{
+		vertThrustArray[vertIndex].m_position = Vec3( -2.f, 1.f, 0.f );
+		vertThrustArray[vertIndex+1].m_position = Vec3( g_rng.RollRandomFloatInRange(-5.f, -4.f), g_rng.RollRandomFloatInRange(-0.5f, 0.5f), 0.f );
+		vertThrustArray[vertIndex+2].m_position = Vec3( -2.f, -1.f, 0.f );
+	}
+	
+
+	for ( int vertIndex = 0; vertIndex < NUM_THRUST_VERTS; ++vertIndex )
+	{
+		float randRed = g_rng.RollRandomFloatInRange(150.f, 255.f);
+		float randAlpha = g_rng.RollRandomFloatInRange(50.f, 200.f);
+		vertThrustArray[vertIndex].m_color = Rgba8( randRed, 10, 10, randAlpha );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
@@ -169,6 +208,7 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 
 		Vec2 forwardVec = GetForwardNormal();
 		m_velocity += forwardVec * PLAYER_SHIP_ACCELERATION * m_thrustFraction * deltaSeconds;
+		m_isThrusting = true;
 	}
 
 	// Shoot

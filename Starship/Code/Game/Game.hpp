@@ -17,7 +17,16 @@ class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
+enum Game_State
+{
+	GAMESTATE_ATTRACT,
+	GAMESTATE_PLAY,
+	GAMESTATE_INVALID,
+	NUM_GAMESTATES
+};
+
+//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -43,7 +52,6 @@ public:
 	RandomNumberGenerator g_rng;
 
 	// Game State
-	bool				m_isAttractMode = true;
 	bool				m_isQuitting = false;
 	bool				m_isPaused = false;
 	bool				m_isSlowMo = false;
@@ -55,6 +63,8 @@ public:
 	float				m_alphaTimer = 3;
 	float				m_roundEndTimer = 3;
 	float				m_camShakeAmount;
+	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
+	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
 
 
 	// Audio
@@ -87,6 +97,7 @@ private:
 
 	void DestroyGarbageEntities();
 	void CleanupGameEntities();
+	void LoadSounds();
 
 	App* m_app;
 	//Camera* m_gameCamera = nullptr;
