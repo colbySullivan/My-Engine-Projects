@@ -67,7 +67,7 @@ void Game::Update(float deltaSeconds)
 		return;
 
 	UpdateCameras( deltaSeconds );
-	RenderText();
+	RenderText("These letters are more square-ish!", Vec2( 1.f, 4.f ), 0.2f, Rgba8( 50, 150, 255 ));
 	KeyboardInput( deltaSeconds, controller );
 	DestroyGarbageEntities();
 }
@@ -485,26 +485,26 @@ void Game::RenderEntities() const
 void Game::RenderShipLives() const
 {
 	//Camera attractCamera;
-	m_worldCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(20.f, 10.f));
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 
-	g_engine->m_render->BeginCamera( *m_worldCamera );
+	g_engine->m_render->BeginCamera( *m_screenCamera );
 	for (int shipLives = 1; shipLives < m_playerShip->m_lives; ++shipLives)
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
 		PlayerShip::InitializeLocalPlayerShipsVerts(fakePlayerShipVerts);
-		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 0.1f, 90.f, Vec2(shipLives * 0.5f, 9.6f));
+		TransformVertexArrayXY3D(NUM_SHIP_VERTS, fakePlayerShipVerts, 10.1f, 90.f, Vec2(shipLives * 50.0f - 20.f, 775.0f));
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 
-	g_engine->m_render->EndCamera( *m_worldCamera );
+	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderText()
+void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color)
 {
 	std::vector<Vertex> textVerts;
 	//AddVertsForTextTriangles2D( textVerts, "Hello, world!", Vec2( SCREEN_SIZE_X / 2, SCREEN_SIZE_Y / 2 ), 0.7f, Rgba8( 255, 150, 50 ) );
-	AddVertsForTextTriangles2D( textVerts, "These letters are more square-ish!", Vec2( 1.f, 4.f ), 0.2f, Rgba8( 50, 150, 255 ), 1.f );
+	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
 	//AddVertsForTextTriangles2D( textVerts, "These are skinny but widely spaced!", Vec2( 0.2f, 2.f ), 0.5f, Rgba8( 150, 255, 150 ), 0.25f, false, 1.f );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }

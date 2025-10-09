@@ -88,7 +88,7 @@ private:
 
 	void RenderEntities() const;
 	void RenderShipLives() const;
-	void RenderText();
+	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color );
 	void UpdateCameras( float deltaSeconds );
 
 	bool AttractModeExitEnter( float deltaSeconds,  XboxController const& controller );
@@ -104,7 +104,6 @@ private:
 	void LoadSounds();
 
 	App* m_app;
-	//Camera* m_gameCamera = nullptr;
 	Camera* m_worldCamera = nullptr;
 	Camera* m_screenCamera = nullptr;
 
