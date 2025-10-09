@@ -93,7 +93,7 @@ private:
 
 	bool AttractModeExitEnter( float deltaSeconds,  XboxController const& controller );
 	void UpdateAttractMode( float deltaSeconds );
-	void RenderAttractMode( float playButtonAlpha ) const;
+	void RenderAttractMode( float playButtonAlpha );
 
 	int GetNumLivingEnemies() const;
 	bool IsReadyToStartNextWave() const;

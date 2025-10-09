@@ -67,7 +67,6 @@ void Game::Update(float deltaSeconds)
 		return;
 
 	UpdateCameras( deltaSeconds );
-	RenderText("These letters are more square-ish!", Vec2( 1.f, 4.f ), 0.2f, Rgba8( 50, 150, 255 ));
 	KeyboardInput( deltaSeconds, controller );
 	DestroyGarbageEntities();
 }
@@ -595,7 +594,7 @@ void Game::UpdateAttractMode(float deltaSeconds)
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderAttractMode( float playButtonAlpha ) const
+void Game::RenderAttractMode( float playButtonAlpha )
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
@@ -625,7 +624,19 @@ void Game::RenderAttractMode( float playButtonAlpha ) const
 		300.0f,
 		0.f,
 		Vec2( 650.f, 250.f ) );
-	g_engine->m_render->DrawVertexArray( NUM_SHIP_VERTS, playButton );
+	g_engine->m_render->DrawVertexArray( 3, playButton );
+	char title[] = "Starship Gold";
+	for ( int charIndex = 0; charIndex < 14; ++charIndex )
+	{
+		char singleChar[1] = { title[charIndex] };
+		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
+		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
+		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
+		//RenderText(singleChar, Vec2(50.f + charIndex * 40.f, 100.f), 40.0f, Rgba8(50, 50 + offsetColor, 255 - offsetColor));
+		RenderText( singleChar, Vec2( 500.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( offsetColorR, offsetColorG, offsetColorB ) );
+
+	}
+	
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
