@@ -21,10 +21,10 @@ public:
 
 	virtual void Update(float deltaSeconds) override;
 	virtual void Render() const override;
+	void Die() override;
+
 private:
 	void InitializeLocalVerts();
-
-	
 
 private:
 	Vertex m_localVerts[NUM_BULLET_VERTS];

@@ -23,6 +23,8 @@ Game::Game()
 	m_screenCamera = new Camera;
 	g_engine = new Engine;
 	m_roundNumber = 1;
+	LoadSounds();
+	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -41,7 +43,6 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	LoadSounds();
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_playerShip = new PlayerShip(this, worldCenter);
 	m_roundNumber = 1;
@@ -94,6 +95,7 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
+		m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 	}
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
@@ -119,13 +121,26 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	}
 
 	if ( m_roundNumber > 5 )
-		m_currentGameState = GAMESTATE_ATTRACT;
-
-	if ( m_playerShip->m_lives <= 1 && m_playerShip->m_isDead )
 	{
+		m_nextGameState = GAMESTATE_ATTRACT;
+	}
+		
+
+	if ( m_playerShip->m_lives <= 0 && m_playerShip->m_isDead )
+	{
+		if ( !m_playingEndSound )
+		{
+			m_endPlaybackID = g_engine->m_audio->StartSound( 5 ); // End sound
+			m_playingEndSound = true;
+		}
 		m_roundEndTimer -= deltaSeconds;
 		if ( m_roundEndTimer <= 0 )
-			m_currentGameState = GAMESTATE_ATTRACT;
+		{
+			m_nextGameState = GAMESTATE_ATTRACT;
+			g_engine->m_audio->StopSound( m_endPlaybackID ); // End sound
+			m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
+			m_playingEndSound = false;
+		}
 	}
 
 	g_engine->m_input->EndFrame();
@@ -523,12 +538,9 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 		if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
 		{
 			m_nextGameState = GAMESTATE_PLAY;
-			////SoundID testSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
-			//m_musicPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // Allows you to stop instance;
-			g_engine->m_audio->StartSound( 0 );
-			//g_engine->m_audio->StartSound( m_musicPlaybackID );
-
 			Startup();
+			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
+
 		}
 		else
 		{
@@ -789,9 +801,27 @@ bool Game::isAlive(Entity* entity) const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadSounds()
 {
-	//SoundID startSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" );
-	//m_musicPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // Allows you to stop instance;
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); // SoundID = 0 | Boot Sound
-
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); //						SoundID = 0
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Laser_Shoot.wav" ); //						SoundID = 1
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Hit_Hurt.wav" ); //						SoundID = 2
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Respawn.wav" ); //							SoundID = 3
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Explosion.wav" ); //						SoundID = 4
+	m_endPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/GameOver.mp3" ); //		SoundID = 5
+	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/LobbyMusic.mp3" ); //	SoundID = 6
 }
 
+//-----------------------------------------------------------------------------------------------
+void Game::PlaySound( SoundPlaybackID soundID )
+{
+    if (soundID == MISSING_SOUND_ID)
+        return;
+
+    if (m_currentSound != soundID)
+    {
+        if (m_currentSound != MISSING_SOUND_ID)
+            g_engine->m_audio->StopSound(m_currentSound);
+
+        m_currentSound = soundID;
+        //g_engine->m_audio->StartSound(m_currentSound);
+    }
+}

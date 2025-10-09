@@ -70,3 +70,13 @@ void Bullet::InitializeLocalVerts()
 	m_localVerts[4].m_color = Rgba8(255, 0, 0, 255);
 	m_localVerts[5].m_color = Rgba8(255, 0, 0, 0);
 }
+
+//-----------------------------------------------------------------------------------------------
+void Bullet::Die()
+{
+	SoundPlaybackID temp = g_engine->m_audio->StartSound( 2 );
+	m_game->PlaySound( temp );
+	m_isGarbage = true;
+	m_isDead = true;
+	g_theApp->m_game->SpawnDebrisCluster( m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize );
+}

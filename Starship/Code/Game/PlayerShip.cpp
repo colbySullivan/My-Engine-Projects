@@ -43,11 +43,6 @@ void PlayerShip::Update(float deltaSeconds)
 	m_position += m_velocity * deltaSeconds;
 
 	RenderThrust( m_localThrustVerts );
-
-	/*if ( m_velocity == Vec2( 0, 0 ) )
-		m_isThrusting = false;
-	else
-		m_isThrusting = true;*/
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -117,6 +112,8 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	if (g_engine->m_input->WasKeyJustPressed(' '))
 	{
 		m_game->SpawnBullet(m_position, m_orientationDegrees);
+		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1 );
+		m_game->PlaySound( temp );
 	}
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
@@ -152,6 +149,8 @@ void PlayerShip::Respawn()
 {
 	if (m_isDead && (m_lives > 0))
 	{
+		SoundPlaybackID temp = g_engine->m_audio->StartSound( 3 );
+		m_game->PlaySound( temp );
 		m_position = Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 		m_velocity = Vec2(0, 0);
 		m_orientationDegrees = 0.f;
@@ -214,6 +213,8 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	// Shoot
 	if( controller.WasButtonJustPressed( XboxButtonID::A ) || (controller.GetRightTrigger() != 0 && m_canTriggerShoot))
 	{
+		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1 );
+		m_game->PlaySound( temp );
 		Vec2 forwardNormal = GetForwardNormal();
 		Vec2 nosePosition = m_position + (forwardNormal * 1.f);
 		m_game->SpawnBullet( nosePosition, m_orientationDegrees );

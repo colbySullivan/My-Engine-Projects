@@ -1,9 +1,10 @@
 #include "Entity.hpp"
-#include "Game/GameCommon.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Core/Engine.hpp"
 #include "Game/App.hpp"
 #include "Game/PlayerShip.hpp"
 #include "Game/Debris.hpp"
+#include "Game/GameCommon.hpp"
 
 Entity::Entity(Game* owner, Vec2 const& startPos )
 {
@@ -56,10 +57,11 @@ void Entity::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	SoundPlaybackID temp = g_engine->m_audio->StartSound( 4 );
+	m_game->PlaySound( temp );
 	m_isGarbage = true;
 	m_isDead = true;
 	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize);
-	
 }
 
 //-----------------------------------------------------------------------------------------------

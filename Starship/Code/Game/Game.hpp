@@ -44,6 +44,7 @@ public:
 	Wasp* SpawnNewRandomWasp();
 	Debris* SpawnNewDebris( Vec2 pos, Rgba8 color, Vec2 velocity, float size );
 	void SpawnDebrisCluster( Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size );
+	void PlaySound( SoundPlaybackID soundID );
 
 	bool isAlive( Entity* entity ) const;
 
@@ -57,6 +58,7 @@ public:
 	bool				m_isSlowMo = false;
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
+	bool				m_playingEndSound = false;
 
 	// Utility
 	int					m_roundNumber = 1;
@@ -68,7 +70,9 @@ public:
 
 
 	// Audio
-	SoundPlaybackID		m_musicPlaybackID = MISSING_SOUND_ID;
+	SoundPlaybackID		m_endPlaybackID = MISSING_SOUND_ID;
+	SoundPlaybackID		m_lobbyPlaybackID = MISSING_SOUND_ID;
+	SoundPlaybackID		m_currentSound = MISSING_SOUND_ID;
 
 
 private:
