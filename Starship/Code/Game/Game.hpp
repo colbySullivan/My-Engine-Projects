@@ -45,7 +45,7 @@ public:
 	Wasp* SpawnNewRandomWasp();
 	Debris* SpawnNewDebris( Vec2 pos, Rgba8 color, Vec2 velocity, float size );
 	void SpawnDebrisCluster( Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size );
-	void PlaySound( SoundPlaybackID soundID );
+	void HandleSound( SoundPlaybackID soundID );
 
 	bool isAlive( Entity* entity ) const;
 
@@ -106,18 +106,22 @@ private:
 	void CleanupGameEntities();
 	void LoadSounds();
 	void CreateBlackHole();
+	void GenerateStars();
 
-	App* m_app;
-	Camera* m_worldCamera = nullptr;
-	Camera* m_screenCamera = nullptr;
+	App*			m_app;
+	Camera*			m_worldCamera = nullptr;
+	Camera*			m_screenCamera = nullptr;
 
 	// Entity Arrays
-	Bullet* m_bullets[MAX_BULLETS] = {};
-	Asteroid* m_asteroid[MAX_ASTEROIDS] = {};
-	Beetle* m_beetles[MAX_BEETLES] = {};
-	Debris* m_debris[MAX_DEBRIS] = {};
-	Wasp* m_wasp[MAX_WASP] = {};
+	Bullet*			m_bullets[MAX_BULLETS] = {};
+	Asteroid*		m_asteroid[MAX_ASTEROIDS] = {};
+	Beetle*			m_beetles[MAX_BEETLES] = {};
+	Debris*			m_debris[MAX_DEBRIS] = {};
+	Wasp*			m_wasp[MAX_WASP] = {};
 
 	// Black hole
 	Vertex m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
+
+	// Stars
+	Vertex			m_starVerts[NUM_STAR_VERTS];
 };

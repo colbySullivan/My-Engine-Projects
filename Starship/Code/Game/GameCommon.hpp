@@ -31,8 +31,8 @@ constexpr float DEBRIS_COSMETIC_RADIUS = 3.0f;
 constexpr float DEBRIS_LIFETIME_SECONDS = 2.0f;
 constexpr float BULLET_LIFETIME_SECONDS = 2.0f;
 constexpr float BULLET_SPEED = 50.f;
-constexpr float BULLET_PHYSICS_RADIUS = 0.5f;
-constexpr float BULLET_COSMETIC_RADIUS = 2.0f;
+constexpr float BULLET_PHYSICS_RADIUS = 1.5f;
+constexpr float BULLET_COSMETIC_RADIUS = 3.0f;
 constexpr float PLAYER_SHIP_ACCELERATION = 30.f;
 constexpr float PLAYER_SHIP_TURN_SPEED = 300.f;
 constexpr float PLAYER_SHIP_PHYSICS_RADIUS = 1.75f;
@@ -42,6 +42,9 @@ constexpr float	SHAKE_TRAUMA_AMOUNT = 1;
 constexpr int NUM_BLACK_HOLE_VERTS = 192;
 constexpr int NUM_BLACK_HOLE_TRIS = 64;
 constexpr int NUM_BLACK_HOLE_SIDES = 64;
+constexpr int NEW_MAX_STARS = 500;
+constexpr int STAR_PER_VERTS = 3;
+constexpr int NUM_STAR_VERTS = NEW_MAX_STARS * STAR_PER_VERTS;
 
 
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

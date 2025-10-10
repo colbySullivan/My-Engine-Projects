@@ -46,7 +46,7 @@ void Bullet::Render() const
 	{
 		tempWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
-	TransformVertexArrayXY3D(NUM_BULLET_VERTS, tempWorldVerts, 1.f, m_orientationDegrees, m_position);
+	TransformVertexArrayXY3D(NUM_BULLET_VERTS, tempWorldVerts, 2.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_BULLET_VERTS, tempWorldVerts);
 
 	if (m_game->g_drawDebug)
@@ -75,7 +75,7 @@ void Bullet::InitializeLocalVerts()
 void Bullet::Die()
 {
 	SoundPlaybackID temp = g_engine->m_audio->StartSound( 2 );
-	m_game->PlaySound( temp );
+	m_game->HandleSound( temp );
 	m_isGarbage = true;
 	m_isDead = true;
 	g_theApp->m_game->SpawnDebrisCluster( m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize );

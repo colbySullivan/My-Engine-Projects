@@ -113,7 +113,7 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	{
 		m_game->SpawnBullet(m_position, m_orientationDegrees);
 		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1 );
-		m_game->PlaySound( temp );
+		m_game->HandleSound( temp );
 	}
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
@@ -134,11 +134,11 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::BounceOffWalls()
 {
-	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius || m_position.x < 0 + m_cosmeticRadius)
+	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius || m_position.x <= 0 + m_cosmeticRadius)
 	{
 		m_velocity.x = -m_velocity.x;
 	}
-	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius || m_position.y < 0 + m_cosmeticRadius)
+	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius || m_position.y <= 0 + m_cosmeticRadius)
 	{
 		m_velocity.y = -m_velocity.y;
 	}
@@ -150,7 +150,7 @@ void PlayerShip::Respawn()
 	if (m_isDead && (m_lives > 0))
 	{
 		SoundPlaybackID temp = g_engine->m_audio->StartSound( 3 );
-		m_game->PlaySound( temp );
+		m_game->HandleSound( temp );
 		m_position = Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 		m_velocity = Vec2(0, 0);
 		m_orientationDegrees = 0.f;
@@ -185,8 +185,8 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
 	g_engine->m_input->GetController(0);
 
-	if (controller.GetRightTrigger() == 0)
-		m_canTriggerShoot = true;
+	//if (controller.GetRightTrigger() == 0)
+	m_canTriggerShoot = true;
 
 	// Respawn
 	if( m_isDead )
@@ -214,7 +214,7 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	if( controller.WasButtonJustPressed( XboxButtonID::A ) || (controller.GetRightTrigger() != 0 && m_canTriggerShoot))
 	{
 		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1 );
-		m_game->PlaySound( temp );
+		m_game->HandleSound( temp );
 		Vec2 forwardNormal = GetForwardNormal();
 		Vec2 nosePosition = m_position + (forwardNormal * 1.f);
 		m_game->SpawnBullet( nosePosition, m_orientationDegrees );

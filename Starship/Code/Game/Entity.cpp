@@ -58,7 +58,7 @@ void Entity::DebugRender() const
 void Entity::Die()
 {
 	SoundPlaybackID temp = g_engine->m_audio->StartSound( 4 );
-	m_game->PlaySound( temp );
+	m_game->HandleSound( temp );
 	m_isGarbage = true;
 	m_isDead = true;
 	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize);

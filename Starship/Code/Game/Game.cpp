@@ -25,6 +25,7 @@ Game::Game()
 	m_roundNumber = 1;
 	LoadSounds();
 	CreateBlackHole();
+	GenerateStars();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 }
 
@@ -430,6 +431,8 @@ void Game::CheckBeetlePush()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderEntities() const
 {
+	g_engine->m_render->DrawVertexArray(NUM_STAR_VERTS, m_starVerts); // Draw stars first so none overlay 
+
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
 	{
 		Bullet const* bullet = m_bullets[bulletIndex];
@@ -615,7 +618,7 @@ void Game::RenderAttractMode( float playButtonAlpha )
 	background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
 	for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
 	{
-		background[vertIndex].m_color = Rgba8( 59, 59, 59, 255 );
+		background[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
 	}
 	TransformVertexArrayXY3D(
 		6,
@@ -882,7 +885,7 @@ void Game::LoadSounds()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::PlaySound( SoundPlaybackID soundID )
+void Game::HandleSound( SoundPlaybackID soundID )
 {
     if (soundID == MISSING_SOUND_ID)
         return;
@@ -902,7 +905,7 @@ void Game::CreateBlackHole()
 	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
 	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
 	{
-		holeRadii[sideNum] = g_rng.RollRandomFloatInRange( 1.8f, 2.0f );
+		holeRadii[sideNum] = g_rng.RollRandomFloatInRange( 1.9f, 2.0f );
 	}
 
 	// Precompute 2D vertex offsets
@@ -938,11 +941,33 @@ void Game::CreateBlackHole()
 		int secondVertIndex = ( triNum * 3 ) + 1;
 		int thirdVertIndex = ( triNum * 3 ) + 2;
 
-		// Center vertex (black)
+		// Center vertex
 		m_blackHoleVerts[firstVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
 
-		// Edge vertices (white)
-		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 59, 59, 59, 255 );
-		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 59, 59, 59, 255 );
+		// Edge vertices
+		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
+		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::GenerateStars()
+{
+	for ( int starNum = 0; starNum < NEW_MAX_STARS; ++starNum )
+	{
+		float randX = g_rng.RollRandomFloatInRange( 0.0f, WORLD_SIZE_X);
+		float randY = g_rng.RollRandomFloatInRange( 0.0f, WORLD_SIZE_Y);
+
+		int firstVertIndex = ( starNum * 3 ) + 0;
+		int secondVertIndex = ( starNum * 3 ) + 1;
+		int thirdVertIndex = ( starNum * 3 ) + 2;
+
+		Vertex& vert1 = m_starVerts[firstVertIndex];
+		Vertex& vert2 = m_starVerts[secondVertIndex];
+		Vertex& vert3 = m_starVerts[thirdVertIndex];
+
+		vert1.m_position = Vec3(randX, randY, 0.f);
+		vert2.m_position = Vec3(randX + .1f, randY, 0.f);
+		vert3.m_position = Vec3(randX, randY + .1f, 0.f);
 	}
 }
