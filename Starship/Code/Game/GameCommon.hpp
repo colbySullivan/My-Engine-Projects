@@ -39,6 +39,9 @@ constexpr float PLAYER_SHIP_PHYSICS_RADIUS = 1.75f;
 constexpr float PLAYER_SHIP_COSMETIC_RADIUS = 2.25f;
 constexpr int	NUM_VERTS = 6;
 constexpr float	SHAKE_TRAUMA_AMOUNT = 1;
+constexpr int NUM_BLACK_HOLE_VERTS = 192;
+constexpr int NUM_BLACK_HOLE_TRIS = 64;
+constexpr int NUM_BLACK_HOLE_SIDES = 64;
 
 
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

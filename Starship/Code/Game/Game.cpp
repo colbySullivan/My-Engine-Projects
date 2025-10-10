@@ -24,6 +24,7 @@ Game::Game()
 	g_engine = new Engine;
 	m_roundNumber = 1;
 	LoadSounds();
+	CreateBlackHole();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 }
 
@@ -502,9 +503,7 @@ void Game::RenderShipLives() const
 void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color)
 {
 	std::vector<Vertex> textVerts;
-	//AddVertsForTextTriangles2D( textVerts, "Hello, world!", Vec2( SCREEN_SIZE_X / 2, SCREEN_SIZE_Y / 2 ), 0.7f, Rgba8( 255, 150, 50 ) );
 	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
-	//AddVertsForTextTriangles2D( textVerts, "These are skinny but widely spaced!", Vec2( 0.2f, 2.f ), 0.5f, Rgba8( 150, 255, 150 ), 0.25f, false, 1.f );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }
 
@@ -598,6 +597,29 @@ void Game::RenderAttractMode( float playButtonAlpha )
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
+
+	// Background
+	Vertex background[6];
+	background[0].m_position = Vec3( 0.f, 0.f, 0.f );
+	background[1].m_position = Vec3( 0.f, SCREEN_SIZE_Y, 0.f );
+	background[2].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+
+	background[3].m_position = Vec3( 0.f, 0.f, 0.f );
+	background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
+	background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+	for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
+	{
+		background[vertIndex].m_color = Rgba8( 59, 59, 59, 255 );
+	}
+	TransformVertexArrayXY3D(
+		6,
+		background,
+		1.0f,
+		0.f,
+		Vec2( 0.f, 0.f ) );
+	g_engine->m_render->DrawVertexArray( 6, background );
+
+	// Player ships
 	for ( int renderedShipsLocationOffset = 0; renderedShipsLocationOffset < 2; ++renderedShipsLocationOffset )
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
@@ -610,6 +632,8 @@ void Game::RenderAttractMode( float playButtonAlpha )
 			Vec2( 300.f + ( renderedShipsLocationOffset * 1000 ), 400.f ) );
 		g_engine->m_render->DrawVertexArray( NUM_SHIP_VERTS, fakePlayerShipVerts );
 	}
+
+	// Play button
 	Vertex playButton[3];
 	playButton[0].m_position = Vec3( 0.f, 0.f, 0.f );
 	playButton[1].m_position = Vec3( 0.f, 1.f, 0.f );
@@ -624,7 +648,24 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		300.0f,
 		0.f,
 		Vec2( 650.f, 250.f ) );
-	g_engine->m_render->DrawVertexArray( 3, playButton );
+	//g_engine->m_render->DrawVertexArray( 3, playButton );
+
+	// Black hole
+	CreateBlackHole(); // randomize vertices
+	Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
+	for ( int vertIndex = 0; vertIndex < NUM_BLACK_HOLE_VERTS; ++vertIndex )
+	{
+		tempHoleWorldVerts[vertIndex] = m_blackHoleVerts[vertIndex];
+	}
+	TransformVertexArrayXY3D(
+		NUM_BLACK_HOLE_VERTS,
+		tempHoleWorldVerts,
+		100.0f,
+		0.f,
+		Vec2( 760.f, 400.f ) );
+	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
+
+	// Title
 	char title[] = "Starship Gold";
 	for ( int charIndex = 0; charIndex < 14; ++charIndex )
 	{
@@ -632,13 +673,14 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
-		//RenderText(singleChar, Vec2(50.f + charIndex * 40.f, 100.f), 40.0f, Rgba8(50, 50 + offsetColor, 255 - offsetColor));
-		RenderText( singleChar, Vec2( 500.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( offsetColorR, offsetColorG, offsetColorB ) );
+		RenderText( singleChar, Vec2( 500.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( ( unsigned char )offsetColorR, ( unsigned char )offsetColorG, ( unsigned char )offsetColorB ) );
 
 	}
-	
+
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
+
+
 
 //-----------------------------------------------------------------------------------------------
 // Wave Management
@@ -835,4 +877,54 @@ void Game::PlaySound( SoundPlaybackID soundID )
         m_currentSound = soundID;
         //g_engine->m_audio->StartSound(m_currentSound);
     }
+}
+
+void Game::CreateBlackHole()
+{
+	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
+	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
+	{
+		holeRadii[sideNum] = g_rng.RollRandomFloatInRange( 1.8f, 2.0f );
+	}
+
+	// Precompute 2D vertex offsets
+	constexpr float degreesPerBlackHoleSide = 360.f / ( float )NUM_BLACK_HOLE_SIDES;
+	Vec2 blackholeLocalVertPositions[NUM_BLACK_HOLE_SIDES] = {};
+	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
+	{
+		float degrees = degreesPerBlackHoleSide * ( float )sideNum;
+		float radius = holeRadii[sideNum];
+		blackholeLocalVertPositions[sideNum].x = radius * CosDegrees( degrees );
+		blackholeLocalVertPositions[sideNum].y = radius * SinDegrees( degrees );
+	}
+
+	// Build triangles
+	for ( int triNum = 0; triNum < NUM_BLACK_HOLE_TRIS; ++triNum )
+	{
+		int startRadiusIndex = triNum;
+		int endRadiusIndex = ( triNum + 1 ) % NUM_BLACK_HOLE_SIDES;
+		int firstVertIndex = ( triNum * 3 ) + 0;
+		int secondVertIndex = ( triNum * 3 ) + 1;
+		int thirdVertIndex = ( triNum * 3 ) + 2;
+		Vec2 secondVertOfs = blackholeLocalVertPositions[startRadiusIndex];
+		Vec2 thirdVertOfs = blackholeLocalVertPositions[endRadiusIndex];
+		m_blackHoleVerts[firstVertIndex].m_position = Vec3( 0.f, 0.f, 0.f );
+		m_blackHoleVerts[secondVertIndex].m_position = Vec3( secondVertOfs.x, secondVertOfs.y, 0.f );
+		m_blackHoleVerts[thirdVertIndex].m_position = Vec3( thirdVertOfs.x, thirdVertOfs.y, 0.f );
+	}
+
+	// Set colors
+	for ( int triNum = 0; triNum < NUM_BLACK_HOLE_TRIS; ++triNum )
+	{
+		int firstVertIndex = ( triNum * 3 ) + 0;
+		int secondVertIndex = ( triNum * 3 ) + 1;
+		int thirdVertIndex = ( triNum * 3 ) + 2;
+
+		// Center vertex (black)
+		m_blackHoleVerts[firstVertIndex].m_color = Rgba8( 191, 191, 191, 255 );
+
+		// Edge vertices (white)
+		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
+		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
+	}
 }

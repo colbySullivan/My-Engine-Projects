@@ -3,6 +3,7 @@
 #include "GameCommon.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/Vertex.hpp"
 
 class App;
 class PlayerShip;
@@ -102,6 +103,7 @@ private:
 	void DestroyGarbageEntities();
 	void CleanupGameEntities();
 	void LoadSounds();
+	void CreateBlackHole();
 
 	App* m_app;
 	Camera* m_worldCamera = nullptr;
@@ -113,4 +115,7 @@ private:
 	Beetle* m_beetles[MAX_BEETLES] = {};
 	Debris* m_debris[MAX_DEBRIS] = {};
 	Wasp* m_wasp[MAX_WASP] = {};
+
+	// Black hole
+	Vertex m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 };
