@@ -66,6 +66,8 @@ public:
 	float				m_alphaTimer = 3;
 	float				m_roundEndTimer = 3;
 	float				m_camShakeAmount;
+	float				m_shipAnimationTimer = 0.0f;
+	float				SHIP_ANIMATION_DURATION = 5.0f;
 	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
 

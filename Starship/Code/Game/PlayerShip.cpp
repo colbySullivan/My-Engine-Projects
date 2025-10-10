@@ -175,7 +175,7 @@ void PlayerShip::RenderThrust(  Vertex* vertThrustArray )
 	{
 		float randRed = g_rng.RollRandomFloatInRange(150.f, 255.f);
 		float randAlpha = g_rng.RollRandomFloatInRange(50.f, 200.f);
-		vertThrustArray[vertIndex].m_color = Rgba8( randRed, 10, 10, randAlpha );
+		vertThrustArray[vertIndex].m_color = Rgba8( ( unsigned char )randRed, 10, 10, ( unsigned char )randAlpha );
 	}
 }
 

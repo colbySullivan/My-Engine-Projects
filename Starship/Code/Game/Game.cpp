@@ -589,6 +589,12 @@ void Game::UpdateAttractMode(float deltaSeconds)
 		alpha = RangeMapClamped(normalizedTime, 1.5f, 3.0f, 255.0f, 60.0f);
 	}
 
+	m_shipAnimationTimer += deltaSeconds;
+	if ( m_shipAnimationTimer > SHIP_ANIMATION_DURATION )
+	{
+		m_shipAnimationTimer = 0.0f;
+	}
+
 	RenderAttractMode(alpha);
 }
 
@@ -619,19 +625,46 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		Vec2( 0.f, 0.f ) );
 	g_engine->m_render->DrawVertexArray( 6, background );
 
+	// Black hole
+	CreateBlackHole(); // randomize vertices
+	Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
+	for ( int vertIndex = 0; vertIndex < NUM_BLACK_HOLE_VERTS; ++vertIndex )
+	{
+		tempHoleWorldVerts[vertIndex] = m_blackHoleVerts[vertIndex];
+	}
+	TransformVertexArrayXY3D(
+		NUM_BLACK_HOLE_VERTS,
+		tempHoleWorldVerts,
+		150.0f,
+		0.f,
+		Vec2( 800.f, 400.f ) );
+	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
+
 	// Player ships
+	float animProgress = m_shipAnimationTimer / SHIP_ANIMATION_DURATION;
 	for ( int renderedShipsLocationOffset = 0; renderedShipsLocationOffset < 2; ++renderedShipsLocationOffset )
 	{
 		Vertex fakePlayerShipVerts[NUM_SHIP_VERTS];
 		PlayerShip::InitializeLocalPlayerShipsVerts( fakePlayerShipVerts );
+
+		Vec2 currentPos = Vec2(
+			Interpolate(200.0f + ( renderedShipsLocationOffset * 1200 ), SCREEN_SIZE_X / 2, animProgress),
+			Interpolate(400.0f, SCREEN_SIZE_Y / 2, animProgress)
+		);
+
+		float currentScale = Interpolate(100.f, 0.f, animProgress);
+
+		float currentRotation = Interpolate(360, 0.f, animProgress);
+
 		TransformVertexArrayXY3D(
 			NUM_SHIP_VERTS,
 			fakePlayerShipVerts,
-			100.0f,
-			( 0.f + renderedShipsLocationOffset * 180 ),
-			Vec2( 300.f + ( renderedShipsLocationOffset * 1000 ), 400.f ) );
+			currentScale,
+			( currentRotation + ( renderedShipsLocationOffset * 180 ) ),
+			currentPos );
 		g_engine->m_render->DrawVertexArray( NUM_SHIP_VERTS, fakePlayerShipVerts );
 	}
+
 
 	// Play button
 	Vertex playButton[3];
@@ -650,21 +683,6 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		Vec2( 650.f, 250.f ) );
 	//g_engine->m_render->DrawVertexArray( 3, playButton );
 
-	// Black hole
-	CreateBlackHole(); // randomize vertices
-	Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
-	for ( int vertIndex = 0; vertIndex < NUM_BLACK_HOLE_VERTS; ++vertIndex )
-	{
-		tempHoleWorldVerts[vertIndex] = m_blackHoleVerts[vertIndex];
-	}
-	TransformVertexArrayXY3D(
-		NUM_BLACK_HOLE_VERTS,
-		tempHoleWorldVerts,
-		100.0f,
-		0.f,
-		Vec2( 760.f, 400.f ) );
-	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
-
 	// Title
 	char title[] = "Starship Gold";
 	for ( int charIndex = 0; charIndex < 14; ++charIndex )
@@ -673,7 +691,7 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
-		RenderText( singleChar, Vec2( 500.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( ( unsigned char )offsetColorR, ( unsigned char )offsetColorG, ( unsigned char )offsetColorB ) );
+		RenderText( singleChar, Vec2( 525.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( ( unsigned char )offsetColorR, ( unsigned char )offsetColorG, ( unsigned char )offsetColorB ) );
 
 	}
 
@@ -921,10 +939,10 @@ void Game::CreateBlackHole()
 		int thirdVertIndex = ( triNum * 3 ) + 2;
 
 		// Center vertex (black)
-		m_blackHoleVerts[firstVertIndex].m_color = Rgba8( 191, 191, 191, 255 );
+		m_blackHoleVerts[firstVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
 
 		// Edge vertices (white)
-		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
-		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
+		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 59, 59, 59, 255 );
+		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 59, 59, 59, 255 );
 	}
 }
