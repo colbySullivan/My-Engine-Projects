@@ -68,6 +68,11 @@ void Game::Update(float deltaSeconds)
 	if(AttractModeExitEnter( deltaSeconds, controller ))
 		return;
 
+	if (m_soundDurationTimer > 0.f)
+	{
+		m_soundDurationTimer -= deltaSeconds;
+	}
+
 	CreateBlackHole();
 	UpdateCameras( deltaSeconds );
 	KeyboardInput( deltaSeconds, controller );
@@ -883,22 +888,40 @@ void Game::LoadSounds()
 	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Explosion.wav" ); //						SoundID = 4
 	m_endPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/GameOver.mp3" ); //		SoundID = 5
 	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/LobbyMusic.mp3" ); //	SoundID = 6
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/hitmarker_2.mp3"); //						SoundID = 7
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::HandleSound( SoundPlaybackID soundID )
+void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float soundDuration)
 {
-    if (soundID == MISSING_SOUND_ID)
-        return;
+	if (soundID == MISSING_SOUND_ID)
+		return;
 
-    if (m_currentSound != soundID)
-    {
-        if (m_currentSound != MISSING_SOUND_ID)
-            g_engine->m_audio->StopSound(m_currentSound);
+	if (priority == PRIORITY_LOW) // Always play shoot and handle seperately
+	{
+		if (m_shootSound != MISSING_SOUND_ID)
+			g_engine->m_audio->StopSound(m_shootSound);
 
-        m_currentSound = soundID;
-        //g_engine->m_audio->StartSound(m_currentSound);
-    }
+		m_shootSound = soundID;
+		m_shotSoundDurationTimer = soundDuration;
+		return;
+	}
+
+	if (m_currentSound != MISSING_SOUND_ID && m_soundDurationTimer > 0.f)
+	{
+		if (priority < m_currentSoundPriority)
+		{
+			g_engine->m_audio->StopSound(soundID);
+			return;
+		}
+	}
+
+	if (m_currentSound != MISSING_SOUND_ID)
+		g_engine->m_audio->StopSound(m_currentSound);
+
+	m_currentSound = soundID;
+	m_currentSoundPriority = priority;
+	m_soundDurationTimer = soundDuration;
 }
 
 void Game::CreateBlackHole()

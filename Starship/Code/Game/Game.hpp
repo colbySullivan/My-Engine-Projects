@@ -27,6 +27,16 @@ enum Game_State
 	NUM_GAMESTATES
 };
 
+//------------------------------------------------------------------------------
+enum SoundPriority
+{
+	PRIORITY_LOW,			// Shoot sound
+	PRIORITY_MEDIUM,		// Hit/hurt, explosion
+	PRIORITY_HIGH,			// Respawn, game over
+	PRIORITY_MUSIC,			// Background music (lobby, etc)
+	NUM_SOUND_PRIORITIES
+};
+
 //-----------------------------------------------------------------------------------------------
 class Game
 {
@@ -45,7 +55,7 @@ public:
 	Wasp* SpawnNewRandomWasp();
 	Debris* SpawnNewDebris( Vec2 pos, Rgba8 color, Vec2 velocity, float size );
 	void SpawnDebrisCluster( Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size );
-	void HandleSound( SoundPlaybackID soundID );
+	void HandleSound( SoundPlaybackID soundID, SoundPriority priority = PRIORITY_LOW, float soundDuration = 0.2f);
 
 	bool isAlive( Entity* entity ) const;
 
@@ -76,6 +86,10 @@ public:
 	SoundPlaybackID		m_endPlaybackID = MISSING_SOUND_ID;
 	SoundPlaybackID		m_lobbyPlaybackID = MISSING_SOUND_ID;
 	SoundPlaybackID		m_currentSound = MISSING_SOUND_ID;
+	SoundPriority		m_currentSoundPriority = PRIORITY_LOW;
+	float				m_soundDurationTimer = 0.f;
+	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
+	float				m_shotSoundDurationTimer = 0.f;
 
 
 private:

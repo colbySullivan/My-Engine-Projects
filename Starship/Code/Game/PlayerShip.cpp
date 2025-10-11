@@ -109,11 +109,16 @@ void PlayerShip::InitializeLocalPlayerShipsVerts(Vertex* vertArray)
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 {
-	if (g_engine->m_input->WasKeyJustPressed(' '))
+	if (m_shootCooldownTimer > 0.f)
+	{
+		m_shootCooldownTimer -= deltaSeconds;
+	}
+	if (g_engine->m_input->IsKeyDown(' ') && m_shootCooldownTimer <= 0)
 	{
 		m_game->SpawnBullet(m_position, m_orientationDegrees);
-		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1 );
-		m_game->HandleSound( temp );
+		SoundPlaybackID temp = g_engine->m_audio->StartSound(1, false, 0.1f);
+		m_game->HandleSound(temp, PRIORITY_LOW);
+		m_shootCooldownTimer = BULLET_COOLDOWN;
 	}
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
@@ -134,27 +139,25 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::BounceOffWalls()
 {
-	// Handle X-axis bouncing
 	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius)
 	{
-		m_position.x = WORLD_SIZE_X - m_cosmeticRadius; // Clamp position
-		m_velocity.x = -m_velocity.x * 0.5;
+		m_position.x = WORLD_SIZE_X - m_cosmeticRadius; // Fixes issue where ship could get clip stuck outside world bounds
+		m_velocity.x = -m_velocity.x * 0.5; // Dampen bounce
 	}
 	else if (m_position.x <= 0 + m_cosmeticRadius)
 	{
-		m_position.x = 0 + m_cosmeticRadius; // Clamp position
+		m_position.x = 0 + m_cosmeticRadius;
 		m_velocity.x = -m_velocity.x * 0.5;
 	}
 
-	// Handle Y-axis bouncing
 	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius)
 	{
-		m_position.y = WORLD_SIZE_Y - m_cosmeticRadius; // Clamp position
+		m_position.y = WORLD_SIZE_Y - m_cosmeticRadius;
 		m_velocity.y = -m_velocity.y * 0.5;
 	}
 	else if (m_position.y <= 0 + m_cosmeticRadius)
 	{
-		m_position.y = 0 + m_cosmeticRadius; // Clamp position
+		m_position.y = 0 + m_cosmeticRadius;
 		m_velocity.y = -m_velocity.y * 0.5;
 	}
 }
@@ -200,9 +203,6 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
 	g_engine->m_input->GetController(0);
 
-	//if (controller.GetRightTrigger() == 0)
-	m_canTriggerShoot = true;
-
 	// Respawn
 	if( m_isDead )
 	{
@@ -226,14 +226,14 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	}
 
 	// Shoot
-	if( controller.WasButtonJustPressed( XboxButtonID::A ) || (controller.GetRightTrigger() != 0 && m_canTriggerShoot))
+	if( controller.IsButtonDown( XboxButtonID::A ) || (controller.GetRightTrigger() != 0) && m_shootCooldownTimer <= 0)
 	{
-		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1 );
-		m_game->HandleSound( temp );
+		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1, false, 0.1f);
+		m_game->HandleSound( temp, PRIORITY_LOW );
 		Vec2 forwardNormal = GetForwardNormal();
 		Vec2 nosePosition = m_position + (forwardNormal * 1.f);
 		m_game->SpawnBullet( nosePosition, m_orientationDegrees );
 
-		m_canTriggerShoot = false;
+		m_shootCooldownTimer = BULLET_COOLDOWN;
 	}
 }
