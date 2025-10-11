@@ -167,8 +167,8 @@ void PlayerShip::Respawn()
 {
 	if (m_isDead && (m_lives > 0))
 	{
-		SoundPlaybackID temp = g_engine->m_audio->StartSound( 3 );
-		m_game->HandleSound( temp );
+		SoundPlaybackID temp = g_engine->m_audio->StartSound( 3, false, 0.5f );
+		m_game->HandleSound( temp, PRIORITY_HIGH );
 		m_position = Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 		m_velocity = Vec2(0, 0);
 		m_orientationDegrees = 0.f;

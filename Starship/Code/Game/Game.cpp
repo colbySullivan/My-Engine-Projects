@@ -14,6 +14,7 @@
 #include "Game/Debris.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Wasp.hpp"
+#include "Game/Interactable.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
@@ -86,7 +87,6 @@ void Game::Render() const
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
 	g_engine->m_render->DrawVertexArray( NUM_STAR_VERTS, m_starVerts ); // Draw stars first so none overlay 
-	CreateInGameBlackHole();
 	RenderEntities();
 }
 
@@ -121,7 +121,8 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 
 	if (g_engine->m_input->WasKeyJustPressed('I'))
 	{
-		SpawnRandomAsteroids();
+		//SpawnRandomAsteroids();
+		SpawnRandomInteractable();
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
@@ -222,6 +223,21 @@ Wasp* Game::SpawnNewRandomWasp()
 	return nullptr;
 }
 
+//------------------------------------------------------------------------------
+Interactable* Game::SpawnRandomInteractable()
+{
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		if (m_interactable[interactableIndex] == nullptr)
+		{
+			m_interactable[interactableIndex] = new Interactable(this, Vec2(100.f, 50.f));
+			return m_interactable[interactableIndex];
+		}
+	}
+	ERROR_RECOVERABLE("Cannot spawn a new asteroid; all array slots are full");
+	return nullptr;
+}
+
 //-----------------------------------------------------------------------------------------------
 Debris* Game::SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size)
 {
@@ -303,6 +319,15 @@ void Game::UpdateEntities(float deltaSeconds)
 		if (debris)
 		{
 			debris->Update(deltaSeconds);
+		}
+	}
+
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		Interactable* interactable = m_interactable[interactableIndex];
+		if (interactable)
+		{
+			interactable->Update(deltaSeconds);
 		}
 	}
 
@@ -464,7 +489,7 @@ void Game::RenderEntities() const
 	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
 	{
 		Beetle const* beetle = m_beetles[beetleIndex];
-		if (beetle)
+		if (beetle) 
 		{
 			beetle->Render();
 		}
@@ -485,6 +510,15 @@ void Game::RenderEntities() const
 		if (debris)
 		{
 			debris->Render();
+		}
+	}
+
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		Interactable* interactable = m_interactable[interactableIndex];
+		if (interactable)
+		{
+			interactable->Render();
 		}
 	}
 
@@ -993,38 +1027,5 @@ void Game::GenerateStars()
 		vert1.m_position = Vec3(randX, randY, 0.f);
 		vert2.m_position = Vec3(randX + .1f, randY, 0.f);
 		vert3.m_position = Vec3(randX, randY + .1f, 0.f);
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void Game::CreateInGameBlackHole() const
-{
-	for (int blackHoleIndex = 0; blackHoleIndex < m_roundBlackHoleAmount ; ++blackHoleIndex)
-	{
-		Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
-		for ( int trisIndex = 0; trisIndex < NUM_BLACK_HOLE_TRIS; ++trisIndex )
-		{
-			int firstVertIndex = ( trisIndex * 3 ) + 0;
-			int secondVertIndex = ( trisIndex * 3 ) + 1;
-			int thirdVertIndex = ( trisIndex * 3 ) + 2;
-
-			tempHoleWorldVerts[firstVertIndex] = m_blackHoleVerts[firstVertIndex];
-			tempHoleWorldVerts[secondVertIndex] = m_blackHoleVerts[secondVertIndex];
-			tempHoleWorldVerts[thirdVertIndex] = m_blackHoleVerts[thirdVertIndex];
-
-			// Center vertex
-			tempHoleWorldVerts[firstVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
-
-			// Edge vertices
-			tempHoleWorldVerts[secondVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
-			tempHoleWorldVerts[thirdVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
-		}
-		TransformVertexArrayXY3D(
-			NUM_BLACK_HOLE_VERTS,
-			tempHoleWorldVerts,
-			1.0f,
-			0.f,
-			Vec2( 130.f - blackHoleIndex * 30, 20.f + blackHoleIndex * 50 ) );
-		g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
 	}
 }

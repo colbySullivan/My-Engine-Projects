@@ -62,6 +62,10 @@ constexpr int NEW_MAX_STARS = 500;
 constexpr int STAR_PER_VERTS = 3;
 constexpr int NUM_STAR_VERTS = NEW_MAX_STARS * STAR_PER_VERTS;
 
+constexpr int MAX_INTERACTABLES = 20;
+constexpr float INTERACTABLES_PHYSICS_RADIUS = 1.2f;
+constexpr float INTERACTABLES_COSMETIC_RADIUS = 2.0f;
+
 
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);
 void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickness, Rgba8 const& color);

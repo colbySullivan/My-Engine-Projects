@@ -17,6 +17,7 @@ class Wasp;
 class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
+class Interactable;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -53,7 +54,8 @@ public:
 	Bullet* SpawnBullet( Vec2 const& pos, float forwardDegrees );
 	Beetle* SpawnNewRandomBeetle();
 	Wasp* SpawnNewRandomWasp();
-	Debris* SpawnNewDebris( Vec2 pos, Rgba8 color, Vec2 velocity, float size );
+	Interactable* SpawnRandomInteractable();
+	Debris* SpawnNewDebris(Vec2 pos, Rgba8 color, Vec2 velocity, float size);
 	void SpawnDebrisCluster( Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size );
 	void HandleSound( SoundPlaybackID soundID, SoundPriority priority = PRIORITY_LOW, float soundDuration = 0.2f);
 
@@ -121,7 +123,6 @@ private:
 	void LoadSounds();
 	void CreateBlackHole();
 	void GenerateStars();
-	void CreateInGameBlackHole() const;
 
 	App* m_app;
 	Camera*			m_worldCamera = nullptr;
@@ -133,6 +134,7 @@ private:
 	Beetle*			m_beetles[MAX_BEETLES] = {};
 	Debris*			m_debris[MAX_DEBRIS] = {};
 	Wasp*			m_wasp[MAX_WASP] = {};
+	Interactable*	m_interactable[MAX_INTERACTABLES] = {};
 
 	// Black hole
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
