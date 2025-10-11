@@ -107,8 +107,9 @@ private:
 	void LoadSounds();
 	void CreateBlackHole();
 	void GenerateStars();
+	void CreateInGameBlackHole() const;
 
-	App*			m_app;
+	App* m_app;
 	Camera*			m_worldCamera = nullptr;
 	Camera*			m_screenCamera = nullptr;
 
@@ -120,7 +121,9 @@ private:
 	Wasp*			m_wasp[MAX_WASP] = {};
 
 	// Black hole
-	Vertex m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
+	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
+	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
+	int				m_roundBlackHoleAmount = 2;
 
 	// Stars
 	Vertex			m_starVerts[NUM_STAR_VERTS];

@@ -68,6 +68,7 @@ void Game::Update(float deltaSeconds)
 	if(AttractModeExitEnter( deltaSeconds, controller ))
 		return;
 
+	CreateBlackHole();
 	UpdateCameras( deltaSeconds );
 	KeyboardInput( deltaSeconds, controller );
 	DestroyGarbageEntities();
@@ -79,6 +80,8 @@ void Game::Render() const
 	g_engine->m_render->BeginCamera(*m_worldCamera);
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
+	g_engine->m_render->DrawVertexArray( NUM_STAR_VERTS, m_starVerts ); // Draw stars first so none overlay 
+	CreateInGameBlackHole();
 	RenderEntities();
 }
 
@@ -431,8 +434,6 @@ void Game::CheckBeetlePush()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderEntities() const
 {
-	g_engine->m_render->DrawVertexArray(NUM_STAR_VERTS, m_starVerts); // Draw stars first so none overlay 
-
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
 	{
 		Bullet const* bullet = m_bullets[bulletIndex];
@@ -969,5 +970,38 @@ void Game::GenerateStars()
 		vert1.m_position = Vec3(randX, randY, 0.f);
 		vert2.m_position = Vec3(randX + .1f, randY, 0.f);
 		vert3.m_position = Vec3(randX, randY + .1f, 0.f);
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::CreateInGameBlackHole() const
+{
+	for (int blackHoleIndex = 0; blackHoleIndex < m_roundBlackHoleAmount ; ++blackHoleIndex)
+	{
+		Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
+		for ( int trisIndex = 0; trisIndex < NUM_BLACK_HOLE_TRIS; ++trisIndex )
+		{
+			int firstVertIndex = ( trisIndex * 3 ) + 0;
+			int secondVertIndex = ( trisIndex * 3 ) + 1;
+			int thirdVertIndex = ( trisIndex * 3 ) + 2;
+
+			tempHoleWorldVerts[firstVertIndex] = m_blackHoleVerts[firstVertIndex];
+			tempHoleWorldVerts[secondVertIndex] = m_blackHoleVerts[secondVertIndex];
+			tempHoleWorldVerts[thirdVertIndex] = m_blackHoleVerts[thirdVertIndex];
+
+			// Center vertex
+			tempHoleWorldVerts[firstVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
+
+			// Edge vertices
+			tempHoleWorldVerts[secondVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
+			tempHoleWorldVerts[thirdVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
+		}
+		TransformVertexArrayXY3D(
+			NUM_BLACK_HOLE_VERTS,
+			tempHoleWorldVerts,
+			1.0f,
+			0.f,
+			Vec2( 130.f - blackHoleIndex * 30, 20.f + blackHoleIndex * 50 ) );
+		g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
 	}
 }
