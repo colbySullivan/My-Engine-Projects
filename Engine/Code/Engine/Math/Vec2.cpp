@@ -209,7 +209,6 @@ Vec2 const Vec2::GetNormalized() const
 	return Vec2( x / length, y / length);
 }
 
-// Try to incorporate GetRotatedByDegrees()
 //-----------------------------------------------------------------------------------------------
 void Vec2::SetOrientationDegrees(float newOrientationDegrees)
 {

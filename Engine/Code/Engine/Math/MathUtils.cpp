@@ -133,7 +133,10 @@ float GetTurnedTowardDegrees(float currentDegrees, float goalDegrees, float maxD
 
 float GetAngleDegreesBetweenVectors2D( Vec2 const& a, Vec2 const& b )
 {
-    return 0.0f; //TODO
+	float angleCos = DotProduct2D( a, b) / ( a.GetLength() * b.GetLength() );
+	angleCos = GetClamped( angleCos, -1.f, 1.f );
+	float angleRad = acosf( angleCos );
+	return ConvertRadiansToDegrees( angleRad );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -182,6 +185,11 @@ float GetDistanceXYSquared3D(Vec3 const& positionA, Vec3 const& positionB)
         + ((positionB.y - positionA.y) * (positionB.y - positionA.y));
 }
 
+int GetTaxicabDistance2D( IntVec2 const& pointA, IntVec2 const& pointB )
+{
+	return abs( pointB.x - pointA.x ) + abs( pointB.y - pointA.y );
+}
+
 //-----------------------------------------------------------------------------------------------
 float GetProjectedLength2D( Vec2 const& vectorToProject, Vec2 const& vectorToProjectOnto )
 {
@@ -220,17 +228,34 @@ bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discR
 
 bool IsPointInsideOrientedSector2D( Vec2 const& point, Vec2 const& sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius )
 {
-    return true; //TODO
+	if ( IsPointInsideDisc2D( point, sectorTip, sectorRadius ) )
+	{
+		Vec2 sectToPoint = point - sectorTip;
+		float displacementDegrees = GetShortestAngularDispDegrees( sectToPoint.GetOrientationDegrees(), sectorFwdDegrees );
+		if ( fabsf( displacementDegrees ) > sectorApertureDegrees * 0.5f )
+			return false;
+	}
+	return true;
 }
 
 bool IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Vec2 const& sectorFwdNormal, float sectorApertureDegrees, float sectorRadius )
 {
-    return true; //TODO
+	if ( IsPointInsideDisc2D( point, sectorTip, sectorRadius ) )
+	{
+		Vec2 sectToPoint = point - sectorTip;
+		float sectorFwdDegrees = sectorFwdNormal.GetOrientationDegrees();
+		float displacementDegrees = GetShortestAngularDispDegrees( sectToPoint.GetOrientationDegrees(), sectorFwdDegrees );
+		if ( fabsf( displacementDegrees ) > sectorApertureDegrees * 0.5f )
+			return false;
+	}
+	return true;
 }
 
 Vec2 GetNearestPointOnDisc2D( Vec2 const& referencePos, Vec2 const& discCenter, float discRadius )
 {
-    return Vec2(0,0); //TODO
+	Vec2 centerToPoint = referencePos - discCenter; 
+	centerToPoint.ClampLength( discRadius );
+	return discCenter + centerToPoint;
 }
 
 bool PushDiscOutOfFixedPoint2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint )
@@ -298,6 +323,12 @@ void TransformPosition2D(Vec2& posToTransform, float uniformScale, float rotatio
 }
 
 //-----------------------------------------------------------------------------------------------
+void TransformPosition2D( Vec2& posToTransform, Vec2 const& iBasis, Vec2 const& jBasis, Vec2 const& translation )
+{
+	posToTransform = ( iBasis * posToTransform.x ) + ( jBasis * posToTransform.y ) + translation;
+}
+
+//-----------------------------------------------------------------------------------------------
 void TransformPositionXY3D(Vec3& posToTransform, float xyScale, float zRotationDegrees, Vec2 const& xyTranslation)
 {
 	posToTransform.x *= xyScale;
@@ -305,5 +336,14 @@ void TransformPositionXY3D(Vec3& posToTransform, float xyScale, float zRotationD
 	posToTransform = posToTransform.GetRotatedAboutZDegrees(zRotationDegrees);
 	posToTransform.x += xyTranslation.x;
     posToTransform.y += xyTranslation.y;
+}
+
+//-----------------------------------------------------------------------------------------------
+void TransformPositionXY3D( Vec3& posToTransform, Vec2 const& iBasis, Vec2 const& jBasis, Vec2 const& translation )
+{
+	float originalX = posToTransform.x;
+	float originalY = posToTransform.y;
+	posToTransform.x = ( iBasis.x * originalX ) + ( jBasis.x * originalY ) + translation.x;
+	posToTransform.y = ( iBasis.y * originalX ) + ( jBasis.y * originalY ) + translation.y;
 }
 
