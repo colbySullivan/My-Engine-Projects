@@ -134,13 +134,28 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::BounceOffWalls()
 {
-	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius || m_position.x <= 0 + m_cosmeticRadius)
+	// Handle X-axis bouncing
+	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius)
 	{
-		m_velocity.x = -m_velocity.x;
+		m_position.x = WORLD_SIZE_X - m_cosmeticRadius; // Clamp position
+		m_velocity.x = -m_velocity.x * 0.5;
 	}
-	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius || m_position.y <= 0 + m_cosmeticRadius)
+	else if (m_position.x <= 0 + m_cosmeticRadius)
 	{
-		m_velocity.y = -m_velocity.y;
+		m_position.x = 0 + m_cosmeticRadius; // Clamp position
+		m_velocity.x = -m_velocity.x * 0.5;
+	}
+
+	// Handle Y-axis bouncing
+	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius)
+	{
+		m_position.y = WORLD_SIZE_Y - m_cosmeticRadius; // Clamp position
+		m_velocity.y = -m_velocity.y * 0.5;
+	}
+	else if (m_position.y <= 0 + m_cosmeticRadius)
+	{
+		m_position.y = 0 + m_cosmeticRadius; // Clamp position
+		m_velocity.y = -m_velocity.y * 0.5;
 	}
 }
 
