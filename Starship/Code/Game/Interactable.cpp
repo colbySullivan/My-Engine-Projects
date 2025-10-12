@@ -6,11 +6,9 @@
 Interactable::Interactable(Game* owner, Vec2 const& startPos)
 	: Entity(owner, startPos)
 {
-	//m_position = (g_rng.RollRandomFloatInRange(WORLD_SIZE_X, 0.f), g_rng.RollRandomFloatInRange(0.f, WORLD_SIZE_Y));
 	m_game = owner;
 	m_position.x = g_rng.RollRandomFloatInRange(WORLD_SIZE_X, 0.f);
 	m_position.y = g_rng.RollRandomFloatInRange(0.f, WORLD_SIZE_Y);
-	//m_position = Vec2(10.f, 5.f);
 	m_cosmeticRadius = INTERACTABLES_COSMETIC_RADIUS;
 	m_physicsRadius = INTERACTABLES_PHYSICS_RADIUS;
 	InitializeLocalVerts();

@@ -21,6 +21,7 @@ public:
 
 	virtual void Update(float deltaSeconds) override;
 	virtual void Render() const override;
+	void Die() override;
 
 	static void InitializeLocalPlayerShipsVerts( Vertex* vertArray );
 

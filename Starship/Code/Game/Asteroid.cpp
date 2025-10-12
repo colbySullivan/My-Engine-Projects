@@ -14,7 +14,7 @@ Asteroid::Asteroid(Game* owner, Vec2 const& startPos)
 	m_physicsRadius = ASTEROID_PHYSICS_RADIUS;
 	m_orientationDegrees = g_rng.RollRandomFloatInRange(0.1f,360.f);
 	m_velocity = GetForwardNormal() * ASTEROID_SPEED;
-	m_health = 3;
+	m_health = 2;
 
 	InitializeLocalVerts();
 }

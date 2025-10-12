@@ -82,6 +82,9 @@ public:
 	float				SHIP_ANIMATION_DURATION = 5.0f;
 	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
+	float 				m_roundTime;	
+	float				m_bestRoundTime = 0.f;
+	float				m_spawnBuffer;
 
 
 	// Audio
@@ -106,7 +109,7 @@ private:
 	void CheckBeetlePush();
 
 	void RenderEntities() const;
-	void RenderShipLives() const;
+	void RenderUI();
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color );
 	void UpdateCameras( float deltaSeconds );
 
@@ -123,6 +126,7 @@ private:
 	void LoadSounds();
 	void CreateBlackHole();
 	void GenerateStars();
+	void RoundTimer(float deltaSeconds);
 
 	App* m_app;
 	Camera*			m_worldCamera = nullptr;

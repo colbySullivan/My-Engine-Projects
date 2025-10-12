@@ -50,6 +50,7 @@ void Game::Startup()
 	m_playerShip = new PlayerShip(this, worldCenter);
 	m_roundNumber = 1;
 	m_roundEndTimer = 3;
+	m_roundTime = 0.f;
 	UpdateWaves();
 }
 
@@ -73,7 +74,7 @@ void Game::Update(float deltaSeconds)
 	{
 		m_soundDurationTimer -= deltaSeconds;
 	}
-
+	RoundTimer( deltaSeconds );
 	CreateBlackHole();
 	UpdateCameras( deltaSeconds );
 	KeyboardInput( deltaSeconds, controller );
@@ -130,10 +131,10 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 		g_drawDebug = !g_drawDebug;
 	}
 
-	if ( m_roundNumber > 5 )
-	{
-		m_nextGameState = GAMESTATE_ATTRACT;
-	}
+	//if ( m_roundNumber > 5 )
+	//{
+	//	m_nextGameState = GAMESTATE_ATTRACT;
+	//}
 		
 
 	if ( m_playerShip->m_lives <= 0 && m_playerShip->m_isDead )
@@ -234,7 +235,7 @@ Interactable* Game::SpawnRandomInteractable()
 			return m_interactable[interactableIndex];
 		}
 	}
-	ERROR_RECOVERABLE("Cannot spawn a new asteroid; all array slots are full");
+	ERROR_RECOVERABLE("Cannot spawn a new interactable; all array slots are full");
 	return nullptr;
 }
 
@@ -275,6 +276,15 @@ void Game::SpawnDebrisCluster(Vec2 pos, Rgba8 entityColor, Vec2 velocity, int de
 void Game::UpdateEntities(float deltaSeconds)
 {
 	m_playerShip->Update(deltaSeconds);
+
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		Interactable* interactable = m_interactable[interactableIndex];
+		if (interactable)
+		{
+			interactable->Update(deltaSeconds);
+		}
+	}
 
 	for (int astroidIndex = 0; astroidIndex < MAX_ASTEROIDS; ++astroidIndex)
 	{
@@ -319,15 +329,6 @@ void Game::UpdateEntities(float deltaSeconds)
 		if (debris)
 		{
 			debris->Update(deltaSeconds);
-		}
-	}
-
-	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
-	{
-		Interactable* interactable = m_interactable[interactableIndex];
-		if (interactable)
-		{
-			interactable->Update(deltaSeconds);
 		}
 	}
 
@@ -525,7 +526,7 @@ void Game::RenderEntities() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderShipLives() const
+void Game::RenderUI()
 {
 	//Camera attractCamera;
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
@@ -539,6 +540,9 @@ void Game::RenderShipLives() const
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, fakePlayerShipVerts);
 	}
 
+	char textBuffer[64];
+	snprintf(textBuffer, sizeof(textBuffer), "Time: %.2f", m_roundTime);
+	RenderText(textBuffer, Vec2(700.f, 750.f), 20.f, Rgba8(50, 150, 255, 255));
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
@@ -596,7 +600,7 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 		return true;
 	}
 
-	RenderShipLives();
+	RenderUI();
 
 	if ( IsReadyToStartNextWave() )
 	{
@@ -772,7 +776,7 @@ int Game::GetNumLivingEnemies() const
 bool Game::IsReadyToStartNextWave() const
 {
 	int numLivingEnemies = GetNumLivingEnemies();
-	return numLivingEnemies == 0;
+	return numLivingEnemies == 0 || m_spawnBuffer <= 0.f;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -780,15 +784,19 @@ void Game::UpdateWaves()
 {
 	if (IsReadyToStartNextWave())
 	{
+		m_spawnBuffer = ROUND_BUFFER;
 		for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
 		{
 			SpawnRandomAsteroids();
 		}
-		for (int i = 0; i < g_rng.RollRandomIntInRange(1, m_roundNumber); ++i)
+		for (int i = 0; i < g_rng.RollRandomIntInRange(m_roundNumber, m_roundNumber+2); ++i)
 			SpawnNewRandomBeetle();
 
-		for (int i = 0; i < g_rng.RollRandomIntInRange(1, m_roundNumber); ++i)
+		for (int i = 0; i < g_rng.RollRandomIntInRange(m_roundNumber, m_roundNumber+1); ++i)
 			SpawnNewRandomWasp();
+
+		//for (int i = 0; i < g_rng.RollRandomIntInRange(1, m_roundNumber); ++i)
+		SpawnRandomInteractable();
 
 	}
 }
@@ -898,7 +906,7 @@ void Game::CleanupGameEntities()
 		Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 		m_playerShip->m_position = worldCenter;
 		m_playerShip->m_isDead = true;
-		m_playerShip->m_isGarbage = false;
+		m_playerShip->m_isGarbage = true;
 	}
 
 	DestroyGarbageEntities();
@@ -1028,4 +1036,16 @@ void Game::GenerateStars()
 		vert2.m_position = Vec3(randX + .1f, randY, 0.f);
 		vert3.m_position = Vec3(randX, randY + .1f, 0.f);
 	}
+}
+
+void Game::RoundTimer(float deltaSeconds)
+{
+	if(m_playerShip->m_isDead)
+		return;
+
+	m_spawnBuffer -= deltaSeconds;
+	m_roundTime += deltaSeconds;
+
+	if (m_roundTime >= m_bestRoundTime)
+		m_bestRoundTime = m_roundTime;
 }

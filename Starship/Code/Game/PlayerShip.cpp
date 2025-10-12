@@ -72,6 +72,15 @@ void PlayerShip::Render() const
 		DebugRender();
 }
 
+void PlayerShip::Die()
+{
+	SoundPlaybackID temp = g_engine->m_audio->StartSound( 4, false, 0.3f);
+	m_game->HandleSound( temp, PRIORITY_HIGH, 0.3f );
+	m_isGarbage = true;
+	m_isDead = true;
+	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize);
+}
+
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::InitializeLocalPlayerShipsVerts(Vertex* vertArray)
 {
