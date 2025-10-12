@@ -130,11 +130,6 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	{
 		g_drawDebug = !g_drawDebug;
 	}
-
-	//if ( m_roundNumber > 5 )
-	//{
-	//	m_nextGameState = GAMESTATE_ATTRACT;
-	//}
 		
 
 	if ( m_playerShip->m_lives <= 0 && m_playerShip->m_isDead )
@@ -604,6 +599,9 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 {
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
+		if (m_gameMusicPlaybackID != MISSING_SOUND_ID)
+			g_engine->m_audio->StopSound(m_gameMusicPlaybackID);
+
 		if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 		{
 			m_isQuitting = true;
@@ -615,6 +613,7 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 			m_nextGameState = GAMESTATE_PLAY;
 			Startup();
 			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
+			m_gameMusicPlaybackID = g_engine->m_audio->StartSound(8, false, 0.8f);
 
 		}
 		else
@@ -807,7 +806,7 @@ int Game::GetNumLivingEnemies() const
 bool Game::IsReadyToStartNextWave() const
 {
 	int numLivingEnemies = GetNumLivingEnemies();
-	return numLivingEnemies == 0 || m_spawnBuffer <= 0.f;
+	return m_spawnBuffer <= 0.f && m_currentGameState == GAMESTATE_PLAY;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -815,6 +814,9 @@ void Game::UpdateWaves()
 {
 	if (IsReadyToStartNextWave())
 	{
+		if (m_roundChangeSound != MISSING_SOUND_ID)
+			g_engine->m_audio->StopSound(m_roundChangeSound);
+		m_roundChangeSound = g_engine->m_audio->StartSound((10 + m_roundNumber) % 28, false, 0.8f);
 		m_spawnBuffer = ROUND_BUFFER;
 		for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
 		{
@@ -963,14 +965,36 @@ bool Game::isAlive(Entity* entity) const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadSounds()
 {
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); //						SoundID = 0
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Laser_Shoot.wav" ); //						SoundID = 1
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Hit_Hurt.wav" ); //						SoundID = 2
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Respawn.wav" ); //							SoundID = 3
-	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Explosion.wav" ); //						SoundID = 4
-	m_endPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/GameOver.mp3" ); //		SoundID = 5
-	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/LobbyMusic.mp3" ); //	SoundID = 6
-	g_engine->m_audio->CreateOrGetSound("Data/Audio/hitmarker_2.mp3"); //						SoundID = 7
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/TestSound.mp3" ); //							SoundID = 0
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Laser_Shoot.wav" ); //							SoundID = 1
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Hit_Hurt.wav" ); //							SoundID = 2
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Respawn.wav" ); //								SoundID = 3
+	g_engine->m_audio->CreateOrGetSound( "Data/Audio/Explosion.wav" ); //							SoundID = 4
+	m_endPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/GameOver.mp3" ); //			SoundID = 5
+	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/LobbyMusic.mp3" ); //		SoundID = 6
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/hitmarker_2.mp3"); //							SoundID = 7
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/GameMusic.mp3"); //								SoundID = 8
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/RoundChange.mp3"); //							SoundID = 9
+
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/it-is-always-a-moon-s-role-to-envy-the-stars.mp3");										// SoundID = 10
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/my-stars-shine-for-all.mp3");															// SoundID = 11
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/shiny-but-it-s-no-star.mp3");															// SoundID = 12
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/so-many-magic-staves.mp3");																// SoundID = 13
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/the-dragons-loyalty-is-a-priceless-gift-do-not-waste-it-in-the-service-of-fools.mp3");	// SoundID = 14
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/stars-are-not-born-they-are-made-by-maine.mp3");										// SoundID = 15
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/here-are-countless-colors-but-i-suppose-a-single-rainbow-is-a-good-start.mp3");			// SoundID = 16
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/stars-never-aligned-for-anyone-except-maine-of-course.mp3");							// SoundID = 17
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/twinkle-twinkle-little-star-do-you-wonder-what-you-are.mp3");							// SoundID = 18
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/starstruck.mp3");																		// SoundID = 19
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/stars-are-best-viewed-from-a-distance.mp3");											// SoundID = 20
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/stars-birth-is-as-violent-as-it-is-breathtaking.mp3");									// SoundID = 21
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/the-stars-weep-for-you-just-kidding-i-already-forgot-your-name.mp3");					// SoundID = 22
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/the-stars-look-very-different-today.mp3");												// SoundID = 23
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/think-cosmic-like-this.mp3");															// SoundID = 24
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/topple-like-all-things-crafted-by-mortals.mp3");										// SoundID = 25
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/tragic.mp3");																			// SoundID = 26
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/stars-never-fall.mp3");																	// SoundID = 27
+	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/unfitting-abitur-conically-beege.mp3");													// SoundID = 28
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -979,12 +1003,12 @@ void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float so
 	if (soundID == MISSING_SOUND_ID)
 		return;
 
-	if (priority == PRIORITY_LOW) // Always play shoot and handle seperately
+	if (priority == PRIORITY_LOW)
 	{
 		if (m_shootSound != MISSING_SOUND_ID)
-			g_engine->m_audio->StopSound(m_shootSound);
+ 			g_engine->m_audio->StopSound(m_shootSound);
 
-		m_shootSound = soundID;
+ 		m_shootSound = soundID;
 		m_shotSoundDurationTimer = soundDuration;
 		return;
 	}

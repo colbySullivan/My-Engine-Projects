@@ -22,7 +22,7 @@ Interactable::~Interactable()
 
 void Interactable::Update([[maybe_unused]] float deltaSeconds)
 {
-	//InitializeLocalVerts();
+	InitializeLocalVerts();
 }
 
 void Interactable::Render() const
@@ -51,7 +51,7 @@ void Interactable::InitializeLocalVerts()
 	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
 	for (int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum)
 	{
-		holeRadii[sideNum] = g_rng.RollRandomFloatInRange(1.9f, 2.0f);
+		holeRadii[sideNum] = g_rng.RollRandomFloatInRange(1.0f, 2.0f);
 	}
 
 	// Precompute 2D vertex offsets
@@ -104,7 +104,7 @@ void Interactable::Die()
 	m_game->HandleSound(temp, PRIORITY_MEDIUM, 0.2f);
 	m_isGarbage = true;
 	m_isDead = true;
-	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize);
+	g_theApp->m_game->SpawnDebrisCluster(m_position, Rgba8(0, 200, 100, 255), m_velocity, m_debrisAmount, 0.5f);
 }
 
 PowerUp Interactable::ApplyEffect(PlayerShip* m_playerShip)

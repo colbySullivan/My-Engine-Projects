@@ -90,7 +90,9 @@ public:
 	// Audio
 	SoundPlaybackID		m_endPlaybackID = MISSING_SOUND_ID;
 	SoundPlaybackID		m_lobbyPlaybackID = MISSING_SOUND_ID;
+	SoundPlaybackID		m_gameMusicPlaybackID = MISSING_SOUND_ID;
 	SoundPlaybackID		m_currentSound = MISSING_SOUND_ID;
+	SoundPlaybackID		m_roundChangeSound = MISSING_SOUND_ID;
 	SoundPriority		m_currentSoundPriority = PRIORITY_LOW;
 	float				m_soundDurationTimer = 0.f;
 	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
