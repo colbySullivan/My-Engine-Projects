@@ -107,6 +107,7 @@ private:
 	void CheckBulletsVsEnemies( Bullet& bullet, Entity& enemy );
 	void CheckEnemiesVsShips();
 	void CheckEnemiesVsShip( Entity& enemy, PlayerShip& ship );
+	void CheckInteractablesVsShips();
 	void CheckBeetlePush();
 
 	void RenderEntities() const;

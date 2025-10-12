@@ -4,10 +4,10 @@
 
 constexpr int	NUM_STARTING_ASTEROIDS = 3;
 constexpr int	MAX_ASTEROIDS = 200;
-constexpr int	MAX_BULLETS = 100;
+constexpr int	MAX_BULLETS = 10000;
 constexpr int	MAX_BEETLES = 200;
-constexpr int	MAX_WASP = 20;
-constexpr int	MAX_DEBRIS = 500;
+constexpr int	MAX_WASP = 200;
+constexpr int	MAX_DEBRIS = 5000;
 
 constexpr float WORLD_SIZE_X = 200.f;
 constexpr float WORLD_SIZE_Y = 100.f;
@@ -44,7 +44,7 @@ constexpr float BULLET_LIFETIME_SECONDS = 2.0f;
 constexpr float BULLET_SPEED = 50.f;
 constexpr float BULLET_PHYSICS_RADIUS = 1.5f;
 constexpr float BULLET_COSMETIC_RADIUS = 3.0f;
-constexpr float BULLET_COOLDOWN = 0.1f;
+constexpr float BULLET_BASE_COOLDOWN = 0.1f;
 
 constexpr float PLAYER_SHIP_ACCELERATION = 20.f;
 constexpr float PLAYER_SHIP_TURN_SPEED = 300.f;
@@ -64,10 +64,10 @@ constexpr int STAR_PER_VERTS = 3;
 constexpr int NUM_STAR_VERTS = NEW_MAX_STARS * STAR_PER_VERTS;
 
 constexpr int MAX_INTERACTABLES = 200;
-constexpr float INTERACTABLES_PHYSICS_RADIUS = 1.2f;
-constexpr float INTERACTABLES_COSMETIC_RADIUS = 2.0f;
+constexpr float INTERACTABLES_PHYSICS_RADIUS = 3.0f;
+constexpr float INTERACTABLES_COSMETIC_RADIUS = 4.0f;
 
-constexpr float	ROUND_BUFFER = 5.f;
+constexpr float	ROUND_BUFFER = 15.f;
 
 
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

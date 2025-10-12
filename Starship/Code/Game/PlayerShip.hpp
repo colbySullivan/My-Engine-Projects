@@ -27,11 +27,15 @@ public:
 
 	int					m_lives = 4;
 	float 				m_invincibilityTimer = 0.f;
+	int					m_bulletUpgradeAmount = 0;
+	bool				m_hasBulletReverse = false;
+	float				m_bulletUpgradeSpeedDivisor = 1.f;
 
 private:
 	void InitializeLocalVerts();
 	void UpdateFromKeyboard(float deltaSeconds);
 	void BounceOffWalls();
+	void Shoot();
 	void Respawn();
 	void RenderThrust( Vertex* vertArray );
 

@@ -23,7 +23,7 @@ Entity::~Entity()
 //-----------------------------------------------------------------------------------------------
 void Entity::Update( [[maybe_unused]] float deltaSeconds)
 {
-	if (m_health == 0 && !m_isDead)
+	if (m_health <= 0 && !m_isDead)
 	{
 		Die();
 	}

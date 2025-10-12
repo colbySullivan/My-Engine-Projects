@@ -231,7 +231,7 @@ Interactable* Game::SpawnRandomInteractable()
 	{
 		if (m_interactable[interactableIndex] == nullptr)
 		{
-			m_interactable[interactableIndex] = new Interactable(this, Vec2(100.f, 50.f));
+			m_interactable[interactableIndex] = new Interactable(this, Vec2(g_rng.RollRandomFloatInRange(WORLD_SIZE_X, 0.f), g_rng.RollRandomFloatInRange(0.f, WORLD_SIZE_Y)));
 			return m_interactable[interactableIndex];
 		}
 	}
@@ -454,6 +454,23 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 	}
 }
 
+//------------------------------------------------------------------------------
+void Game::CheckInteractablesVsShips()
+{
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		Interactable* interactable = m_interactable[interactableIndex];
+		if (interactable && !m_playerShip->m_isDead)
+		{
+			if (DoDiscsOverlap(interactable->m_position, interactable->m_physicsRadius, m_playerShip->m_position, m_playerShip->m_physicsRadius))
+			{
+				interactable->Die();
+				interactable->ApplyEffect(m_playerShip);
+			}
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 void Game::CheckBeetlePush()
 {
@@ -626,6 +643,7 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 		UpdateEntities( deltaSeconds );
 		CheckBulletsVsEnemies();
 		CheckEnemiesVsShips();
+		CheckInteractablesVsShips();
 		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 	}
 	return false;
@@ -911,6 +929,15 @@ void Game::CleanupGameEntities()
 		{
 			m_debris[debrisIndex]->m_isDead = true;
 			m_debris[debrisIndex]->m_isGarbage = true;
+		}
+	}
+
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		if (m_interactable[interactableIndex])
+		{
+			m_interactable[interactableIndex]->m_isDead = true;
+			m_interactable[interactableIndex]->m_isGarbage = true;
 		}
 	}
 

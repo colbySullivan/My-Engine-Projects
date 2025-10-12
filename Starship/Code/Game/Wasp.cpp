@@ -41,7 +41,7 @@ void Wasp::Update(float deltaSeconds)
 	}
 	m_position += (m_velocity * deltaSeconds);
 
-	if (m_health == 0 && !m_isDead)
+	if (m_health <= 0 && !m_isDead)
 	{
 		m_isDead = true;
 		m_isGarbage = true;

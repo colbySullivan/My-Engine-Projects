@@ -140,10 +140,7 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	}
 	if (g_engine->m_input->IsKeyDown(' ') && m_shootCooldownTimer <= 0)
 	{
-		m_game->SpawnBullet(m_position, m_orientationDegrees);
-		SoundPlaybackID temp = g_engine->m_audio->StartSound(1, false, 0.1f);
-		m_game->HandleSound(temp, PRIORITY_LOW);
-		m_shootCooldownTimer = BULLET_COOLDOWN;
+		Shoot();
 	}
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
@@ -187,6 +184,34 @@ void PlayerShip::BounceOffWalls()
 	}
 }
 
+void PlayerShip::Shoot()
+{
+	SoundPlaybackID temp = g_engine->m_audio->StartSound(1, false, 0.1f);
+	m_game->HandleSound(temp, PRIORITY_LOW);
+	Vec2 forwardNormal = GetForwardNormal();
+	Vec2 nosePosition = m_position + (forwardNormal * 1.f);
+	m_game->SpawnBullet(nosePosition, m_orientationDegrees);
+	if (m_bulletUpgradeAmount > 0)
+	{
+		for (int i = 1; i <= m_bulletUpgradeAmount; ++i)
+		{
+			float angleOffset = 5.f * i;
+			m_game->SpawnBullet(nosePosition, m_orientationDegrees + angleOffset);
+			m_game->SpawnBullet(nosePosition, m_orientationDegrees - angleOffset);
+		}
+		/*m_game->SpawnBullet(nosePosition, m_orientationDegrees + 45.f);
+		m_game->SpawnBullet(nosePosition, m_orientationDegrees - 45.f);*/
+	}
+	if (m_hasBulletReverse)
+	{
+		Vec2 backPosition = m_position - (forwardNormal * 1.f);
+		m_game->SpawnBullet(backPosition, m_orientationDegrees + 180.f);
+	}
+
+
+	m_shootCooldownTimer = BULLET_BASE_COOLDOWN * m_bulletUpgradeSpeedDivisor;
+}
+
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::Respawn()
 {
@@ -201,6 +226,7 @@ void PlayerShip::Respawn()
 		m_health = 1;
 		m_lives -= 1;
 		m_invincibilityTimer = SHIP_INVINCIBILITY_TIME;
+
 	}
 }
 
@@ -252,14 +278,8 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	}
 
 	// Shoot
-	if( controller.IsButtonDown( XboxButtonID::A ) || (controller.GetRightTrigger() != 0) && m_shootCooldownTimer <= 0)
+	if( (controller.IsButtonDown( XboxButtonID::A ) || controller.GetRightTrigger() != 0) && m_shootCooldownTimer <= 0 )
 	{
-		SoundPlaybackID temp = g_engine->m_audio->StartSound( 1, false, 0.1f);
-		m_game->HandleSound( temp, PRIORITY_LOW );
-		Vec2 forwardNormal = GetForwardNormal();
-		Vec2 nosePosition = m_position + (forwardNormal * 1.f);
-		m_game->SpawnBullet( nosePosition, m_orientationDegrees );
-
-		m_shootCooldownTimer = BULLET_COOLDOWN;
+		Shoot();
 	}
 }
