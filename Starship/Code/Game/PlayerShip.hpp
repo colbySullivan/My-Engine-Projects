@@ -25,7 +25,8 @@ public:
 
 	static void InitializeLocalPlayerShipsVerts( Vertex* vertArray );
 
-	int m_lives = 4;
+	int					m_lives = 4;
+	float 				m_invincibilityTimer = 0.f;
 
 private:
 	void InitializeLocalVerts();

@@ -18,6 +18,7 @@ PlayerShip::PlayerShip( Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = PLAYER_SHIP_COSMETIC_RADIUS;
 	m_entityColor = Rgba8(102, 153, 204, 255);
 	m_debrisAmount = 25;
+	m_invincibilityTimer = SHIP_INVINCIBILITY_TIME;
 	InitializeLocalPlayerShipsVerts(m_localVerts);
 }
 
@@ -37,7 +38,10 @@ void PlayerShip::Update(float deltaSeconds)
 		Respawn();
 	}
 	if (!m_isDead)
+	{
+		m_invincibilityTimer -= deltaSeconds;
 		UpdateFromKeyboard(deltaSeconds);
+	}
 	UpdateFromController(deltaSeconds);
 	BounceOffWalls();
 	m_position += m_velocity * deltaSeconds;
@@ -52,6 +56,18 @@ void PlayerShip::Render() const
 	for ( int vertIndex = 0; vertIndex < NUM_SHIP_VERTS; ++vertIndex )
 	{
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
+	}
+
+	if (m_invincibilityTimer > 0.f)
+	{
+		for (int vertIndex = 0; vertIndex < NUM_SHIP_VERTS; ++vertIndex)
+		{
+			float invincibilityFraction = m_invincibilityTimer / SHIP_INVINCIBILITY_TIME;
+			float rValue = Interpolate(255, 102, invincibilityFraction);
+			float gValue = Interpolate(255, 153, invincibilityFraction);
+			float bValue = Interpolate(255, 204, invincibilityFraction);
+			tempShipWorldVerts[vertIndex].m_color = Rgba8((unsigned char)rValue, (unsigned char)gValue, ( unsigned char )bValue, 255);
+		}
 	}
 
 	Vertex tempThrustWorldVerts[NUM_SHIP_VERTS];
@@ -151,23 +167,23 @@ void PlayerShip::BounceOffWalls()
 	if (m_position.x >= WORLD_SIZE_X - m_cosmeticRadius)
 	{
 		m_position.x = WORLD_SIZE_X - m_cosmeticRadius; // Fixes issue where ship could get clip stuck outside world bounds
-		m_velocity.x = -m_velocity.x * 0.5; // Dampen bounce
+		m_velocity.x = -m_velocity.x * 0.5f; // Dampen bounce
 	}
 	else if (m_position.x <= 0 + m_cosmeticRadius)
 	{
 		m_position.x = 0 + m_cosmeticRadius;
-		m_velocity.x = -m_velocity.x * 0.5;
+		m_velocity.x = -m_velocity.x * 0.5f;
 	}
 
 	if (m_position.y >= WORLD_SIZE_Y - m_cosmeticRadius)
 	{
 		m_position.y = WORLD_SIZE_Y - m_cosmeticRadius;
-		m_velocity.y = -m_velocity.y * 0.5;
+		m_velocity.y = -m_velocity.y * 0.5f;
 	}
 	else if (m_position.y <= 0 + m_cosmeticRadius)
 	{
 		m_position.y = 0 + m_cosmeticRadius;
-		m_velocity.y = -m_velocity.y * 0.5;
+		m_velocity.y = -m_velocity.y * 0.5f;
 	}
 }
 
@@ -184,6 +200,7 @@ void PlayerShip::Respawn()
 		m_isDead = false;
 		m_health = 1;
 		m_lives -= 1;
+		m_invincibilityTimer = SHIP_INVINCIBILITY_TIME;
 	}
 }
 

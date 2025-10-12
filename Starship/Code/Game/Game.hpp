@@ -101,6 +101,7 @@ private:
 	void KeyboardInput( float deltaSeconds, XboxController const& controller );
 
 	void UpdateEntities( float deltaSeconds );
+	bool CheckInvincibilityMode();
 
 	void CheckBulletsVsEnemies();
 	void CheckBulletsVsEnemies( Bullet& bullet, Entity& enemy );

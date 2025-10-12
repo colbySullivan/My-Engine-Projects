@@ -335,6 +335,12 @@ void Game::UpdateEntities(float deltaSeconds)
 	CheckBeetlePush();
 }
 
+//------------------------------------------------------------------------------
+bool Game::CheckInvincibilityMode()
+{
+	return m_playerShip->m_invincibilityTimer > 0.f;
+}
+
 //-----------------------------------------------------------------------------------------------
 // Collision Detection
 //-----------------------------------------------------------------------------------------------
@@ -372,7 +378,7 @@ void Game::CheckBulletsVsEnemies()
 		}
 	}
 
-	for (int waspIndex = 0; waspIndex < MAX_BEETLES; ++waspIndex)
+	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
 	{
 		Wasp* wasp = m_wasp[waspIndex];
 		if (wasp)
@@ -435,9 +441,16 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 {
 	if (DoDiscsOverlap(enemy.m_position, enemy.m_physicsRadius, ship.m_position, ship.m_physicsRadius))
 	{
-		ship.m_health -= 1;
 		enemy.m_health -= 1;
-		m_camShakeAmount = SHAKE_TRAUMA_AMOUNT; //TODO
+		m_camShakeAmount = SHAKE_TRAUMA_AMOUNT;
+
+		if (CheckInvincibilityMode())
+		{
+			SoundPlaybackID temp = g_engine->m_audio->StartSound(7, false, 0.3f);
+			HandleSound(temp, PRIORITY_MEDIUM, 0.2f);
+			return;
+		}
+		ship.m_health -= 1;
 	}
 }
 
@@ -465,6 +478,15 @@ void Game::CheckBeetlePush()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderEntities() const
 {
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		Interactable* interactable = m_interactable[interactableIndex];
+		if (interactable)
+		{
+			interactable->Render();
+		}
+	}
+
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
 	{
 		Bullet const* bullet = m_bullets[bulletIndex];
@@ -511,15 +533,6 @@ void Game::RenderEntities() const
 		if (debris)
 		{
 			debris->Render();
-		}
-	}
-
-	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
-	{
-		Interactable* interactable = m_interactable[interactableIndex];
-		if (interactable)
-		{
-			interactable->Render();
 		}
 	}
 
