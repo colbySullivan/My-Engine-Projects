@@ -31,10 +31,10 @@ enum Game_State
 //------------------------------------------------------------------------------
 enum SoundPriority
 {
-	PRIORITY_LOW,			// Shoot sound
-	PRIORITY_MEDIUM,		// Hit/hurt, explosion
-	PRIORITY_HIGH,			// Respawn, game over
-	PRIORITY_MUSIC,			// Background music (lobby, etc)
+	PRIORITY_LOW,			// Shoot
+	PRIORITY_MEDIUM,		// Hit/hurt / Alien death
+	PRIORITY_HIGH,			// Respawn / Final death
+	PRIORITY_MUSIC,			// Background music game and lobby
 	NUM_SOUND_PRIORITIES
 };
 
