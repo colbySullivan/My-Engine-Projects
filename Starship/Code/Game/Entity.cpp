@@ -134,8 +134,8 @@ void Entity::spawnRandomEdge()
 //------------------------------------------------------------------------------
 void Entity::HealthVisual()
 {
-	m_entityColor.r = (unsigned char)Interpolate((float)m_startingEntityColor.r, 255.f, (float)m_health / (float)m_startingHealth);
-	m_entityColor.g = (unsigned char)Interpolate((float)m_startingEntityColor.g, 255.f, (float)m_health / (float)m_startingHealth);
-	m_entityColor.b = (unsigned char)Interpolate((float)m_startingEntityColor.b, 255.f, (float)m_health / (float)m_startingHealth);
+	m_entityColor.r =  static_cast<unsigned char>(Interpolate(static_cast<unsigned char>(m_startingEntityColor.r), 255.f, static_cast<float>(m_health) / static_cast<float>(m_startingHealth)));
+	m_entityColor.g =  static_cast<unsigned char>(Interpolate(static_cast<unsigned char>(m_startingEntityColor.g), 255.f, static_cast<float>(m_health) / static_cast<float>(m_startingHealth)));
+	m_entityColor.b =  static_cast<unsigned char>(Interpolate(static_cast<unsigned char>(m_startingEntityColor.b), 255.f, static_cast<float>(m_health) / static_cast<float>(m_startingHealth)));
 }
 

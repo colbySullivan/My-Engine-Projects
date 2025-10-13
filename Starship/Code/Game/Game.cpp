@@ -232,7 +232,7 @@ Wasp* Game::SpawnNewRandomWasp()
 			return m_wasp[waspIndex];
 		}
 	}
-	ERROR_RECOVERABLE("Cannot spawn a new beetle; all array slots are full");
+	ERROR_RECOVERABLE("Cannot spawn a new wasp; all array slots are full");
 	return nullptr;
 }
 
@@ -414,7 +414,7 @@ void Game::CheckBulletsVsEnemies(Bullet& bullet, Entity& enemy)
 	{
 		bullet.Die();
 		enemy.m_health -= 1;
-		m_camShakeAmount = SHAKE_TRAUMA_AMOUNT / 2; //TODO
+		m_camShakeAmount = SHAKE_TRAUMA_AMOUNT / 2;
 	}
 }
 
@@ -791,7 +791,7 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
-		RenderText( singleChar, Vec2( 525.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( ( unsigned char )offsetColorR, ( unsigned char )offsetColorG, ( unsigned char )offsetColorB ) );
+		RenderText( singleChar, Vec2( 525.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( static_cast<unsigned char>(offsetColorR), static_cast<unsigned char>(offsetColorG), static_cast<unsigned char>(offsetColorB) ) );
 
 	}
 
@@ -851,7 +851,6 @@ void Game::UpdateWaves()
 		for (int i = 0; i < g_rng.RollRandomIntInRange(m_roundNumber, m_roundNumber+1); ++i)
 			SpawnNewRandomWasp();
 
-		//for (int i = 0; i < g_rng.RollRandomIntInRange(1, m_roundNumber); ++i)
 		SpawnRandomInteractable();
 
 	}
@@ -1071,11 +1070,11 @@ void Game::CreateBlackHole()
 	}
 
 	// Precompute 2D vertex offsets
-	constexpr float degreesPerBlackHoleSide = 360.f / ( float )NUM_BLACK_HOLE_SIDES;
+	constexpr float degreesPerBlackHoleSide = 360.f / static_cast<float>(NUM_BLACK_HOLE_SIDES);
 	Vec2 blackholeLocalVertPositions[NUM_BLACK_HOLE_SIDES] = {};
 	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
 	{
-		float degrees = degreesPerBlackHoleSide * ( float )sideNum;
+		float degrees = degreesPerBlackHoleSide * static_cast<float>(sideNum);
 		float radius = holeRadii[sideNum];
 		blackholeLocalVertPositions[sideNum].x = radius * CosDegrees( degrees );
 		blackholeLocalVertPositions[sideNum].y = radius * SinDegrees( degrees );

@@ -16,7 +16,7 @@ constexpr int NUM_THRUST_VERTS = 3 * NUM_THRUST_FLAMES;
 class PlayerShip : public Entity
 {
 public:
-	PlayerShip(Game* owner, Vec2 const& startPos); //TODO update this to take in controller id for multiplayer
+	PlayerShip(Game* owner, Vec2 const& startPos);
 	~PlayerShip();
 
 	virtual void Update(float deltaSeconds) override;

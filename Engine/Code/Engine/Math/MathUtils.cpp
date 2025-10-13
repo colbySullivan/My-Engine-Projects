@@ -298,7 +298,7 @@ bool PushDiscsOutOfEachOther2D( Vec2& aCenter, float aRadius, Vec2& bCenter, flo
 		float overlapDist = discSepDist - centerToCenterLength;
 
 		Vec2 pushDirection = centerToCenter.GetNormalized();
-		float halfOverlap = overlapDist * 0.5f; // TODO take size into account
+		float halfOverlap = overlapDist * 0.5f;
 		aCenter -= pushDirection * halfOverlap;
 		bCenter += pushDirection * halfOverlap;
 

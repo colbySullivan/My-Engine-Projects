@@ -66,7 +66,7 @@ void PlayerShip::Render() const
 			float rValue = Interpolate(255, 102, invincibilityFraction);
 			float gValue = Interpolate(255, 153, invincibilityFraction);
 			float bValue = Interpolate(255, 204, invincibilityFraction);
-			tempShipWorldVerts[vertIndex].m_color = Rgba8((unsigned char)rValue, (unsigned char)gValue, ( unsigned char )bValue, 255);
+			tempShipWorldVerts[vertIndex].m_color = Rgba8(static_cast<unsigned char>(rValue), static_cast<unsigned char>(gValue), static_cast<unsigned char>(bValue), 255);
 		}
 	}
 
@@ -250,7 +250,7 @@ void PlayerShip::RenderThrust(  Vertex* vertThrustArray )
 	{
 		float randRed = g_rng.RollRandomFloatInRange(150.f, 255.f);
 		float randAlpha = g_rng.RollRandomFloatInRange(50.f, 200.f);
-		vertThrustArray[vertIndex].m_color = Rgba8( ( unsigned char )randRed, 10, 10, ( unsigned char )randAlpha );
+		vertThrustArray[vertIndex].m_color = Rgba8( static_cast<unsigned char>(randRed), 10, 10, static_cast<unsigned char>(randAlpha) );
 	}
 }
 
