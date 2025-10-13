@@ -24,6 +24,7 @@ public:
 	Vec2        GetForwardNormal() const;
 	void		WrapAroundScreen();
 	void		spawnRandomEdge();
+	void		HealthVisual();
 
 	RandomNumberGenerator g_rng;
 
@@ -37,8 +38,11 @@ public:
 	float       m_cosmeticRadius = 10.f;
 	float		m_debrisSize = 0.5f;
 	int         m_health = 1;
+	int			m_startingHealth = 1;
 	int			m_debrisAmount = 3;
 	bool        m_isDead = false;  // gameplay idea
 	bool        m_isGarbage = false;  // code idea
 	Rgba8		m_entityColor = Rgba8(200, 200, 200, 127);
+	Rgba8		m_startingEntityColor = Rgba8(200, 200, 200, 127);
+
 };

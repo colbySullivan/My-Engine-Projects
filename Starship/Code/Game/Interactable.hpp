@@ -11,18 +11,6 @@ constexpr int NUM_INTERACTABLE_VERTS = 192;
 constexpr int NUM_INTERACTABLE_TRIS = 64;
 constexpr int NUM_INTERACTABLE_SIDES = 64;
 
-//------------------------------------------------------------------------------
-enum PowerUp
-{
-	BulletSpeed1,
-	BulletSpeed2,
-	BulletSpeed3,
-	BulletCount1,
-	BulletCount2,
-	BulletCount3,
-	Num_PowerUps
-};
-
 
 //------------------------------------------------------------------------------
 

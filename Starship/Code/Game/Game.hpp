@@ -72,6 +72,7 @@ public:
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
 	bool				m_playingEndSound = false;
+	bool				m_powerUpScreen = false;
 
 	// Utility
 	int					m_roundNumber = 1;
@@ -79,12 +80,14 @@ public:
 	float				m_roundEndTimer = 3;
 	float				m_camShakeAmount;
 	float				m_shipAnimationTimer = 0.0f;
-	float				SHIP_ANIMATION_DURATION = 5.0f;
 	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
 	float 				m_roundTime;	
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
+	PowerUp				m_currentPowerUp = Num_PowerUps;
+	float				m_powerUpTimer = 0.f;
+	int					m_enemiesKilled = 0;
 
 
 	// Audio
@@ -131,6 +134,7 @@ private:
 	void CreateBlackHole();
 	void GenerateStars();
 	void RoundTimer(float deltaSeconds);
+	void RenderPauseScreenPowerUp(PowerUp m_currentPowerUp);
 
 	App* m_app;
 	Camera*			m_worldCamera = nullptr;

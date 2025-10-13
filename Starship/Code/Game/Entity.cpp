@@ -10,6 +10,7 @@ Entity::Entity(Game* owner, Vec2 const& startPos )
 {
 	m_game = owner;
 	m_position = startPos;
+	m_startingHealth = m_health;
 	//m_velocity = velocity;
 	//m_health = health;
 }
@@ -61,7 +62,8 @@ void Entity::Die()
 	m_game->HandleSound( temp, PRIORITY_HIGH, 0.3f );*/
 	m_isGarbage = true;
 	m_isDead = true;
-	g_theApp->m_game->SpawnDebrisCluster(m_position, m_entityColor, m_velocity, m_debrisAmount, m_debrisSize);
+	g_theApp->m_game->m_enemiesKilled += 1;
+	g_theApp->m_game->SpawnDebrisCluster(m_position, m_startingEntityColor, m_velocity, m_debrisAmount, m_debrisSize);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -127,5 +129,13 @@ void Entity::spawnRandomEdge()
 		m_position.y = -m_cosmeticRadius;
 		break;
 	}
+}
+
+//------------------------------------------------------------------------------
+void Entity::HealthVisual()
+{
+	m_entityColor.r = (unsigned char)Interpolate((float)m_startingEntityColor.r, 255.f, (float)m_health / (float)m_startingHealth);
+	m_entityColor.g = (unsigned char)Interpolate((float)m_startingEntityColor.g, 255.f, (float)m_health / (float)m_startingHealth);
+	m_entityColor.b = (unsigned char)Interpolate((float)m_startingEntityColor.b, 255.f, (float)m_health / (float)m_startingHealth);
 }
 

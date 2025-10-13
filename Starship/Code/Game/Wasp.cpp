@@ -14,7 +14,8 @@ Wasp::Wasp(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = WASP_COSMETIC_RADIUS;
 	m_physicsRadius = WASP_PHYSICS_RADIUS;
 	m_health = 3;
-	m_entityColor = Rgba8(10, 255, 10, 255);
+	m_entityColor = Rgba8(139, 0, 0, 255);
+	m_startingEntityColor = Rgba8(139, 0, 0, 255);
 	InitializeLocalVerts();
 	spawnRandomEdge();
 }
@@ -41,6 +42,13 @@ void Wasp::Update(float deltaSeconds)
 	}
 	m_position += (m_velocity * deltaSeconds);
 
+	HealthVisual();
+
+	for (int vertIndex = 0; vertIndex < NUM_WASP_VERTS; ++vertIndex)
+	{
+		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, m_entityColor.a);
+	}
+
 	if (m_health <= 0 && !m_isDead)
 	{
 		m_isDead = true;
@@ -62,6 +70,7 @@ void Wasp::Render() const
 
 	TransformVertexArrayXY3D(NUM_WASP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_WASP_VERTS, tempShipWorldVerts);
+
 	if (m_game->g_drawDebug)
 		DebugRender();
 }

@@ -51,6 +51,10 @@ void Game::Startup()
 	m_roundNumber = 1;
 	m_roundEndTimer = 3;
 	m_roundTime = 0.f;
+	m_isPaused = false;
+	m_spawnBuffer = 0.f;
+	m_powerUpScreen = false;
+	m_enemiesKilled = 0;
 	UpdateWaves();
 }
 
@@ -64,6 +68,11 @@ void Game::Update(float deltaSeconds)
 		m_currentGameState = m_nextGameState;
 	}
 
+	if (m_isPaused)
+	{
+		RenderPauseScreenPowerUp(m_currentPowerUp);
+	}
+
 	if ( m_isSlowMo ) // T pressed
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
 
@@ -74,6 +83,12 @@ void Game::Update(float deltaSeconds)
 	{
 		m_soundDurationTimer -= deltaSeconds;
 	}
+
+	if (m_powerUpTimer > 0.f)
+	{
+		m_powerUpTimer -= deltaSeconds;
+	}
+
 	RoundTimer( deltaSeconds );
 	CreateBlackHole();
 	UpdateCameras( deltaSeconds );
@@ -110,9 +125,10 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
 
-	if (g_engine->m_input->WasKeyJustPressed('P')) // Pauses game
+	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{
 		m_isPaused = !m_isPaused; // Switch pause
+		m_powerUpScreen = false;
 	}
 	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
 	{
@@ -130,7 +146,6 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	{
 		g_drawDebug = !g_drawDebug;
 	}
-		
 
 	if ( m_playerShip->m_lives <= 0 && m_playerShip->m_isDead )
 	{
@@ -197,6 +212,7 @@ Beetle* Game::SpawnNewRandomBeetle()
 		if (m_beetles[beetleIndex] == nullptr)
 		{
 			m_beetles[beetleIndex] = new Beetle(this, Vec2(0, 0)); //Position will be randomly chosen in astroid class
+			m_beetles[beetleIndex]->m_health += m_roundNumber * 2;
 			return m_beetles[beetleIndex];
 		}
 	}
@@ -212,6 +228,7 @@ Wasp* Game::SpawnNewRandomWasp()
 		if (m_wasp[waspIndex] == nullptr)
 		{
 			m_wasp[waspIndex] = new Wasp(this, Vec2(0, 0)); //Position will be randomly chosen in astroid class
+			m_wasp[waspIndex]->m_health += m_roundNumber * 2;
 			return m_wasp[waspIndex];
 		}
 	}
@@ -460,7 +477,13 @@ void Game::CheckInteractablesVsShips()
 			if (DoDiscsOverlap(interactable->m_position, interactable->m_physicsRadius, m_playerShip->m_position, m_playerShip->m_physicsRadius))
 			{
 				interactable->Die();
-				interactable->ApplyEffect(m_playerShip);
+				m_currentPowerUp = interactable->ApplyEffect(m_playerShip);
+				if (m_currentPowerUp != Num_PowerUps)
+				{
+					m_isPaused = !m_isPaused;
+					m_powerUpTimer = POWERUP_DELAY;
+					m_powerUpScreen = true;
+				}
 			}
 		}
 	}
@@ -805,7 +828,7 @@ int Game::GetNumLivingEnemies() const
 //-----------------------------------------------------------------------------------------------
 bool Game::IsReadyToStartNextWave() const
 {
-	int numLivingEnemies = GetNumLivingEnemies();
+	//int numLivingEnemies = GetNumLivingEnemies();
 	return m_spawnBuffer <= 0.f && m_currentGameState == GAMESTATE_PLAY;
 }
 
@@ -882,6 +905,15 @@ void Game::DestroyGarbageEntities()
 		{
 			delete debris;
 			m_debris[debrisIndex] = nullptr;
+		}
+	}
+	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
+	{
+		Interactable const* interactable = m_interactable[interactableIndex];
+		if (interactable && interactable->m_isGarbage)
+		{
+			delete interactable;
+			m_interactable[interactableIndex] = nullptr;
 		}
 	}
 }
@@ -1107,9 +1139,88 @@ void Game::RoundTimer(float deltaSeconds)
 	if(m_playerShip->m_isDead)
 		return;
 
-	m_spawnBuffer -= deltaSeconds;
-	m_roundTime += deltaSeconds;
+	if (!m_isPaused)
+	{
+		m_spawnBuffer -= deltaSeconds;
+		m_roundTime += deltaSeconds;
+	}
 
 	if (m_roundTime >= m_bestRoundTime)
 		m_bestRoundTime = m_roundTime;
+}
+
+//------------------------------------------------------------------------------
+void Game::RenderPauseScreenPowerUp(PowerUp m_currentPowerUp)
+{
+	m_screenCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(SCREEN_SIZE_X, SCREEN_SIZE_Y));
+	g_engine->m_render->BeginCamera(*m_screenCamera);
+
+	// Background
+	Vertex background[6];
+	background[0].m_position = Vec3(0.f, 0.f, 0.f);
+	background[1].m_position = Vec3(0.f, SCREEN_SIZE_Y, 0.f);
+	background[2].m_position = Vec3(SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f);
+
+	background[3].m_position = Vec3(0.f, 0.f, 0.f);
+	background[4].m_position = Vec3(SCREEN_SIZE_X, 0.f, 0.f);
+	background[5].m_position = Vec3(SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f);
+	for (int vertIndex = 0; vertIndex < 6; ++vertIndex)
+	{
+		background[vertIndex].m_color = Rgba8(255, 255, 255, 100);
+	}
+	TransformVertexArrayXY3D(
+		6,
+		background,
+		1.0f,
+		0.f,
+		Vec2(0.f, 0.f));
+	g_engine->m_render->DrawVertexArray(6, background);
+
+	char powerUpText[64];
+	if (m_powerUpScreen)
+	{
+
+		if (m_powerUpTimer > 0.f)
+		{
+			snprintf(powerUpText, sizeof(powerUpText), "What is it? %f", m_powerUpTimer);
+		}
+		else
+		{
+			switch (m_currentPowerUp)
+			{
+			case BulletSpeed1:
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletSpeed1");
+				break;
+			case BulletSpeed2:
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletSpeed2");
+				break;
+			case BulletSpeed3:
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletSpeed3");
+				break;
+			case BulletCount1:
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletCount1");
+				break;
+			case BulletCount2:
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletCount2");
+				break;
+			case BulletCount3:
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletCount3");
+				break;
+			default:
+				snprintf(powerUpText, sizeof(powerUpText), "Unknown");
+				break;
+			}
+		}
+
+		RenderText(powerUpText, Vec2(200.f, 450.f), 40.f, Rgba8(255, 215, 0, 255));
+		RenderText("Press Start to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
+	}
+	else
+	{
+		snprintf(powerUpText, sizeof(powerUpText), "Aliens killed: %i", m_enemiesKilled);
+		RenderText("PAUSED", Vec2(350.f, 400.f), 80.f, Rgba8(255, 255, 255, 255));
+		RenderText("Press P to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
+		RenderText(powerUpText, Vec2(325.f, 200.f), 30.f, Rgba8(255, 255, 255, 255));
+	}
+	g_engine->m_render->EndCamera(*m_screenCamera);
 }

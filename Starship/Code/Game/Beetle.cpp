@@ -14,6 +14,8 @@ Beetle::Beetle(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = BEETLE_COSMETIC_RADIUS;
 	m_physicsRadius = BEETLE_PHYSICS_RADIUS;
 	m_health = 3;
+	m_entityColor = Rgba8(255, 191, 0, 255);
+	m_startingEntityColor = Rgba8(255, 191, 0, 255);
 	InitializeLocalVerts();
 	spawnRandomEdge();
 }
@@ -35,6 +37,13 @@ void Beetle::Update(float deltaSeconds)
 		m_velocity = directionToPlayer * BEETLE_SPEED;
 	}
 	m_position += m_velocity * deltaSeconds;
+
+	HealthVisual();
+
+	for (int vertIndex = 0; vertIndex < NUM_BEETLE_VERTS; ++vertIndex)
+	{
+		m_localVerts[vertIndex].m_color = Rgba8(m_entityColor.r, m_entityColor.g, m_entityColor.b, m_entityColor.a);
+	}
 
 	Entity::Update(deltaSeconds);
 }

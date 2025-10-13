@@ -204,8 +204,13 @@ void PlayerShip::Shoot()
 	}
 	if (m_hasBulletReverse)
 	{
-		Vec2 backPosition = m_position - (forwardNormal * 1.f);
-		m_game->SpawnBullet(backPosition, m_orientationDegrees + 180.f);
+		for (int i = 1; i <= m_bulletUpgradeAmount; ++i)
+		{
+			float angleOffset = 5.f * i;
+			Vec2 backPosition = m_position - (forwardNormal * 1.f);
+			m_game->SpawnBullet(backPosition, m_orientationDegrees + angleOffset + 180.f);
+			m_game->SpawnBullet(backPosition, m_orientationDegrees - angleOffset + 180.f);
+		}
 	}
 
 
@@ -258,7 +263,7 @@ void PlayerShip::UpdateFromController([[maybe_unused]] float deltaSeconds )
 	// Respawn
 	if( m_isDead )
 	{
-		if( controller.WasButtonJustPressed( XboxButtonID::START ) && m_lives > 0 )
+		if( controller.WasButtonJustPressed( XboxButtonID::A ) && m_lives > 0 )
 		{
 			Respawn();
 		}

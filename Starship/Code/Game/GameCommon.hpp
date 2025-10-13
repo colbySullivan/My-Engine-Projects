@@ -46,12 +46,13 @@ constexpr float BULLET_PHYSICS_RADIUS = 1.5f;
 constexpr float BULLET_COSMETIC_RADIUS = 3.0f;
 constexpr float BULLET_BASE_COOLDOWN = 0.1f;
 
-constexpr float PLAYER_SHIP_ACCELERATION = 20.f;
+constexpr float PLAYER_SHIP_ACCELERATION = 30.f;
 constexpr float PLAYER_SHIP_TURN_SPEED = 300.f;
 constexpr float PLAYER_SHIP_PHYSICS_RADIUS = 1.75f;
 constexpr float PLAYER_SHIP_COSMETIC_RADIUS = 2.25f;
 constexpr int	NUM_VERTS = 6;
 constexpr float SHIP_INVINCIBILITY_TIME = 2.0f;
+constexpr float SHIP_ANIMATION_DURATION = 5.0f;
 
 constexpr float	SHAKE_TRAUMA_AMOUNT = 1;
 
@@ -66,9 +67,22 @@ constexpr int NUM_STAR_VERTS = NEW_MAX_STARS * STAR_PER_VERTS;
 constexpr int MAX_INTERACTABLES = 200;
 constexpr float INTERACTABLES_PHYSICS_RADIUS = 3.0f;
 constexpr float INTERACTABLES_COSMETIC_RADIUS = 4.0f;
+constexpr float POWERUP_DELAY = 1.0f;
 
 constexpr float	ROUND_BUFFER = 15.f;
 
+//------------------------------------------------------------------------------
+enum PowerUp
+{
+	BulletSpeed1,
+	BulletSpeed2,
+	BulletSpeed3,
+	BulletCount1,
+	BulletCount2,
+	BulletCount3,
+	Num_PowerUps
+};
 
+//------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);
 void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickness, Rgba8 const& color);
