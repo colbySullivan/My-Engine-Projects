@@ -228,26 +228,28 @@ bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discR
 
 bool IsPointInsideOrientedSector2D( Vec2 const& point, Vec2 const& sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius )
 {
-	if ( IsPointInsideDisc2D( point, sectorTip, sectorRadius ) )
-	{
-		Vec2 sectToPoint = point - sectorTip;
-		float displacementDegrees = GetShortestAngularDispDegrees( sectToPoint.GetOrientationDegrees(), sectorFwdDegrees );
-		if ( fabsf( displacementDegrees ) > sectorApertureDegrees * 0.5f )
-			return false;
-	}
+	if ( !IsPointInsideDisc2D( point, sectorTip, sectorRadius ) )
+		return false;
+
+	Vec2 sectToPoint = point - sectorTip;
+	float displacementDegrees = GetShortestAngularDispDegrees( sectToPoint.GetOrientationDegrees(), sectorFwdDegrees );
+	if ( fabsf( displacementDegrees ) > sectorApertureDegrees * 0.5f )
+		return false;
+
 	return true;
 }
 
 bool IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Vec2 const& sectorFwdNormal, float sectorApertureDegrees, float sectorRadius )
 {
-	if ( IsPointInsideDisc2D( point, sectorTip, sectorRadius ) )
-	{
-		Vec2 sectToPoint = point - sectorTip;
-		float sectorFwdDegrees = sectorFwdNormal.GetOrientationDegrees();
-		float displacementDegrees = GetShortestAngularDispDegrees( sectToPoint.GetOrientationDegrees(), sectorFwdDegrees );
-		if ( fabsf( displacementDegrees ) > sectorApertureDegrees * 0.5f )
-			return false;
-	}
+	if ( !IsPointInsideDisc2D( point, sectorTip, sectorRadius ) )
+		return false;
+
+	Vec2 sectToPoint = point - sectorTip;
+	float sectorFwdDegrees = sectorFwdNormal.GetOrientationDegrees();
+	float displacementDegrees = GetShortestAngularDispDegrees( sectToPoint.GetOrientationDegrees(), sectorFwdDegrees );
+	if ( fabsf( displacementDegrees ) > sectorApertureDegrees * 0.5f )
+		return false;
+
 	return true;
 }
 
