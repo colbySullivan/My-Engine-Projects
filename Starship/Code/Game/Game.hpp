@@ -88,6 +88,8 @@ public:
 	PowerUp				m_currentPowerUp = Num_PowerUps;
 	float				m_powerUpTimer = 0.f;
 	int					m_enemiesKilled = 0;
+	bool				m_firstStart = true;
+	float				m_firstStartTimer;
 
 
 	// Audio
@@ -134,7 +136,9 @@ private:
 	void CreateBlackHole();
 	void GenerateStars();
 	void RoundTimer(float deltaSeconds);
-	void RenderPauseScreenPowerUp(PowerUp m_currentPowerUp);
+	void RenderPauseScreenPowerUp(PowerUp currentPowerUp);
+	void RenderDeadScreen();
+	void RenderStartScreen();
 
 	App* m_app;
 	Camera*			m_worldCamera = nullptr;

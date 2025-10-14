@@ -55,6 +55,8 @@ void Game::Startup()
 	m_spawnBuffer = 0.f;
 	m_powerUpScreen = false;
 	m_enemiesKilled = 0;
+	m_firstStart = true;
+	m_firstStartTimer = 5.0f;
 	UpdateWaves();
 }
 
@@ -68,9 +70,23 @@ void Game::Update(float deltaSeconds)
 		m_currentGameState = m_nextGameState;
 	}
 
-	if (m_isPaused)
+	if ( m_firstStart )
+	{
+		m_isPaused = true;
+		RenderStartScreen();
+		m_firstStartTimer -= deltaSeconds;
+	}
+		
+
+	if ( m_isPaused &&  !m_playerShip->m_isDead && !m_firstStart)
 	{
 		RenderPauseScreenPowerUp(m_currentPowerUp);
+	}
+
+	if ( m_playerShip->m_isDead && !m_firstStart )
+	{
+		//g_engine->m_render->EndCamera( *m_worldCamera );
+		RenderDeadScreen();
 	}
 
 	if ( m_isSlowMo ) // T pressed
@@ -129,6 +145,7 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	{
 		m_isPaused = !m_isPaused; // Switch pause
 		m_powerUpScreen = false;
+		m_firstStart = false;
 	}
 	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
 	{
@@ -147,11 +164,11 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 		g_drawDebug = !g_drawDebug;
 	}
 
-	if ( m_playerShip->m_lives <= 0 && m_playerShip->m_isDead )
+	if ( m_playerShip->m_lives <= 0 )
 	{
 		if ( !m_playingEndSound )
 		{
-			m_endPlaybackID = g_engine->m_audio->StartSound( 5 ); // End sound
+			m_endPlaybackID = g_engine->m_audio->StartSound( 25 ); // End sound
 			m_playingEndSound = true;
 		}
 		m_roundEndTimer -= deltaSeconds;
@@ -1149,7 +1166,7 @@ void Game::RoundTimer(float deltaSeconds)
 }
 
 //------------------------------------------------------------------------------
-void Game::RenderPauseScreenPowerUp(PowerUp m_currentPowerUp)
+void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
 {
 	m_screenCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(SCREEN_SIZE_X, SCREEN_SIZE_Y));
 	g_engine->m_render->BeginCamera(*m_screenCamera);
@@ -1185,25 +1202,25 @@ void Game::RenderPauseScreenPowerUp(PowerUp m_currentPowerUp)
 		}
 		else
 		{
-			switch (m_currentPowerUp)
+			switch (currentPowerUp)
 			{
 			case BulletSpeed1:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletSpeed1");
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 1");
 				break;
 			case BulletSpeed2:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletSpeed2");
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 2");
 				break;
 			case BulletSpeed3:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletSpeed3");
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 3");
 				break;
 			case BulletCount1:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletCount1");
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 1");
 				break;
 			case BulletCount2:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletCount2");
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 2");
 				break;
 			case BulletCount3:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade given: BulletCount3");
+				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 3");
 				break;
 			default:
 				snprintf(powerUpText, sizeof(powerUpText), "Unknown");
@@ -1218,8 +1235,93 @@ void Game::RenderPauseScreenPowerUp(PowerUp m_currentPowerUp)
 	{
 		snprintf(powerUpText, sizeof(powerUpText), "Aliens killed: %i", m_enemiesKilled);
 		RenderText("PAUSED", Vec2(350.f, 400.f), 80.f, Rgba8(255, 255, 255, 255));
-		RenderText("Press P to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
+		RenderText("Press P or Start to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
 		RenderText(powerUpText, Vec2(325.f, 200.f), 30.f, Rgba8(255, 255, 255, 255));
 	}
 	g_engine->m_render->EndCamera(*m_screenCamera);
+}
+
+void Game::RenderDeadScreen()
+{
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	g_engine->m_render->BeginCamera( *m_screenCamera );
+
+	// Background
+	Vertex background[6];
+	background[0].m_position = Vec3( 0.f, 0.f, 0.f );
+	background[1].m_position = Vec3( 0.f, SCREEN_SIZE_Y, 0.f );
+	background[2].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+
+	background[3].m_position = Vec3( 0.f, 0.f, 0.f );
+	background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
+	background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+	for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
+	{
+		background[vertIndex].m_color = Rgba8( 255, 255, 255, 100 );
+	}
+	TransformVertexArrayXY3D(
+		6,
+		background,
+		1.0f,
+		0.f,
+		Vec2( 0.f, 0.f ) );
+	g_engine->m_render->DrawVertexArray( 6, background );
+
+	if ( m_playerShip->m_lives <= 0 )
+	{
+		RenderText( "Game Over", Vec2( 350.f, 400.f ), 80.f, Rgba8( 255, 255, 255, 255 ) );
+		RenderText( "The stars are mine!", Vec2( 400.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
+	}
+		
+	else
+	{
+		RenderText( "Wasted", Vec2( 350.f, 400.f ), 80.f, Rgba8( 255, 255, 255, 255 ) );
+		RenderText( "Press A to Respawn", Vec2( 325.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
+	}
+	
+
+	g_engine->m_render->EndCamera(*m_screenCamera);
+}
+
+void Game::RenderStartScreen()
+{
+	char timerText[64];
+	snprintf( timerText, sizeof( timerText ), "Press start %f", m_firstStartTimer );
+	if ( m_firstStartTimer > 0 )
+	{
+		m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+		g_engine->m_render->BeginCamera( *m_screenCamera );
+
+		// Background
+		Vertex background[6];
+		background[0].m_position = Vec3( 0.f, 0.f, 0.f );
+		background[1].m_position = Vec3( 0.f, SCREEN_SIZE_Y, 0.f );
+		background[2].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+
+		background[3].m_position = Vec3( 0.f, 0.f, 0.f );
+		background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
+		background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+		for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
+		{
+			background[vertIndex].m_color = Rgba8( 255, 255, 255, 100 );
+		}
+		TransformVertexArrayXY3D(
+			6,
+			background,
+			1.0f,
+			0.f,
+			Vec2( 0.f, 0.f ) );
+		g_engine->m_render->DrawVertexArray( 6, background );
+
+		RenderText( "Survive", Vec2( 350.f, 400.f ), 80.f, Rgba8( 255, 255, 255, 255 ) );
+		RenderText( "Green == Awesome", Vec2( 325.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
+		RenderText( timerText, Vec2( 325.f, 200.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
+
+		g_engine->m_render->EndCamera( *m_screenCamera );
+	}
+	else
+	{
+		m_firstStart = false;
+		m_isPaused = false;
+	}
 }

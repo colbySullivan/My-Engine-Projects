@@ -33,7 +33,7 @@ void Beetle::Update(float deltaSeconds)
 	{
 		Vec2 toPlayerPos = m_game->m_playerShip->m_position - m_position;
 		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
-		m_orientationDegrees = Atan2Degrees(directionToPlayer.y, directionToPlayer.x) - 90.f;
+		m_orientationDegrees = Atan2Degrees( directionToPlayer.y, directionToPlayer.x ) - 90.f;
 		m_velocity = directionToPlayer * BEETLE_SPEED;
 	}
 	m_position += m_velocity * deltaSeconds;

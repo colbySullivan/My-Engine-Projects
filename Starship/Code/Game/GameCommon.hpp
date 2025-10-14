@@ -65,11 +65,11 @@ constexpr int STAR_PER_VERTS = 3;
 constexpr int NUM_STAR_VERTS = NEW_MAX_STARS * STAR_PER_VERTS;
 
 constexpr int MAX_INTERACTABLES = 200;
-constexpr float INTERACTABLES_PHYSICS_RADIUS = 3.0f;
-constexpr float INTERACTABLES_COSMETIC_RADIUS = 4.0f;
+constexpr float INTERACTABLES_PHYSICS_RADIUS = 6.0f;
+constexpr float INTERACTABLES_COSMETIC_RADIUS = 8.0f;
 constexpr float POWERUP_DELAY = 1.0f;
 
-constexpr float	ROUND_BUFFER = 15.f;
+constexpr float	ROUND_BUFFER = 12.f;
 
 //------------------------------------------------------------------------------
 enum PowerUp

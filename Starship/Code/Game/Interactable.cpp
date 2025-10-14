@@ -38,7 +38,7 @@ void Interactable::Render() const
 		tempWorldVerts[vertIndex] = m_interactableVerts[vertIndex];
 	}
 	
-	TransformVertexArrayXY3D(NUM_INTERACTABLE_VERTS, tempWorldVerts, 2.0f, 0.f, m_position);
+	TransformVertexArrayXY3D(NUM_INTERACTABLE_VERTS, tempWorldVerts, 4.0f, 0.f, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_INTERACTABLE_VERTS, tempWorldVerts);
 	
 	if (m_game->g_drawDebug)
@@ -51,7 +51,7 @@ void Interactable::InitializeLocalVerts()
 	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
 	for (int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum)
 	{
-		holeRadii[sideNum] = g_rng.RollRandomFloatInRange(1.0f, 2.0f);
+		holeRadii[sideNum] = g_rng.RollRandomFloatInRange(1.8f, 2.0f);
 	}
 
 	// Precompute 2D vertex offsets

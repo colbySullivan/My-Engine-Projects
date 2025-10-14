@@ -220,18 +220,24 @@ void PlayerShip::Shoot()
 //-----------------------------------------------------------------------------------------------
 void PlayerShip::Respawn()
 {
-	if (m_isDead && (m_lives > 0))
+	if ( m_isDead )
 	{
-		SoundPlaybackID temp = g_engine->m_audio->StartSound( 3, false, 0.5f );
-		m_game->HandleSound( temp, PRIORITY_HIGH );
-		m_position = Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
-		m_velocity = Vec2(0, 0);
-		m_orientationDegrees = 0.f;
-		m_isDead = false;
-		m_health = 1;
-		m_lives -= 1;
-		m_invincibilityTimer = SHIP_INVINCIBILITY_TIME;
-
+		if ( m_lives > 1 )
+		{
+			SoundPlaybackID temp = g_engine->m_audio->StartSound( 3, false, 0.5f );
+			m_game->HandleSound( temp, PRIORITY_HIGH );
+			m_position = Vec2( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
+			m_velocity = Vec2( 0, 0 );
+			m_orientationDegrees = 0.f;
+			m_isDead = false;
+			m_health = 1;
+			m_lives -= 1;
+			m_invincibilityTimer = SHIP_INVINCIBILITY_TIME;
+		}
+		else
+		{
+			m_lives = 0;	// Explicitly end the game
+		}
 	}
 }
 
