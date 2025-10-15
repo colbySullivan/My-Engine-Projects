@@ -1228,7 +1228,7 @@ void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
 		}
 
 		RenderText(powerUpText, Vec2(200.f, 450.f), 40.f, Rgba8(255, 215, 0, 255));
-		RenderText("Press Start to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
+		RenderText("Press Start or P to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
 	}
 	else
 	{
@@ -1275,7 +1275,7 @@ void Game::RenderDeadScreen()
 	else
 	{
 		RenderText( "Wasted", Vec2( 350.f, 400.f ), 80.f, Rgba8( 255, 255, 255, 255 ) );
-		RenderText( "Press A to Respawn", Vec2( 325.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
+		RenderText( "Press A or N to Respawn", Vec2( 325.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
 	}
 	
 
@@ -1285,7 +1285,7 @@ void Game::RenderDeadScreen()
 void Game::RenderStartScreen()
 {
 	char timerText[64];
-	snprintf( timerText, sizeof( timerText ), "Press start %f", m_firstStartTimer );
+	snprintf( timerText, sizeof( timerText ), "Press start or P %f", m_firstStartTimer );
 	if ( m_firstStartTimer > 0 )
 	{
 		m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
