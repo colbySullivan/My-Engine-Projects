@@ -54,6 +54,7 @@ void Beetle::Render() const
 	if (m_isDead)
 		return;
 	Vertex tempShipWorldVerts[NUM_BEETLE_VERTS];
+
 	for (int vertIndex = 0; vertIndex < NUM_BEETLE_VERTS; ++vertIndex)
 	{
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
@@ -61,8 +62,12 @@ void Beetle::Render() const
 
 	TransformVertexArrayXY3D(NUM_BEETLE_VERTS, tempShipWorldVerts, 3.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_BEETLE_VERTS, tempShipWorldVerts);
-	if (m_game->g_drawDebug)
+
+	if ( m_game->g_drawDebug )
+	{
 		DebugRender();
+	}
+		
 }
 
 //-----------------------------------------------------------------------------------------------

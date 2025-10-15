@@ -59,7 +59,7 @@ public:
 	void SpawnDebrisCluster( Vec2 pos, Rgba8 entityColor, Vec2 velocity, int debrisAmount, float size );
 	void HandleSound( SoundPlaybackID soundID, SoundPriority priority = PRIORITY_LOW, float soundDuration = 0.2f);
 
-	bool isAlive( Entity* entity ) const;
+	bool IsAlive( Entity* entity ) const;
 
 	PlayerShip* m_playerShip = nullptr;
 	Beetle* m_beetle = nullptr;
@@ -140,7 +140,7 @@ private:
 	void RenderDeadScreen();
 	void RenderStartScreen();
 
-	App* m_app;
+	App*			m_app = nullptr;
 	Camera*			m_worldCamera = nullptr;
 	Camera*			m_screenCamera = nullptr;
 

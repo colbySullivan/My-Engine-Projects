@@ -37,13 +37,16 @@ void PlayerShip::Update(float deltaSeconds)
 	{
 		Respawn();
 	}
+
 	if (!m_isDead)
 	{
 		m_invincibilityTimer -= deltaSeconds;
 		UpdateFromKeyboard(deltaSeconds);
 	}
+
 	UpdateFromController(deltaSeconds);
 	BounceOffWalls();
+
 	m_position += m_velocity * deltaSeconds;
 
 	RenderThrust( m_localThrustVerts );
@@ -53,6 +56,7 @@ void PlayerShip::Update(float deltaSeconds)
 void PlayerShip::Render() const
 {
 	Vertex tempShipWorldVerts[NUM_SHIP_VERTS];
+
 	for ( int vertIndex = 0; vertIndex < NUM_SHIP_VERTS; ++vertIndex )
 	{
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
@@ -71,6 +75,7 @@ void PlayerShip::Render() const
 	}
 
 	Vertex tempThrustWorldVerts[NUM_SHIP_VERTS];
+
 	for ( int vertIndex = 0; vertIndex < NUM_THRUST_VERTS; ++vertIndex )
 	{
 		tempThrustWorldVerts[vertIndex] = m_localThrustVerts[vertIndex];
@@ -78,14 +83,22 @@ void PlayerShip::Render() const
 
 	TransformVertexArrayXY3D(NUM_SHIP_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	TransformVertexArrayXY3D(NUM_THRUST_VERTS, tempThrustWorldVerts, 1.f, m_orientationDegrees, m_position);
-	if (!m_isDead)
+
+	if ( !m_isDead )
+	{
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempShipWorldVerts);
+	}
+		
 
-	if (!m_isDead && m_isThrusting)
+	if ( !m_isDead && m_isThrusting )
+	{
 		g_engine->m_render->DrawVertexArray(NUM_SHIP_VERTS, tempThrustWorldVerts);
+	}
 
-	if(m_game->g_drawDebug)
+	if ( m_game->g_drawDebug )
+	{
 		DebugRender();
+	}
 }
 
 void PlayerShip::Die()
@@ -138,18 +151,22 @@ void PlayerShip::UpdateFromKeyboard(float deltaSeconds)
 	{
 		m_shootCooldownTimer -= deltaSeconds;
 	}
+
 	if (g_engine->m_input->IsKeyDown(' ') && m_shootCooldownTimer <= 0)
 	{
 		Shoot();
 	}
+
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
 		m_orientationDegrees += PLAYER_SHIP_TURN_SPEED * deltaSeconds;
 	}
+
 	if (g_engine->m_input->IsKeyDown('F'))
 	{
 		m_orientationDegrees -= PLAYER_SHIP_TURN_SPEED * deltaSeconds;
 	}
+
 	if (g_engine->m_input->IsKeyDown('E'))
 	{
 		Vec2 forwardVec = GetForwardNormal();
@@ -199,8 +216,7 @@ void PlayerShip::Shoot()
 			m_game->SpawnBullet(nosePosition, m_orientationDegrees + angleOffset);
 			m_game->SpawnBullet(nosePosition, m_orientationDegrees - angleOffset);
 		}
-		/*m_game->SpawnBullet(nosePosition, m_orientationDegrees + 45.f);
-		m_game->SpawnBullet(nosePosition, m_orientationDegrees - 45.f);*/
+
 	}
 	if (m_hasBulletReverse)
 	{

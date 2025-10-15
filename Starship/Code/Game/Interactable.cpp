@@ -27,7 +27,7 @@ void Interactable::Update([[maybe_unused]] float deltaSeconds)
 
 void Interactable::Render() const
 {
-	if (m_isDead)
+	if ( m_isDead )
 	{
 		return;
 	}
@@ -41,8 +41,11 @@ void Interactable::Render() const
 	TransformVertexArrayXY3D(NUM_INTERACTABLE_VERTS, tempWorldVerts, 4.0f, 0.f, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_INTERACTABLE_VERTS, tempWorldVerts);
 	
-	if (m_game->g_drawDebug)
+	if ( m_game->g_drawDebug )
+	{
 		DebugRender();
+	}
+		
 }
 
 //------------------------------------------------------------------------------
@@ -109,49 +112,33 @@ void Interactable::Die()
 
 PowerUp Interactable::ApplyEffect(PlayerShip* m_playerShip)
 {
-	if (m_givenPowerUp)
+	if ( m_givenPowerUp )
+	{
 		return Num_PowerUps;
+	}
+		
 
 	m_givenPowerUp = true; // Fixes issue of multiple powerups being given due to fast frame time
 
 	PowerUp powerUpType = BulletSpeed1;
 	int roll = g_rng.RollRandomIntInRange(0, 100);
 
-	if (roll < 20)
-		powerUpType = BulletSpeed1;
-	else if (roll < 40)
-		powerUpType = BulletSpeed2;
-	else if (roll < 45)
-		powerUpType = BulletSpeed3;
-	else if (roll < 70)
-		powerUpType = BulletCount1;
-	else if (roll < 90)
-		powerUpType = BulletCount2;
-	else
-		powerUpType = BulletCount3;
+	if		(roll < 20)	powerUpType = BulletSpeed1;
+	else if (roll < 40)	powerUpType = BulletSpeed2;
+	else if (roll < 45)	powerUpType = BulletSpeed3;
+	else if (roll < 70)	powerUpType = BulletCount1;
+	else if (roll < 90)	powerUpType = BulletCount2;
+	else				powerUpType = BulletCount3;
 
 	switch (powerUpType)
 	{
-	case BulletSpeed1:
-		m_playerShip->m_bulletUpgradeSpeedDivisor -= 0.01f;
-		break;
-	case BulletSpeed2:
-		m_playerShip->m_bulletUpgradeSpeedDivisor -= 0.02f;
-		break;
-	case BulletSpeed3:
-		m_playerShip->m_bulletUpgradeSpeedDivisor -= 0.03f;
-		break;
-	case BulletCount1:
-		m_playerShip->m_bulletUpgradeAmount += 1;
-		break;
-	case BulletCount2:
-		m_playerShip->m_bulletUpgradeAmount += 2;
-		break;
-	case BulletCount3:
-		m_playerShip->m_hasBulletReverse = true;
-		break;
-	default:
-		break;
+	case BulletSpeed1: m_playerShip->m_bulletUpgradeSpeedDivisor -= 0.01f;	break;
+	case BulletSpeed2: m_playerShip->m_bulletUpgradeSpeedDivisor -= 0.02f;	break;
+	case BulletSpeed3: m_playerShip->m_bulletUpgradeSpeedDivisor -= 0.03f;	break;
+	case BulletCount1: m_playerShip->m_bulletUpgradeAmount += 1;			break;
+	case BulletCount2: m_playerShip->m_bulletUpgradeAmount += 2;			break;
+	case BulletCount3: m_playerShip->m_hasBulletReverse = true;				break;
+	default:																break;
 	}
 	return powerUpType;
 }

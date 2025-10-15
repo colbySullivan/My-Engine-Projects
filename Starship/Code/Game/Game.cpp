@@ -89,7 +89,9 @@ void Game::Update(float deltaSeconds)
 	}
 
 	if ( m_isSlowMo ) // T pressed
+	{
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+	}
 
 	if(AttractModeExitEnter( deltaSeconds, controller ))
 		return;
@@ -154,7 +156,7 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 
 	if (g_engine->m_input->WasKeyJustPressed('I'))
 	{
-		//SpawnRandomAsteroids();
+		SpawnRandomAsteroids();
 		SpawnRandomInteractable();
 	}
 
@@ -170,7 +172,9 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 			m_endPlaybackID = g_engine->m_audio->StartSound( 25 ); // End sound
 			m_playingEndSound = true;
 		}
+
 		m_roundEndTimer -= deltaSeconds;
+
 		if ( m_roundEndTimer <= 0 )
 		{
 			m_nextGameState = GAMESTATE_ATTRACT;
@@ -196,6 +200,7 @@ Asteroid* Game::SpawnRandomAsteroids()
 			return m_asteroid[astroidIndex];
 		}
 	}
+
 	ERROR_RECOVERABLE("Cannot spawn a new asteroid; all array slots are full");
 	return nullptr;
 }
@@ -232,6 +237,7 @@ Beetle* Game::SpawnNewRandomBeetle()
 			return m_beetles[beetleIndex];
 		}
 	}
+
 	ERROR_RECOVERABLE("Cannot spawn a new beetle; all array slots are full");
 	return nullptr;
 }
@@ -248,6 +254,7 @@ Wasp* Game::SpawnNewRandomWasp()
 			return m_wasp[waspIndex];
 		}
 	}
+
 	ERROR_RECOVERABLE("Cannot spawn a new wasp; all array slots are full");
 	return nullptr;
 }
@@ -454,6 +461,7 @@ void Game::CheckEnemiesVsShips()
 			CheckEnemiesVsShip(*beetle, *m_playerShip);
 		}
 	}
+
 	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
 	{
 		Wasp* wasp = m_wasp[waspIndex];
@@ -478,6 +486,7 @@ void Game::CheckEnemiesVsShip(Entity& enemy, PlayerShip& ship)
 			HandleSound(temp, PRIORITY_MEDIUM, 0.2f);
 			return;
 		}
+
 		ship.m_health -= 1;
 	}
 }
@@ -618,18 +627,21 @@ void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color)
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }
 
+
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateCameras( float deltaSeconds )
 {
 	// Random camera shake
 	float shakeHorizontal = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
 	float shakeVertical = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
 	
-
 	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X + shakeHorizontal, WORLD_SIZE_Y + shakeVertical ) );
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 
 	if ( m_camShakeAmount > 0 )
+	{
 		m_camShakeAmount -= deltaSeconds;
+	}
 
 }
 
@@ -638,8 +650,10 @@ bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& contr
 {
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
-		if (m_gameMusicPlaybackID != MISSING_SOUND_ID)
+		if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
+		{
 			g_engine->m_audio->StopSound(m_gameMusicPlaybackID);
+		}
 
 		if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 		{
@@ -706,6 +720,7 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	}
 
 	m_shipAnimationTimer += deltaSeconds;
+
 	if ( m_shipAnimationTimer > SHIP_ANIMATION_DURATION )
 	{
 		m_shipAnimationTimer = 0.0f;
@@ -825,7 +840,7 @@ int Game::GetNumLivingEnemies() const
 	for (int beetleIndex = 0; beetleIndex < MAX_BEETLES; ++beetleIndex)
 	{
 		Beetle* beetle = m_beetles[beetleIndex];
-		if (isAlive(beetle))
+		if (IsAlive(beetle))
 		{
 			++numLivingEnemies;
 		}
@@ -833,7 +848,7 @@ int Game::GetNumLivingEnemies() const
 	for (int waspIndex = 0; waspIndex < MAX_WASP; ++waspIndex)
 	{
 		Wasp* wasp = m_wasp[waspIndex];
-		if (isAlive(wasp))
+		if (IsAlive(wasp))
 		{
 			++numLivingEnemies;
 		}
@@ -855,17 +870,23 @@ void Game::UpdateWaves()
 	{
 		if (m_roundChangeSound != MISSING_SOUND_ID)
 			g_engine->m_audio->StopSound(m_roundChangeSound);
+		
 		m_roundChangeSound = g_engine->m_audio->StartSound((10 + m_roundNumber) % 28, false, 0.8f);
 		m_spawnBuffer = ROUND_BUFFER;
 		for (int i = 0; i < NUM_STARTING_ASTEROIDS; ++i)
 		{
 			SpawnRandomAsteroids();
 		}
+
 		for (int i = 0; i < g_rng.RollRandomIntInRange(m_roundNumber, m_roundNumber+2); ++i)
+		{
 			SpawnNewRandomBeetle();
+		}
 
 		for (int i = 0; i < g_rng.RollRandomIntInRange(m_roundNumber, m_roundNumber+1); ++i)
+		{
 			SpawnNewRandomWasp();
+		}
 
 		SpawnRandomInteractable();
 
@@ -1004,7 +1025,7 @@ void Game::CleanupGameEntities()
 //-----------------------------------------------------------------------------------------------
 // Utility Functions
 //-----------------------------------------------------------------------------------------------
-bool Game::isAlive(Entity* entity) const
+bool Game::IsAlive(Entity* entity) const
 {
 	return (entity && !entity->m_isDead);
 }
@@ -1088,6 +1109,7 @@ void Game::CreateBlackHole()
 	// Precompute 2D vertex offsets
 	constexpr float degreesPerBlackHoleSide = 360.f / static_cast<float>(NUM_BLACK_HOLE_SIDES);
 	Vec2 blackholeLocalVertPositions[NUM_BLACK_HOLE_SIDES] = {};
+
 	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
 	{
 		float degrees = degreesPerBlackHoleSide * static_cast<float>(sideNum);
@@ -1183,12 +1205,14 @@ void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
 	{
 		background[vertIndex].m_color = Rgba8(255, 255, 255, 100);
 	}
+
 	TransformVertexArrayXY3D(
 		6,
 		background,
 		1.0f,
 		0.f,
 		Vec2(0.f, 0.f));
+
 	g_engine->m_render->DrawVertexArray(6, background);
 
 	char powerUpText[64];
@@ -1203,33 +1227,20 @@ void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
 		{
 			switch (currentPowerUp)
 			{
-			case BulletSpeed1:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 1");
-				break;
-			case BulletSpeed2:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 2");
-				break;
-			case BulletSpeed3:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 3");
-				break;
-			case BulletCount1:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 1");
-				break;
-			case BulletCount2:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 2");
-				break;
-			case BulletCount3:
-				snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 3");
-				break;
-			default:
-				snprintf(powerUpText, sizeof(powerUpText), "Unknown");
-				break;
+				case BulletSpeed1:	snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 1");	break;
+				case BulletSpeed2:	snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 2");	break;
+				case BulletSpeed3:	snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletSpeed lvl 3");	break;
+				case BulletCount1:	snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 1");	break;
+				case BulletCount2:	snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 2");	break;
+				case BulletCount3:	snprintf(powerUpText, sizeof(powerUpText), "Upgrade: BulletCount lvl 3");	break;
+				default:			snprintf(powerUpText, sizeof(powerUpText), "Unknown");						break;
 			}
 		}
 
 		RenderText(powerUpText, Vec2(200.f, 450.f), 40.f, Rgba8(255, 215, 0, 255));
 		RenderText("Press Start or P to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
 	}
+
 	else
 	{
 		snprintf(powerUpText, sizeof(powerUpText), "Aliens killed: %i", m_enemiesKilled);
@@ -1237,6 +1248,7 @@ void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
 		RenderText("Press P or Start to Resume", Vec2(325.f, 300.f), 30.f, Rgba8(255, 255, 255, 255));
 		RenderText(powerUpText, Vec2(325.f, 200.f), 30.f, Rgba8(255, 255, 255, 255));
 	}
+
 	g_engine->m_render->EndCamera(*m_screenCamera);
 }
 
@@ -1254,16 +1266,19 @@ void Game::RenderDeadScreen()
 	background[3].m_position = Vec3( 0.f, 0.f, 0.f );
 	background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
 	background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+
 	for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
 	{
 		background[vertIndex].m_color = Rgba8( 255, 255, 255, 100 );
 	}
+
 	TransformVertexArrayXY3D(
 		6,
 		background,
 		1.0f,
 		0.f,
 		Vec2( 0.f, 0.f ) );
+	
 	g_engine->m_render->DrawVertexArray( 6, background );
 
 	if ( m_playerShip->m_lives <= 0 )
@@ -1278,7 +1293,6 @@ void Game::RenderDeadScreen()
 		RenderText( "Press A or N to Respawn", Vec2( 325.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
 	}
 	
-
 	g_engine->m_render->EndCamera(*m_screenCamera);
 }
 
@@ -1300,10 +1314,12 @@ void Game::RenderStartScreen()
 		background[3].m_position = Vec3( 0.f, 0.f, 0.f );
 		background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
 		background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
+
 		for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
 		{
 			background[vertIndex].m_color = Rgba8( 255, 255, 255, 100 );
 		}
+
 		TransformVertexArrayXY3D(
 			6,
 			background,
