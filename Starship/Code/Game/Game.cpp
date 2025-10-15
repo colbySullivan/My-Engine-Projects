@@ -85,7 +85,6 @@ void Game::Update(float deltaSeconds)
 
 	if ( m_playerShip->m_isDead && !m_firstStart )
 	{
-		//g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderDeadScreen();
 	}
 
@@ -801,7 +800,7 @@ void Game::RenderAttractMode( float playButtonAlpha )
 	//g_engine->m_render->DrawVertexArray( 3, playButton );
 
 	// Title
-	char title[] = "Starship Gold";
+	char title[32] = "Starship Gold";
 	for ( int charIndex = 0; charIndex < 14; ++charIndex )
 	{
 		char singleChar[1] = { title[charIndex] };
