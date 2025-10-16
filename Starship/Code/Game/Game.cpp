@@ -815,14 +815,24 @@ void Game::RenderAttractMode( float playButtonAlpha )
 	//g_engine->m_render->DrawVertexArray( 3, playButton );
 
 	// Title
-	char title[32] = "Starship Gold";
-	for ( int charIndex = 0; charIndex < 14; ++charIndex )
+	char title[32] = "Starship Iron IIII";
+	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
-		char singleChar[1] = { title[charIndex] };
+		char singleChar[2] = { title[charIndex], '\0' };
 		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
 		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
-		RenderText( singleChar, Vec2( 525.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( static_cast<unsigned char>(offsetColorR), static_cast<unsigned char>(offsetColorG), static_cast<unsigned char>(offsetColorB) ) );
+		RenderText( singleChar, Vec2( 475.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( static_cast<unsigned char>(offsetColorR), static_cast<unsigned char>(offsetColorG), static_cast<unsigned char>(offsetColorB) ) );
+
+	}
+	char nameTitle[96] = "Made by Colby Sullivan";
+	for ( int charIndex = 0; charIndex < 22; ++charIndex )
+	{
+		char singleChar[2] = { nameTitle[charIndex], '\0' };
+		int offsetColorR = g_rng.RollRandomIntInRange( 200, 255 );
+		int offsetColorG = g_rng.RollRandomIntInRange( 200, 255 );
+		int offsetColorB = g_rng.RollRandomIntInRange( 0, 255 );
+		RenderText( singleChar, Vec2( 390.f + charIndex * 40.f, 50.f ), 40.0f, Rgba8( static_cast< unsigned char >( offsetColorR ), static_cast< unsigned char >( offsetColorG ), static_cast< unsigned char >( offsetColorB ) ) );
 
 	}
 
