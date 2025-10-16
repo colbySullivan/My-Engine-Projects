@@ -8,11 +8,6 @@
 
 
 //-----------------------------------------------------------------------------------------------
-std::string PowerUpToString()
-{
-
-}
-
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color)
 {
 	float halfThickness = 0.5f * thickness;
