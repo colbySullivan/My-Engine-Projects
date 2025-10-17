@@ -2,7 +2,7 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <Windows.h>
 #include <gl/GL.h>
 #include <Game/GameCommon.hpp>
 #define UNUSED(x) (void)(x);

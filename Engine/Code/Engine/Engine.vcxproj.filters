@@ -17,6 +17,9 @@
     <Filter Include="Audio">
       <UniqueIdentifier>{f484e802-fa4c-464e-9d4e-57ea4076e6d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{3c00cb0a-6a6a-4f52-aa3c-dc1ffd01cde5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -81,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="Renderer\SimpleTriangleFont.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Window\Window.cpp">
+      <Filter>Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\SimpleTriangleFont.hpp">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Window\Window.hpp">
+      <Filter>Window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

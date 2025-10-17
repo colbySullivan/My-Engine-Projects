@@ -2,6 +2,7 @@
 
 //------------------------------------------------------------------------------
 class Engine;   // Forward declaration; simply states that "an Engine class exists"
+class Window;   // Forward declaration; simply states that "a Renderer class exists"
 class Renderer; // Forward declaration; simply states that "a Renderer class exists"
 class InputSystem; // Forward declaration; simply states that "an InputSystem class exists" 
 class AudioSystem;
@@ -19,7 +20,8 @@ public:
     void EndFrame();
 
 public:
-    Renderer*   m_render    = nullptr; // Legal because of line 5
-	InputSystem* m_input = nullptr; // Legal because of line 6  
-    AudioSystem* m_audio = nullptr;
+    Window*         m_window    = nullptr;
+    Renderer*       m_render    = nullptr;
+	InputSystem*    m_input     = nullptr; 
+    AudioSystem*    m_audio     = nullptr;
 };
