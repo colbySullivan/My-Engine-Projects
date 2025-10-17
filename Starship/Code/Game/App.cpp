@@ -13,6 +13,10 @@ App* g_app = nullptr;
 
 App::App()
 {
+	EngineConfig config;
+
+	g_engine = new Engine( config );
+
 	g_app = this;
 	m_game = new Game();
 	m_game->Startup();

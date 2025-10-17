@@ -21,7 +21,8 @@ unsigned char const KEYCODE_UPARROW = 0x26;
 unsigned char const KEYCODE_LEFTARROW = 0x25;
 unsigned char const KEYCODE_RIGHTARROW = 0x27;
 
-InputSystem::InputSystem()
+InputSystem::InputSystem( InputConfig const& config ) 
+	: m_config( config )
 {
 	m_input = this;
 }

@@ -25,11 +25,17 @@ extern unsigned char const KEYCODE_RIGHTARROW;
 constexpr int NUM_KEYCODES = 256;
 constexpr int NUM_XBOX_CONTROLLERS = 4;
 
+//-----------------------------------------------------------------------------------------------
+struct InputConfig
+{
+	bool	m_isEnabled = true;
+};
+
 //------------------------------------------------------------------------------
 class InputSystem
 {
 public:
-	InputSystem();
+	InputSystem( InputConfig const& config );
 	~InputSystem();
 	void Startup();
 	void Shutdown();
@@ -43,6 +49,7 @@ public:
 	XboxController const& GetController(int controllerID) const;
 
 	InputSystem*	m_input;
+	InputConfig	m_config;
 
 protected:
 	KeyButtonState m_keyStates[NUM_KEYCODES];

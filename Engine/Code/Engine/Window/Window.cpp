@@ -4,7 +4,8 @@
 #include <Windows.h>
 
 //-----------------------------------------------------------------------------------------------
-Window::Window()
+Window::Window( WindowConfig const& config )
+	: m_config( config )
 {
 
 }

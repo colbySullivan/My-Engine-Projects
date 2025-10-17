@@ -19,10 +19,9 @@
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
-	//m_gameCamera = new Camera;
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
-	g_engine = new Engine;
+
 	m_roundNumber = 1;
 	LoadSounds();
 	CreateBlackHole();

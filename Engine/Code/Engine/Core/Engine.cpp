@@ -6,15 +6,15 @@
 
 Engine* g_engine = nullptr;
 
-Engine::Engine()
+Engine::Engine( EngineConfig const& config )
 {
-	m_window = new Window();
+	m_window = new Window( config.m_windowConfig );
+	m_render = new Renderer( config.m_renderConfig);
+	m_input = new InputSystem( config.m_inputConfig );
+	m_audio = new AudioSystem( config.m_audioConfig );
 	m_window->Startup();
-	m_render = new Renderer();
 	m_render->Startup();
-	m_input = new InputSystem();
 	m_input->Startup();
-	m_audio = new AudioSystem();
 	m_audio->Startup();
 }
 
