@@ -14,7 +14,7 @@ App* g_app = nullptr;
 App::App()
 {
 	EngineConfig config;
-
+	config.m_windowConfig.m_clientAspect = 2.0f;
 	g_engine = new Engine( config );
 
 	g_app = this;

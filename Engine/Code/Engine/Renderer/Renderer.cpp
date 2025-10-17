@@ -1,6 +1,8 @@
-#include "Renderer.hpp"
+#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/Engine.hpp"
+#include "Engine/Window/Window.hpp"
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <gl/GL.h>
@@ -40,7 +42,9 @@ void Renderer::BeginFrame()
 
 void Renderer::EndFrame()
 {
-	
+	// "Present" the backbuffer by swapping the front (visible) and back (working) screen buffers
+	HDC displayDeviceContent = (HDC) g_engine->m_window->m_displayDeviceContext;
+	SwapBuffers( displayDeviceContent ); // Note: call this only once at the very end of each frame
 }
 
 void Renderer::CreateRenderingContext()
