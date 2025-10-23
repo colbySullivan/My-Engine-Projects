@@ -8,10 +8,13 @@ Engine* g_engine = nullptr;
 
 Engine::Engine( EngineConfig const& config )
 {
+	g_engine = this;
+
 	m_window = new Window( config.m_windowConfig );
 	m_render = new Renderer( config.m_renderConfig);
 	m_input = new InputSystem( config.m_inputConfig );
 	m_audio = new AudioSystem( config.m_audioConfig );
+
 	m_window->Startup();
 	m_render->Startup();
 	m_input->Startup();

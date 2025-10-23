@@ -15,6 +15,7 @@ App::App()
 {
 	EngineConfig config;
 	config.m_windowConfig.m_clientAspect = 2.0f;
+	config.m_windowConfig.m_windowTitle = "Starship Gold";
 	g_engine = new Engine( config );
 
 	g_app = this;

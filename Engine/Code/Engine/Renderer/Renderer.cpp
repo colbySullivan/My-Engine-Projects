@@ -6,7 +6,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <gl/GL.h>
-#include <Game/GameCommon.hpp>
+#include "Game/GameCommon.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #define UNUSED(x) (void)(x);
 
 
@@ -43,7 +44,7 @@ void Renderer::BeginFrame()
 void Renderer::EndFrame()
 {
 	// "Present" the backbuffer by swapping the front (visible) and back (working) screen buffers
-	HDC displayDeviceContent = (HDC) g_engine->m_window->m_displayDeviceContext;
+	HDC displayDeviceContent = reinterpret_cast<HDC>( g_engine->m_window->m_displayDeviceContext );
 	SwapBuffers( displayDeviceContent ); // Note: call this only once at the very end of each frame
 }
 
@@ -61,8 +62,14 @@ void Renderer::CreateRenderingContext()
 	pixelFormatDescriptor.cAccumBits = 0;
 	pixelFormatDescriptor.cStencilBits = 8;
 
-	HWND windowHandle = ::GetActiveWindow(); // #TempHack  Later, the Window subsystem will hold this
-	HDC displayDeviceContext = GetDC(windowHandle);
+	//HWND windowHandle = ::GetActiveWindow(); // #TempHack  Later, the Window subsystem will hold this
+	//HDC displayDeviceContext = GetDC(windowHandle);
+
+	GUARANTEE_OR_DIE( g_engine, "No Engine instance!" );
+	GUARANTEE_OR_DIE( g_engine->m_window, "No Window instance!" );
+	GUARANTEE_OR_DIE( g_engine->m_window->m_windowHandle, "No HWND!" );
+	HWND windowHandle = reinterpret_cast< HWND >( g_engine->m_window->m_windowHandle );
+	HDC displayDeviceContext = ::GetDC( windowHandle );
 
 	// These two OpenGL-like functions (wglCreateContext and wglMakeCurrent) will remain here for now.
 	int pixelFormatCode = ChoosePixelFormat(displayDeviceContext, &pixelFormatDescriptor);

@@ -143,7 +143,8 @@ void Window::CreateOSWindow()
 
 	WCHAR windowTitle[1024];
 	MultiByteToWideChar( GetACP(), 0, m_config.m_windowTitle.c_str(), -1, windowTitle, sizeof( windowTitle ) / sizeof( windowTitle[0] ) );
-	HWND hWnd = CreateWindowEx(
+
+	m_windowHandle = CreateWindowEx(
 		windowStyleExFlags,
 		windowClassDescription.lpszClassName,
 		windowTitle,
@@ -157,11 +158,18 @@ void Window::CreateOSWindow()
 		( HINSTANCE )applicationInstanceHandle,
 		NULL );
 
-	ShowWindow( hWnd, SW_SHOW );
-	SetForegroundWindow( hWnd );
-	SetFocus( hWnd );
+	/*ShowWindow( reinterpret_cast< HWND >( m_windowHandle ), SW_SHOW );
+	SetForegroundWindow( reinterpret_cast< HWND >( m_windowHandle ) );
+	SetFocus( reinterpret_cast< HWND >( m_windowHandle ) );*/
 
-	m_displayDeviceContext = GetDC( hWnd );
+	//m_displayDeviceContext = GetDC( reinterpret_cast< HWND >( m_windowHandle ) );
+
+	HWND hwnd = static_cast< HWND >( m_windowHandle );
+	ShowWindow( hwnd, SW_SHOW );
+	SetForegroundWindow( hwnd );
+	SetFocus( hwnd );
+
+	m_displayDeviceContext = GetDC( hwnd );
 
 	HCURSOR cursor = LoadCursor( NULL, IDC_ARROW );
 	SetCursor( cursor );

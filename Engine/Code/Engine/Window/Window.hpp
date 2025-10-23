@@ -26,6 +26,7 @@ public:
 
 	WindowConfig	m_config;
 	void*			m_displayDeviceContext = 0;
+	void*			m_windowHandle = 0;
 private:
 	void CreateOSWindow();
 	void RunMessagePump();
