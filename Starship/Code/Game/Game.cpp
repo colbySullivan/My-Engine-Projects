@@ -64,7 +64,7 @@ void Game::Update(float deltaSeconds)
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
 	UpdateCameras( deltaSeconds );
-	KeyboardInput( deltaSeconds, controller );
+	UpdateKeyboardInput( deltaSeconds, controller );
 
 	if ( m_currentGameState != m_nextGameState )
 	{
@@ -78,7 +78,7 @@ void Game::Update(float deltaSeconds)
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
-		CleanupGameEntities();
+		RemoveAllGameEntities();
 		UpdateAttractMode( deltaSeconds );
 	}
 
@@ -103,8 +103,8 @@ void Game::Update(float deltaSeconds)
 			CheckInteractablesVsShips();
 			RoundTimer( deltaSeconds );
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
+			DestroyGarbageEntities();
 		}
-		DestroyGarbageEntities();
 	}
 }
 
@@ -138,7 +138,6 @@ void Game::Render() const
 			RenderPauseScreenPowerUp( m_currentPowerUp );
 		}
 
-
 		RenderUI();
 		RenderEntities();
 	}
@@ -154,7 +153,7 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 // Input Handling
 //-----------------------------------------------------------------------------------------------
-void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
+void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& controller )
 {
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 	{
@@ -192,7 +191,6 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
 			m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 8, false, 0.8f );
 		}
-
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed('I'))
@@ -220,7 +218,7 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 		{
 			m_nextGameState = GAMESTATE_ATTRACT;
 			g_engine->m_audio->StopSound( m_endPlaybackID ); // End sound
-			m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
+			//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 			m_playingEndSound = false;
 		}
 	}
@@ -923,7 +921,7 @@ void Game::DestroyGarbageEntities()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::CleanupGameEntities()
+void Game::RemoveAllGameEntities()
 {
 	for (int bulletIndex = 0; bulletIndex < MAX_BULLETS; ++bulletIndex)
 	{

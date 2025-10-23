@@ -103,7 +103,7 @@ public:
 
 
 private:
-	void KeyboardInput( float deltaSeconds, XboxController const& controller );
+	void UpdateKeyboardInput( float deltaSeconds, XboxController const& controller );
 
 	void UpdateEntities( float deltaSeconds );
 	bool CheckInvincibilityMode();
@@ -128,7 +128,7 @@ private:
 	void UpdateWaves();
 
 	void DestroyGarbageEntities();
-	void CleanupGameEntities();
+	void RemoveAllGameEntities();
 	void LoadSounds();
 	void UpdateBlackHole();
 	void GenerateStars();
