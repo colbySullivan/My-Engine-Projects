@@ -26,7 +26,6 @@ Game::Game()
 
 	m_roundNumber = 1;
 	LoadSounds();
-	UpdateBlackHole();
 	GenerateStars();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 }
@@ -79,8 +78,8 @@ void Game::Update(float deltaSeconds)
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
+		CleanupGameEntities();
 		UpdateAttractMode( deltaSeconds );
-		UpdateBlackHole();
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
@@ -95,14 +94,9 @@ void Game::Update(float deltaSeconds)
 			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
 		}
 
-		if ( IsReadyToStartNextWave() )
-		{
-			m_roundNumber++;
-			UpdateWaves();
-		}
-
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
 		{
+			UpdateWaves();
 			UpdateEntities( deltaSeconds );
 			CheckBulletsVsEnemies();
 			CheckEnemiesVsShips();
@@ -117,7 +111,6 @@ void Game::Update(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	g_engine->m_render->BeginCamera(*m_worldCamera);
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	
 
@@ -126,8 +119,15 @@ void Game::Render() const
 		RenderAttractMode();
 	}
 
+	if ( m_currentGameState == GAMESTATE_ATTRACT )
+	{
+		return;
+	}
+
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
+		g_engine->m_render->ClearScreen(backgroundColor);
+
 		if ( m_playerShip->m_isDead )
 		{
 			RenderDeadScreen();
@@ -142,10 +142,6 @@ void Game::Render() const
 		RenderUI();
 		RenderEntities();
 	}
-	
-	
-	g_engine->m_render->ClearScreen(backgroundColor);
-	g_engine->m_render->DrawVertexArray( NUM_STAR_VERTS, m_starVerts ); // Draw stars first so none overlay 
 	
 }
 
@@ -186,6 +182,17 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	{
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
+	}
+	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
+	{
+		if ( m_currentGameState != GAMESTATE_PLAY )
+		{
+			m_nextGameState = GAMESTATE_PLAY;
+			Startup();
+			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
+			m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 8, false, 0.8f );
+		}
+
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed('I'))
@@ -572,6 +579,7 @@ void Game::CheckBeetlePush()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderEntities() const
 {
+	g_engine->m_render->BeginCamera(*m_worldCamera);
 	for (int interactableIndex = 0; interactableIndex < MAX_INTERACTABLES; ++interactableIndex)
 	{
 		Interactable* interactable = m_interactable[interactableIndex];
@@ -629,7 +637,7 @@ void Game::RenderEntities() const
 			debris->Render();
 		}
 	}
-
+	g_engine->m_render->EndCamera(*m_worldCamera);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -637,6 +645,7 @@ void Game::RenderUI() const
 {
 	//Camera attractCamera;
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	g_engine->m_render->DrawVertexArray( NUM_STAR_VERTS, m_starVerts ); // Draw stars first so none overlay 
 
 	g_engine->m_render->BeginCamera( *m_screenCamera );
 	for (int shipLives = 1; shipLives < m_playerShip->m_lives; ++shipLives)
@@ -688,8 +697,6 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	{
 		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
 	}
-	m_alphaTimer += deltaSeconds;
-	float normalizedTime = fmodf(m_alphaTimer, 3.0f);
 
 	m_shipAnimationTimer += deltaSeconds;
 
@@ -697,6 +704,7 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	{
 		m_shipAnimationTimer = 0.0f;
 	}
+	UpdateBlackHole();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -820,7 +828,6 @@ int Game::GetNumLivingEnemies() const
 //-----------------------------------------------------------------------------------------------
 bool Game::IsReadyToStartNextWave() const
 {
-	//int numLivingEnemies = GetNumLivingEnemies();
 	return m_spawnBuffer <= 0.f && m_currentGameState == GAMESTATE_PLAY;
 }
 
@@ -850,7 +857,7 @@ void Game::UpdateWaves()
 		}
 
 		SpawnRandomInteractable();
-
+		m_roundNumber++;
 	}
 }
 
