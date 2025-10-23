@@ -91,8 +91,10 @@ void Renderer::BeginCamera(Camera const& camera)
 {
 	glLoadIdentity();
 	Vec2 bottomLeft = camera.GetOrthoBottomLeft();
-	Vec2 topLeft = camera.GetOrthoTopRight();
-	glOrtho(bottomLeft.x, topLeft.x, bottomLeft.y, topLeft.y, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
+	Vec2 topRight = camera.GetOrthoTopRight();
+	glOrtho(bottomLeft.x, topRight.x, bottomLeft.y, topRight.y, 0.f, 1.f); // arguments are: xLeft, xRight, yBottom, yTop, zNear, zFar
+	GLenum err;
+	err = glGetError();
 }
 
 void Renderer::EndCamera( [[maybe_unused]] Camera const& camera)

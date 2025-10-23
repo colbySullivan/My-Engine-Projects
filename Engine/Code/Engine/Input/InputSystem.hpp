@@ -48,7 +48,6 @@ public:
 	void HandleKeyReleased(unsigned char keyCode);
 	XboxController const& GetController(int controllerID) const;
 
-	InputSystem*	m_input;
 	InputConfig	m_config;
 
 protected:

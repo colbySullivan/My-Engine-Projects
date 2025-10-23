@@ -43,6 +43,7 @@ void Engine::BeginFrame()
 	m_window->BeginFrame();
 	m_input->BeginFrame();
 	m_render->BeginFrame();
+	m_audio->BeginFrame();
 }
 
 void Engine::EndFrame()
@@ -50,4 +51,5 @@ void Engine::EndFrame()
 	m_window->EndFrame();
 	m_input->EndFrame();
 	m_render->EndFrame();
+	m_audio->EndFrame();
 }

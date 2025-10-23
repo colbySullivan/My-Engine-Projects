@@ -24,7 +24,6 @@ unsigned char const KEYCODE_RIGHTARROW = 0x27;
 InputSystem::InputSystem( InputConfig const& config ) 
 	: m_config( config )
 {
-	m_input = this;
 }
 
 //-----------------------------------------------------------------------------------------------

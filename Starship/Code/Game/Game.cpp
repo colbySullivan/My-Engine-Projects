@@ -16,6 +16,8 @@
 #include "Game/Wasp.hpp"
 #include "Game/Interactable.hpp"
 
+RandomNumberGenerator g_rng;
+
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
@@ -24,7 +26,7 @@ Game::Game()
 
 	m_roundNumber = 1;
 	LoadSounds();
-	CreateBlackHole();
+	UpdateBlackHole();
 	GenerateStars();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 }
@@ -54,8 +56,6 @@ void Game::Startup()
 	m_spawnBuffer = 0.f;
 	m_powerUpScreen = false;
 	m_enemiesKilled = 0;
-	m_firstStart = true;
-	m_firstStartTimer = 5.0f;
 	UpdateWaves();
 }
 
@@ -64,52 +64,54 @@ void Game::Update(float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
+	UpdateCameras( deltaSeconds );
+	KeyboardInput( deltaSeconds, controller );
+
 	if ( m_currentGameState != m_nextGameState )
 	{
 		m_currentGameState = m_nextGameState;
 	}
-
-	if ( m_firstStart )
-	{
-		m_isPaused = true;
-		RenderStartScreen();
-		m_firstStartTimer -= deltaSeconds;
-	}
-		
-
-	if ( m_isPaused &&  !m_playerShip->m_isDead && !m_firstStart)
-	{
-		RenderPauseScreenPowerUp(m_currentPowerUp);
-	}
-
-	if ( m_playerShip->m_isDead && !m_firstStart )
-	{
-		RenderDeadScreen();
-	}
-
-	if ( m_isSlowMo ) // T pressed
-	{
-		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
-	}
-
-	if(AttractModeExitEnter( deltaSeconds, controller ))
-		return;
 
 	if (m_soundDurationTimer > 0.f)
 	{
 		m_soundDurationTimer -= deltaSeconds;
 	}
 
-	if (m_powerUpTimer > 0.f)
+	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
-		m_powerUpTimer -= deltaSeconds;
+		UpdateAttractMode( deltaSeconds );
+		UpdateBlackHole();
 	}
 
-	RoundTimer( deltaSeconds );
-	CreateBlackHole();
-	UpdateCameras( deltaSeconds );
-	KeyboardInput( deltaSeconds, controller );
-	DestroyGarbageEntities();
+	if ( m_currentGameState == GAMESTATE_PLAY )
+	{
+		if ( m_powerUpTimer > 0.f )
+		{
+			m_powerUpTimer -= deltaSeconds;
+		}
+
+		if ( m_isSlowMo ) // T pressed
+		{
+			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+		}
+
+		if ( IsReadyToStartNextWave() )
+		{
+			m_roundNumber++;
+			UpdateWaves();
+		}
+
+		if ( !m_isPaused || m_pauseAfterNextUpdate )
+		{
+			UpdateEntities( deltaSeconds );
+			CheckBulletsVsEnemies();
+			CheckEnemiesVsShips();
+			CheckInteractablesVsShips();
+			RoundTimer( deltaSeconds );
+			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
+		}
+		DestroyGarbageEntities();
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -117,9 +119,34 @@ void Game::Render() const
 {
 	g_engine->m_render->BeginCamera(*m_worldCamera);
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
+	
+
+	if ( m_currentGameState == GAMESTATE_ATTRACT )
+	{
+		RenderAttractMode();
+	}
+
+	if ( m_currentGameState == GAMESTATE_PLAY )
+	{
+		if ( m_playerShip->m_isDead )
+		{
+			RenderDeadScreen();
+		}
+
+		if ( m_isPaused && !m_playerShip->m_isDead )
+		{
+			RenderPauseScreenPowerUp( m_currentPowerUp );
+		}
+
+
+		RenderUI();
+		RenderEntities();
+	}
+	
+	
 	g_engine->m_render->ClearScreen(backgroundColor);
 	g_engine->m_render->DrawVertexArray( NUM_STAR_VERTS, m_starVerts ); // Draw stars first so none overlay 
-	RenderEntities();
+	
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -133,6 +160,15 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 {
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
+	{
+		if ( m_currentGameState == GAMESTATE_ATTRACT )
+		{
+			m_isQuitting = true;
+			return;
+		}
+	}
+
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
@@ -145,7 +181,6 @@ void Game::KeyboardInput( float deltaSeconds, XboxController const& controller )
 	{
 		m_isPaused = !m_isPaused; // Switch pause
 		m_powerUpScreen = false;
-		m_firstStart = false;
 	}
 	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
 	{
@@ -598,7 +633,7 @@ void Game::RenderEntities() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderUI()
+void Game::RenderUI() const
 {
 	//Camera attractCamera;
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
@@ -619,7 +654,7 @@ void Game::RenderUI()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color)
+void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) const
 {
 	std::vector<Vertex> textVerts;
 	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
@@ -645,78 +680,16 @@ void Game::UpdateCameras( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Game::AttractModeExitEnter( float deltaSeconds, XboxController const& controller )
-{
-	if ( m_currentGameState == GAMESTATE_ATTRACT )
-	{
-		if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
-		{
-			g_engine->m_audio->StopSound(m_gameMusicPlaybackID);
-		}
-
-		if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
-		{
-			m_isQuitting = true;
-			return true;
-		}
-
-		if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
-		{
-			m_nextGameState = GAMESTATE_PLAY;
-			Startup();
-			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
-			m_gameMusicPlaybackID = g_engine->m_audio->StartSound(8, false, 0.8f);
-
-		}
-		else
-		{
-			CleanupGameEntities();
-			UpdateAttractMode( deltaSeconds );
-		}
-	}
-
-	if ( m_currentGameState == GAMESTATE_ATTRACT )
-	{
-		g_engine->m_input->EndFrame();
-		return true;
-	}
-
-	RenderUI();
-
-	if ( IsReadyToStartNextWave() )
-	{
-		m_roundNumber++;
-		UpdateWaves();
-	}
-
-	if ( !m_isPaused || m_pauseAfterNextUpdate )
-	{
-		UpdateEntities( deltaSeconds );
-		CheckBulletsVsEnemies();
-		CheckEnemiesVsShips();
-		CheckInteractablesVsShips();
-		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------------------------
 // Attract Mode
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateAttractMode(float deltaSeconds)
 {
+	if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
+	{
+		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
+	}
 	m_alphaTimer += deltaSeconds;
 	float normalizedTime = fmodf(m_alphaTimer, 3.0f);
-	float alpha;
-
-	if (normalizedTime <= 3.0f)
-	{
-		alpha = RangeMapClamped(normalizedTime, 0.0f, 1.5f, 60.0f, 255.0f);
-	}
-	else
-	{
-		alpha = RangeMapClamped(normalizedTime, 1.5f, 3.0f, 255.0f, 60.0f);
-	}
 
 	m_shipAnimationTimer += deltaSeconds;
 
@@ -724,12 +697,10 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	{
 		m_shipAnimationTimer = 0.0f;
 	}
-
-	RenderAttractMode(alpha);
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderAttractMode( float playButtonAlpha )
+void Game::RenderAttractMode() const
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
@@ -756,7 +727,6 @@ void Game::RenderAttractMode( float playButtonAlpha )
 	g_engine->m_render->DrawVertexArray( 6, background );
 
 	// Black hole
-	CreateBlackHole(); // randomize vertices
 	Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
 	for ( int vertIndex = 0; vertIndex < NUM_BLACK_HOLE_VERTS; ++vertIndex )
 	{
@@ -795,26 +765,8 @@ void Game::RenderAttractMode( float playButtonAlpha )
 		g_engine->m_render->DrawVertexArray( NUM_SHIP_VERTS, fakePlayerShipVerts );
 	}
 
-
-	// Play button
-	Vertex playButton[3];
-	playButton[0].m_position = Vec3( 0.f, 0.f, 0.f );
-	playButton[1].m_position = Vec3( 0.f, 1.f, 0.f );
-	playButton[2].m_position = Vec3( 1.f, 0.5f, 0.f );
-	for ( int vertIndex = 0; vertIndex < 3; ++vertIndex )
-	{
-		playButton[vertIndex].m_color = Rgba8( 0, 255, 0, static_cast< unsigned char >( playButtonAlpha ) );
-	}
-	TransformVertexArrayXY3D(
-		3,
-		playButton,
-		300.0f,
-		0.f,
-		Vec2( 650.f, 250.f ) );
-	//g_engine->m_render->DrawVertexArray( 3, playButton );
-
 	// Title
-	char title[32] = "Starship Iron IIII";
+	char title[32] = "Starship Gold";
 	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };
@@ -1107,7 +1059,7 @@ void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float so
 	m_soundDurationTimer = soundDuration;
 }
 
-void Game::CreateBlackHole()
+void Game::UpdateBlackHole()
 {
 	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
 	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
@@ -1196,7 +1148,7 @@ void Game::RoundTimer(float deltaSeconds)
 }
 
 //------------------------------------------------------------------------------
-void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
+void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp) const
 {
 	m_screenCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(SCREEN_SIZE_X, SCREEN_SIZE_Y));
 	g_engine->m_render->BeginCamera(*m_screenCamera);
@@ -1261,7 +1213,7 @@ void Game::RenderPauseScreenPowerUp(PowerUp currentPowerUp)
 	g_engine->m_render->EndCamera(*m_screenCamera);
 }
 
-void Game::RenderDeadScreen()
+void Game::RenderDeadScreen() const
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
@@ -1303,49 +1255,4 @@ void Game::RenderDeadScreen()
 	}
 	
 	g_engine->m_render->EndCamera(*m_screenCamera);
-}
-
-void Game::RenderStartScreen()
-{
-	char timerText[64];
-	snprintf( timerText, sizeof( timerText ), "Press start or P %f", m_firstStartTimer );
-	if ( m_firstStartTimer > 0 )
-	{
-		m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
-		g_engine->m_render->BeginCamera( *m_screenCamera );
-
-		// Background
-		Vertex background[6];
-		background[0].m_position = Vec3( 0.f, 0.f, 0.f );
-		background[1].m_position = Vec3( 0.f, SCREEN_SIZE_Y, 0.f );
-		background[2].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
-
-		background[3].m_position = Vec3( 0.f, 0.f, 0.f );
-		background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
-		background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
-
-		for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
-		{
-			background[vertIndex].m_color = Rgba8( 255, 255, 255, 100 );
-		}
-
-		TransformVertexArrayXY3D(
-			6,
-			background,
-			1.0f,
-			0.f,
-			Vec2( 0.f, 0.f ) );
-		g_engine->m_render->DrawVertexArray( 6, background );
-
-		RenderText( "Survive", Vec2( 350.f, 400.f ), 80.f, Rgba8( 255, 255, 255, 255 ) );
-		RenderText( "Green == Awesome", Vec2( 325.f, 300.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
-		RenderText( timerText, Vec2( 325.f, 200.f ), 30.f, Rgba8( 255, 255, 255, 255 ) );
-
-		g_engine->m_render->EndCamera( *m_screenCamera );
-	}
-	else
-	{
-		m_firstStart = false;
-		m_isPaused = false;
-	}
 }

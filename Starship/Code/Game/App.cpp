@@ -38,8 +38,9 @@ void App::RunFrame()
 	m_lastFrameTime = timeNow;
 
 	g_engine->BeginFrame();
-	Render();
 	Update(deltaSeconds);
+	Render();
+	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------
 

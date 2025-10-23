@@ -41,6 +41,7 @@ enum SoundPriority
 //-----------------------------------------------------------------------------------------------
 class Game
 {
+
 public:
 	Game();
 	~Game();
@@ -63,7 +64,6 @@ public:
 
 	PlayerShip* m_playerShip = nullptr;
 	Beetle* m_beetle = nullptr;
-	RandomNumberGenerator g_rng;
 
 	// Game State
 	bool				m_isQuitting = false;
@@ -88,8 +88,6 @@ public:
 	PowerUp				m_currentPowerUp = Num_PowerUps;
 	float				m_powerUpTimer = 0.f;
 	int					m_enemiesKilled = 0;
-	bool				m_firstStart = true;
-	float				m_firstStartTimer;
 
 
 	// Audio
@@ -118,13 +116,12 @@ private:
 	void CheckBeetlePush();
 
 	void RenderEntities() const;
-	void RenderUI();
-	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color );
+	void RenderUI() const;
+	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void UpdateCameras( float deltaSeconds );
 
-	bool AttractModeExitEnter( float deltaSeconds,  XboxController const& controller );
 	void UpdateAttractMode( float deltaSeconds );
-	void RenderAttractMode( float playButtonAlpha );
+	void RenderAttractMode( ) const;
 
 	int GetNumLivingEnemies() const;
 	bool IsReadyToStartNextWave() const;
@@ -133,12 +130,11 @@ private:
 	void DestroyGarbageEntities();
 	void CleanupGameEntities();
 	void LoadSounds();
-	void CreateBlackHole();
+	void UpdateBlackHole();
 	void GenerateStars();
 	void RoundTimer(float deltaSeconds);
-	void RenderPauseScreenPowerUp(PowerUp currentPowerUp);
-	void RenderDeadScreen();
-	void RenderStartScreen();
+	void RenderPauseScreenPowerUp(PowerUp currentPowerUp) const;
+	void RenderDeadScreen() const;
 
 	App*			m_app = nullptr;
 	Camera*			m_worldCamera = nullptr;
