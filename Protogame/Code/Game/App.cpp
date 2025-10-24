@@ -1,5 +1,4 @@
 #include "App.hpp"
-#include "PlayerShip.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Renderer/Camera.hpp"

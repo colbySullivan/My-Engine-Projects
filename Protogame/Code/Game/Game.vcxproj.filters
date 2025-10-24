@@ -19,31 +19,10 @@
     <ClCompile Include="GameCommon.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Asteroid.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="Beetle.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="Debris.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerShip.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="Wasp.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="Interactable.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,31 +36,10 @@
     <ClInclude Include="EngineBuildPreferences.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Asteroid.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Beetle.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Bullet.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Debris.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="Entity.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerShip.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Wasp.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="Game.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Interactable.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
