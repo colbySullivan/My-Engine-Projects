@@ -10,10 +10,12 @@
 #include "Game/Entity.hpp"
 
 RandomNumberGenerator g_rng;
+Game* g_game = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
+	g_game = this;
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
 	m_roundNumber = 1;
@@ -24,9 +26,11 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
+	delete g_game;
 	delete g_engine;
 	delete m_worldCamera;
 	delete m_screenCamera;
+	g_game = nullptr;
 	g_engine = nullptr;
 	m_worldCamera = nullptr;
 	m_screenCamera = nullptr;

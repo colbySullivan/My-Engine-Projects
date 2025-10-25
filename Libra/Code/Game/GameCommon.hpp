@@ -1,6 +1,8 @@
 #pragma once
-#include <Engine/Math/MathUtils.hpp>
-#include <Engine/Core/Rgba8.hpp>
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Rgba8.hpp"
+
+class Game;
 
 constexpr float WORLD_SIZE_X = 200.f;
 constexpr float WORLD_SIZE_Y = 100.f;
@@ -26,10 +28,12 @@ constexpr int NUM_BLACK_HOLE_SIDES = 64;
 
 constexpr int	NUM_VERTS = 15;
 
+extern Game* g_game;
+
 constexpr float PLAYER_PHYSICS_RADIUS = 1.75f;
 constexpr float PLAYER_COSMETIC_RADIUS = 2.25f;
 constexpr float PLAYER_TURN_SPEED = 180.f;
-constexpr float PLAYER_ACCELERATION = 30.f;
+constexpr float PLAYER_SPEED = 1.f;
 
 
 //------------------------------------------------------------------------------

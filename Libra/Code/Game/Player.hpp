@@ -28,7 +28,7 @@ private:
 	void Respawn();
 
 	void UpdateFromController(float deltaSeconds);
-
+	void UpdateMovement(float deltaSeconds, Vec2 const& moveInput);
 private:
 	Vertex		m_localVerts[NUM_VERTS];
 	float		m_thrustFraction = -5.f;

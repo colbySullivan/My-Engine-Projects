@@ -23,6 +23,7 @@ Player::~Player()
 void Player::Update([[maybe_unused]] float deltaSeconds)
 {
 	Entity::Update(deltaSeconds);
+	UpdateFromKeyboard(deltaSeconds);
 	UpdateFromController(deltaSeconds);
 
 	m_position += m_velocity * deltaSeconds;
@@ -86,21 +87,38 @@ void Player::InitializeLocalVerts()
 //------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard(float deltaSeconds)
 {
-	if (g_engine->m_input->IsKeyDown('S'))
-	{
-		m_orientationDegrees += PLAYER_TURN_SPEED * deltaSeconds;
-	}
-
-	if (g_engine->m_input->IsKeyDown('F'))
-	{
-		m_orientationDegrees -= PLAYER_TURN_SPEED * deltaSeconds;
-	}
-
+	Vec2 moveInput(0.f, 0.f);
+	bool isAKeyPressed = false;
 	if (g_engine->m_input->IsKeyDown('E'))
 	{
-		Vec2 forwardVec = GetForwardNormal();
-		m_velocity += forwardVec * PLAYER_ACCELERATION * deltaSeconds;
+		moveInput.y += 1.f;
+		isAKeyPressed = true;
 	}
+	if (g_engine->m_input->IsKeyDown('D'))
+	{
+		moveInput.y -= 1.f;
+		isAKeyPressed = true;
+	}
+	if (g_engine->m_input->IsKeyDown('S'))
+	{
+		moveInput.x -= 1.f;
+		isAKeyPressed = true;
+	}
+	if (g_engine->m_input->IsKeyDown('F'))
+	{
+		moveInput.x += 1.f;
+		isAKeyPressed = true;
+
+	}
+	if (isAKeyPressed)
+	{
+		UpdateMovement(deltaSeconds, moveInput);
+	}
+	else
+	{
+		m_velocity = Vec2(0.f, 0.f);
+	}
+
 }
 
 //------------------------------------------------------------------------------
@@ -115,15 +133,15 @@ void Player::UpdateFromController(float deltaSeconds)
 	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
 	g_engine->m_input->GetController(0);
 
-	// Respawn
-	if (m_isDead)
-	{
-		if (controller.WasButtonJustPressed(XboxButtonID::A) && m_lives > 0)
-		{
-			Respawn();
-		}
-		return;
-	}
+	//// Respawn
+	//if (m_isDead)
+	//{
+	//	if (controller.WasButtonJustPressed(XboxButtonID::A) && m_lives > 0)
+	//	{
+	//		Respawn();
+	//	}
+	//	return;
+	//}
 
 	// Drive
 	float leftStickMagnitude = controller.GetLeftStick().GetMagnitude();
@@ -133,6 +151,32 @@ void Player::UpdateFromController(float deltaSeconds)
 		m_orientationDegrees = controller.GetLeftStick().GetOrientationDegrees();
 
 		Vec2 forwardVec = GetForwardNormal();
-		m_velocity += forwardVec * PLAYER_ACCELERATION * m_thrustFraction * deltaSeconds;
+		m_velocity += forwardVec * PLAYER_SPEED * m_thrustFraction * deltaSeconds;
 	}
+}
+
+//------------------------------------------------------------------------------
+void Player::UpdateMovement(float deltaSeconds, Vec2 const& moveInput)
+{
+	float headingDirection = moveInput.GetOrientationDegrees();
+
+	float angleDelta = GetShortestAngularDispDegrees(m_orientationDegrees, headingDirection);
+	float maxTurnThisFrame = PLAYER_TURN_SPEED * deltaSeconds;
+
+	if (fabsf(angleDelta) <= maxTurnThisFrame)
+	{
+		m_orientationDegrees = headingDirection;
+	}
+	else
+	{
+		if (angleDelta > 0.f)
+		{
+			m_orientationDegrees += maxTurnThisFrame;
+		}
+		else
+		{
+			m_orientationDegrees -= maxTurnThisFrame;
+		}
+	}
+	m_velocity = GetForwardNormal() * PLAYER_SPEED;
 }
