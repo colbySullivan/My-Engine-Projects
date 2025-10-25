@@ -130,28 +130,13 @@ void Player::Respawn()
 //------------------------------------------------------------------------------
 void Player::UpdateFromController(float deltaSeconds)
 {
-	XboxController const& controller = g_engine->m_input->GetController(0); // #ToDo: support multiple players?
-	g_engine->m_input->GetController(0);
+	XboxController const& controller = g_engine->m_input->GetController(0);
 
-	//// Respawn
-	//if (m_isDead)
-	//{
-	//	if (controller.WasButtonJustPressed(XboxButtonID::A) && m_lives > 0)
-	//	{
-	//		Respawn();
-	//	}
-	//	return;
-	//}
-
-	// Drive
 	float leftStickMagnitude = controller.GetLeftStick().GetMagnitude();
 	if (leftStickMagnitude > 0.f)
 	{
-		m_thrustFraction = leftStickMagnitude;
-		m_orientationDegrees = controller.GetLeftStick().GetOrientationDegrees();
-
-		Vec2 forwardVec = GetForwardNormal();
-		m_velocity += forwardVec * PLAYER_SPEED * m_thrustFraction * deltaSeconds;
+		Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
+		UpdateMovement(deltaSeconds, leftStickPos);
 	}
 }
 
