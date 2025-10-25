@@ -3,6 +3,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Game/App.hpp"
 #include "Game/GameCommon.hpp"
+#include "Game/Game.hpp"
 
 Entity::Entity(Game* owner, Vec2 const& startPos )
 {
@@ -120,12 +121,3 @@ void Entity::spawnRandomEdge()
 		break;
 	}
 }
-
-//------------------------------------------------------------------------------
-void Entity::HealthVisual()
-{
-	m_entityColor.r =  static_cast<unsigned char>(Interpolate(static_cast<unsigned char>(m_startingEntityColor.r), 255.f, static_cast<float>(m_health) / static_cast<float>(m_startingHealth)));
-	m_entityColor.g =  static_cast<unsigned char>(Interpolate(static_cast<unsigned char>(m_startingEntityColor.g), 255.f, static_cast<float>(m_health) / static_cast<float>(m_startingHealth)));
-	m_entityColor.b =  static_cast<unsigned char>(Interpolate(static_cast<unsigned char>(m_startingEntityColor.b), 255.f, static_cast<float>(m_health) / static_cast<float>(m_startingHealth)));
-}
-

@@ -4,6 +4,7 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Game/Player.hpp"
 
 class App;
 class Entity;
@@ -11,6 +12,7 @@ class InputSystem;
 class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
+class Player;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -66,6 +68,9 @@ public:
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
 
+	// Entities
+	Player* m_player = nullptr;
+
 
 	// Audio
 	SoundPlaybackID		m_endPlaybackID = MISSING_SOUND_ID;
@@ -84,10 +89,12 @@ private:
 
 	void RenderUI() const;
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
-	void UpdateCameras( float deltaSeconds );
+	void RenderAttractMode() const;
+	void RenderEntities() const;
 
+	void UpdateCameras( float deltaSeconds );
 	void UpdateAttractMode( float deltaSeconds );
-	void RenderAttractMode( ) const;
+	void UpdateEntities( float deltaSeconds );
 
 	void LoadSounds();
 	void UpdateBlackHole();

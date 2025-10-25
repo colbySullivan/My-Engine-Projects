@@ -16,7 +16,6 @@ Game::Game()
 {
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
-
 	m_roundNumber = 1;
 	LoadSounds();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
@@ -39,6 +38,7 @@ Game::~Game()
 void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
+	m_player = new Player(this, worldCenter);
 	m_isPaused = false;
 }
 
@@ -76,6 +76,7 @@ void Game::Update(float deltaSeconds)
 		{
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
+		UpdateEntities( deltaSeconds );
 	}
 }
 
@@ -100,6 +101,7 @@ void Game::Render() const
 		g_engine->m_render->ClearScreen(backgroundColor);
 
 		RenderUI();
+		RenderEntities();
 	}
 	
 }
@@ -217,11 +219,12 @@ void Game::UpdateAttractMode(float deltaSeconds)
 
 	m_shipAnimationTimer += deltaSeconds;
 
-	if ( m_shipAnimationTimer > SHIP_ANIMATION_DURATION )
-	{
-		m_shipAnimationTimer = 0.0f;
-	}
 	UpdateBlackHole();
+}
+
+void Game::UpdateEntities(float deltaSeconds)
+{
+	m_player->Update(deltaSeconds);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -288,6 +291,19 @@ void Game::RenderAttractMode() const
 	}
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
+}
+
+//------------------------------------------------------------------------------
+void Game::RenderEntities() const
+{
+	g_engine->m_render->BeginCamera(*m_worldCamera);
+
+	if (m_player)
+	{
+		m_player->Render();
+	}
+
+	g_engine->m_render->EndCamera(*m_worldCamera);
 }
 
 //-----------------------------------------------------------------------------------------------

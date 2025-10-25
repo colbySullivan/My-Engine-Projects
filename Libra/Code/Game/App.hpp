@@ -4,7 +4,7 @@
 
 
 //------------------------------------------------------------------------------
-class PlayerShip;
+class Player;
 class App;
 class Game;
 
