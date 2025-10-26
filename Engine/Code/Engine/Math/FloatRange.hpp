@@ -10,7 +10,6 @@ public:
 	static const FloatRange ONE;
 	static const FloatRange ZERO_TO_ONE;
 
-	FloatRange() = default;
 	explicit FloatRange(float min, float max);
 
 	FloatRange& operator=(const FloatRange& other);

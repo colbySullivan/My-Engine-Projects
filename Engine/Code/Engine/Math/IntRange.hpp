@@ -10,7 +10,6 @@ public:
 	static const IntRange ONE;
 	static const IntRange ZERO_TO_ONE;
 
-	IntRange() = default;
 	explicit IntRange(int min, int max);
 
 	IntRange& operator=(const IntRange& other);
