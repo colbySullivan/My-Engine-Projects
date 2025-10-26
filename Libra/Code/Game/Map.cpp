@@ -55,7 +55,7 @@ void Map::Render() const
 
 		AddVertsForAABB2D(tileVerts, box, tileColor);
 	}
-
+	TransformVertexArrayXY3D(static_cast<int>(tileVerts.size()), tileVerts.data(), 1.0f, 0.0f, Vec2(0.0f, 0.0f));
 	g_engine->m_render->DrawVertexArray(static_cast<int>(tileVerts.size()), tileVerts.data());
 
 }
@@ -105,11 +105,12 @@ void Map::OutEdgeStoneSetup()
 //------------------------------------------------------------------------------
 void Map::StoneTileSetup()
 {
-	for (int tileY = 6; tileY < m_dimensions.y - 1; ++tileY)
+	for (int tileY = 1; tileY < m_dimensions.y - 1; ++tileY)
 	{
-		for (int tileX = 6; tileX < m_dimensions.x - 1; ++tileX)
+		for (int tileX = 1; tileX < m_dimensions.x - 1; ++tileX)
 		{
-			if (g_rng.RollRandomFloatZeroToOne() < 0.1f)
+
+			if (g_rng.RollRandomFloatZeroToOne() < 0.1f && (tileX > 5 || tileY > 5))
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 				m_tiles[tileIndex].m_type = STONE;
