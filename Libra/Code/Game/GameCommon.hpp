@@ -35,6 +35,9 @@ constexpr float PLAYER_COSMETIC_RADIUS = 2.25f;
 constexpr float PLAYER_TURN_SPEED = 180.f;
 constexpr float PLAYER_SPEED = 1.f;
 
+const Rgba8 GRASS_COLOR = Rgba8(50, 100, 50, 255);
+const Rgba8 STONE_COLOR = Rgba8(180, 180, 180, 255);
+
 
 //------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

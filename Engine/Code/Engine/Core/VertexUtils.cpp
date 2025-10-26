@@ -31,7 +31,27 @@ void AddVertsForRing2D(std::vector<Vertex>& verts, Vec2 ringCenter, float ringRa
 //------------------------------------------------------------------------------
 void AddVertsForAABB2D(std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba8 color)
 {
-	ERROR_AND_DIE("AddVertsForAABB2D not implemented yet");
+	// Get the four corners of the AABB
+	float minX = alignedBox.m_mins.x;
+	float minY = alignedBox.m_mins.y;
+	float maxX = alignedBox.m_maxs.x;
+	float maxY = alignedBox.m_maxs.y;
+
+	int startIndex = static_cast<int>(verts.size());
+	verts.resize(verts.size() + 6);
+
+	verts[startIndex + 0].m_position = Vec3(minX, minY, 0.f);
+	verts[startIndex + 1].m_position = Vec3(maxX, minY, 0.f);
+	verts[startIndex + 2].m_position = Vec3(maxX, maxY, 0.f);
+
+	verts[startIndex + 3].m_position = Vec3(minX, minY, 0.f);
+	verts[startIndex + 4].m_position = Vec3(maxX, maxY, 0.f);
+	verts[startIndex + 5].m_position = Vec3(minX, maxY, 0.f);
+
+	for (int vertIndex = 0; vertIndex < 6; ++vertIndex)
+	{
+		verts[startIndex + vertIndex].m_color = color;
+	}
 }
 
 //------------------------------------------------------------------------------

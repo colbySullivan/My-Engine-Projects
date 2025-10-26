@@ -26,6 +26,18 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
+	if (m_currentMap)
+	{
+		delete m_currentMap;
+		m_currentMap = nullptr;
+	}
+
+	if (m_player)
+	{
+		delete m_player;
+		m_player = nullptr;
+	}
+
 	delete g_game;
 	delete g_engine;
 	delete m_worldCamera;
@@ -42,7 +54,8 @@ Game::~Game()
 void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
-	m_player = new Player(this, worldCenter);
+	m_currentMap = new Map(IntVec2(static_cast<int>(WORLD_SIZE_X), static_cast<int>(WORLD_SIZE_Y)));
+	m_player = new Player(this, Vec2(2,2));
 	m_isPaused = false;
 }
 
@@ -104,6 +117,7 @@ void Game::Render() const
 	{
 		g_engine->m_render->ClearScreen(backgroundColor);
 
+		m_currentMap->Render();
 		RenderUI();
 		RenderEntities();
 	}

@@ -5,6 +5,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Game/Player.hpp"
+#include "Game/Map.hpp"
 
 class App;
 class Entity;
@@ -36,6 +37,7 @@ enum SoundPriority
 //-----------------------------------------------------------------------------------------------
 class Game
 {
+	Map* m_currentMap = nullptr;
 
 public:
 	Game();

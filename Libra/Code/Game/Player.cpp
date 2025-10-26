@@ -41,7 +41,7 @@ void Player::Render() const
 		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D(NUM_VERTS, tempShipWorldVerts, 3.f, m_orientationDegrees, m_position);
+	TransformVertexArrayXY3D(NUM_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
 	g_engine->m_render->DrawVertexArray(NUM_VERTS, tempShipWorldVerts);
 
 	if (m_game->g_drawDebug)
