@@ -12,7 +12,8 @@
 RandomNumberGenerator g_rng;
 
 //-----------------------------------------------------------------------------------------------
-Game::Game()
+Game::Game(App* m_app)
+	:m_app( g_theApp )
 {
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
@@ -21,10 +22,8 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
-	delete g_engine;
 	delete m_worldCamera;
 	delete m_screenCamera;
-	g_engine = nullptr;
 	m_worldCamera = nullptr;
 	m_screenCamera = nullptr;
 }

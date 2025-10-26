@@ -25,6 +25,12 @@
     <ClCompile Include="Game.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="GameNearestPoint.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRaycastVsDiscs.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -40,6 +46,12 @@
       <Filter>Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="Game.hpp">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameNearestPoint.hpp">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRaycastVsDiscs.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Game/Game.hpp"
+#include "Game/GameNearestPoint.hpp"
 
 
 App* g_app = nullptr;
@@ -16,17 +17,18 @@ App::App()
 	config.m_windowConfig.m_clientAspect = 2.0f;
 	config.m_windowConfig.m_windowTitle = "Starship Gold";
 	g_engine = new Engine( config );
-
-	g_app = this;
-	m_game = new Game();
+	m_game = new GameNearestPoint( this );
 	m_game->Startup();
 }
 //-----------------------------------------------------------------------------------------------
 
 App::~App()
 {
-	m_game = nullptr;
 	delete m_game;
+	m_game = nullptr;
+
+	delete g_engine;
+	g_engine = nullptr;
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -46,11 +48,11 @@ void App::RunFrame()
 void App::Update(float deltaSeconds)
 {
 	m_game->Update(deltaSeconds);
-	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
+	if (g_engine->m_input->IsKeyDown(KEYCODE_F7))
 	{
 		delete m_game;
 		m_game = nullptr;
-		m_game = new Game();
+		m_game = new GameNearestPoint(this); //TODO: Change to desired gametype
 	}
 }
 //-----------------------------------------------------------------------------------------------

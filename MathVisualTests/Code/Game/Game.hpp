@@ -17,7 +17,7 @@ class Game
 {
 
 public:
-	Game();
+	Game(App* m_app);
 	~Game();
 
 	void Startup();

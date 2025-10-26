@@ -72,15 +72,11 @@ constexpr float POWERUP_DELAY = 1.0f;
 constexpr float	ROUND_BUFFER = 12.f;
 
 //------------------------------------------------------------------------------
-enum PowerUp
+enum GameType
 {
-	BulletSpeed1,
-	BulletSpeed2,
-	BulletSpeed3,
-	BulletCount1,
-	BulletCount2,
-	BulletCount3,
-	Num_PowerUps
+	GAMEMODE_NEAREST_POINT,
+	GAMEMODE_RAYCAST_VS_DISCS,
+	GAME_NUM_TYPES
 };
 
 //------------------------------------------------------------------------------
