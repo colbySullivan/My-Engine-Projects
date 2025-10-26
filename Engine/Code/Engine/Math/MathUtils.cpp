@@ -349,3 +349,18 @@ void TransformPositionXY3D( Vec3& posToTransform, Vec2 const& iBasis, Vec2 const
 	posToTransform.y = ( iBasis.y * originalX ) + ( jBasis.y * originalY ) + translation.y;
 }
 
+//------------------------------------------------------------------------------
+bool IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox)
+{
+	Vec2 localPos = orientedBox.GetLocalPosForWorldPos(point);
+	Vec2 halfDimensions = orientedBox.m_halfDimensions;
+
+	if (localPos.x >= -halfDimensions.x && localPos.x <= halfDimensions.x &&
+		localPos.y >= -halfDimensions.y && localPos.y <= halfDimensions.y)
+	{
+		return true;
+	}
+
+	return false;
+}
+
