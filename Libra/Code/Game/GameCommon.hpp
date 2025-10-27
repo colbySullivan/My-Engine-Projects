@@ -4,8 +4,8 @@
 
 class Game;
 
-constexpr float WORLD_SIZE_X = 200.f;
-constexpr float WORLD_SIZE_Y = 100.f;
+constexpr float WORLD_SIZE_X = 20.f;
+constexpr float WORLD_SIZE_Y = 10.f;
 
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;
 constexpr float WORLD_CENTER_Y = WORLD_SIZE_Y / 2.f;
@@ -26,7 +26,7 @@ constexpr int NUM_BLACK_HOLE_VERTS = 192;
 constexpr int NUM_BLACK_HOLE_TRIS = 64;
 constexpr int NUM_BLACK_HOLE_SIDES = 64;
 
-constexpr int	NUM_VERTS = 15;
+constexpr int	NUM_VERTS = 6;
 
 extern Game* g_game;
 
