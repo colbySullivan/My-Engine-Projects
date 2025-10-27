@@ -117,8 +117,9 @@ void Game::Render() const
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
 		g_engine->m_render->ClearScreen(backgroundColor);
-
+		g_engine->m_render->BeginCamera( *m_worldCamera );
 		m_currentMap->Render();
+		g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderUI();
 		RenderEntities();
 	}
@@ -247,7 +248,7 @@ void Game::UpdateEntities(float deltaSeconds)
 }
 
 //------------------------------------------------------------------------------
-bool Game::IsTileSolidToEntity(IntVec2 const& tileCoords, Entity& e)
+bool Game::IsTileSolidToEntity(IntVec2 const& tileCoords, [[maybe_unused]] Entity& e)
 {
 	return m_currentMap->IsTileSolidAtTileCoords(tileCoords);
 }

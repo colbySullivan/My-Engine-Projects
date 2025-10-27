@@ -17,13 +17,13 @@ void TransformVertexArrayXY3D( int numVerts, Vertex* verts, float uniformScaleXY
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForDisc2D(std::vector<Vertex>& verts, Vec2 const& center, float discRadius, Rgba8 color)
+void AddVertsForDisc2D( [[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 const& center, [[maybe_unused]] float discRadius, [[maybe_unused]] Rgba8 color)
 {
 	ERROR_AND_DIE("AddVertsForDisc2D not implemented yet");
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForRing2D(std::vector<Vertex>& verts, Vec2 ringCenter, float ringRadius, float thickness, Rgba8 color)
+void AddVertsForRing2D( [[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 ringCenter, [[maybe_unused]] float ringRadius, [[maybe_unused]] float thickness, [[maybe_unused]] Rgba8 color)
 {
 	ERROR_AND_DIE("AddVertsForRing2D not implemented yet");
 }
@@ -55,25 +55,25 @@ void AddVertsForAABB2D(std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForOBB2D(std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba8 color)
+void AddVertsForOBB2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] OBB2 const& orientedBox, [[maybe_unused]] Rgba8 color)
 {
 	ERROR_AND_DIE("AddVertsForOBB2D not implemented yet");
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForCapsule2D(std::vector<Vertex>& verts, Vec2 boneStart, Vec2 boneEnd, float radius, Rgba8 color)
+void AddVertsForCapsule2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 boneStart, [[maybe_unused]] Vec2 boneEnd, [[maybe_unused]] float radius, [[maybe_unused]] Rgba8 color)
 {
 	ERROR_AND_DIE("AddVertsForCapsule2D not implemented yet");
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForArrow2D(std::vector<Vertex>& verts, Vec2 ccw1, Vec2 ccw2, Rgba8 color)
+void AddVertsForArrow2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 ccw1, [[maybe_unused]] Vec2 ccw2, [[maybe_unused]] Rgba8 color)
 {
 	ERROR_AND_DIE("AddVertsForArrow2D not implemented yet");
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color)
+void AddVertsForLineSegment2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 start, [[maybe_unused]] Vec2 end, [[maybe_unused]] Vec2 thickness, [[maybe_unused]] Rgba8 color)
 {
 	ERROR_AND_DIE("AddVertsForLineSegment2D not implemented yet");
 }

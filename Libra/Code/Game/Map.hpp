@@ -14,7 +14,7 @@ enum TileType {
 class Tile {
 public:
 	IntVec2 m_tileCoords;
-	TileType m_type;
+	TileType m_type = GRASS;
 };
 
 //------------------------------------------------------------------------------
