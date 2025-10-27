@@ -97,6 +97,9 @@ private:
 	void UpdateCameras( float deltaSeconds );
 	void UpdateAttractMode( float deltaSeconds );
 	void UpdateEntities( float deltaSeconds );
+	bool IsTileSolidToEntity( IntVec2 const& tileCoords, Entity& e );
+	void PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords );
+	void UpdatePlayerCollisionWithTiles();
 
 	void LoadSounds();
 	void UpdateBlackHole();

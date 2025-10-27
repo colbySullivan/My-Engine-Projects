@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include <vector>
 
@@ -30,6 +31,8 @@ public:
 	// Tile access
 	int GetTileIndexForTileCoords(IntVec2 tileCoords) const;
 	IntVec2 GetTileCoordsForIndex(int tileCoords) const;
+	bool IsTileSolidAtTileCoords(IntVec2 tileCoords) const;
+	AABB2 GetTileBounds(IntVec2 const& tileCoords) const;
 
 	// Rendering
 	void Render() const;

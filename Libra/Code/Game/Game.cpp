@@ -93,6 +93,7 @@ void Game::Update(float deltaSeconds)
 		{
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
+		UpdatePlayerCollisionWithTiles();
 		UpdateEntities( deltaSeconds );
 	}
 }
@@ -243,6 +244,32 @@ void Game::UpdateAttractMode(float deltaSeconds)
 void Game::UpdateEntities(float deltaSeconds)
 {
 	m_player->Update(deltaSeconds);
+}
+
+//------------------------------------------------------------------------------
+bool Game::IsTileSolidToEntity(IntVec2 const& tileCoords, Entity& e)
+{
+	return m_currentMap->IsTileSolidAtTileCoords(tileCoords);
+}
+
+//------------------------------------------------------------------------------
+void Game::PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords )
+{
+	//if (!IsTileSolidToEntity(tileCoords, e))
+	if (!m_currentMap->IsTileSolidAtTileCoords(tileCoords))
+	{
+		return;
+	}
+
+	AABB2 tileBounds = m_currentMap->GetTileBounds(tileCoords);
+	Vec2 nearestPointOnTile = tileBounds.GetNearestPoint(e.m_position);
+	PushDiscOutOfFixedPoint2D(e.m_position, e.m_physicsRadius, nearestPointOnTile);
+}
+
+//------------------------------------------------------------------------------
+void Game::UpdatePlayerCollisionWithTiles()
+{
+	PushEntityOutOfTileIfSolid(*m_player, IntVec2(2, 4)); // TODO : Replace with actual tile collision checking with NESW
 }
 
 //-----------------------------------------------------------------------------------------------

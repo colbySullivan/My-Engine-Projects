@@ -26,6 +26,23 @@ IntVec2 Map::GetTileCoordsForIndex(int tileCoords) const
 }
 
 //------------------------------------------------------------------------------
+bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
+{
+	return m_tiles[GetTileIndexForTileCoords(tileCoords)].m_type != GRASS;
+}
+
+//------------------------------------------------------------------------------
+AABB2 Map::GetTileBounds(IntVec2 const& tileCoords) const
+{
+	float minX = static_cast<float>(tileCoords.x);
+	float minY = static_cast<float>(tileCoords.y);
+	float maxX = minX + 1.0f;
+	float maxY = minY + 1.0f;
+
+	return AABB2(minX, minY, maxX, maxY);
+}
+
+//------------------------------------------------------------------------------
 void Map::Render() const
 {
 	std::vector<Vertex> tileVerts;
@@ -70,6 +87,9 @@ void Map::BuildMapTiles()
 	OutEdgeStoneSetup();
 	BarrierTileSetup();
 }
+
+
+
 
 //------------------------------------------------------------------------------
 // Tile Setups

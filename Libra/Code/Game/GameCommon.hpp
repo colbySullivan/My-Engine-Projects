@@ -30,8 +30,8 @@ constexpr int	NUM_VERTS = 15;
 
 extern Game* g_game;
 
-constexpr float PLAYER_PHYSICS_RADIUS = 1.75f;
-constexpr float PLAYER_COSMETIC_RADIUS = 2.25f;
+constexpr float PLAYER_PHYSICS_RADIUS = 0.5f;
+constexpr float PLAYER_COSMETIC_RADIUS = 1.f;
 constexpr float PLAYER_TURN_SPEED = 180.f;
 constexpr float PLAYER_SPEED = 1.f;
 
