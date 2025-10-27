@@ -76,12 +76,12 @@ bool    IsPointInsideCapsule2D(Vec2 point, Vec2 boneStart, Vec2 boneEnd, float r
 //bool  IsPointInsideCapsule2D( Vec2 point, Capsule2 const& capsule );
 bool    IsPointInsideTriangle2D(Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2); // Counter-Clockwise (positive winding)
 //bool  IsPointInsideTriangle2D( Vec2 point, Triangle2D const& triangle );
-bool    IsPointInsideOrientedSector2D(Vec2 point, Vec2 sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius);
-bool    IsPointInsideDirectedSector2D(Vec2 point, Vec2 sectorTip, Vec2 sectorFwdNormal, float sectorApertureDegrees, float sectorRadius);
+//bool    IsPointInsideOrientedSector2D(Vec2 point, Vec2 sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius);
+//bool    IsPointInsideDirectedSector2D(Vec2 point, Vec2 sectorTip, Vec2 sectorFwdNormal, float sectorApertureDegrees, float sectorRadius);
 
 //-----------------------------------------------------------------------------------------------
 // Get nearest point on...
-Vec2    GetNearestPointOnDisc2D(Vec2 referencePos, Vec2 discCenter, float discRadius);
+//Vec2    GetNearestPointOnDisc2D(Vec2 referencePos, Vec2 discCenter, float discRadius);
 //Vec2  GetNearestPointOnDisc2D( Vec2 referencePos, Disc2 const& disc );
 Vec2    GetNearestPointOnAABB2D(Vec2 referencePos, AABB2 const& alignedBox);
 Vec2    GetNearestPointOnOBB2D(Vec2 referencePos, OBB2 const& orientedBox);
@@ -96,5 +96,5 @@ Vec2    GetNearestPointOnTriangle2D(Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec
 
 //-----------------------------------------------------------------------------------------------
 // Corrective physics (push shapes out of discs, AABB2s, OBB2s, capsules, etc.)
-bool    PushDiscOutOfFixedPoint2D(Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint);
+//bool    PushDiscOutOfFixedPoint2D(Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint);
 //bool  PushDiscOutOfFixedDisc2D( Vec2& mobileDiscCenter, float mobileDiscRadius, Vec2 const& fixedDiscCenter, float fixedDiscRadius );
