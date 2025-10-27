@@ -70,38 +70,32 @@ void Player::InitializeLocalVerts()
 //------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard(float deltaSeconds)
 {
-	Vec2 moveInput(0.f, 0.f);
-	bool isAKeyPressed = false;
+	bool isMoving = false;
+	m_velocity = GetForwardNormal();
 	if (g_engine->m_input->IsKeyDown('E'))
 	{
-		moveInput.y += 1.f;
-		isAKeyPressed = true;
+		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, 90.f, 1.f);
+		isMoving = true;
 	}
 	if (g_engine->m_input->IsKeyDown('D'))
 	{
-		moveInput.y -= 1.f;
-		isAKeyPressed = true;
+		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, -90.f, 1.f);
+		isMoving = true;
 	}
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
-		moveInput.x -= 1.f;
-		isAKeyPressed = true;
+		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, -180.f, 1.f);
+		isMoving = true;
 	}
 	if (g_engine->m_input->IsKeyDown('F'))
 	{
-		moveInput.x += 1.f;
-		isAKeyPressed = true;
-
+		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, 0.f, 1.f);
+		isMoving = true;
 	}
-	if (isAKeyPressed)
-	{
-		UpdateMovement(deltaSeconds, moveInput);
-	}
-	else
+	else if( !isMoving )
 	{
 		m_velocity = Vec2(0.f, 0.f);
 	}
-
 }
 
 //------------------------------------------------------------------------------
@@ -119,32 +113,5 @@ void Player::UpdateFromController(float deltaSeconds)
 	if (leftStickMagnitude > 0.f)
 	{
 		Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
-		UpdateMovement(deltaSeconds, leftStickPos);
 	}
-}
-
-//------------------------------------------------------------------------------
-void Player::UpdateMovement(float deltaSeconds, Vec2 const& moveInput)
-{
-	float headingDirection = moveInput.GetOrientationDegrees();
-
-	float angleDelta = GetShortestAngularDispDegrees(m_orientationDegrees, headingDirection);
-	float maxTurnThisFrame = PLAYER_TURN_SPEED * deltaSeconds;
-
-	if (fabsf(angleDelta) <= maxTurnThisFrame)
-	{
-		m_orientationDegrees = headingDirection;
-	}
-	else
-	{
-		if (angleDelta > 0.f)
-		{
-			m_orientationDegrees += maxTurnThisFrame;
-		}
-		else
-		{
-			m_orientationDegrees -= maxTurnThisFrame;
-		}
-	}
-	m_velocity = GetForwardNormal() * PLAYER_SPEED;
 }

@@ -24,7 +24,6 @@ public:
 	Vec2        GetForwardNormal() const;
 	void		WrapAroundScreen();
 	void		spawnRandomEdge();
-	void		HealthVisual();
 
 	RandomNumberGenerator g_rng;
 
