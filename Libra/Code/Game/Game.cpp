@@ -4,10 +4,13 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Math/OBB2.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Game/Entity.hpp"
+#include "Game/Map.hpp"
+#include "Game/Player.hpp"
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
@@ -54,8 +57,8 @@ Game::~Game()
 void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
-	m_currentMap = new Map(IntVec2(static_cast<int>(WORLD_SIZE_X), static_cast<int>(WORLD_SIZE_Y)));
-	m_player = new Player(this, Vec2(2,2));
+	m_currentMap = new Map(g_game, IntVec2(static_cast<int>(WORLD_SIZE_X), static_cast<int>(WORLD_SIZE_Y)));
+	//m_player = new Player(this, Vec2(2,2));
 	m_isPaused = false;
 }
 
@@ -93,7 +96,6 @@ void Game::Update(float deltaSeconds)
 		{
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
-		UpdatePlayerCollisionWithTiles();
 		UpdateEntities( deltaSeconds );
 	}
 }
@@ -158,7 +160,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	{
 		m_isPaused = !m_isPaused; // Switch pause
 	}
-	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
+	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single paused Update (simulation step) and then pauses.
 	{
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
@@ -242,35 +244,10 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	UpdateBlackHole();
 }
 
+//-----------------------------------------------------------------------------------------------
 void Game::UpdateEntities(float deltaSeconds)
 {
-	m_player->Update(deltaSeconds);
-}
-
-//------------------------------------------------------------------------------
-bool Game::IsTileSolidToEntity(IntVec2 const& tileCoords, [[maybe_unused]] Entity& e)
-{
-	return m_currentMap->IsTileSolidAtTileCoords(tileCoords);
-}
-
-//------------------------------------------------------------------------------
-void Game::PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords )
-{
-	//if (!IsTileSolidToEntity(tileCoords, e))
-	if (!m_currentMap->IsTileSolidAtTileCoords(tileCoords))
-	{
-		return;
-	}
-
-	AABB2 tileBounds = m_currentMap->GetTileBounds(tileCoords);
-	Vec2 nearestPointOnTile = tileBounds.GetNearestPoint(e.m_position);
-	PushDiscOutOfFixedPoint2D(e.m_position, e.m_physicsRadius, nearestPointOnTile);
-}
-
-//------------------------------------------------------------------------------
-void Game::UpdatePlayerCollisionWithTiles()
-{
-	PushEntityOutOfTileIfSolid(*m_player, IntVec2(2, 4)); // TODO : Replace with actual tile collision checking with NESW
+	m_currentMap->Update( deltaSeconds );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -344,10 +321,7 @@ void Game::RenderEntities() const
 {
 	g_engine->m_render->BeginCamera(*m_worldCamera);
 
-	if (m_player)
-	{
-		m_player->Render();
-	}
+	m_currentMap->Render();
 
 	g_engine->m_render->EndCamera(*m_worldCamera);
 }

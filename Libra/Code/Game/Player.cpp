@@ -68,7 +68,7 @@ void Player::InitializeLocalVerts()
 }
 
 //------------------------------------------------------------------------------
-void Player::UpdateFromKeyboard(float deltaSeconds)
+void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 {
 	bool isMoving = false;
 	m_velocity = GetForwardNormal();
@@ -105,7 +105,7 @@ void Player::Respawn()
 }
 
 //------------------------------------------------------------------------------
-void Player::UpdateFromController(float deltaSeconds)
+void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController(0);
 

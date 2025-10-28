@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/Rgba8.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 class Game;
 
@@ -37,6 +38,15 @@ constexpr float PLAYER_SPEED = 1.f;
 
 const Rgba8 GRASS_COLOR = Rgba8(50, 100, 50, 255);
 const Rgba8 STONE_COLOR = Rgba8(180, 180, 180, 255);
+
+const IntVec2 STEP_EAST = IntVec2( 1, 0 );
+const IntVec2 STEP_WEST = IntVec2( -1, 0 );
+const IntVec2 STEP_NORTH = IntVec2( 0, 1 );
+const IntVec2 STEP_SOUTH = IntVec2( 0, -1 );
+const IntVec2 STEP_NE = IntVec2( 1, 1 ); 
+const IntVec2 STEP_NW = IntVec2( -1, 1 );  
+const IntVec2 STEP_SE = IntVec2( 1, -1 );  
+const IntVec2 STEP_SW = IntVec2( -1, -1 ); 
 
 
 //------------------------------------------------------------------------------

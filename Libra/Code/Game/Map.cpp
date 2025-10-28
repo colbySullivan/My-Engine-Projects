@@ -5,10 +5,18 @@
 #include "Engine/Core/Engine.hpp"
 
 //------------------------------------------------------------------------------
-Map::Map(IntVec2 dimensions)
-	: m_dimensions(dimensions)
+Map::Map( Game* game, IntVec2 dimensions )
+	: m_game( game )
+	, m_dimensions( dimensions )
 {
 	BuildMapTiles();
+	AddToEntityVector(new Player(m_game, Vec2(2.f, 2.f)));
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::Update( float deltaSeconds)
+{
+	UpdateEntities( deltaSeconds );
 }
 
 //------------------------------------------------------------------------------
@@ -31,6 +39,42 @@ bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
 	return m_tiles[GetTileIndexForTileCoords(tileCoords)].m_type != GRASS;
 }
 
+//-----------------------------------------------------------------------------------------------
+void Map::PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords )
+{
+	//if (!IsTileSolidToEntity(tileCoords, e))
+	if ( !IsTileSolidAtTileCoords( tileCoords ) )
+	{
+		return;
+	}
+
+	AABB2 tileBounds = GetTileBounds( tileCoords );
+	Vec2 nearestPointOnTile = tileBounds.GetNearestPoint( e.m_position );
+	PushDiscOutOfFixedPoint2D( e.m_position, e.m_physicsRadius, nearestPointOnTile );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::PushEntityOutOfWalls( Entity& e, [[maybe_unused]] float deltaSeconds )
+{
+	/*if ( g_debugNoClip && e.IsPlayer() )
+	{
+	return;
+	}*/
+
+	IntVec2 myTileCoords = GetTileCoordsForWorldPos( e.m_position );
+
+
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_EAST );
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_WEST );
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_NORTH );
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_SOUTH );
+
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_NE );
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_NW );
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_SE );
+	PushEntityOutOfTileIfSolid( e, myTileCoords + STEP_SW );
+}
+
 //------------------------------------------------------------------------------
 AABB2 Map::GetTileBounds(IntVec2 const& tileCoords) const
 {
@@ -40,6 +84,13 @@ AABB2 Map::GetTileBounds(IntVec2 const& tileCoords) const
 	float maxY = minY + 1.0f;
 
 	return AABB2(minX, minY, maxX, maxY);
+}
+
+IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
+{
+	int tileX = static_cast< int >( floorf( worldPos.x ) );
+	int tileY = static_cast< int >( floorf( worldPos.y ) );
+	return IntVec2( tileX, tileY );
 }
 
 //------------------------------------------------------------------------------
@@ -74,6 +125,14 @@ void Map::Render() const
 	}
 	TransformVertexArrayXY3D(static_cast<int>(tileVerts.size()), tileVerts.data(), 1.0f, 0.0f, Vec2(0.0f, 0.0f));
 	g_engine->m_render->DrawVertexArray(static_cast<int>(tileVerts.size()), tileVerts.data());
+
+	for ( int entityIndex = 0; entityIndex < m_entities.size(); entityIndex++ )
+	{
+		if ( m_entities[entityIndex] )
+		{
+			m_entities[entityIndex]->Render();
+		}
+	}
 
 }
 
@@ -149,6 +208,26 @@ void Map::GrassTileSetup()
 			int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 			m_tiles[tileIndex].m_tileCoords = IntVec2(tileX, tileY);
 			m_tiles[tileIndex].m_type = GRASS;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::AddToEntityVector( Entity* e )
+{
+	m_entities.reserve( static_cast< int >( m_entities.size() ) + 1 );
+	m_entities.push_back( e );
+}
+
+void Map::UpdateEntities( float deltaSeconds )
+{
+	for (int entityIndex = 0; entityIndex < m_entities.size() ; entityIndex++)
+	{
+		Entity* entityAtIndex = m_entities[entityIndex];
+		if ( entityAtIndex )
+		{
+			entityAtIndex->Update( deltaSeconds );
+			PushEntityOutOfWalls( *entityAtIndex, deltaSeconds );
 		}
 	}
 }

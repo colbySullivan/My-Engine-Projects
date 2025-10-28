@@ -81,3 +81,9 @@ void IntVec2::operator=(const IntVec2& copyFrom)
 	x = copyFrom.x;
 	y = copyFrom.y;
 }
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 const IntVec2::operator+( IntVec2 const& vecToAdd ) const
+{
+	return IntVec2( x + vecToAdd.x, y + vecToAdd.y);
+}

@@ -5,7 +5,6 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Game/Player.hpp"
-#include "Game/Map.hpp"
 
 class App;
 class Entity;
@@ -14,6 +13,7 @@ class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
 class Player;
+class Map;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -97,9 +97,6 @@ private:
 	void UpdateCameras( float deltaSeconds );
 	void UpdateAttractMode( float deltaSeconds );
 	void UpdateEntities( float deltaSeconds );
-	bool IsTileSolidToEntity( IntVec2 const& tileCoords, Entity& e );
-	void PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords );
-	void UpdatePlayerCollisionWithTiles();
 
 	void LoadSounds();
 	void UpdateBlackHole();
