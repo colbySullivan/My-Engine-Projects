@@ -30,7 +30,8 @@ constexpr int NUM_BLACK_HOLE_VERTS = 192;
 constexpr int NUM_BLACK_HOLE_TRIS = 64;
 constexpr int NUM_BLACK_HOLE_SIDES = 64;
 
-constexpr int	NUM_VERTS = 6;
+constexpr int NUM_PLAYER_VERTS = 6;
+constexpr int NUM_TURRET_VERTS = 6;
 
 extern Game* g_game;
 

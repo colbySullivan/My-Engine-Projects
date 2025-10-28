@@ -23,14 +23,19 @@ public:
 	int					m_lives = 4;
 
 private:
-	void InitializeLocalVerts();
+	void InitializePlayerVerts();
 	void UpdateFromKeyboard(float deltaSeconds);
 	//void Shoot();
 	void Respawn();
 
 	void UpdateFromController(float deltaSeconds);
+	void InitializeTurretVerts();
+	void RenderPlayer() const;
+	void RenderTurret() const;
+	void ControlOrientationTurning( float m_orientationDegrees );
 private:
-	Vertex		m_localVerts[NUM_VERTS];
+	Vertex		m_playerVerts[NUM_PLAYER_VERTS];
+	Vertex		m_turretVerts[NUM_TURRET_VERTS];
 	float		m_thrustFraction = -5.f;
 	bool		m_isMoving = false;
 };

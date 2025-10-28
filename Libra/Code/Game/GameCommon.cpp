@@ -75,7 +75,7 @@ void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickne
 	Vec2 topRight = entity2Pos + halfThicknessOffset;
 	Vec2 bottomRight = entity2Pos - halfThicknessOffset;
 
-	Vertex verts[NUM_VERTS];
+	Vertex verts[NUM_PLAYER_VERTS];
 
 	// First triangle
 	verts[0].m_position = Vec3(bottomLeft.x, bottomLeft.y, 0.0f);
@@ -87,10 +87,10 @@ void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickne
 	verts[4].m_position = Vec3(topRight.x, topRight.y, 0.0f);
 	verts[5].m_position = Vec3(bottomRight.x, bottomRight.y, 0.0f);
 
-	for (int vertIndex = 0; vertIndex < NUM_VERTS; ++vertIndex)
+	for (int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex)
 	{
 		verts[vertIndex].m_color = color;
 	}
 
-	g_engine->m_render->DrawVertexArray(NUM_VERTS, verts);
+	g_engine->m_render->DrawVertexArray(NUM_PLAYER_VERTS, verts);
 }

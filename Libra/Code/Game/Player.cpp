@@ -10,7 +10,8 @@ Player::Player(Game* owner, Vec2 const& startPos)
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
-	InitializeLocalVerts();
+	InitializePlayerVerts();
+	InitializeTurretVerts();
 }
 
 //------------------------------------------------------------------------------
@@ -39,19 +40,47 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 //------------------------------------------------------------------------------
 void Player::Render() const
 {
-	if (m_isDead)
-		return;
-	Vertex tempShipWorldVerts[NUM_VERTS];
+	RenderPlayer();
+	RenderTurret();
+}
 
-	for (int vertIndex = 0; vertIndex < NUM_VERTS; ++vertIndex)
+//-----------------------------------------------------------------------------------------------
+void Player::RenderPlayer() const
+{
+	if ( m_isDead )
+		return;
+	Vertex tempShipWorldVerts[NUM_PLAYER_VERTS];
+
+	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
 	{
-		tempShipWorldVerts[vertIndex] = m_localVerts[vertIndex];
+		tempShipWorldVerts[vertIndex] = m_playerVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D(NUM_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position);
-	g_engine->m_render->DrawVertexArray(NUM_VERTS, tempShipWorldVerts);
+	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position );
+	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempShipWorldVerts );
 
-	if (m_game->g_drawDebug)
+	if ( m_game->g_drawDebug )
+	{
+		DebugRender();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Player::RenderTurret() const
+{
+	if ( m_isDead )
+		return;
+	Vertex tempTurretWorldVerts[NUM_TURRET_VERTS];
+
+	for ( int vertIndex = 0; vertIndex < NUM_TURRET_VERTS; ++vertIndex )
+	{
+		tempTurretWorldVerts[vertIndex] = m_turretVerts[vertIndex];
+	}
+
+	TransformVertexArrayXY3D( NUM_TURRET_VERTS, tempTurretWorldVerts, 0.8f, m_turretOrientationDegrees, m_position );
+	g_engine->m_render->DrawVertexArray( NUM_TURRET_VERTS, tempTurretWorldVerts );
+
+	if ( m_game->g_drawDebug )
 	{
 		DebugRender();
 	}
@@ -63,25 +92,43 @@ bool Player::IsPlayer()
 }
 
 //------------------------------------------------------------------------------
-void Player::InitializeLocalVerts()
+void Player::InitializePlayerVerts()
 {
 
-	m_localVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_localVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
-	m_localVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
+	m_playerVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
+	m_playerVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
+	m_playerVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
 
-	m_localVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_localVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
-	m_localVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
-	for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
+	m_playerVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
+	m_playerVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
+	m_playerVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
+	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
 	{
-		m_localVerts[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
+		m_playerVerts[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Player::InitializeTurretVerts()
+{
+	m_turretVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
+	m_turretVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
+	m_turretVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
+
+	m_turretVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
+	m_turretVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
+	m_turretVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
+
+	for ( int vertIndex = 0; vertIndex < NUM_TURRET_VERTS; ++vertIndex )
+	{
+		m_turretVerts[vertIndex].m_color = Rgba8( 255, 0, 0, 255 );
 	}
 }
 
 //------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 {
+	// Player controller
 	if (g_engine->m_input->IsKeyDown('E'))
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, 90.f, 1.f);
@@ -102,6 +149,24 @@ void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, 0.f, 1.f);
 		m_isMoving = true;
 	}
+
+	// Turret controller
+	if ( g_engine->m_input->IsKeyDown( 'I' ) )
+	{
+		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 90.f, 1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'K' ) )
+	{
+		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -90.f, 1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'J' ) )
+	{
+		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -180.f, 1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'L' ) )
+	{
+		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 0.f, 1.f );
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -121,5 +186,12 @@ void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
 		m_isMoving = true;
 		Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, leftStickPos.GetOrientationDegrees(), 1.f );
+	}
+
+	float rightStickMagnitude = controller.GetRightStick().GetMagnitude();
+	if ( rightStickMagnitude > 0.f )
+	{
+		Vec2 rightStickPos = controller.GetRightStick().GetPosition();
+		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, rightStickPos.GetOrientationDegrees(), 1.f );
 	}
 }

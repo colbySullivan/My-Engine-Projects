@@ -33,6 +33,7 @@ public:
 	Vec2        m_position;
 	Vec2        m_velocity;
 	float       m_orientationDegrees = 0.f;  // counter-clockwise from +x/east
+	float		m_turretOrientationDegrees = 0.f;
 	float       m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise
 	float       m_physicsRadius = 5.f;
 	float       m_cosmeticRadius = 10.f;
