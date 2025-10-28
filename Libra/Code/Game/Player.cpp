@@ -22,9 +22,16 @@ Player::~Player()
 //------------------------------------------------------------------------------
 void Player::Update([[maybe_unused]] float deltaSeconds)
 {
+	m_isMoving = false;
+	m_velocity = GetForwardNormal();
 	Entity::Update(deltaSeconds);
 	UpdateFromKeyboard(deltaSeconds);
 	UpdateFromController(deltaSeconds);
+
+	if ( !m_isMoving )
+	{
+		m_velocity = Vec2( 0.f, 0.f );
+	}
 
 	m_position += m_velocity * deltaSeconds;
 }
@@ -75,31 +82,25 @@ void Player::InitializeLocalVerts()
 //------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 {
-	bool isMoving = false;
-	m_velocity = GetForwardNormal();
 	if (g_engine->m_input->IsKeyDown('E'))
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, 90.f, 1.f);
-		isMoving = true;
+		m_isMoving = true;
 	}
 	if (g_engine->m_input->IsKeyDown('D'))
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, -90.f, 1.f);
-		isMoving = true;
+		m_isMoving = true;
 	}
 	if (g_engine->m_input->IsKeyDown('S'))
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, -180.f, 1.f);
-		isMoving = true;
+		m_isMoving = true;
 	}
 	if (g_engine->m_input->IsKeyDown('F'))
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, 0.f, 1.f);
-		isMoving = true;
-	}
-	else if( !isMoving )
-	{
-		m_velocity = Vec2(0.f, 0.f);
+		m_isMoving = true;
 	}
 }
 
@@ -117,6 +118,8 @@ void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
 	float leftStickMagnitude = controller.GetLeftStick().GetMagnitude();
 	if (leftStickMagnitude > 0.f)
 	{
+		m_isMoving = true;
 		Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
+		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, leftStickPos.GetOrientationDegrees(), 1.f );
 	}
 }
