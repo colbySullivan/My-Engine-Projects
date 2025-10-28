@@ -121,3 +121,9 @@ void Entity::spawnRandomEdge()
 		break;
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
+bool Entity::IsPlayer()
+{
+	return false;
+}

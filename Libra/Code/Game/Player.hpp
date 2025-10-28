@@ -17,6 +17,7 @@ public:
 
 	virtual void Update(float deltaSeconds) override;
 	virtual void Render() const override;
+	virtual bool IsPlayer();
 	//void Die() override;
 
 	int					m_lives = 4;

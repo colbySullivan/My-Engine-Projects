@@ -57,7 +57,7 @@ Game::~Game()
 void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
-	m_currentMap = new Map(g_game, IntVec2(static_cast<int>(WORLD_SIZE_X), static_cast<int>(WORLD_SIZE_Y)));
+	m_currentMap = new Map(g_game, IntVec2(MAP_SIZE_X, MAP_SIZE_Y));
 	//m_player = new Player(this, Vec2(2,2));
 	m_isPaused = false;
 }

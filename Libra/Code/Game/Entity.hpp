@@ -19,6 +19,7 @@ public:
 	virtual void Render() const = 0;
 	virtual void DebugRender() const;
 	virtual void Die();
+	virtual bool IsPlayer();
 
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;

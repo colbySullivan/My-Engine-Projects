@@ -27,6 +27,7 @@ class Map
 	std::vector< Tile > m_tiles; // Note: this is NOT a 2D array!
 	std::vector< Entity* > m_entities;
 	IntVec2 m_dimensions; // # of tiles wide (x) and high (y)
+	int m_numTilesInViewVertically;
 
 public:	
 	Map( Game* game, IntVec2 dimensions );
@@ -42,6 +43,9 @@ public:
 
 	// Rendering
 	void Render() const;
+	void RenderTiles() const;
+	void RenderEntities() const;
+	void RenderUpdateCameras() const;
 	void BuildMapTiles();
 	void BarrierTileSetup();
 	void OutEdgeStoneSetup();

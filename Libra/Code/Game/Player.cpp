@@ -50,6 +50,11 @@ void Player::Render() const
 	}
 }
 
+bool Player::IsPlayer()
+{
+	return true;
+}
+
 //------------------------------------------------------------------------------
 void Player::InitializeLocalVerts()
 {

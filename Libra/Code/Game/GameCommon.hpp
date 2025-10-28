@@ -8,6 +8,9 @@ class Game;
 constexpr float WORLD_SIZE_X = 20.f;
 constexpr float WORLD_SIZE_Y = 10.f;
 
+constexpr int MAP_SIZE_X = 50;
+constexpr int MAP_SIZE_Y = 25;
+
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;
 constexpr float WORLD_CENTER_Y = WORLD_SIZE_Y / 2.f;
 
