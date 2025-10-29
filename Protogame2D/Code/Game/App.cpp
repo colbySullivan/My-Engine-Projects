@@ -6,6 +6,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Game/Game.hpp"
+#include <ThirdParty/stb/stb_image.h>
 
 
 App* g_app = nullptr;
@@ -20,6 +21,13 @@ App::App()
 	g_app = this;
 	m_game = new Game();
 	m_game->Startup();
+
+	IntVec2 dimensions = IntVec2(0,0);		// This will be filled in for us to indicate image width & height
+	int bytesPerTexel = 0;					// ...and how many color components the image had (e.g. 3=RGB=24bit, 4=RGBA=32bit)
+
+	// Load (and decompress) the image RGB(A) bytes from a file on disk into a memory buffer (array of bytes)
+	stbi_set_flip_vertically_on_load( 1 ); // We prefer uvTexCoords has origin (0,0) at BOTTOM LEFT
+	unsigned char* texelData = stbi_load( "Data/Textures/Test_StbiFlippedAndOpenGL.png", &dimensions.x, &dimensions.y, &bytesPerTexel, 0);
 }
 //-----------------------------------------------------------------------------------------------
 
