@@ -8,6 +8,7 @@
 #include "Game/GameCommon.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Game/Entity.hpp"
+#include <ThirdParty/stb/stb_image.h>
 
 RandomNumberGenerator g_rng;
 
@@ -286,6 +287,13 @@ void Game::RenderAttractMode() const
 		RenderText( singleChar, Vec2( 390.f + charIndex * 40.f, 50.f ), 40.0f, Rgba8( static_cast< unsigned char >( offsetColorR ), static_cast< unsigned char >( offsetColorG ), static_cast< unsigned char >( offsetColorB ) ) );
 
 	}
+
+	Texture* testTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
+	std::vector<Vertex> testTextureVerts;
+	AABB2 texturedAABB2( 0.f, 0.f, 512.f, 512.f );
+	AddVertsForAABB2D( testTextureVerts, texturedAABB2, Rgba8( 255, 255, 255, 255 ) ); // This should now set UVs on each Vertex!!
+	g_engine->m_render->BindTexture( testTexture );
+	g_engine->m_render->DrawVertexArray( testTextureVerts );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }

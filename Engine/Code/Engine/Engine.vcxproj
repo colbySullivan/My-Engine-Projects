@@ -166,6 +166,7 @@
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\ErrorWarningAssert.cpp" />
+    <ClCompile Include="Core\Image.cpp" />
     <ClCompile Include="Core\Rgba8.cpp" />
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\Time.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
     <ClCompile Include="Renderer\SimpleTriangleFont.cpp" />
+    <ClCompile Include="Renderer\Texture.cpp" />
     <ClCompile Include="Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -201,8 +203,10 @@
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Core\Engine.hpp" />
     <ClInclude Include="Core\ErrorWarningAssert.hpp" />
+    <ClInclude Include="Core\Image.hpp" />
     <ClInclude Include="Core\Rgba8.hpp" />
     <ClInclude Include="Core\StringUtils.hpp" />
+    <ClInclude Include="Core\Texture.hpp" />
     <ClInclude Include="Core\Time.hpp" />
     <ClInclude Include="Core\Vertex.hpp" />
     <ClInclude Include="Core\VertexUtils.hpp" />

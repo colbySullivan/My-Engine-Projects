@@ -1,4 +1,6 @@
 #pragma once
+#include "Engine/Core/Texture.hpp"
+#include <vector>
 
 //------------------------------------------------------------------------------
 struct Rgba8;
@@ -28,5 +30,12 @@ public:
 	void EndCamera(Camera const& camera);
 	void DrawVertexArray(int numVertexes, Vertex const* vertexes);
 
-	RenderConfig	m_config;
+	void DrawVertexArray( std::vector<Vertex> const& verts );
+	Texture* CreateTextureFromData( char const* name, IntVec2 dimensions, int bytesPerTexel, uint8_t* texelData );
+	void BindTexture( Texture* texture );
+	Texture* CreateTextureFromFile( char const* imageFilePath );
+	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
+	Texture* GetTextureForFileName( char const* imageFilePath );
+	RenderConfig m_config;
+	std::vector< Texture* > m_loadedTextures;
 };

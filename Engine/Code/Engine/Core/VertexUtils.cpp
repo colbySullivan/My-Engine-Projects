@@ -29,29 +29,20 @@ void AddVertsForRing2D( [[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unu
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForAABB2D(std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba8 color)
+void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba8 color )
 {
-	// Get the four corners of the AABB
 	float minX = alignedBox.m_mins.x;
 	float minY = alignedBox.m_mins.y;
 	float maxX = alignedBox.m_maxs.x;
 	float maxY = alignedBox.m_maxs.y;
 
-	int startIndex = static_cast<int>(verts.size());
-	verts.resize(verts.size() + 6);
+	verts.push_back(Vertex(Vec3( minX, minY, 0.f ), color, Vec2( 0.f, 0.f )));
+	verts.push_back(Vertex(Vec3( maxX, minY, 0.f ), color, Vec2( 1.f, 0.f )));
+	verts.push_back(Vertex(Vec3( maxX, maxY, 0.f ), color, Vec2( 1.f, 1.f )));
+	verts.push_back(Vertex(Vec3( minX, minY, 0.f ), color, Vec2( 0.f, 0.f )));
+	verts.push_back(Vertex(Vec3( maxX, maxY, 0.f ), color, Vec2( 1.f, 1.f )));
+	verts.push_back(Vertex(Vec3( minX, maxY, 0.f ), color, Vec2( 0.f, 1.f )));
 
-	verts[startIndex + 0].m_position = Vec3(minX, minY, 0.f);
-	verts[startIndex + 1].m_position = Vec3(maxX, minY, 0.f);
-	verts[startIndex + 2].m_position = Vec3(maxX, maxY, 0.f);
-
-	verts[startIndex + 3].m_position = Vec3(minX, minY, 0.f);
-	verts[startIndex + 4].m_position = Vec3(maxX, maxY, 0.f);
-	verts[startIndex + 5].m_position = Vec3(minX, maxY, 0.f);
-
-	for (int vertIndex = 0; vertIndex < 6; ++vertIndex)
-	{
-		verts[startIndex + vertIndex].m_color = color;
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -67,9 +58,9 @@ void AddVertsForCapsule2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_u
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForArrow2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 ccw1, [[maybe_unused]] Vec2 ccw2, [[maybe_unused]] Rgba8 color)
+void AddVertsForTriangle2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 ccw0, [[maybe_unused]] Vec2 ccw1, [[maybe_unused]] Vec2 ccw2, [[maybe_unused]] Rgba8 color)
 {
-	ERROR_AND_DIE("AddVertsForArrow2D not implemented yet");
+	ERROR_AND_DIE("AddVertsForTriangle2D not implemented yet");
 }
 
 //------------------------------------------------------------------------------

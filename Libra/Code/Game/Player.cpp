@@ -12,6 +12,7 @@ Player::Player(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
+	m_playerTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
 }
 
 //------------------------------------------------------------------------------
@@ -41,28 +42,40 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 void Player::Render() const
 {
 	RenderPlayer();
-	RenderTurret();
+	//RenderTurret();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Player::RenderPlayer() const
 {
+	//g_engine->m_render->DrawVertexArray( testTextureVerts );
+
 	if ( m_isDead )
 		return;
 	Vertex tempShipWorldVerts[NUM_PLAYER_VERTS];
+	//std::vector<Vertex> tempShipWorldVerts;
 
 	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
 	{
 		tempShipWorldVerts[vertIndex] = m_playerVerts[vertIndex];
+		//tempShipWorldVerts.push_back(m_playerVerts[vertIndex]);
 	}
 
+	/*Texture* testTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );*/
+	//std::vector<Vertex> testTextureVerts;
+	//AABB2 texturedAABB2( 0.f, 0.f, 1.f, 1.f );
 	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position );
+	//AABB2 texturedAABB2( m_position.x - 0.5f, m_position.y - 0.5f, m_position.x + 0.5f, m_position.y + 0.5f );
+	g_engine->m_render->BindTexture( m_playerTexture );
 	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempShipWorldVerts );
+
+	g_engine->m_render->BindTexture( nullptr );
 
 	if ( m_game->g_drawDebug )
 	{
 		DebugRender();
 	}
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -121,7 +134,7 @@ void Player::InitializeTurretVerts()
 
 	for ( int vertIndex = 0; vertIndex < NUM_TURRET_VERTS; ++vertIndex )
 	{
-		m_turretVerts[vertIndex].m_color = Rgba8( 255, 0, 0, 255 );
+		m_turretVerts[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
 	}
 }
 

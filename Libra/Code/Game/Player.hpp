@@ -6,6 +6,7 @@
 
 //------------------------------------------------------------------------------
 class Game;
+class Texture;
 
 //------------------------------------------------------------------------------
 
@@ -33,6 +34,8 @@ private:
 	void RenderPlayer() const;
 	void RenderTurret() const;
 	void ControlOrientationTurning( float m_orientationDegrees );
+	Texture* m_playerTexture = nullptr;
+
 private:
 	Vertex		m_playerVerts[NUM_PLAYER_VERTS];
 	Vertex		m_turretVerts[NUM_TURRET_VERTS];

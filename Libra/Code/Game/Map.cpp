@@ -44,7 +44,6 @@ bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
 //-----------------------------------------------------------------------------------------------
 void Map::PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords )
 {
-	//if (!IsTileSolidToEntity(tileCoords, e))
 	if ( !IsTileSolidAtTileCoords( tileCoords ) )
 	{
 		return;

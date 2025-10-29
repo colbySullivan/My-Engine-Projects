@@ -17,5 +17,5 @@ void AddVertsForRing2D(std::vector<Vertex>& verts, Vec2 ringCenter, float ringRa
 void AddVertsForAABB2D(std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba8 color);
 void AddVertsForOBB2D(std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba8 color);
 void AddVertsForCapsule2D(std::vector<Vertex>& verts, Vec2 boneStart, Vec2 boneEnd, float radius, Rgba8 color);
-void AddVertsForArrow2D(std::vector<Vertex>& verts, Vec2 ccw1, Vec2 ccw2, Rgba8 color); // counter-clockwise
+void AddVertsForTriangle2D(std::vector<Vertex>& verts, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2, Rgba8 color);
 void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color);
