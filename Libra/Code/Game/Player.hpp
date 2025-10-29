@@ -35,6 +35,7 @@ private:
 	void RenderTurret() const;
 	void ControlOrientationTurning( float m_orientationDegrees );
 	Texture* m_playerTexture = nullptr;
+	Texture* m_turretTexture = nullptr;
 
 private:
 	Vertex		m_playerVerts[NUM_PLAYER_VERTS];

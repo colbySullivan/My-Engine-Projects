@@ -12,7 +12,10 @@ Player::Player(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
-	m_playerTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
+	m_playerTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
+	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
+
+	g_engine->m_render->BindTexture( nullptr );
 }
 
 //------------------------------------------------------------------------------
@@ -42,33 +45,24 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 void Player::Render() const
 {
 	RenderPlayer();
-	//RenderTurret();
+	RenderTurret();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Player::RenderPlayer() const
 {
-	//g_engine->m_render->DrawVertexArray( testTextureVerts );
-
 	if ( m_isDead )
 		return;
+
 	Vertex tempShipWorldVerts[NUM_PLAYER_VERTS];
-	//std::vector<Vertex> tempShipWorldVerts;
 
 	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
 	{
 		tempShipWorldVerts[vertIndex] = m_playerVerts[vertIndex];
-		//tempShipWorldVerts.push_back(m_playerVerts[vertIndex]);
 	}
-
-	/*Texture* testTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );*/
-	//std::vector<Vertex> testTextureVerts;
-	//AABB2 texturedAABB2( 0.f, 0.f, 1.f, 1.f );
 	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position );
-	//AABB2 texturedAABB2( m_position.x - 0.5f, m_position.y - 0.5f, m_position.x + 0.5f, m_position.y + 0.5f );
 	g_engine->m_render->BindTexture( m_playerTexture );
-	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempShipWorldVerts );
-
+	g_engine->m_render->DrawVertexArray(NUM_PLAYER_VERTS, tempShipWorldVerts );
 	g_engine->m_render->BindTexture( nullptr );
 
 	if ( m_game->g_drawDebug )
@@ -90,8 +84,10 @@ void Player::RenderTurret() const
 		tempTurretWorldVerts[vertIndex] = m_turretVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D( NUM_TURRET_VERTS, tempTurretWorldVerts, 0.8f, m_turretOrientationDegrees, m_position );
+	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempTurretWorldVerts, 1.f, m_turretOrientationDegrees, m_position );
+	g_engine->m_render->BindTexture( m_turretTexture );
 	g_engine->m_render->DrawVertexArray( NUM_TURRET_VERTS, tempTurretWorldVerts );
+	g_engine->m_render->BindTexture( nullptr );
 
 	if ( m_game->g_drawDebug )
 	{
@@ -107,35 +103,23 @@ bool Player::IsPlayer()
 //------------------------------------------------------------------------------
 void Player::InitializePlayerVerts()
 {
-
-	m_playerVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_playerVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
-	m_playerVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
-
-	m_playerVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_playerVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
-	m_playerVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
-	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
-	{
-		m_playerVerts[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
-	}
+	m_playerVerts[0] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
+	m_playerVerts[1] = Vertex( Vec3( 0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 0.f ) );
+	m_playerVerts[2] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
+	m_playerVerts[3] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
+	m_playerVerts[4] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
+	m_playerVerts[5] = Vertex( Vec3( -0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 1.f ) );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Player::InitializeTurretVerts()
 {
-	m_turretVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_turretVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
-	m_turretVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
-
-	m_turretVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_turretVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
-	m_turretVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
-
-	for ( int vertIndex = 0; vertIndex < NUM_TURRET_VERTS; ++vertIndex )
-	{
-		m_turretVerts[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
-	}
+	m_turretVerts[0] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
+	m_turretVerts[1] = Vertex( Vec3( 0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 0.f ) );
+	m_turretVerts[2] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
+	m_turretVerts[3] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
+	m_turretVerts[4] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
+	m_turretVerts[5] = Vertex( Vec3( -0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 1.f ) );
 }
 
 //------------------------------------------------------------------------------
