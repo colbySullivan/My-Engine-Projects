@@ -23,6 +23,7 @@ Game::Game()
 	m_screenCamera = new Camera;
 	m_roundNumber = 1;
 	LoadSounds();
+	InitializePauseVerts();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 }
 
@@ -125,6 +126,10 @@ void Game::Render() const
 		g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderUI();
 		RenderEntities();
+		if ( m_isPaused )
+		{
+			RenderPauseSreen();
+		}
 	}
 	
 }
@@ -188,6 +193,20 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	}
 
 	g_engine->m_input->EndFrame();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderPauseSreen() const
+{
+	Vertex tempPauseWorldVerts[NUM_PLAYER_VERTS];
+
+	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
+	{
+		tempPauseWorldVerts[vertIndex] = m_pauseScreenVerts[vertIndex];
+	}
+
+	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempPauseWorldVerts, 100.f, 0.0f, Vec2(0.0f, 0.0f));
+	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempPauseWorldVerts );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -421,5 +440,22 @@ void Game::UpdateBlackHole()
 		// Edge vertices
 		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
 		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::InitializePauseVerts()
+{
+	m_pauseScreenVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
+	m_pauseScreenVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
+	m_pauseScreenVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
+
+	m_pauseScreenVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
+	m_pauseScreenVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
+	m_pauseScreenVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
+
+	for ( int vertIndex = 0; vertIndex < NUM_TURRET_VERTS; ++vertIndex )
+	{
+		m_pauseScreenVerts[vertIndex].m_color = Rgba8( 0, 0, 0, 100 );
 	}
 }

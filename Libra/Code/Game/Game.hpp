@@ -109,4 +109,8 @@ private:
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
+
+	void RenderPauseSreen() const;
+	void InitializePauseVerts();
+	Vertex			m_pauseScreenVerts[NUM_PLAYER_VERTS];
 };
