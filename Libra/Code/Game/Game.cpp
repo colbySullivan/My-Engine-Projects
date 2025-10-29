@@ -95,8 +95,13 @@ void Game::Update(float deltaSeconds)
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
 		{
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
+			g_engine->m_audio->SetSoundPlaybackSpeed(m_gameMusicPlaybackID, 1.0f);
+			UpdateEntities( deltaSeconds );
 		}
-		UpdateEntities( deltaSeconds );
+		else
+		{
+			g_engine->m_audio->SetSoundPlaybackSpeed(m_gameMusicPlaybackID, 0.0f);
+		}
 	}
 }
 
@@ -109,10 +114,6 @@ void Game::Render() const
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		RenderAttractMode();
-	}
-
-	if ( m_currentGameState == GAMESTATE_ATTRACT )
-	{
 		return;
 	}
 
@@ -172,7 +173,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 			m_nextGameState = GAMESTATE_PLAY;
 			Startup();
 			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
-			//m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 1, false, 0.8f );
+			m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 2, false, 0.8f );
 		}
 	}
 
@@ -333,8 +334,9 @@ void Game::RenderEntities() const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadSounds()
 {
-	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/LobbyMusic.mp3" ); //	SoundID = 0
+	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Tank!.mp3" );		//	SoundID = 0
 	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/tragic.mp3");				//	SoundID = 1
+	m_gameMusicPlaybackID = g_engine->m_audio->CreateOrGetSound("Data/Audio/lobby.mp3");	//	SoundID = 2
 
 }
 
