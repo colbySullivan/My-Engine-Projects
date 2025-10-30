@@ -43,4 +43,7 @@ public:
 	bool        m_isDead = false;  // gameplay idea
 	bool        m_isGarbage = false;  // code idea
 	bool		m_noClip = false;
+	Vec2		m_desiredMoveDirection = Vec2(0.f,0.f);
+	Vec2		m_desiredTurretDirection = Vec2(0.f,0.f);
+
 };

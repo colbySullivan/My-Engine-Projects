@@ -35,8 +35,8 @@ private:
 	void RenderTurret() const;
 	void ControlOrientationTurning( float m_orientationDegrees );
 
-	void PlayerControlKeyboard();
-	void TurretControlKeyboard();
+	bool PlayerControlKeyboard();
+	bool TurretControlKeyboard();
 private:
 	Vertex		m_playerVerts[NUM_PLAYER_VERTS];
 	Vertex		m_turretVerts[NUM_TURRET_VERTS];

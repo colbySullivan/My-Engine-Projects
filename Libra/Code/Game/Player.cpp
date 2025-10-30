@@ -96,87 +96,113 @@ void Player::RenderTurret() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Player::PlayerControlKeyboard()
+bool Player::PlayerControlKeyboard()
 {
 	if ( g_engine->m_input->IsKeyDown( 'E' ) && g_engine->m_input->IsKeyDown( 'S' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 135.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( -1.f, 1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'E' ) && g_engine->m_input->IsKeyDown( 'F' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 45.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( 1.f, 1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'F' ) && g_engine->m_input->IsKeyDown( 'D' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -45.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( 1.f, -1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'D' ) && g_engine->m_input->IsKeyDown( 'S' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -135.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( -1.f, -1.f );
+		return true;
 	}
 
 	if ( g_engine->m_input->IsKeyDown( 'E' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 90.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( 0.f, 1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'D' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -90.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( 0.f, -1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'S' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -180.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( -1.f, 0.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'F' ) )
 	{
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 0.f, 1.f );
-		m_isMoving = true;
+		m_desiredMoveDirection = Vec2( 1.f, 0.f );
+		return true;
 	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
-void Player::TurretControlKeyboard()
+bool Player::TurretControlKeyboard()
 {
 	if ( g_engine->m_input->IsKeyDown( 'I' ) && g_engine->m_input->IsKeyDown( 'J' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 135.f, 1.f );
+		m_desiredTurretDirection = Vec2( -1.f, 1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'I' ) && g_engine->m_input->IsKeyDown( 'L' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 45.f, 1.f );
+		m_desiredTurretDirection = Vec2( 1.f, 1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'K' ) && g_engine->m_input->IsKeyDown( 'L' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -45.f, 1.f );
+		m_desiredTurretDirection = Vec2( 1.f, -1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'K' ) && g_engine->m_input->IsKeyDown( 'J' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -135.f, 1.f );
+		m_desiredTurretDirection = Vec2( -1.f, -1.f );
+		return true;
 	}
 
 	if ( g_engine->m_input->IsKeyDown( 'I' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 90.f, 1.f );
+		m_desiredTurretDirection = Vec2( 0.f, 1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'K' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -90.f, 1.f );
+		m_desiredTurretDirection = Vec2( 0.f, -1.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'J' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -180.f, 1.f );
+		m_desiredTurretDirection = Vec2( -1.f, 0.f );
+		return true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'L' ) )
 	{
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 0.f, 1.f );
+		m_desiredTurretDirection = Vec2( 1.f, 0.f );
+		return true;
 	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -215,7 +241,7 @@ void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 		m_noClip = !m_noClip;
 	}
 
-	PlayerControlKeyboard();
+	m_isMoving = PlayerControlKeyboard();
 	TurretControlKeyboard();
 }
 
@@ -236,6 +262,7 @@ void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
 		m_isMoving = true;
 		Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
 		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, leftStickPos.GetOrientationDegrees(), 1.f );
+		m_desiredMoveDirection = leftStickPos;
 	}
 
 	float rightStickMagnitude = controller.GetRightStick().GetMagnitude();
@@ -243,5 +270,6 @@ void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
 	{
 		Vec2 rightStickPos = controller.GetRightStick().GetPosition();
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, rightStickPos.GetOrientationDegrees(), 1.f );
+		m_desiredTurretDirection = rightStickPos;
 	}
 }
