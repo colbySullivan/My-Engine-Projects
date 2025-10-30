@@ -144,6 +144,12 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateKeyboardInput( XboxController const& controller )
 {
+	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT && m_isPaused )
+	{
+		m_nextGameState = GAMESTATE_ATTRACT;
+		m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+	}
+
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 	{
 		if ( m_currentGameState == GAMESTATE_ATTRACT )
@@ -151,12 +157,11 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 			m_isQuitting = true;
 			return;
 		}
-	}
 
-	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
-	{
-		m_nextGameState = GAMESTATE_ATTRACT;
-		m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+		if ( m_currentGameState == GAMESTATE_PLAY )
+		{
+			m_isPaused = true;
+		}
 	}
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate

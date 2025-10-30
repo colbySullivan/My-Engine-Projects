@@ -11,13 +11,20 @@ Map::Map( Game* game, IntVec2 dimensions )
 	, m_dimensions( dimensions )
 {
 	m_numTilesInViewVertically = 10;
+	m_debugCamera = false;
 	BuildMapTiles();
-	AddToEntityVector(new Player(m_game, Vec2(2.f, 2.f)));
+	AddToEntityVector(new Player(m_game, Vec2(1.5f, 1.5f)));
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::Update( float deltaSeconds)
 {
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_F4 ) )
+	{
+		m_debugCamera = !m_debugCamera;
+	}
+
+	UpdateCameras();
 	UpdateEntities( deltaSeconds );
 }
 
@@ -98,13 +105,12 @@ IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
 //-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
-	RenderUpdateCameras();
 	RenderTiles();
 	RenderEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::RenderUpdateCameras() const
+void Map::UpdateCameras()
 {
 	Player* player = nullptr;
 	for ( int i = 0; i < m_entities.size(); i++ )
@@ -118,6 +124,15 @@ void Map::RenderUpdateCameras() const
 
 	if ( player )
 	{
+		if ( m_debugCamera )
+		{
+			m_numTilesInViewVertically = m_dimensions.y;
+		}
+		else
+		{
+			m_numTilesInViewVertically = 10;
+		}
+
 		Vec2 cameraCenter = player->m_position;
 		float halfHeight = m_numTilesInViewVertically * 0.5f;
 		float halfWidth = halfHeight * 2.0f;
