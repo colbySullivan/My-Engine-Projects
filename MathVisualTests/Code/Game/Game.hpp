@@ -41,4 +41,5 @@ private:
 	App*			m_app = nullptr;
 	Camera*			m_worldCamera = nullptr;
 	Camera*			m_screenCamera = nullptr;
+	std::vector<Vertex> m_lineVerts;
 };

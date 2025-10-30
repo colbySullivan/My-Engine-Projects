@@ -6,7 +6,10 @@ class GameNearestPoint : public Game {
 public:
 	GameNearestPoint(App* app);
 
-	/*virtual void Update(float deltaTime) override;
-	virtual void Render() override;*/
+	virtual void Update( float deltaTime );
+	virtual void Render();
 
+private:
+	void AddShapeVerts();
+	std::vector<Vertex> m_lineVerts;
 };

@@ -66,5 +66,27 @@ void AddVertsForTriangle2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_
 //------------------------------------------------------------------------------
 void AddVertsForLineSegment2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 start, [[maybe_unused]] Vec2 end, [[maybe_unused]] Vec2 thickness, [[maybe_unused]] Rgba8 color)
 {
-	ERROR_AND_DIE("AddVertsForLineSegment2D not implemented yet");
+	Vec2 directionLength = end - start;
+
+	if ( directionLength.GetLengthSquared() == 0.f )
+		return;
+
+	Vec2 forward = directionLength.GetNormalized();
+	Vec2 left = Vec2( -forward.y, forward.x );
+
+	Vec2 halfThickness = left * ( thickness.x * 0.5f );
+
+	Vec2 a = start - halfThickness;
+	Vec2 b = start + halfThickness;
+	Vec2 c = end + halfThickness;
+	Vec2 d = end - halfThickness;
+
+	// Add two triangles (6 vertices)
+	verts.push_back( Vertex( Vec3( a.x, a.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( b.x, b.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( c.x, c.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+
+	verts.push_back( Vertex( Vec3( a.x, a.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( c.x, c.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( d.x, d.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
 }

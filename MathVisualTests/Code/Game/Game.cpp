@@ -12,11 +12,12 @@
 RandomNumberGenerator g_rng;
 
 //-----------------------------------------------------------------------------------------------
-Game::Game(App* m_app)
+Game::Game([[maybe_unused]] App* m_app)
 	:m_app( g_theApp )
 {
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
+	AddVertsForLineSegment2D(m_lineVerts, Vec2(0.f,0.f), Vec2(1000.f,1000.f), Vec2(1.0f,1.0f), Rgba8(255, 255, 255, 255));
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -62,6 +63,11 @@ void Game::Render() const
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 
 	g_engine->m_render->ClearScreen(backgroundColor);
+
+	g_engine->m_render->BeginCamera( *m_screenCamera );
+	g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
+	g_engine->m_render->EndCamera( *m_screenCamera );
+
 }
 
 //-----------------------------------------------------------------------------------------------
