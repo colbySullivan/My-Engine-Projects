@@ -42,4 +42,5 @@ public:
 	int			m_debrisAmount = 3;
 	bool        m_isDead = false;  // gameplay idea
 	bool        m_isGarbage = false;  // code idea
+	bool		m_noClip = false;
 };

@@ -34,12 +34,14 @@ private:
 	void RenderPlayer() const;
 	void RenderTurret() const;
 	void ControlOrientationTurning( float m_orientationDegrees );
-	Texture* m_playerTexture = nullptr;
-	Texture* m_turretTexture = nullptr;
 
+	void PlayerControlKeyboard();
+	void TurretControlKeyboard();
 private:
 	Vertex		m_playerVerts[NUM_PLAYER_VERTS];
 	Vertex		m_turretVerts[NUM_TURRET_VERTS];
 	float		m_thrustFraction = -5.f;
 	bool		m_isMoving = false;
+	Texture*	m_playerTexture = nullptr;
+	Texture*	m_turretTexture = nullptr;
 };

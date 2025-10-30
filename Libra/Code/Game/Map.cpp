@@ -57,10 +57,10 @@ void Map::PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords )
 //-----------------------------------------------------------------------------------------------
 void Map::PushEntityOutOfWalls( Entity& e, [[maybe_unused]] float deltaSeconds )
 {
-	/*if ( g_debugNoClip && e.IsPlayer() )
+	if ( e.m_noClip && e.IsPlayer() )
 	{
-	return;
-	}*/
+		return;
+	}
 
 	IntVec2 myTileCoords = GetTileCoordsForWorldPos( e.m_position );
 

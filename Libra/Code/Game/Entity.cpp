@@ -36,18 +36,23 @@ void Entity::Render() const
 //-----------------------------------------------------------------------------------------------
 void Entity::DebugRender() const
 {
-	DebugDrawRing(m_position, m_physicsRadius, 0.2f, Rgba8(255,0,255)); // Outer circle
-	DebugDrawRing(m_position, m_cosmeticRadius, 0.2f, Rgba8(0,255,255)); // Inner circle
+	DebugDrawRing(m_position, m_physicsRadius, 0.01f, Rgba8(255,0,255)); // Outer circle
+	DebugDrawRing(m_position, m_cosmeticRadius, 0.01f, Rgba8(0,255,255)); // Inner circle
 
 	Vec2 forwardDebugLine = m_position + GetForwardNormal() * m_cosmeticRadius;
 	Vec2 rotatedDebugLine = m_position + GetForwardNormal().GetRotatedBy90Degrees() * m_cosmeticRadius;
 	Vec2 velocityDebugLine = m_position + 1.f * m_velocity;
+	Vec2 forwardTurretLine = m_cosmeticRadius * 1.0f * Vec2::MakeFromPolarDegrees(m_turretOrientationDegrees);
+	//Vec2 tankGoal = m_cosmeticRadius * 1.0f * Vec2::MakeFromPolarDegrees(m_turretOrientationDegrees);
 
-	DebugDrawLine(m_position, forwardDebugLine, 0.2f, Rgba8(255, 0, 0)); // Forward line
-	DebugDrawLine(m_position, rotatedDebugLine, 0.2f, Rgba8(0, 255, 0)); // Right line
-	DebugDrawLine(m_position, velocityDebugLine, 0.2f, Rgba8(255,255,0)); // Velocity line
+	//DebugDrawLine(m_position + 1.0f * tankGoal, m_position + 1.1f * tankGoal, .1f, Rgba8(255, 0, 0)); // Forward line
+	DebugDrawLine(m_position, forwardTurretLine, 0.03f, Rgba8(255, 0, 0));
+	DebugDrawLine(m_position, forwardDebugLine, 0.03f, Rgba8(255, 0, 0)); // Forward line
+	DebugDrawLine(m_position, rotatedDebugLine, 0.03f, Rgba8(0, 255, 0)); // Right line
+	DebugDrawLine(m_position, velocityDebugLine, 0.01f, Rgba8(255,255,0)); // Velocity line
 
-
+	//m_cosmet * 1.0f * Vec2::MakeFromPolar
+	//DebugDrawline( m_pos + 1.0f * tankGoal, m_pos + 1.1f * tankGoal
 }
 
 //-----------------------------------------------------------------------------------------------

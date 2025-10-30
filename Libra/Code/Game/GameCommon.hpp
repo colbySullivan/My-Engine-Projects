@@ -35,8 +35,8 @@ constexpr int NUM_TURRET_VERTS = 6;
 
 extern Game* g_game;
 
-constexpr float PLAYER_PHYSICS_RADIUS = 0.5f;
-constexpr float PLAYER_COSMETIC_RADIUS = 1.f;
+constexpr float PLAYER_PHYSICS_RADIUS = 0.3f;
+constexpr float PLAYER_COSMETIC_RADIUS = 0.5f;
 constexpr float PLAYER_TURN_SPEED = 180.f;
 constexpr float PLAYER_SPEED = 1.f;
 
