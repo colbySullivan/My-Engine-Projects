@@ -20,7 +20,6 @@ void GameNearestPoint::Update( float deltaTime )
 {	
 	Game::UpdateCameras(deltaTime);
 	UpdatePointPosition(deltaTime);
-	m_line->GetClosestPoint(m_pointPos);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -28,21 +27,19 @@ void GameNearestPoint::Render() const
 {
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
-
 	g_engine->m_render->ClearScreen( backgroundColor );
-	g_engine->m_render->DrawVertexArray( ( int )m_line->m_lineVerts.size(), m_line->m_lineVerts.data() );
 
+	// TODO make this a disc
+	//-----------------------------------------------------------------------------------------------
 	Vertex tempPointWorldVerts[6];
-
 	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
 	{
 		tempPointWorldVerts[vertIndex] = m_pointVerts[vertIndex];
 	}
-
 	TransformVertexArrayXY3D(m_pointVerts.size(), tempPointWorldVerts, .5f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(6, tempPointWorldVerts);
-
-	m_line->Render();
+	//-----------------------------------------------------------------------------------------------
+	RenderShapes();
 
 	g_engine->m_render->EndCamera( *m_worldCamera );
 }
@@ -51,10 +48,10 @@ void GameNearestPoint::Render() const
 void GameNearestPoint::AddShapeVerts()
 {
 	// LineTestShape
-	m_line = new TestShapeLine( Vec2( 10.f, 10.f ), Vec2( 50.f, 60.f ), Vec2( 0.5f, 0.5f ), Rgba8( 255, 255, 255, 255 ) );
-	AddVertsForLineSegment2D(m_line->m_lineVerts, m_line->m_start, m_line->m_end, m_line->m_thickness, m_line->m_color);
+	TestShape* line = new TestShapeLine( Vec2( 10.f, 10.f ), Vec2( 50.f, 60.f ), Vec2( 0.5f, 0.5f ), Rgba8( 255, 255, 255, 255 ) );
+	m_testShapes.push_back(line);
 
-	// Player moving point shape
+	// Player moving point shape TODO make disc and push to m_testShapes
 	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
 	AddVertsForAABB2D( m_pointVerts, pointAABB2, Rgba8( 255, 255, 255, 255 ) );
 }
@@ -82,3 +79,18 @@ void GameNearestPoint::UpdatePointPosition( float deltaTime )
 		m_pointPos += moveDirection * m_speed * deltaTime;
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
+void GameNearestPoint::RenderShapes() const
+{
+	for (int Index = 0; Index < m_testShapes.size() ; Index++)
+	{
+		TestShape* shape = m_testShapes[Index];
+		if ( shape != nullptr )
+		{
+			shape->GetClosestPoint(m_pointPos);
+			shape->Render();
+		}
+	}
+}
+

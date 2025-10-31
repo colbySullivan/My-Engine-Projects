@@ -17,8 +17,10 @@ private:
 	void AddShapeVerts();
 	
 	void UpdatePointPosition( float deltaTime );
+	void RenderShapes() const;
 	std::vector<Vertex> m_pointVerts;
-	TestShapeLine*	m_line;
+	std::vector<TestShape*> m_testShapes;
+	//TestShapeLine*	m_line;
 	Vec2 m_pointPos = Vec2( 10.f, 60.f );
 	float m_speed = 50.f;
 };

@@ -20,4 +20,6 @@ public:
 	Rgba8 m_color;
 
 	Vec2 GetClosestPoint( Vec2 pointPos ) override;
+	bool IsPointInsideMe( Vec2 point ) const override;
+	void AddVertsForMe( std::vector<Vertex>& verts ) const override;
 };

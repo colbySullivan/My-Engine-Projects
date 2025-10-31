@@ -5,13 +5,15 @@
 class TestShape
 {
 public:
-	TestShape();
+	TestShape() = default;
 	virtual ~TestShape();
 
 	virtual void Update();
 	virtual void Render() const;
 
-	virtual Vec2 GetClosestPoint( Vec2 pointPos );
+	virtual bool IsPointInsideMe( Vec2 point ) const = 0;
+	virtual Vec2 GetClosestPoint( Vec2 pointPos ) = 0;
+	virtual void AddVertsForMe( std::vector<Vertex>& verts ) const = 0;
 
 public:
 	std::vector<Vertex> m_pointVerts;
