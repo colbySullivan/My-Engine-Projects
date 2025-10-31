@@ -31,17 +31,18 @@ public:
 	bool				m_isSlowMo = false;
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
+	Camera* m_worldCamera = nullptr;
+	Camera* m_screenCamera = nullptr;
+	void UpdateCameras( float deltaSeconds );
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
 
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
-	void UpdateCameras( float deltaSeconds );
+	
 
 	Game* CreateNewGameOfType( GameType type );
 	Game* g_gameMode;
 	App* m_app = nullptr;
-	Camera*			m_worldCamera = nullptr;
-	Camera*			m_screenCamera = nullptr;
 	std::vector<Vertex> m_lineVerts;
 };

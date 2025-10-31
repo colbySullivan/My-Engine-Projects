@@ -18,17 +18,16 @@ Game::Game([[maybe_unused]] App* m_app)
 	:m_app( g_theApp )
 {
 	m_worldCamera = new Camera;
-	m_screenCamera = new Camera;
-	AddVertsForLineSegment2D(m_lineVerts, Vec2(0.f,0.f), Vec2(1000.f,1000.f), Vec2(1.0f,1.0f), Rgba8(255, 255, 255, 255));
+	//m_screenCamera = new Camera;
 }
 
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
 	delete m_worldCamera;
-	delete m_screenCamera;
+	//delete m_screenCamera;
 	m_worldCamera = nullptr;
-	m_screenCamera = nullptr;
+	//m_screenCamera = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -45,8 +44,6 @@ void Game::Startup()
 void Game::Update(float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
-
-	g_gameMode->Update( deltaSeconds );
 
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
@@ -69,10 +66,9 @@ void Game::Render() const
 
 	g_engine->m_render->ClearScreen(backgroundColor);
 
-	g_engine->m_render->BeginCamera( *m_screenCamera );
+	//g_engine->m_render->BeginCamera( *g_gameMode->m_worldCamera );
 	g_gameMode->Render();
-	//g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
-	g_engine->m_render->EndCamera( *m_screenCamera );
+	//g_engine->m_render->EndCamera( *g_gameMode->m_worldCamera );
 
 }
 
@@ -153,7 +149,7 @@ void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) c
 void Game::UpdateCameras( [[maybe_unused]] float deltaSeconds )
 {
 	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	//m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 }
 
 //-----------------------------------------------------------------------------------------------

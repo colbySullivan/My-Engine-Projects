@@ -81,7 +81,6 @@ void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, 
 	Vec2 c = end + halfThickness;
 	Vec2 d = end - halfThickness;
 
-	// Add two triangles (6 vertices)
 	verts.push_back( Vertex( Vec3( a.x, a.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
 	verts.push_back( Vertex( Vec3( b.x, b.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
 	verts.push_back( Vertex( Vec3( c.x, c.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );

@@ -15,5 +15,10 @@ public:
 
 private:
 	void AddShapeVerts();
+	
+	void UpdatePointPosition( float deltaTime );
+	std::vector<Vertex> m_pointVerts;
 	TestShapeLine*	m_line;
+	Vec2 m_pointPos = Vec2( 10.f, 60.f );
+	float m_speed = 50.f;
 };
