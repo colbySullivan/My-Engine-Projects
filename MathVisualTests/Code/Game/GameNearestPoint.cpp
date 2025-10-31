@@ -40,6 +40,15 @@ void GameNearestPoint::Render() const
 
 	TransformVertexArrayXY3D(m_pointVerts.size(), tempPointWorldVerts, .5f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(6, tempPointWorldVerts);
+
+	Vec2 test = GetNearestPointOnLineSegment2D(m_pointPos, m_line->m_start, m_line->m_end);
+
+	std::vector<Vertex> closePoint;
+	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
+	AddVertsForAABB2D( closePoint, pointAABB2, Rgba8( 255, 255, 0, 255 ) );
+	TransformVertexArrayXY3D(closePoint.size(), closePoint.data(), .5f, 0.f, test);
+	g_engine->m_render->DrawVertexArray(6, closePoint.data());
+
 	g_engine->m_render->EndCamera( *m_worldCamera );
 }
 
@@ -51,6 +60,7 @@ void GameNearestPoint::AddShapeVerts()
 
 	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
 	AddVertsForAABB2D( m_pointVerts, pointAABB2, Rgba8( 255, 255, 255, 255 ) );
+
 }
 
 //-----------------------------------------------------------------------------------------------

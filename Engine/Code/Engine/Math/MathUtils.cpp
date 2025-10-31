@@ -364,3 +364,50 @@ bool IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox)
 	return false;
 }
 
+//-----------------------------------------------------------------------------------------------
+Vec2 GetNearestPointOnInfiniteLine2D( Vec2 referencePos, Vec2 pointOnLine, Vec2 anotherPointOnLine )
+{
+	Vec2 pointDirection = pointOnLine - referencePos;
+	Vec2 SE = anotherPointOnLine - referencePos;
+	Vec2 SN = GetProjectedVector2D(pointDirection, SE);
+	return pointOnLine + SN;
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec2 GetNearestPointOnLineSegment2D( Vec2 referencePos, Vec2 start, Vec2 end )
+{
+	Vec2 startDirection = end - start;
+	Vec2 pointDirection = referencePos - start;
+	Vec2 endDirection = referencePos - end;
+
+	if ( DotProduct2D( startDirection, pointDirection ) <= 0 )
+	{
+		return start;
+	}
+
+	if ( DotProduct2D( endDirection, startDirection ) > 0 )
+	{
+		return end;
+	}
+
+	Vec2 SN = GetProjectedVector2D( pointDirection, startDirection );
+	return start + SN;
+}
+
+////-----------------------------------------------------------------------------------------------
+//Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
+//{
+//	//check inside
+//
+//	//nearestpointAB
+//	//nearestpointBC
+//	//nearestpointCA
+//
+//	// float distSqAB , BC , CA GetDistanceSq
+//
+//	// if distsqAB <= distsq BC && distSQab <= distSqCa return nearestPointAB
+//	// else if BC <= CA return BC
+//	// else return CA
+//
+//}
+
