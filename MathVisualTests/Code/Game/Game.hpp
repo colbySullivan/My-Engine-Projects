@@ -21,8 +21,8 @@ public:
 	~Game();
 
 	void Startup();
-	void Update( float deltaSeconds );
-	void Render() const;
+	virtual void Update( float deltaSeconds );
+	virtual void Render() const;
 	void Shutdown();
 
 	// Game State
@@ -38,7 +38,9 @@ private:
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void UpdateCameras( float deltaSeconds );
 
-	App*			m_app = nullptr;
+	Game* CreateNewGameOfType( GameType type );
+	Game* g_gameMode;
+	App* m_app = nullptr;
 	Camera*			m_worldCamera = nullptr;
 	Camera*			m_screenCamera = nullptr;
 	std::vector<Vertex> m_lineVerts;

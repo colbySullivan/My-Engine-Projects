@@ -64,15 +64,15 @@ void AddVertsForTriangle2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForLineSegment2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 start, [[maybe_unused]] Vec2 end, [[maybe_unused]] Vec2 thickness, [[maybe_unused]] Rgba8 color)
+void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color)
 {
 	Vec2 directionLength = end - start;
 
 	if ( directionLength.GetLengthSquared() == 0.f )
 		return;
 
-	Vec2 forward = directionLength.GetNormalized();
-	Vec2 left = Vec2( -forward.y, forward.x );
+	Vec2 forwardNormal = directionLength.GetNormalized();
+	Vec2 left = Vec2( -forwardNormal.y, forwardNormal.x );
 
 	Vec2 halfThickness = left * ( thickness.x * 0.5f );
 

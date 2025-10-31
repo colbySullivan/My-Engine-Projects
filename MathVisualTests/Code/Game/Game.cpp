@@ -8,6 +8,8 @@
 #include "Game/GameCommon.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Game/Entity.hpp"
+#include "Game/GameRaycastVsDiscs.hpp"
+#include "Game/GameNearestPoint.hpp"
 
 RandomNumberGenerator g_rng;
 
@@ -34,6 +36,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	g_gameMode = CreateNewGameOfType( GAMEMODE_NEAREST_POINT );
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_isPaused = false;
 }
@@ -42,6 +45,8 @@ void Game::Startup()
 void Game::Update(float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
+
+	g_gameMode->Update( deltaSeconds );
 
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
@@ -65,7 +70,8 @@ void Game::Render() const
 	g_engine->m_render->ClearScreen(backgroundColor);
 
 	g_engine->m_render->BeginCamera( *m_screenCamera );
-	g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
+	g_gameMode->Render();
+	//g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
 	g_engine->m_render->EndCamera( *m_screenCamera );
 
 }
@@ -113,6 +119,18 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	}
 
+	/*if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
+	{
+		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % NUM_GAMEMODES );
+		if ( m_theGame )
+		{
+			m_theGame->Shutdown();
+			delete m_theGame;
+		}
+		m_theGame = Game::CreateNewGameOfType( g_gameMode );
+		m_theGame->Startup();
+	}*/
+
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
 		g_drawDebug = !g_drawDebug;
@@ -136,4 +154,17 @@ void Game::UpdateCameras( [[maybe_unused]] float deltaSeconds )
 {
 	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+}
+
+//-----------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+Game* Game::CreateNewGameOfType( GameType type )
+{
+	Game* newGame = nullptr;
+	switch ( type )
+	{
+		case GAMEMODE_NEAREST_POINT:			newGame = new GameNearestPoint(m_app);				break;
+		case GAMEMODE_RAYCAST_VS_DISCS:         newGame = new GameRaycastVsDiscs(m_app);			break;
+	}
+	return newGame;
 }
