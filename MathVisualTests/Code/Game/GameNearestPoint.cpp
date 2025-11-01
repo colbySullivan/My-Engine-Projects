@@ -29,17 +29,17 @@ void GameNearestPoint::Render() const
 	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen( backgroundColor );
 
-	// TODO make this a disc
+	RenderShapes();
+	
 	//-----------------------------------------------------------------------------------------------
 	Vertex tempPointWorldVerts[DISC_VERTS];
 	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
 	{
 		tempPointWorldVerts[vertIndex] = m_pointVerts[vertIndex];
 	}
-	TransformVertexArrayXY3D(m_pointVerts.size(), tempPointWorldVerts, .5f, 0.f, m_pointPos);
+	TransformVertexArrayXY3D(m_pointVerts.size(), tempPointWorldVerts, .25f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(DISC_VERTS, tempPointWorldVerts);
 	//-----------------------------------------------------------------------------------------------
-	RenderShapes();
 
 	g_engine->m_render->EndCamera( *m_worldCamera );
 }
@@ -47,7 +47,7 @@ void GameNearestPoint::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::AddShapeVerts()
 {
-	AddVertsForDisc2D( m_pointVerts, Vec2(0.f, 0.f), 1.0f, Rgba8( 0, 255, 0, 255 ) );
+	AddVertsForDisc2D( m_pointVerts, Vec2(0.f, 0.f), 1.0f, Rgba8( 255, 255, 255, 255 ) );
 
 	TestShape* segLine = new TestShapeLine( Vec2( 10.f, 10.f ), Vec2( 50.f, 60.f ), Vec2( 0.5f, 0.5f ), Rgba8( 255, 255, 255, 255 ) );
 	m_testShapes.push_back(segLine);
@@ -106,7 +106,7 @@ void GameNearestPoint::RenderShapes() const
 			}
 			else
 			{
-				shape->ChangeColor(Rgba8(255, 255, 255, 255));
+				shape->ChangeColor(Rgba8(0, 0, 255, 150));
 			}
 			shape->GetClosestPoint(m_pointPos);
 			shape->Render();
