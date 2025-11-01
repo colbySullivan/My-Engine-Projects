@@ -46,9 +46,25 @@ void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgb
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForOBB2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] OBB2 const& orientedBox, [[maybe_unused]] Rgba8 color)
+void AddVertsForOBB2D( std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba8 color )
 {
-	ERROR_AND_DIE("AddVertsForOBB2D not implemented yet");
+	Vec2 jBasisNormal = orientedBox.m_iBasisNormal.GetRotatedBy90Degrees();
+
+	Vec2 right = orientedBox.m_iBasisNormal * orientedBox.m_halfDimensions.x;
+	Vec2 up = jBasisNormal * orientedBox.m_halfDimensions.y;
+
+	Vec2 bottomLeft = orientedBox.m_center - right - up;
+	Vec2 bottomRight = orientedBox.m_center + right - up;
+	Vec2 topRight = orientedBox.m_center + right + up;
+	Vec2 topLeft = orientedBox.m_center - right + up;
+
+	verts.push_back( Vertex( Vec3( bottomLeft.x, bottomLeft.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( bottomRight.x, bottomRight.y, 0.f ), color, Vec2( 1.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( topRight.x, topRight.y, 0.f ), color, Vec2( 1.f, 1.f ) ) );
+
+	verts.push_back( Vertex( Vec3( bottomLeft.x, bottomLeft.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( topRight.x, topRight.y, 0.f ), color, Vec2( 1.f, 1.f ) ) );
+	verts.push_back( Vertex( Vec3( topLeft.x, topLeft.y, 0.f ), color, Vec2( 0.f, 1.f ) ) );
 }
 
 //------------------------------------------------------------------------------
@@ -58,9 +74,11 @@ void AddVertsForCapsule2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_u
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForTriangle2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 ccw0, [[maybe_unused]] Vec2 ccw1, [[maybe_unused]] Vec2 ccw2, [[maybe_unused]] Rgba8 color)
+void AddVertsForTriangle2D(std::vector<Vertex>& verts, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2, Rgba8 color)
 {
-	ERROR_AND_DIE("AddVertsForTriangle2D not implemented yet");
+	verts.push_back( Vertex( Vec3( ccw0.x, ccw0.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( ccw1.x, ccw1.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	verts.push_back( Vertex( Vec3( ccw2.x, ccw2.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
 }
 
 //------------------------------------------------------------------------------

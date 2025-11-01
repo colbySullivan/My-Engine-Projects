@@ -54,6 +54,10 @@ void GameNearestPoint::AddShapeVerts()
 	// Player moving point shape TODO make disc and push to m_testShapes
 	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
 	AddVertsForAABB2D( m_pointVerts, pointAABB2, Rgba8( 255, 255, 255, 255 ) );
+
+	TestShape* triangle = new TestShapeTriangle(Vec2( 40.f, 40.f ), Vec2( 40.f, 10.f ), Vec2( 60.f, 60.f ), Rgba8( 255, 255, 255, 255 ));
+	m_testShapes.push_back(triangle);
+
 }
 
 //-----------------------------------------------------------------------------------------------

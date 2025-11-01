@@ -12,7 +12,7 @@ public:
 	virtual void Render() const;
 
 	virtual bool IsPointInsideMe( Vec2 point ) const = 0;
-	virtual Vec2 GetClosestPoint( Vec2 pointPos ) = 0;
+	virtual void GetClosestPoint( Vec2 pointPos ) = 0;
 	virtual void AddVertsForMe( std::vector<Vertex>& verts ) const = 0;
 
 public:

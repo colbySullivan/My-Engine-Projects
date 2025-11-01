@@ -2,6 +2,7 @@
 #include "Game/Game.hpp"
 #include "Game/TestShape.hpp"
 #include "Game/TestShapeLine.hpp"
+#include "Game/TestShapeTriangle.hpp"
 
 //-----------------------------------------------------------------------------------------------
 class GameNearestPoint : public Game {

@@ -198,6 +198,7 @@
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="TestShape.cpp" />
     <ClCompile Include="TestShapeLine.cpp" />
+    <ClCompile Include="TestShapeTriangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="GameRaycastVsDiscs.hpp" />
     <ClInclude Include="TestShape.hpp" />
     <ClInclude Include="TestShapeLine.hpp" />
+    <ClInclude Include="TestShapeTriangle.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

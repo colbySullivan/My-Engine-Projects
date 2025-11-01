@@ -1,47 +1,47 @@
-#include "Game/TestShapeLine.hpp"
+#include "Game/TestShapeTriangle.hpp"
 #include "Engine/Core/Engine.hpp"
 
-TestShapeLine::TestShapeLine( Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color )
-	: m_start( start )
-	, m_end( end )
-	, m_thickness( thickness )
+TestShapeTriangle::TestShapeTriangle( Vec2 ccw0, Vec2 ccw1, Vec2 ccw2, Rgba8 color )
+	: m_aPoint( ccw0 )
+	, m_bPoint( ccw1 )
+	, m_cPoint( ccw2 )
 	, m_color( color )
 {
-	AddVertsForMe(m_lineVerts);
+	AddVertsForMe( m_lineVerts );
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeLine::Update()
+void TestShapeTriangle::Update()
 {
-	
+
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeLine::Render() const
+void TestShapeTriangle::Render() const
 {
 	std::vector<Vertex> closePoint;
 	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
 	AddVertsForAABB2D( closePoint, pointAABB2, Rgba8( 255, 0, 0, 255 ) );
 	TransformVertexArrayXY3D( closePoint.size(), closePoint.data(), .5f, 0.f, m_closestPoint );
 	g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
-	g_engine->m_render->DrawVertexArray(closePoint);
+	g_engine->m_render->DrawVertexArray( closePoint );
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeLine::GetClosestPoint( Vec2 pointPos )
+void TestShapeTriangle::GetClosestPoint( Vec2 pointPos )
 {
-	m_closestPoint = GetNearestPointOnLineSegment2D( pointPos, m_start, m_end );
+	//m_closestPoint = GetNearestPointOnLineSegment2D( pointPos, m_start, m_end );
 }
 
 //-----------------------------------------------------------------------------------------------
-bool TestShapeLine::IsPointInsideMe( Vec2 point ) const
+bool TestShapeTriangle::IsPointInsideMe( Vec2 point ) const
 {
 	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeLine::AddVertsForMe( std::vector<Vertex>& verts ) const
+void TestShapeTriangle::AddVertsForMe( std::vector<Vertex>& verts ) const
 {
-	AddVertsForLineSegment2D(verts, m_start, m_end, m_thickness, m_color);
+	AddVertsForTriangle2D( verts, m_aPoint, m_bPoint, m_cPoint, m_color );
 }
 
