@@ -71,6 +71,8 @@ constexpr float POWERUP_DELAY = 1.0f;
 
 constexpr float	ROUND_BUFFER = 12.f;
 
+constexpr int DISC_VERTS = 96;
+
 //------------------------------------------------------------------------------
 enum GameType
 {

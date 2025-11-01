@@ -31,13 +31,13 @@ void GameNearestPoint::Render() const
 
 	// TODO make this a disc
 	//-----------------------------------------------------------------------------------------------
-	Vertex tempPointWorldVerts[6];
+	Vertex tempPointWorldVerts[DISC_VERTS];
 	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
 	{
 		tempPointWorldVerts[vertIndex] = m_pointVerts[vertIndex];
 	}
 	TransformVertexArrayXY3D(m_pointVerts.size(), tempPointWorldVerts, .5f, 0.f, m_pointPos);
-	g_engine->m_render->DrawVertexArray(6, tempPointWorldVerts);
+	g_engine->m_render->DrawVertexArray(DISC_VERTS, tempPointWorldVerts);
 	//-----------------------------------------------------------------------------------------------
 	RenderShapes();
 
@@ -47,18 +47,19 @@ void GameNearestPoint::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::AddShapeVerts()
 {
+	AddVertsForDisc2D( m_pointVerts, Vec2(0.f, 0.f), 1.0f, Rgba8( 0, 255, 0, 255 ) );
+
 	TestShape* segLine = new TestShapeLine( Vec2( 10.f, 10.f ), Vec2( 50.f, 60.f ), Vec2( 0.5f, 0.5f ), Rgba8( 255, 255, 255, 255 ) );
 	m_testShapes.push_back(segLine);
 
 	TestShape* infiniteLine = new TestShapeLine(Vec2(200.f, 0.f), Vec2(50.f, 600.f), Vec2(0.5f, 0.5f), Rgba8(255, 255, 255, 255));
 	m_testShapes.push_back(infiniteLine);
 
-	// Player moving point shape TODO make disc and push to m_testShapes
-	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
-	AddVertsForAABB2D( m_pointVerts, pointAABB2, Rgba8( 0, 255, 0, 255 ) );
-
 	TestShape* triangle = new TestShapeTriangle(Vec2( 40.f, 40.f ), Vec2( 40.f, 10.f ), Vec2( 60.f, 60.f ), Rgba8( 255, 255, 255, 255 ));
 	m_testShapes.push_back(triangle);
+
+	TestShape* disc = new TestShapeDisc( Vec2( 100.f, 40.f ), 10.0f, Rgba8( 255, 255, 255, 255 ) );
+	m_testShapes.push_back( disc );
 
 
 	Vec2 iBasis = Vec2( 1.f, 1.f );

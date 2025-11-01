@@ -20,8 +20,7 @@ void TestShapeTriangle::Update()
 void TestShapeTriangle::Render() const
 {
 	std::vector<Vertex> closePoint;
-	AABB2 pointAABB2( 0.f, 0.f, 1.f, 1.f );
-	AddVertsForAABB2D( closePoint, pointAABB2, Rgba8( 255, 0, 0, 255 ) );
+	AddVertsForDisc2D( closePoint, Vec2( 0.f, 0.f ), 1.0f, Rgba8( 255, 0, 0, 255 ) );
 	TransformVertexArrayXY3D( closePoint.size(), closePoint.data(), .5f, 0.f, m_closestPoint );
 	g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
 	g_engine->m_render->DrawVertexArray( closePoint );

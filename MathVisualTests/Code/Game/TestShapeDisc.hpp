@@ -6,7 +6,7 @@
 class TestShapeDisc : public TestShape
 {
 public:
-	TestShapeDisc(Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color);
+	TestShapeDisc(Vec2 center, float radius, Rgba8 color);
 
 	void Update() override;
 	void Render() const override;
@@ -14,9 +14,8 @@ public:
 	std::vector<Vertex> m_lineVerts;
 
 public:
-	Vec2 m_start;
-	Vec2 m_end;
-	Vec2 m_thickness;
+	Vec2 m_center;;
+	float m_discRadius;
 	Rgba8 m_color;
 
 	void GetClosestPoint(Vec2 pointPos) override;

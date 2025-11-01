@@ -19,8 +19,8 @@ void TransformVertexArrayXY3D( int numVerts, Vertex* verts, float uniformScaleXY
 //------------------------------------------------------------------------------
 void AddVertsForDisc2D(std::vector<Vertex>& verts, Vec2 const& center, float discRadius, Rgba8 color)
 {
-	constexpr int numWedges = 32;
-	constexpr float degreesPerWedge = 360.f / static_cast<float>(numWedges);
+	int numWedges = 32;
+	float degreesPerWedge = 360.f / static_cast<float>(numWedges);
 
 	for (int wedgeIndex = 0; wedgeIndex < numWedges; ++wedgeIndex)
 	{
