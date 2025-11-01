@@ -36,12 +36,21 @@ void TestShapeTriangle::GetClosestPoint( Vec2 pointPos )
 //-----------------------------------------------------------------------------------------------
 bool TestShapeTriangle::IsPointInsideMe( Vec2 point ) const
 {
-	return false;
+	return IsPointInsideTriangle2D(point, m_aPoint, m_bPoint, m_cPoint);
 }
 
 //-----------------------------------------------------------------------------------------------
 void TestShapeTriangle::AddVertsForMe( std::vector<Vertex>& verts ) const
 {
 	AddVertsForTriangle2D( verts, m_aPoint, m_bPoint, m_cPoint, m_color );
+}
+
+//-----------------------------------------------------------------------------------------------
+void TestShapeTriangle::ChangeColor(Rgba8 newColor)
+{
+	for (int i = 0; i < m_lineVerts.size(); ++i)
+	{
+		m_lineVerts[i].m_color = newColor;
+	}
 }
 

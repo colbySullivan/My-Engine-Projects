@@ -99,6 +99,14 @@ void GameNearestPoint::RenderShapes() const
 		TestShape* shape = m_testShapes[Index];
 		if ( shape != nullptr )
 		{
+			if (shape->IsPointInsideMe(m_pointPos))
+			{
+				shape->ChangeColor(Rgba8(0, 0, 255, 255));
+			}
+			else
+			{
+				shape->ChangeColor(Rgba8(255, 255, 255, 255));
+			}
 			shape->GetClosestPoint(m_pointPos);
 			shape->Render();
 		}

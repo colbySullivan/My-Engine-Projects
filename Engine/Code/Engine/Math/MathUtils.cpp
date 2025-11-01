@@ -349,6 +349,11 @@ void TransformPositionXY3D( Vec3& posToTransform, Vec2 const& iBasis, Vec2 const
 	posToTransform.y = ( iBasis.y * originalX ) + ( jBasis.y * originalY ) + translation.y;
 }
 
+bool IsPointInsideAABB2D(Vec2 point, AABB2 const& alignedBox)
+{
+	return alignedBox.IsPointInside(point);
+}
+
 //------------------------------------------------------------------------------
 bool IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox)
 {

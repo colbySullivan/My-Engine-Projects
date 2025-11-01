@@ -45,3 +45,11 @@ void TestShapeLine::AddVertsForMe( std::vector<Vertex>& verts ) const
 	AddVertsForLineSegment2D(verts, m_start, m_end, m_thickness, m_color);
 }
 
+//-----------------------------------------------------------------------------------------------
+void TestShapeLine::ChangeColor(Rgba8 newColor)
+{
+	for (int i = 0; i < m_lineVerts.size(); ++i)
+	{
+		m_lineVerts[i].m_color = newColor;
+	}
+}

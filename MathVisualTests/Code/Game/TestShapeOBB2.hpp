@@ -23,4 +23,5 @@ public:
 	void GetClosestPoint( Vec2 pointPos ) override;
 	bool IsPointInsideMe( Vec2 point ) const override;
 	void AddVertsForMe( std::vector<Vertex>& verts ) const override;
+	void ChangeColor(Rgba8 newColor) override;
 };

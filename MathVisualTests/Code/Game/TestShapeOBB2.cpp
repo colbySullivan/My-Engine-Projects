@@ -37,7 +37,7 @@ void TestShapeOBB2::GetClosestPoint( Vec2 pointPos )
 //-----------------------------------------------------------------------------------------------
 bool TestShapeOBB2::IsPointInsideMe( Vec2 point ) const
 {
-	return false;
+	return IsPointInsideOBB2D(point, *m_orientedBox);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -46,3 +46,11 @@ void TestShapeOBB2::AddVertsForMe( std::vector<Vertex>& verts ) const
 	AddVertsForOBB2D(verts, *m_orientedBox, m_color);
 }
 
+//-----------------------------------------------------------------------------------------------
+void TestShapeOBB2::ChangeColor(Rgba8 newColor)
+{
+	for (int i = 0; i < m_lineVerts.size(); ++i)
+	{
+		m_lineVerts[i].m_color = newColor;
+	}
+}
