@@ -384,6 +384,46 @@ bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 }
 
 //-----------------------------------------------------------------------------------------------
+Vec2 GetNearestPointOnOBB2D(Vec2 referencePos, OBB2 const& orientedBox)
+{
+	if (IsPointInsideOBB2D(referencePos, orientedBox))
+	{
+		return referencePos;
+	}
+
+	Vec2 obb2Corners[4];
+	orientedBox.GetCornerPoints(obb2Corners);
+
+	Vec2 nearestAB = GetNearestPointOnLineSegment2D(referencePos, obb2Corners[0], obb2Corners[1]);
+	Vec2 nearestBC = GetNearestPointOnLineSegment2D(referencePos, obb2Corners[1], obb2Corners[2]);
+	Vec2 nearestCD = GetNearestPointOnLineSegment2D(referencePos, obb2Corners[2], obb2Corners[3]);
+	Vec2 nearestDA = GetNearestPointOnLineSegment2D(referencePos, obb2Corners[3], obb2Corners[0]);
+
+	float distAB = GetDistanceSquared2D(nearestAB, referencePos);
+	float distBC = GetDistanceSquared2D(nearestBC, referencePos);
+	float distCD = GetDistanceSquared2D(nearestCD, referencePos);
+	float distDA = GetDistanceSquared2D(nearestDA, referencePos);
+
+	if (distAB <= distBC && distAB <= distCD && distAB <= distDA)
+	{
+		return nearestAB;
+	}
+	else if (distBC <= distCD && distBC <= distDA)
+	{
+		return nearestBC;
+	}
+	else if (distCD <= distDA)
+	{
+		return nearestCD;
+	}
+	else
+	{
+		return nearestDA;
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnInfiniteLine2D( Vec2 referencePos, Vec2 pointOnLine, Vec2 anotherPointOnLine )
 {
 	Vec2 pointDirection = pointOnLine - referencePos;

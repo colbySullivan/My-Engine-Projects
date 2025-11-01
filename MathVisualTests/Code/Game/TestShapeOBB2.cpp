@@ -7,6 +7,7 @@ TestShapeOBB2::TestShapeOBB2( Vec2 const& center, Vec2 const& iBasisNormal, Vec2
 	, m_halfDimensions( halfDimensions )
 	, m_color( color )
 {
+	m_orientedBox = new OBB2(m_center, m_iBasisNormal, m_halfDimensions);
 	AddVertsForMe( m_lineVerts );
 }
 
@@ -30,7 +31,7 @@ void TestShapeOBB2::Render() const
 //-----------------------------------------------------------------------------------------------
 void TestShapeOBB2::GetClosestPoint( Vec2 pointPos )
 {
-	//m_closestPoint = GetNearestPointOnLineSegment2D( pointPos, m_start, m_end );
+	m_closestPoint = GetNearestPointOnOBB2D( pointPos, *m_orientedBox);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -42,8 +43,6 @@ bool TestShapeOBB2::IsPointInsideMe( Vec2 point ) const
 //-----------------------------------------------------------------------------------------------
 void TestShapeOBB2::AddVertsForMe( std::vector<Vertex>& verts ) const
 {
-	//OBB2 orientedBox(Vec2(10.f,10.f), Vec2(10.f,10.f), Vec2(10.f,10.f));
-	OBB2 orientedBox(m_center, m_iBasisNormal, m_halfDimensions);
-	AddVertsForOBB2D(verts, orientedBox, m_color);
+	AddVertsForOBB2D(verts, *m_orientedBox, m_color);
 }
 

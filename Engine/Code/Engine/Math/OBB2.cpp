@@ -10,6 +10,20 @@ OBB2::OBB2(Vec2 const& center, Vec2 const& iBasisNormal, Vec2 const& halfDimensi
 
 }
 
+//------------------------------------------------------------------------------
+void OBB2::GetCornerPoints(Vec2* out_fourCorners) const
+{
+	Vec2 jBasisNormal = Vec2(-m_iBasisNormal.y, m_iBasisNormal.x);
+
+	Vec2 i = m_iBasisNormal * m_halfDimensions.x;
+	Vec2 j = jBasisNormal * m_halfDimensions.y;
+
+	out_fourCorners[0] = m_center - i - j;
+	out_fourCorners[1] = m_center + i - j;
+	out_fourCorners[2] = m_center + i + j;
+	out_fourCorners[3] = m_center - i + j;
+}
+
 Vec2 OBB2::GetLocalPosForWorldPos(Vec2 const& worldPos) const
 {
 	Vec2 jBasisNormal = Vec2(-m_iBasisNormal.y, m_iBasisNormal.x);

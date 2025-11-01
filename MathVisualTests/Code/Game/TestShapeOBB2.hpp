@@ -18,6 +18,8 @@ public:
 	Vec2 m_halfDimensions;
 	Rgba8 m_color;
 
+	OBB2* m_orientedBox = nullptr;
+
 	void GetClosestPoint( Vec2 pointPos ) override;
 	bool IsPointInsideMe( Vec2 point ) const override;
 	void AddVertsForMe( std::vector<Vertex>& verts ) const override;
