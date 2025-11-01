@@ -197,6 +197,7 @@
     <ClCompile Include="GameRaycastVsDiscs.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="TestShape.cpp" />
+    <ClCompile Include="TestShapeDisc.cpp" />
     <ClCompile Include="TestShapeLine.cpp" />
     <ClCompile Include="TestShapeOBB2.cpp" />
     <ClCompile Include="TestShapeTriangle.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="GameNearestPoint.hpp" />
     <ClInclude Include="GameRaycastVsDiscs.hpp" />
     <ClInclude Include="TestShape.hpp" />
+    <ClInclude Include="TestShapeDisc.hpp" />
     <ClInclude Include="TestShapeLine.hpp" />
     <ClInclude Include="TestShapeOBB2.hpp" />
     <ClInclude Include="TestShapeTriangle.hpp" />

@@ -17,9 +17,23 @@ void TransformVertexArrayXY3D( int numVerts, Vertex* verts, float uniformScaleXY
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForDisc2D( [[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 const& center, [[maybe_unused]] float discRadius, [[maybe_unused]] Rgba8 color)
+void AddVertsForDisc2D(std::vector<Vertex>& verts, Vec2 const& center, float discRadius, Rgba8 color)
 {
-	ERROR_AND_DIE("AddVertsForDisc2D not implemented yet");
+	constexpr int numWedges = 32;
+	constexpr float degreesPerWedge = 360.f / static_cast<float>(numWedges);
+
+	for (int wedgeIndex = 0; wedgeIndex < numWedges; ++wedgeIndex)
+	{
+		float startDegrees = degreesPerWedge * static_cast<float>(wedgeIndex);
+		float endDegrees = degreesPerWedge * static_cast<float>(wedgeIndex + 1);
+
+		Vec2 startPos = center + Vec2::MakeFromPolarDegrees(startDegrees, discRadius);
+		Vec2 endPos = center + Vec2::MakeFromPolarDegrees(endDegrees, discRadius);
+
+		verts.push_back(Vertex(Vec3(center.x, center.y, 0.f), color, Vec2(0.f, 0.f)));
+		verts.push_back(Vertex(Vec3(startPos.x, startPos.y, 0.f), color, Vec2(0.f, 0.f)));
+		verts.push_back(Vertex(Vec3(endPos.x, endPos.y, 0.f), color, Vec2(0.f, 0.f)));
+	}
 }
 
 //------------------------------------------------------------------------------
