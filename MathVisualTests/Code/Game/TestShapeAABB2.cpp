@@ -1,52 +1,59 @@
-#include "Game/TestShapeDisc.hpp"
+#include "Game/TestShapeAABB2.hpp"
 #include "Engine/Core/Engine.hpp"
 
-TestShapeDisc::TestShapeDisc(Vec2 center, float radius, Rgba8 color)
-	: m_center(center)
-	, m_discRadius(radius)
-	, m_color(color)
+TestShapeAABB2::TestShapeAABB2( Vec2 mins, Vec2 maxs, Rgba8 color )
+	: m_mins( mins )
+	, m_maxs( maxs )
+	, m_color( color )
 {
-	AddVertsForMe(m_lineVerts);
+	m_aabb2Box = new AABB2(m_mins, m_maxs);
+	AddVertsForMe( m_lineVerts );
+}
+
+TestShapeAABB2::~TestShapeAABB2()
+{
+	delete m_aabb2Box;
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeDisc::Update()
+void TestShapeAABB2::Update()
 {
 
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeDisc::Render() const
+void TestShapeAABB2::Render() const
 {
 	std::vector<Vertex> closePoint;
 	AddVertsForDisc2D( closePoint, Vec2( 0.f, 0.f ), 1.0f, Rgba8( 255, 215, 0, 255 ) );
 	TransformVertexArrayXY3D( static_cast<int>(closePoint.size()), closePoint.data(), .5f, 0.f, m_closestPoint );
-	g_engine->m_render->DrawVertexArray( ( int )m_lineVerts.size(), m_lineVerts.data() );
+	g_engine->m_render->DrawVertexArray( static_cast<int>(m_lineVerts.size()), m_lineVerts.data() );
 	g_engine->m_render->DrawVertexArray( closePoint );
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeDisc::GetClosestPoint(Vec2 pointPos)
+void TestShapeAABB2::GetClosestPoint( Vec2 pointPos )
 {
-	m_closestPoint = GetNearestPointOnDisc2D(pointPos, m_center, m_discRadius);
+	//m_closestPoint = GetNearestPointOnDisc2D( pointPos, m_center, m_discRadius );
+	m_closestPoint = GetNearestPointOnAABB2D(pointPos, *m_aabb2Box);
 }
 
 //-----------------------------------------------------------------------------------------------
-bool TestShapeDisc::IsPointInsideMe(Vec2 point) const
+bool TestShapeAABB2::IsPointInsideMe( Vec2 point ) const
 {
-	return IsPointInsideDisc2D(point, m_center, m_discRadius);
+	return IsPointInsideAABB2D(point, *m_aabb2Box);
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeDisc::AddVertsForMe(std::vector<Vertex>& verts) const
+void TestShapeAABB2::AddVertsForMe( std::vector<Vertex>& verts ) const
 {
-	AddVertsForDisc2D(verts, m_center, m_discRadius, m_color);
+	AddVertsForAABB2D(verts, *m_aabb2Box, m_color);
 }
 
 //-----------------------------------------------------------------------------------------------
-void TestShapeDisc::ChangeColor(Rgba8 newColor)
+void TestShapeAABB2::ChangeColor( Rgba8 newColor )
 {
-	for (int i = 0; i < m_lineVerts.size(); ++i)
+	for ( int i = 0; i < m_lineVerts.size(); ++i )
 	{
 		m_lineVerts[i].m_color = newColor;
 	}

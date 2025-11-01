@@ -37,7 +37,7 @@ void GameNearestPoint::Render() const
 	{
 		tempPointWorldVerts[vertIndex] = m_pointVerts[vertIndex];
 	}
-	TransformVertexArrayXY3D(m_pointVerts.size(), tempPointWorldVerts, .25f, 0.f, m_pointPos);
+	TransformVertexArrayXY3D(static_cast<int>(m_pointVerts.size()), tempPointWorldVerts, .25f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(DISC_VERTS, tempPointWorldVerts);
 	//-----------------------------------------------------------------------------------------------
 
@@ -66,6 +66,9 @@ void GameNearestPoint::AddShapeVerts()
 	iBasis.Normalize();
 	TestShape* obb2 = new TestShapeOBB2( Vec2( 70.f, 30.f ), iBasis, Vec2( 10.f, 5.f ), Rgba8( 255, 255, 255, 255 ) );
 	m_testShapes.push_back( obb2 );
+
+	TestShape* abb2 = new TestShapeAABB2(Vec2(10.f,10.f), Vec2(20.f,20.f), Rgba8( 255, 255, 255, 255 ));
+	m_testShapes.push_back( abb2 );
 }
 
 //-----------------------------------------------------------------------------------------------

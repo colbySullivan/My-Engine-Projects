@@ -389,6 +389,46 @@ bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 }
 
 //-----------------------------------------------------------------------------------------------
+Vec2 GetNearestPointOnAABB2D( Vec2 referencePos, AABB2 const& alignedBox )
+{
+	if ( IsPointInsideAABB2D( referencePos, alignedBox ) )
+	{
+		return referencePos;
+	}
+
+	Vec2 aabb2Corners[4];
+	aabb2Corners[0] = alignedBox.m_mins;                               
+	aabb2Corners[1] = Vec2( alignedBox.m_maxs.x, alignedBox.m_mins.y );
+	aabb2Corners[2] = alignedBox.m_maxs;                               
+	aabb2Corners[3] = Vec2( alignedBox.m_mins.x, alignedBox.m_maxs.y );
+
+	Vec2 nearestAB = GetNearestPointOnLineSegment2D( referencePos, aabb2Corners[0], aabb2Corners[1] );
+	Vec2 nearestBC = GetNearestPointOnLineSegment2D( referencePos, aabb2Corners[1], aabb2Corners[2] );
+	Vec2 nearestCD = GetNearestPointOnLineSegment2D( referencePos, aabb2Corners[2], aabb2Corners[3] );
+	Vec2 nearestDA = GetNearestPointOnLineSegment2D( referencePos, aabb2Corners[3], aabb2Corners[0] );
+
+	float distAB = GetDistanceSquared2D( nearestAB, referencePos );
+	float distBC = GetDistanceSquared2D( nearestBC, referencePos );
+	float distCD = GetDistanceSquared2D( nearestCD, referencePos );
+	float distDA = GetDistanceSquared2D( nearestDA, referencePos );
+
+	if ( distAB <= distBC && distAB <= distCD && distAB <= distDA )
+	{
+		return nearestAB;
+	}
+	if ( distBC <= distCD && distBC <= distDA )
+	{
+		return nearestBC;
+	}
+	if ( distCD <= distDA )
+	{
+		return nearestCD;
+	}
+	
+	return nearestDA;
+}
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnOBB2D(Vec2 referencePos, OBB2 const& orientedBox)
 {
 	if (IsPointInsideOBB2D(referencePos, orientedBox))
@@ -413,18 +453,16 @@ Vec2 GetNearestPointOnOBB2D(Vec2 referencePos, OBB2 const& orientedBox)
 	{
 		return nearestAB;
 	}
-	else if (distBC <= distCD && distBC <= distDA)
+	if (distBC <= distCD && distBC <= distDA)
 	{
 		return nearestBC;
 	}
-	else if (distCD <= distDA)
+	 if (distCD <= distDA)
 	{
 		return nearestCD;
 	}
-	else
-	{
-		return nearestDA;
-	}
+
+	return nearestDA;
 }
 
 
@@ -455,6 +493,7 @@ Vec2 GetNearestPointOnLineSegment2D( Vec2 referencePos, Vec2 start, Vec2 end )
 	}
 
 	Vec2 SN = GetProjectedVector2D( pointDirection, startDirection );
+
 	return start + SN;
 }
 
