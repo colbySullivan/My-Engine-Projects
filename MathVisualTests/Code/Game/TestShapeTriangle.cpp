@@ -30,7 +30,7 @@ void TestShapeTriangle::Render() const
 //-----------------------------------------------------------------------------------------------
 void TestShapeTriangle::GetClosestPoint( Vec2 pointPos )
 {
-	//m_closestPoint = GetNearestPointOnLineSegment2D( pointPos, m_start, m_end );
+	m_closestPoint = GetNearestPointOnTriangle2D(pointPos, m_aPoint, m_bPoint, m_cPoint);
 }
 
 //-----------------------------------------------------------------------------------------------

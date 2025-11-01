@@ -365,6 +365,25 @@ bool IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox)
 }
 
 //-----------------------------------------------------------------------------------------------
+bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
+{
+	Vec2 distAB = ccw1 - ccw0;
+	Vec2 distPointA = ccw0 - point;
+	float aSection = DotProduct2D(distAB.GetRotatedBy90Degrees(), distPointA);
+
+	Vec2 distBC = ccw2 - ccw1;
+	Vec2 distPointB = ccw1 - point;
+	float bSection = DotProduct2D( distBC.GetRotatedBy90Degrees(), distPointB );
+
+	Vec2 distCA = ccw0 - ccw2;
+	Vec2 distPointC = ccw2 - point;
+	float cSection = DotProduct2D( distCA.GetRotatedBy90Degrees(), distPointC );
+
+	return ( aSection <= 0 && bSection <= 0 && cSection <= 0  );
+
+}
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnInfiniteLine2D( Vec2 referencePos, Vec2 pointOnLine, Vec2 anotherPointOnLine )
 {
 	Vec2 pointDirection = pointOnLine - referencePos;
@@ -394,20 +413,33 @@ Vec2 GetNearestPointOnLineSegment2D( Vec2 referencePos, Vec2 start, Vec2 end )
 	return start + SN;
 }
 
-////-----------------------------------------------------------------------------------------------
-//Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
-//{
-//	//check inside
-//
-//	//nearestpointAB
-//	//nearestpointBC
-//	//nearestpointCA
-//
-//	// float distSqAB , BC , CA GetDistanceSq
-//
-//	// if distsqAB <= distsq BC && distSQab <= distSqCa return nearestPointAB
-//	// else if BC <= CA return BC
-//	// else return CA
-//
-//}
+//-----------------------------------------------------------------------------------------------
+Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
+{
+	if ( IsPointInsideTriangle2D( referencePos, ccw0, ccw1, ccw2 ) )
+	{
+		return referencePos;
+	}
+
+	Vec2 nearestAB = GetNearestPointOnLineSegment2D( referencePos, ccw0, ccw1);
+	Vec2 nearestBC = GetNearestPointOnLineSegment2D( referencePos, ccw1, ccw2 );
+	Vec2 nearestCA = GetNearestPointOnLineSegment2D( referencePos, ccw2, ccw0 );
+
+	float distAB = GetDistanceSquared2D( nearestAB, referencePos );
+	float distBC = GetDistanceSquared2D( nearestBC, referencePos );
+	float distCA = GetDistanceSquared2D( nearestCA, referencePos );
+
+	if (distAB <= distBC && distAB <= distCA)
+	{
+		return nearestAB;
+	}
+	else if ( distBC <= distCA )
+	{
+		return nearestBC;
+	}
+	else
+	{
+		return nearestCA;
+	}
+}
 
