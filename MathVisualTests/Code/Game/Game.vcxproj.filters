@@ -40,6 +40,9 @@
     <ClCompile Include="TestShapeTriangle.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="TestShapeOBB2.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -70,6 +73,9 @@
       <Filter>Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="TestShapeTriangle.hpp">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeOBB2.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>

@@ -58,6 +58,10 @@ void GameNearestPoint::AddShapeVerts()
 	TestShape* triangle = new TestShapeTriangle(Vec2( 40.f, 40.f ), Vec2( 40.f, 10.f ), Vec2( 60.f, 60.f ), Rgba8( 255, 255, 255, 255 ));
 	m_testShapes.push_back(triangle);
 
+	Vec2 iBasis = Vec2( 1.f, 1.f );
+	iBasis.Normalize(); // or use Vec2(1.f, 0.f) for axis-aligned
+	TestShape* obb2 = new TestShapeOBB2( Vec2( 70.f, 30.f ), iBasis, Vec2( 10.f, 5.f ), Rgba8( 255, 255, 255, 255 ) );
+	m_testShapes.push_back( obb2 );
 }
 
 //-----------------------------------------------------------------------------------------------
