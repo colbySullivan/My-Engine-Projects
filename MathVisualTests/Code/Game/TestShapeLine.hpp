@@ -17,6 +17,7 @@ public:
 	Vec2 m_start;
 	Vec2 m_end;
 	Vec2 m_thickness;
+	Vec2 m_mousePoint;
 	Rgba8 m_color;
 
 	void GetClosestPoint( Vec2 pointPos ) override;

@@ -16,6 +16,7 @@ public:
 public:
 	Vec2 m_center;;
 	float m_discRadius;
+	Vec2 m_mousePoint;
 	Rgba8 m_color;
 
 	void GetClosestPoint(Vec2 pointPos) override;

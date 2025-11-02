@@ -465,7 +465,6 @@ Vec2 GetNearestPointOnOBB2D(Vec2 referencePos, OBB2 const& orientedBox)
 	return nearestDA;
 }
 
-
 //-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnInfiniteLine2D( Vec2 referencePos, Vec2 pointOnLine, Vec2 anotherPointOnLine )
 {

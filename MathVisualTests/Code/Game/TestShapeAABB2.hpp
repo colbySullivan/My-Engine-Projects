@@ -18,7 +18,7 @@ public:
 	Vec2 m_mins;
 	Vec2 m_maxs;
 	Rgba8 m_color;
-
+	Vec2 m_mousePoint;
 	AABB2* m_aabb2Box = nullptr;
 
 	void GetClosestPoint( Vec2 pointPos ) override;

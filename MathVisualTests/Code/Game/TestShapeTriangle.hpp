@@ -17,6 +17,7 @@ public:
 	Vec2 m_bPoint;
 	Vec2 m_cPoint;
 	Rgba8 m_color;
+	Vec2 m_mousePoint;
 
 	void GetClosestPoint( Vec2 pointPos ) override;
 	bool IsPointInsideMe( Vec2 point ) const override;

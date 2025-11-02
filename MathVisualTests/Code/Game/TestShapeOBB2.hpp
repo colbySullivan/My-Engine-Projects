@@ -16,6 +16,7 @@ public:
 	Vec2 m_center;
 	Vec2 m_iBasisNormal;
 	Vec2 m_halfDimensions;
+	Vec2 m_mousePoint;
 	Rgba8 m_color;
 
 	OBB2* m_orientedBox = nullptr;

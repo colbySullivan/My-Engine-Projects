@@ -26,6 +26,7 @@ Game::~Game()
 {
 	delete m_worldCamera;
 	//delete m_screenCamera;
+
 	m_worldCamera = nullptr;
 	//m_screenCamera = nullptr;
 }
@@ -121,10 +122,8 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
 	{
-		// Advance to next mode
 		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % GAME_NUM_TYPES );
 
-		// Shutdown and delete old game
 		if ( g_theGame )
 		{
 			g_theGame->Shutdown();
@@ -132,7 +131,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 			g_theGame = nullptr;
 		}
 
-		// Create new game of selected type
 		g_theGame = Game::CreateNewGameOfType( g_gameMode );
 		if ( g_theGame )
 		{
