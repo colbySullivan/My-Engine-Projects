@@ -70,10 +70,10 @@ void Game::Render() const
 
 	g_engine->m_render->ClearScreen(backgroundColor);
 
-	//g_engine->m_render->BeginCamera( *g_gameMode->m_worldCamera );
+	g_engine->m_render->BeginCamera( *m_worldCamera );
 	if ( g_theGame && g_theGame != this )
 		g_theGame->Render();
-	//g_engine->m_render->EndCamera( *g_gameMode->m_worldCamera );
+	g_engine->m_render->EndCamera( *m_worldCamera );
 
 }
 

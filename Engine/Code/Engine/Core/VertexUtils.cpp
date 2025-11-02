@@ -37,9 +37,33 @@ void AddVertsForDisc2D(std::vector<Vertex>& verts, Vec2 const& center, float dis
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForRing2D( [[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 ringCenter, [[maybe_unused]] float ringRadius, [[maybe_unused]] float thickness, [[maybe_unused]] Rgba8 color)
+void AddVertsForRing2D(std::vector<Vertex>& verts, Vec2 ringCenter, float ringRadius, float thickness, Rgba8 color)
 {
-	ERROR_AND_DIE("AddVertsForRing2D not implemented yet");
+	int numWedges = 32;
+	float degreesPerWedge = 360.f / static_cast< float >( numWedges );
+
+	float innerRadius = ringRadius - ( thickness * 0.5f );
+	float outerRadius = ringRadius + ( thickness * 0.5f );
+
+	for ( int wedgeIndex = 0; wedgeIndex < numWedges; ++wedgeIndex )
+	{
+		float startDegrees = degreesPerWedge * static_cast< float >( wedgeIndex );
+		float endDegrees = degreesPerWedge * static_cast< float >( wedgeIndex + 1 );
+
+		Vec2 innerStart = ringCenter + Vec2::MakeFromPolarDegrees( startDegrees, innerRadius );
+		Vec2 innerEnd = ringCenter + Vec2::MakeFromPolarDegrees( endDegrees, innerRadius );
+
+		Vec2 outerStart = ringCenter + Vec2::MakeFromPolarDegrees( startDegrees, outerRadius );
+		Vec2 outerEnd = ringCenter + Vec2::MakeFromPolarDegrees( endDegrees, outerRadius );
+
+		verts.push_back( Vertex( Vec3( innerStart.x, innerStart.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( outerStart.x, outerStart.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( outerEnd.x, outerEnd.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+
+		verts.push_back( Vertex( Vec3( innerStart.x, innerStart.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( outerEnd.x, outerEnd.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( innerEnd.x, innerEnd.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -82,7 +106,7 @@ void AddVertsForOBB2D( std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForCapsule2D([[maybe_unused]] std::vector<Vertex>& verts, [[maybe_unused]] Vec2 boneStart, [[maybe_unused]] Vec2 boneEnd, [[maybe_unused]] float radius, [[maybe_unused]] Rgba8 color)
+void AddVertsForCapsule2D( std::vector<Vertex>& verts, Vec2 boneStart, Vec2 boneEnd, float radius, Rgba8 color )
 {
 	ERROR_AND_DIE("AddVertsForCapsule2D not implemented yet");
 }

@@ -31,22 +31,12 @@ void GameNearestPoint::Startup()
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::Update( float deltaSeconds )
 {	
-	if ( m_isSlowMo ) // T pressed
-	{
-		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
-	}
-
-	Game::Update(deltaSeconds);
 	UpdatePointPosition(deltaSeconds);
 }
 
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::Render() const
 {
-	g_engine->m_render->BeginCamera( *m_worldCamera );
-	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
-	g_engine->m_render->ClearScreen( backgroundColor );
-
 	RenderShapes();
 	
 	//-----------------------------------------------------------------------------------------------
@@ -58,8 +48,6 @@ void GameNearestPoint::Render() const
 	TransformVertexArrayXY3D(static_cast<int>(m_pointVerts.size()), tempPointWorldVerts, .25f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(DISC_VERTS, tempPointWorldVerts);
 	//-----------------------------------------------------------------------------------------------
-
-	g_engine->m_render->EndCamera( *m_worldCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
