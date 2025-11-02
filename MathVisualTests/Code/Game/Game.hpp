@@ -20,7 +20,7 @@ public:
 	Game(App* m_app);
 	~Game();
 
-	void Startup();
+	virtual void Startup();
 	virtual void Update( float deltaSeconds );
 	virtual void Render() const;
 	void Shutdown();
@@ -41,7 +41,8 @@ private:
 	
 
 	Game* CreateNewGameOfType( GameType type );
-	Game* g_gameMode;
+	GameType g_gameMode;
+	Game* g_theGame;
 	App* m_app = nullptr;
 	std::vector<Vertex> m_lineVerts;
 };

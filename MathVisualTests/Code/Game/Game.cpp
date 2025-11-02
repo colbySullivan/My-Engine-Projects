@@ -35,27 +35,30 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	g_gameMode = CreateNewGameOfType( GAMEMODE_NEAREST_POINT );
-	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
+	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	m_isPaused = false;
 }
+
 
 //-----------------------------------------------------------------------------------------------
 void Game::Update(float deltaSeconds)
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
-	UpdateCameras( deltaSeconds );
-	UpdateKeyboardInput( controller );
-
 	if ( m_isSlowMo ) // T pressed
 	{
 		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
 	}
 
+	UpdateCameras( deltaSeconds );
+	UpdateKeyboardInput( controller );
+
 	if ( !m_isPaused || m_pauseAfterNextUpdate )
 	{
-		m_pauseAfterNextUpdate = false; // Reset run token for simulation step
+		m_pauseAfterNextUpdate = false;
+
+		if ( g_theGame && g_theGame != this )
+			g_theGame->Update( deltaSeconds );
 	}
 }
 
@@ -67,7 +70,8 @@ void Game::Render() const
 	g_engine->m_render->ClearScreen(backgroundColor);
 
 	//g_engine->m_render->BeginCamera( *g_gameMode->m_worldCamera );
-	g_gameMode->Render();
+	if ( g_theGame && g_theGame != this )
+		g_theGame->Render();
 	//g_engine->m_render->EndCamera( *g_gameMode->m_worldCamera );
 
 }
@@ -115,17 +119,27 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	}
 
-	/*if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
 	{
-		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % NUM_GAMEMODES );
-		if ( m_theGame )
+		// Advance to next mode
+		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % GAME_NUM_TYPES );
+
+		// Shutdown and delete old game
+		if ( g_theGame )
 		{
-			m_theGame->Shutdown();
-			delete m_theGame;
+			g_theGame->Shutdown();
+			delete g_theGame;
+			g_theGame = nullptr;
 		}
-		m_theGame = Game::CreateNewGameOfType( g_gameMode );
-		m_theGame->Startup();
-	}*/
+
+		// Create new game of selected type
+		g_theGame = Game::CreateNewGameOfType( g_gameMode );
+		if ( g_theGame )
+		{
+			g_theGame->Startup();
+		}
+	}
+
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
@@ -153,7 +167,6 @@ void Game::UpdateCameras( [[maybe_unused]] float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------
 Game* Game::CreateNewGameOfType( GameType type )
 {
 	Game* newGame = nullptr;

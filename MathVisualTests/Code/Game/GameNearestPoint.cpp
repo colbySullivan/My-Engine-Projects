@@ -7,19 +7,37 @@
 GameNearestPoint::GameNearestPoint(App* app)
 	: Game(app)
 {
-	AddShapeVerts();
 }
 
 GameNearestPoint::~GameNearestPoint()
 {
-
+	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
+	{
+		if ( m_testShapes[Index] != nullptr )
+		{
+			delete m_testShapes[Index];
+			m_testShapes[Index] = nullptr;
+		}
+	}
+	m_testShapes.clear();
 }
 
 //-----------------------------------------------------------------------------------------------
-void GameNearestPoint::Update( float deltaTime )
+void GameNearestPoint::Startup()
+{
+	AddShapeVerts();
+}
+
+//-----------------------------------------------------------------------------------------------
+void GameNearestPoint::Update( float deltaSeconds )
 {	
-	Game::UpdateCameras(deltaTime);
-	UpdatePointPosition(deltaTime);
+	if ( m_isSlowMo ) // T pressed
+	{
+		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+	}
+
+	Game::Update(deltaSeconds);
+	UpdatePointPosition(deltaSeconds);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -72,7 +90,7 @@ void GameNearestPoint::AddShapeVerts()
 }
 
 //-----------------------------------------------------------------------------------------------
-void GameNearestPoint::UpdatePointPosition( float deltaTime )
+void GameNearestPoint::UpdatePointPosition( float deltaSeconds )
 {
 
 	Vec2 moveDirection = Vec2(0.f,0.f);
@@ -91,7 +109,7 @@ void GameNearestPoint::UpdatePointPosition( float deltaTime )
 
 	if ( moveDirection.GetLengthSquared() > 0.f ) {
 		moveDirection.Normalize();
-		m_pointPos += moveDirection * m_speed * deltaTime;
+		m_pointPos += moveDirection * m_speed * deltaSeconds;
 	}
 }
 

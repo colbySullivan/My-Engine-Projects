@@ -14,13 +14,14 @@ public:
 	GameNearestPoint(App* app);
 	~GameNearestPoint();
 
+	void Startup() override;
 	void Update( float deltaSeconds ) override;
 	void Render() const override;
 
 private:
 	void AddShapeVerts();
 	
-	void UpdatePointPosition( float deltaTime );
+	void UpdatePointPosition( float deltaSeconds );
 	void RenderShapes() const;
 	std::vector<Vertex> m_pointVerts;
 	std::vector<TestShape*> m_testShapes;
