@@ -6,6 +6,9 @@
 #include "Game/TestShapeOBB2.hpp"
 #include "Game/TestShapeDisc.hpp"
 #include "Game/TestShapeAABB2.hpp"
+#include "Game/TestShapeCapsule.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
+
 
 //-----------------------------------------------------------------------------------------------
 class GameNearestPoint : public Game {
@@ -18,11 +21,13 @@ public:
 	void Update( float deltaSeconds ) override;
 	void Render() const override;
 
+	RandomNumberGenerator* g_rng;
 private:
 	void AddShapeVerts();
 	
 	void UpdatePointPosition( float deltaSeconds );
 	void RenderShapes() const;
+	Vec2 GetRandomPosition( float minX, float maxX, float minY, float maxY );
 	std::vector<Vertex> m_pointVerts;
 	std::vector<TestShape*> m_testShapes;
 	//TestShapeLine*	m_line;

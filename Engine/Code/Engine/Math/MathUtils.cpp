@@ -370,6 +370,23 @@ bool IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox)
 }
 
 //-----------------------------------------------------------------------------------------------
+bool IsPointInsideCapsule2D( Vec2 point, Vec2 boneStart, Vec2 boneEnd, float radius )
+{
+	Vec2 distAB = boneEnd - boneStart;
+	Vec2 sect1 =  boneStart - point;
+	float aSection = DotProduct2D( sect1, distAB.GetNormalized() );
+
+	Vec2 distBA = boneStart - boneEnd;
+	Vec2 sect2 = boneEnd - point;
+	float bSection = DotProduct2D( sect2, distBA.GetNormalized() );
+
+	float cSection = DotProduct2D( distAB.GetRotatedBy90Degrees().GetNormalized(), sect1 );
+	float dSection = DotProduct2D( distAB.GetRotatedByMinus90Degrees().GetNormalized(), sect1 );
+
+	return (aSection <= radius && bSection <= radius && cSection <= radius && dSection <=radius);
+}
+
+//-----------------------------------------------------------------------------------------------
 bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 {
 	Vec2 distAB = ccw1 - ccw0;
@@ -497,6 +514,18 @@ Vec2 GetNearestPointOnLineSegment2D( Vec2 referencePos, Vec2 start, Vec2 end )
 }
 
 //-----------------------------------------------------------------------------------------------
+Vec2 GetNearestPointOnCapsule2D( Vec2 referencePos, Vec2 boneStart, Vec2 boneEnd, float radius )
+{
+	if( IsPointInsideCapsule2D(referencePos, boneStart, boneEnd, radius) )
+		return referencePos;
+
+	Vec2 nearestOnBone = GetNearestPointOnLineSegment2D(referencePos, boneStart, boneEnd);
+
+	Vec2 boneToPoint = referencePos - nearestOnBone;
+	return nearestOnBone + ( boneToPoint.GetNormalized() * radius );
+}
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 {
 	if ( IsPointInsideTriangle2D( referencePos, ccw0, ccw1, ccw2 ) )
@@ -516,13 +545,11 @@ Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 
 	{
 		return nearestAB;
 	}
-	else if ( distBC <= distCA )
+	if ( distBC <= distCA )
 	{
 		return nearestBC;
 	}
-	else
-	{
-		return nearestCA;
-	}
+
+	return nearestCA;
 }
 

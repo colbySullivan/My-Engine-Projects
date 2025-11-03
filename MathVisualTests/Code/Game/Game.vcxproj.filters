@@ -49,6 +49,9 @@
     <ClCompile Include="TestShapeAABB2.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="TestShapeCapsule.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -88,6 +91,9 @@
       <Filter>Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="TestShapeAABB2.hpp">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeCapsule.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>

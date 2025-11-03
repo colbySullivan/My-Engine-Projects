@@ -108,7 +108,41 @@ void AddVertsForOBB2D( std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba
 //------------------------------------------------------------------------------
 void AddVertsForCapsule2D( std::vector<Vertex>& verts, Vec2 boneStart, Vec2 boneEnd, float radius, Rgba8 color )
 {
-	ERROR_AND_DIE("AddVertsForCapsule2D not implemented yet");
+	AddVertsForLineSegment2D( verts, boneStart, boneEnd, Vec2( radius * 2.f, radius * 2.f ), color );
+
+	Vec2 direction = boneEnd - boneStart;
+	Vec2 forward = direction.GetNormalized();
+
+	int numWedges = 16;
+	float degreesPerWedge = 180.f / static_cast< float >( numWedges );
+
+	float forwardAngle = forward.GetOrientationDegrees();
+
+	for ( int wedgeIndex = 0; wedgeIndex < numWedges; ++wedgeIndex )
+	{
+		float startDegrees = forwardAngle + 90.f + ( degreesPerWedge * static_cast< float >( wedgeIndex ) );
+		float endDegrees = forwardAngle + 90.f + ( degreesPerWedge * static_cast< float >( wedgeIndex + 1 ) );
+
+		Vec2 startPos = boneStart + Vec2::MakeFromPolarDegrees( startDegrees, radius );
+		Vec2 endPos = boneStart + Vec2::MakeFromPolarDegrees( endDegrees, radius );
+
+		verts.push_back( Vertex( Vec3( boneStart.x, boneStart.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( startPos.x, startPos.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( endPos.x, endPos.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	}
+
+	for ( int wedgeIndex = 0; wedgeIndex < numWedges; ++wedgeIndex )
+	{
+		float startDegrees = forwardAngle - 90.f + ( degreesPerWedge * static_cast< float >( wedgeIndex ) );
+		float endDegrees = forwardAngle - 90.f + ( degreesPerWedge * static_cast< float >( wedgeIndex + 1 ) );
+
+		Vec2 startPos = boneEnd + Vec2::MakeFromPolarDegrees( startDegrees, radius );
+		Vec2 endPos = boneEnd + Vec2::MakeFromPolarDegrees( endDegrees, radius );
+
+		verts.push_back( Vertex( Vec3( boneEnd.x, boneEnd.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( startPos.x, startPos.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( Vec3( endPos.x, endPos.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
+	}
 }
 
 //------------------------------------------------------------------------------

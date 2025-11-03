@@ -39,7 +39,6 @@ void GameNearestPoint::Render() const
 {
 	RenderShapes();
 	
-	//-----------------------------------------------------------------------------------------------
 	Vertex tempPointWorldVerts[DISC_VERTS];
 	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
 	{
@@ -47,34 +46,79 @@ void GameNearestPoint::Render() const
 	}
 	TransformVertexArrayXY3D(static_cast<int>(m_pointVerts.size()), tempPointWorldVerts, .25f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(DISC_VERTS, tempPointWorldVerts);
-	//-----------------------------------------------------------------------------------------------
 }
 
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::AddShapeVerts()
 {
-	AddVertsForDisc2D( m_pointVerts, Vec2(0.f, 0.f), 1.0f, Rgba8( 255, 255, 255, 255 ) );
+	AddVertsForDisc2D( m_pointVerts, Vec2( 0.f, 0.f ), 1.0f, Rgba8( 255, 255, 255, 255 ) );
 
-	TestShape* segLine = new TestShapeLine( Vec2( 10.f, 10.f ), Vec2( 50.f, 60.f ), Vec2( 0.5f, 0.5f ), Rgba8( 255, 255, 255, 255 ) );
-	m_testShapes.push_back(segLine);
+	TestShape* segLine = new TestShapeLine(
+		GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+		GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+		Vec2( 0.5f, 0.5f ),
+		Rgba8( 255, 255, 255, 255 )
+	);
+	m_testShapes.push_back( segLine );
 
-	TestShape* infiniteLine = new TestShapeLine(Vec2(200.f, 0.f), Vec2(50.f, 600.f), Vec2(0.5f, 0.5f), Rgba8(255, 255, 255, 255));
-	m_testShapes.push_back(infiniteLine);
+	TestShape* infiniteLine = new TestShapeLine(
+		GetRandomPosition( 10.f, 90.f, 10.f, 50.f ),
+		GetRandomPosition( 110.f, 190.f, 50.f, 90.f ),
+		Vec2( 0.5f, 0.5f ),
+		Rgba8( 255, 255, 255, 255 )
+	);
+	m_testShapes.push_back( infiniteLine );
 
-	TestShape* triangle = new TestShapeTriangle(Vec2( 40.f, 40.f ), Vec2( 40.f, 10.f ), Vec2( 60.f, 60.f ), Rgba8( 255, 255, 255, 255 ));
-	m_testShapes.push_back(triangle);
+	Vec2 pointA = GetRandomPosition( 10.f, 180.f, 10.f, 80.f );
+	TestShape* triangle = new TestShapeTriangle(
+		pointA,
+		pointA - GetRandomPosition( 1.f, 20.f, 1.f, 20.f ),
+		pointA + GetRandomPosition( 1.f, 20.f, 1.f, 20.f ),
+		Rgba8( 255, 255, 255, 255 )
+	);
+	m_testShapes.push_back( triangle );
 
-	TestShape* disc = new TestShapeDisc( Vec2( 100.f, 40.f ), 10.0f, Rgba8( 255, 255, 255, 255 ) );
+	TestShape* disc = new TestShapeDisc(
+		GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+		10.0f,
+		Rgba8( 255, 255, 255, 255 )
+	);
 	m_testShapes.push_back( disc );
-
 
 	Vec2 iBasis = Vec2( 1.f, 1.f );
 	iBasis.Normalize();
-	TestShape* obb2 = new TestShapeOBB2( Vec2( 70.f, 30.f ), iBasis, Vec2( 10.f, 5.f ), Rgba8( 255, 255, 255, 255 ) );
+	Vec2 center = GetRandomPosition( 30.f, 170.f, 30.f, 70.f );
+	Vec2 halfDimensions = Vec2(
+		g_rng->RollRandomFloatInRange( 5.f, 15.f ),
+		g_rng->RollRandomFloatInRange( 5.f, 15.f )
+	);
+	TestShape* obb2 = new TestShapeOBB2(
+		center,
+		iBasis,
+		halfDimensions,
+		Rgba8( 255, 255, 255, 255 )
+	);
 	m_testShapes.push_back( obb2 );
 
-	TestShape* abb2 = new TestShapeAABB2(Vec2(10.f,10.f), Vec2(20.f,20.f), Rgba8( 255, 255, 255, 255 ));
+	Vec2 aabbMin = GetRandomPosition( 10.f, 150.f, 10.f, 70.f );
+	Vec2 aabbMax = Vec2(
+		aabbMin.x + g_rng->RollRandomFloatInRange( 10.f, 40.f ),
+		aabbMin.y + g_rng->RollRandomFloatInRange( 10.f, 30.f )
+	);
+	TestShape* abb2 = new TestShapeAABB2(
+		aabbMin,
+		aabbMax,
+		Rgba8( 255, 255, 255, 255 )
+	);
 	m_testShapes.push_back( abb2 );
+
+	TestShape* capsule = new TestShapeCapsule(
+		GetRandomPosition( 10.f, 140.f, 10.f, 70.f ),
+		GetRandomPosition( 60.f, 190.f, 30.f, 90.f ),
+		g_rng->RollRandomFloatInRange( 3.f, 8.f ),
+		Rgba8( 255, 255, 255, 255 )
+	);
+	m_testShapes.push_back( capsule );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -123,3 +167,8 @@ void GameNearestPoint::RenderShapes() const
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+Vec2 GameNearestPoint::GetRandomPosition( float minX, float maxX, float minY, float maxY )
+{
+	return Vec2( g_rng->RollRandomFloatInRange( minX, maxX ), g_rng->RollRandomFloatInRange( minY, maxY ) );
+}

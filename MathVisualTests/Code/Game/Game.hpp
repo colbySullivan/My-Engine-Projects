@@ -31,8 +31,9 @@ public:
 	bool				m_isSlowMo = false;
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
-	Camera* m_worldCamera = nullptr;
-	Camera* m_screenCamera = nullptr;
+	Camera*				m_worldCamera = nullptr;
+	Camera*				m_screenCamera = nullptr;
+
 	void UpdateCameras( float deltaSeconds );
 
 private:
