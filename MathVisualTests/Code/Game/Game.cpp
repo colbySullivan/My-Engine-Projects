@@ -60,6 +60,11 @@ void Game::Update(float deltaSeconds)
 
 		if ( g_theGame && g_theGame != this )
 			g_theGame->Update( deltaSeconds );
+		else // First instance boot up
+		{
+			g_theGame = Game::CreateNewGameOfType( g_gameMode );
+			g_theGame->Startup();
+		}
 	}
 }
 
@@ -94,11 +99,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		return;
 	}
 
-	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ))
-	{
-		
-	}
-
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
 
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
@@ -120,9 +120,26 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
 	{
 		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % GAME_NUM_TYPES );
+
+		if ( g_theGame )
+		{
+			g_theGame->Shutdown();
+			delete g_theGame;
+			g_theGame = nullptr;
+		}
+
+		g_theGame = Game::CreateNewGameOfType( g_gameMode );
+		if ( g_theGame )
+		{
+			g_theGame->Startup();
+		}
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	{
 
 		if ( g_theGame )
 		{

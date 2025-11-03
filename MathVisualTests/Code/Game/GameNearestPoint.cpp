@@ -2,6 +2,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/SimpleTriangleFont.hpp"
 
 //------------------------------------------------------------------------------
 GameNearestPoint::GameNearestPoint(App* app)
@@ -38,7 +39,7 @@ void GameNearestPoint::Update( float deltaSeconds )
 void GameNearestPoint::Render() const
 {
 	RenderShapes();
-	
+	RenderText("Press Start or P to Resume", Vec2(10.f, 10.f), 1.f, Rgba8(255, 255, 255, 255));
 	Vertex tempPointWorldVerts[DISC_VERTS];
 	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
 	{
@@ -171,4 +172,13 @@ void GameNearestPoint::RenderShapes() const
 Vec2 GameNearestPoint::GetRandomPosition( float minX, float maxX, float minY, float maxY )
 {
 	return Vec2( g_rng->RollRandomFloatInRange( minX, maxX ), g_rng->RollRandomFloatInRange( minY, maxY ) );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void GameNearestPoint::RenderText( const char text[], Vec2 pos, float height, Rgba8 color ) const
+{
+	std::vector<Vertex> textVerts;
+	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
+	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }
