@@ -3,21 +3,23 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Game/Game.hpp"
+#include "Game/TileDefinitions.hpp"
+#include "Game/Tile.hpp"
 #include <vector>
 
 class Entity;
 //------------------------------------------------------------------------------
-enum TileType {
-	GRASS,
-	STONE
-};
-
-//------------------------------------------------------------------------------
-class Tile {
-public:
-	IntVec2 m_tileCoords;
-	TileType m_type = GRASS;
-};
+//enum TileType {
+//	GRASS,
+//	STONE
+//};
+//
+////------------------------------------------------------------------------------
+//class Tile {
+//public:
+//	IntVec2 m_tileCoords;
+//	TileType m_type = GRASS;
+//};
 
 //------------------------------------------------------------------------------
 class Map
@@ -53,9 +55,13 @@ public:
 	void StoneTileSetup();
 	void GrassTileSetup();
 
+	//IsPointInSolid(), (), RaycastVsTiles()
+
 	// Utility
 	void Update( float deltaSeconds );
 	void AddToEntityVector( Entity* e );
+	bool HasLineOfSight( Vec2 posA, Vec2 posB) const;
+	//RaycastResult2D	RaycastVsTiles2( Vec2 startPos, Vec2 fwdNormal, float maxDist );
 
 
 private:

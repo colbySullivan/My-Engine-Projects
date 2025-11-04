@@ -9,6 +9,21 @@ class RandomNumberGenerator;
 class Game;
 
 //-----------------------------------------------------------------------------------------------
+enum EntityType
+{
+	ENTITY_TYPE_GOOD_PLAYER,
+	ENTITY_TYPE_EVIL_SCORPIO,
+	ENTITY_TYPE_EVIL_LEO,
+	ENTITY_TYPE_EVIL_ARIES,
+	ENTITY_TYPE_GOOD_BULLET,
+	ENTITY_TYPE_EVIL_BULLET,
+	NUM_ENTITY_TYPES
+};
+
+//-----------------------------------------------------------------------------------------------
+//typedef std::vector<Entity*> EntityList;
+
+//-----------------------------------------------------------------------------------------------
 class Entity
 {
 public:

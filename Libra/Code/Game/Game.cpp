@@ -11,6 +11,7 @@
 #include "Game/Entity.hpp"
 #include "Game/Map.hpp"
 #include "Game/Player.hpp"
+#include "Game/Tile.hpp"
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
@@ -25,6 +26,7 @@ Game::Game()
 	LoadSounds();
 	InitializePauseVerts();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+	//TileDef::InitializeTileDefs(); // TODO
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ IntVec2 Map::GetTileCoordsForIndex(int tileCoords) const
 //------------------------------------------------------------------------------
 bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
 {
-	return m_tiles[GetTileIndexForTileCoords(tileCoords)].m_type != GRASS;
+	return m_tiles[GetTileIndexForTileCoords(tileCoords)].m_type != TILE_TYPE_GRASS;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ void Map::RenderTiles() const
 
 		AABB2 box = AABB2( minX, minY, maxX, maxY );
 		Rgba8 tileColor;
-		if ( tile.m_type == GRASS )
+		if ( tile.m_type == TILE_TYPE_GRASS )
 		{
 			tileColor = GRASS_COLOR;
 		}
@@ -219,11 +219,11 @@ void Map::BuildMapTiles()
 //------------------------------------------------------------------------------
 void Map::BarrierTileSetup()
 {
-	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(3, 4))].m_type = STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 4))].m_type = STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 3))].m_type = STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 2))].m_type = STONE;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = TILE_TYPE_STONE;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(3, 4))].m_type = TILE_TYPE_STONE;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 4))].m_type = TILE_TYPE_STONE;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 3))].m_type = TILE_TYPE_STONE;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 2))].m_type = TILE_TYPE_STONE;
 }
 
 //------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ void Map::OutEdgeStoneSetup()
 			if (isEdge)
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
-				m_tiles[tileIndex].m_type = STONE;
+				m_tiles[tileIndex].m_type = TILE_TYPE_STONE;
 			}
 		}
 	}
@@ -256,7 +256,7 @@ void Map::StoneTileSetup()
 			if (g_rng.RollRandomFloatZeroToOne() < 0.1f && (tileX > 5 || tileY > 5))
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
-				m_tiles[tileIndex].m_type = STONE;
+				m_tiles[tileIndex].m_type = TILE_TYPE_STONE;
 			}
 		}
 	}
@@ -271,7 +271,7 @@ void Map::GrassTileSetup()
 		{
 			int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 			m_tiles[tileIndex].m_tileCoords = IntVec2(tileX, tileY);
-			m_tiles[tileIndex].m_type = GRASS;
+			m_tiles[tileIndex].m_type = TILE_TYPE_GRASS;
 		}
 	}
 }
@@ -282,6 +282,42 @@ void Map::AddToEntityVector( Entity* e )
 	m_entities.reserve( static_cast< int >( m_entities.size() ) + 1 );
 	m_entities.push_back( e );
 }
+
+//-----------------------------------------------------------------------------------------------
+bool Map::HasLineOfSight( Vec2 posA, Vec2 posB ) const
+{
+	Vec2 fwdNormal = (posA - posB ).GetNormalized();
+	float maxDist = GetDistance2D( posA, posB );
+	//RaycastResult2D result = RaycastVsTiles( posA, fwdNormal, maxDist );
+	//return !result.m_didImpact;
+	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+//RaycastResult2D Map::RaycastVsTiles2( Vec2 startPos, Vec2 fwdNormal, float maxDist )
+//{
+//	constexpr float TINY_STEPS_PER_UNIT = 10.f;
+//	int numSteps = static_cast<float>(maxDist * TINY_STEPS_PER_UNIT);
+//	Vec2 tinyStepForward = fwdNormal * (maxDist / numSteps);
+//	Vec2 currentPos = startPos;
+//	for (int i = 0; i < numSteps ; ++i)
+//	{
+//		currentPos += tinyStepForward;
+//		if ( IsPointInSolid( currentPos ) )
+//		{
+//			RaycastResult2D hitResult;
+//			hitResult.m_didImpact = true;
+//			hitResult.m_impactPos = currentPos;
+//			hitResult.m_impactDist = GetDistance2D( startPos, currentPos );
+//			return hitResult;
+//		}
+//	}
+//	RaycastResult2D missResult;
+//	hitResult.m_didImpact = false;
+//	hitResult.m_impactPos = startPos + (fwdNormal * maxDist);
+//	hitResult.m_impactDist = maxDist;
+//	return hitResult;
+//}
 
 //-----------------------------------------------------------------------------------------------
 void Map::UpdateEntities( float deltaSeconds )
