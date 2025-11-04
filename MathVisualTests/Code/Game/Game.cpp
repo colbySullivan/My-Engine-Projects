@@ -10,6 +10,7 @@
 #include "Game/Entity.hpp"
 #include "Game/GameRaycastVsDiscs.hpp"
 #include "Game/GameNearestPoint.hpp"
+#include "Game/App.hpp"
 
 RandomNumberGenerator g_rng;
 
@@ -40,48 +41,6 @@ void Game::Startup()
 	m_isPaused = false;
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::Update(float deltaSeconds)
-{
-	XboxController const& controller = g_engine->m_input->GetController( 0 );
-
-	if ( m_isSlowMo ) // T pressed
-	{
-		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
-	}
-
-	UpdateCameras( deltaSeconds );
-	UpdateKeyboardInput( controller );
-
-	if ( !m_isPaused || m_pauseAfterNextUpdate )
-	{
-		m_pauseAfterNextUpdate = false;
-
-		if ( g_theGame && g_theGame != this )
-			g_theGame->Update( deltaSeconds );
-		else // First instance boot up
-		{
-			g_theGame = Game::CreateNewGameOfType( g_gameMode );
-			g_theGame->Startup();
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void Game::Render() const
-{
-	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
-
-	g_engine->m_render->ClearScreen(backgroundColor);
-
-	g_engine->m_render->BeginCamera( *m_worldCamera );
-	if ( g_theGame && g_theGame != this )
-		g_theGame->Render();
-	g_engine->m_render->EndCamera( *m_worldCamera );
-
-}
-
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
@@ -91,9 +50,9 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 // Input Handling
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateKeyboardInput( XboxController const& controller )
+void Game::UpdateKeyboardInput()
 {
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) )
 	{
 		m_isQuitting = true;
 		return;
@@ -101,7 +60,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
 
-	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
+	if (g_engine->m_input->WasKeyJustPressed('P')) // Pauses game
 	{
 		m_isPaused = !m_isPaused; // Switch pause
 	}
@@ -110,51 +69,10 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
-	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
+	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) )
 	{
 		Startup();
 	}
-
-	if (g_engine->m_input->WasKeyJustPressed('I'))
-	{
-
-	}
-
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
-	{
-		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % GAME_NUM_TYPES );
-
-		if ( g_theGame )
-		{
-			g_theGame->Shutdown();
-			delete g_theGame;
-			g_theGame = nullptr;
-		}
-
-		g_theGame = Game::CreateNewGameOfType( g_gameMode );
-		if ( g_theGame )
-		{
-			g_theGame->Startup();
-		}
-	}
-
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
-	{
-
-		if ( g_theGame )
-		{
-			g_theGame->Shutdown();
-			delete g_theGame;
-			g_theGame = nullptr;
-		}
-
-		g_theGame = Game::CreateNewGameOfType( g_gameMode );
-		if ( g_theGame )
-		{
-			g_theGame->Startup();
-		}
-	}
-
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
@@ -181,14 +99,15 @@ void Game::UpdateCameras( [[maybe_unused]] float deltaSeconds )
 	//m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 }
 
-//-----------------------------------------------------------------------------------------------
-Game* Game::CreateNewGameOfType( GameType type )
+
+void Game::RenderGameText( GameType type ) const
 {
-	Game* newGame = nullptr;
+	char powerUpText[128];
 	switch ( type )
 	{
-		case GAMEMODE_NEAREST_POINT:			newGame = new GameNearestPoint(m_app);				break;
-		case GAMEMODE_RAYCAST_VS_DISCS:         newGame = new GameRaycastVsDiscs(m_app);			break;
+		case GAMEMODE_NEAREST_POINT:			snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Nearest point (2D)");							break;
+		case GAMEMODE_RAYCAST_VS_DISCS:         snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Raycast vs Discs (2D) - NOT YET IMPLEMENTED");	break;
 	}
-	return newGame;
+	RenderText( powerUpText, Vec2( 1.f, 95.f ), 2.f, Rgba8( 255, 215, 0, 255 ) );
+	RenderText( "F8 to randomize; WASD/Arrows = move reference point, hold T = slow", Vec2( 1.f, 93.f ), 2.f, Rgba8( 100, 120, 180, 255 ) );
 }

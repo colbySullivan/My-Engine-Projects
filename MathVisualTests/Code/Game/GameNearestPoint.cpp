@@ -26,20 +26,37 @@ GameNearestPoint::~GameNearestPoint()
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::Startup()
 {
+	Game::Startup();
 	AddShapeVerts();
 }
 
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::Update( float deltaSeconds )
 {	
+	if ( m_isSlowMo ) // T pressed
+	{
+		deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+	}
 	UpdatePointPosition(deltaSeconds);
+	UpdateCameras( deltaSeconds );
+	Game::UpdateKeyboardInput();
+
+	if ( !m_isPaused || m_pauseAfterNextUpdate )
+	{
+		m_pauseAfterNextUpdate = false;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::Render() const
 {
+	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
+
+	g_engine->m_render->ClearScreen( backgroundColor );
+
+	g_engine->m_render->BeginCamera( *m_worldCamera );
+
 	RenderShapes();
-	RenderText("Press Start or P to Resume", Vec2(10.f, 10.f), 1.f, Rgba8(255, 255, 255, 255));
 	Vertex tempPointWorldVerts[DISC_VERTS];
 	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
 	{
@@ -47,6 +64,10 @@ void GameNearestPoint::Render() const
 	}
 	TransformVertexArrayXY3D(static_cast<int>(m_pointVerts.size()), tempPointWorldVerts, .25f, 0.f, m_pointPos);
 	g_engine->m_render->DrawVertexArray(DISC_VERTS, tempPointWorldVerts);
+
+	Game::RenderGameText( GAMEMODE_NEAREST_POINT );
+
+	g_engine->m_render->EndCamera( *m_worldCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -63,8 +84,8 @@ void GameNearestPoint::AddShapeVerts()
 	m_testShapes.push_back( segLine );
 
 	TestShape* infiniteLine = new TestShapeLine(
-		GetRandomPosition( 10.f, 90.f, 10.f, 50.f ),
-		GetRandomPosition( 110.f, 190.f, 50.f, 90.f ),
+		GetRandomPosition( -50.f, 50.f, -50.f, 50.f ),
+		GetRandomPosition( 150.f, 250.f, 150.f, 250.f ),
 		Vec2( 0.5f, 0.5f ),
 		Rgba8( 255, 255, 255, 255 )
 	);
@@ -172,13 +193,4 @@ void GameNearestPoint::RenderShapes() const
 Vec2 GameNearestPoint::GetRandomPosition( float minX, float maxX, float minY, float maxY )
 {
 	return Vec2( g_rng->RollRandomFloatInRange( minX, maxX ), g_rng->RollRandomFloatInRange( minY, maxY ) );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void GameNearestPoint::RenderText( const char text[], Vec2 pos, float height, Rgba8 color ) const
-{
-	std::vector<Vertex> textVerts;
-	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
-	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }

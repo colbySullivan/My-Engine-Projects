@@ -6,6 +6,8 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "App.hpp"
 
+Game* g_theGame = nullptr;
+GameType g_gameMode = GAMEMODE_NEAREST_POINT;
 
 //-----------------------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color)

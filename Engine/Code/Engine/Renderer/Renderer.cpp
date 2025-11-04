@@ -1,4 +1,3 @@
-#include "Game/GameCommon.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/Camera.hpp"

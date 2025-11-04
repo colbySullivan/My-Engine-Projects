@@ -7,6 +7,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameNearestPoint.hpp"
+#include "Game/GameRaycastVsDiscs.hpp"
 
 
 App* g_app = nullptr;
@@ -17,10 +18,15 @@ App::App()
 	config.m_windowConfig.m_clientAspect = 2.0f;
 	config.m_windowConfig.m_windowTitle = "MathVisualTests";
 	g_engine = new Engine( config );
-	//m_game = new GameNearestPoint( this );
-	m_game = new Game( this );
+
+	g_gameMode = GAMEMODE_NEAREST_POINT;
+
+	m_game = new GameNearestPoint( this );
+	g_theGame = m_game;
+
 	m_game->Startup();
 }
+
 //-----------------------------------------------------------------------------------------------
 
 App::~App()
@@ -44,17 +50,43 @@ void App::RunFrame()
 	Render();
 	g_engine->EndFrame();
 }
-//-----------------------------------------------------------------------------------------------
 
-void App::Update(float deltaSeconds)
+//-----------------------------------------------------------------------------------------------
+void App::Update( float deltaSeconds )
 {
-	m_game->Update(deltaSeconds);
-	//if (g_engine->m_input->IsKeyDown(KEYCODE_F7))
-	//{
-	//	delete m_game;
-	//	m_game = nullptr;
-	//	m_game = new GameNearestPoint(this); //TODO: Change to desired gametype
-	//}
+	// Handle mode switching in App
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
+	{
+		g_gameMode = static_cast< GameType >( ( g_gameMode + 1 ) % GAME_NUM_TYPES );
+
+		m_game->Shutdown();
+		delete m_game;
+		m_game = CreateNewGameOfType( g_gameMode );
+		m_game->Startup();
+		return;
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	{
+		m_game->Shutdown();
+		delete m_game;
+		m_game = CreateNewGameOfType( g_gameMode );
+		m_game->Startup();
+		return;
+	}
+
+	m_game->Update( deltaSeconds );
+}
+
+Game* App::CreateNewGameOfType( GameType type )
+{
+	Game* newGame = nullptr;
+	switch ( type )
+	{
+	case GAMEMODE_NEAREST_POINT:    newGame = new GameNearestPoint( this );    break;
+	case GAMEMODE_RAYCAST_VS_DISCS: newGame = new GameRaycastVsDiscs( this ); break;
+	}
+	return newGame;
 }
 //-----------------------------------------------------------------------------------------------
 

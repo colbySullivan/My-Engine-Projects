@@ -10,6 +10,7 @@ TestShapeCapsule::TestShapeCapsule( Vec2 boneStart, Vec2 boneEnd, float radius, 
 	AddVertsForMe( m_lineVerts );
 }
 
+//-----------------------------------------------------------------------------------------------
 TestShapeCapsule::~TestShapeCapsule()
 {
 

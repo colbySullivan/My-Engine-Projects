@@ -1,12 +1,13 @@
 #pragma once
 #include "Engine/Renderer/Camera.hpp"
-#include "Game.hpp"
+#include "Game/GameCommon.hpp"
 
 
 //------------------------------------------------------------------------------
 class PlayerShip;
 class App;
 class Game;
+enum GameType;
 
 //------------------------------------------------------------------------------
 extern App* g_theApp;
@@ -20,6 +21,7 @@ public:
 
 	void RunFrame();
 	void Update(float deltaSeconds);
+	Game* CreateNewGameOfType( GameType type );
 	void Render() const;
 
 	void SetIsQuitting();

@@ -1,9 +1,9 @@
 #pragma once
-#include "App.hpp"
-#include "GameCommon.hpp"
+#include "Game/GameCommon.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Engine/Renderer/Camera.hpp"
 
 class App;
 class Entity;
@@ -18,11 +18,11 @@ class Game
 
 public:
 	Game(App* m_app);
-	~Game();
+	virtual ~Game();
 
 	virtual void Startup();
-	virtual void Update( float deltaSeconds );
-	virtual void Render() const;
+	virtual void Update( float deltaSeconds ) = 0;
+	virtual void Render() const = 0;
 	void Shutdown();
 
 	// Game State
@@ -32,18 +32,14 @@ public:
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
 	Camera*				m_worldCamera = nullptr;
-	Camera*				m_screenCamera = nullptr;
+	//Camera*				m_screenCamera = nullptr;
 
 	void UpdateCameras( float deltaSeconds );
-
+	void UpdateKeyboardInput();
+	void RenderGameText( GameType g_gameMode ) const;
 private:
-	void UpdateKeyboardInput( XboxController const& controller );
-	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	
-
-	Game* CreateNewGameOfType( GameType type );
-	GameType g_gameMode;
-	Game* g_theGame;
+	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	App* m_app = nullptr;
 	std::vector<Vertex> m_lineVerts;
 };

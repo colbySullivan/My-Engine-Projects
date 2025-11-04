@@ -2,6 +2,8 @@
 #include <Engine/Math/MathUtils.hpp>
 #include <Engine/Core/Rgba8.hpp>
 
+class Game;
+
 constexpr int	NUM_STARTING_ASTEROIDS = 3;
 constexpr int	MAX_ASTEROIDS = 200;
 constexpr int	MAX_BULLETS = 10000;
@@ -80,6 +82,9 @@ enum GameType
 	GAMEMODE_RAYCAST_VS_DISCS,
 	GAME_NUM_TYPES
 };
+
+extern Game* g_theGame;
+extern GameType g_gameMode;
 
 //------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

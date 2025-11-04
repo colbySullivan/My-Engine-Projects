@@ -28,7 +28,6 @@ private:
 	void UpdatePointPosition( float deltaSeconds );
 	void RenderShapes() const;
 	Vec2 GetRandomPosition( float minX, float maxX, float minY, float maxY );
-	void RenderText( const char text[], Vec2 pos, float height, Rgba8 color ) const;
 	std::vector<Vertex> m_pointVerts;
 	std::vector<TestShape*> m_testShapes;
 	//TestShapeLine*	m_line;
