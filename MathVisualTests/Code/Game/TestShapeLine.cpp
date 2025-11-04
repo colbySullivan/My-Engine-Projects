@@ -8,6 +8,7 @@ TestShapeLine::TestShapeLine( Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color 
 	, m_color( color )
 {
 	AddVertsForMe(m_lineVerts);
+	m_closestPoint = Vec2(-100.f,-100.f);
 }
 
 //-----------------------------------------------------------------------------------------------
