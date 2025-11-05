@@ -8,6 +8,9 @@
     <Filter Include="Gameplay">
       <UniqueIdentifier>{6d31e6c2-10a2-44db-ba79-a53d24cd072e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{6074fbad-7db7-40bd-87a6-1f46c1ebb144}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -19,13 +22,7 @@
     <ClCompile Include="GameCommon.cpp">
       <Filter>Framework</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
@@ -37,11 +34,17 @@
     <ClCompile Include="TileDefinitions.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
     <ClCompile Include="Leo.cpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Scorpio.cpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -54,13 +57,7 @@
     <ClInclude Include="EngineBuildPreferences.hpp">
       <Filter>Framework</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="Game.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="Map.hpp">
@@ -72,11 +69,17 @@
     <ClInclude Include="TileDefinitions.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
     <ClInclude Include="Leo.hpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.hpp">
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Scorpio.hpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

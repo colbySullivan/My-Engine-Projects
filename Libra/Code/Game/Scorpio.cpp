@@ -7,13 +7,15 @@
 Scorpio::Scorpio( Game* owner, Vec2 const& startPos )
 	: Entity( owner, startPos )
 {
+	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
+	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
 	m_isPushedByWalls = true;
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTurretBase.png" );
 	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyCannon.png" );
-	m_position = startPos;
+	g_engine->m_render->BindTexture( nullptr );
 }
 
 //-----------------------------------------------------------------------------------------------
