@@ -56,15 +56,6 @@ void Scorpio::Render() const
 	}
 }
 
-void Scorpio::AddVertsForMe( std::vector<Vertex>& verts ) const
-{
-	Vec2 mins( -0.5f, -0.5f );
-	Vec2 maxs( 0.5f, 0.5f );
-	AABB2 localBox( mins, maxs );
-
-	AddVertsForAABB2D( verts, localBox, Rgba8( 255,255,255,255 ) );
-}
-
 //-----------------------------------------------------------------------------------------------
 void Scorpio::Shoot()
 {

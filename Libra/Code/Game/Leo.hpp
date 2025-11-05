@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/Entity.hpp"
 
-class Leo : Entity
+class Leo : public Entity
 {
 public:
 	Leo( Game* owner, Vec2 const& startPos );

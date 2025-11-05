@@ -5,6 +5,8 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Game/Scorpio.hpp"
+#include "Game/Leo.hpp"
+
 
 //------------------------------------------------------------------------------
 Map::Map( Game* game, IntVec2 dimensions )
@@ -16,6 +18,8 @@ Map::Map( Game* game, IntVec2 dimensions )
 	BuildMapTiles();
 	AddToEntityVector(new Player(m_game, Vec2(1.5f, 1.5f)));
 	AddToEntityVector(new Scorpio(m_game, Vec2(5.f, 1.5f)));
+	AddToEntityVector( new Leo( m_game, Vec2( 5.f, 5.f ) ) );
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -330,7 +334,10 @@ void Map::UpdateEntities( float deltaSeconds )
 		if ( entityAtIndex )
 		{
 			entityAtIndex->Update( deltaSeconds );
-			PushEntityOutOfWalls( *entityAtIndex, deltaSeconds );
+			if ( entityAtIndex->m_isPushedByWalls )
+			{
+				PushEntityOutOfWalls( *entityAtIndex, deltaSeconds );
+			}
 		}
 	}
 }
