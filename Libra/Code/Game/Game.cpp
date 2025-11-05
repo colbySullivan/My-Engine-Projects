@@ -11,6 +11,7 @@
 #include "Game/Entity.hpp"
 #include "Game/Map.hpp"
 #include "Game/Player.hpp"
+#include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
 
 RandomNumberGenerator g_rng;

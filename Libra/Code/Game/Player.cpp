@@ -12,7 +12,7 @@ Player::Player(Game* owner, Vec2 const& startPos)
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
-	m_playerTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
+	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
 	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
 
 	g_engine->m_render->BindTexture( nullptr );
@@ -61,7 +61,7 @@ void Player::RenderPlayer() const
 		tempShipWorldVerts[vertIndex] = m_playerVerts[vertIndex];
 	}
 	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_playerTexture );
+	g_engine->m_render->BindTexture( m_bodyTexture );
 	g_engine->m_render->DrawVertexArray(NUM_PLAYER_VERTS, tempShipWorldVerts );
 	g_engine->m_render->BindTexture( nullptr );
 

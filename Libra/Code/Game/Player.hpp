@@ -6,7 +6,6 @@
 
 //------------------------------------------------------------------------------
 class Game;
-class Texture;
 
 //------------------------------------------------------------------------------
 
@@ -42,6 +41,4 @@ private:
 	Vertex		m_turretVerts[NUM_TURRET_VERTS];
 	float		m_thrustFraction = -5.f;
 	bool		m_isMoving = false;
-	Texture*	m_playerTexture = nullptr;
-	Texture*	m_turretTexture = nullptr;
 };

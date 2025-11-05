@@ -1,12 +1,17 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Core/Vertex.hpp"
+#include <vector>
 
 
 //-----------------------------------------------------------------------------------------------
 
 class RandomNumberGenerator;
 class Game;
+class Texture;
+class Entity;
+struct AABB2;
 
 //-----------------------------------------------------------------------------------------------
 enum EntityType
@@ -21,7 +26,15 @@ enum EntityType
 };
 
 //-----------------------------------------------------------------------------------------------
-//typedef std::vector<Entity*> EntityList;
+enum EntityFaction
+{
+	FACTION_GOOD,
+	FACTION_NEUTRAL,
+	FACTION_EVIL
+};
+
+//-----------------------------------------------------------------------------------------------
+typedef std::vector<Entity*> EntityList;
 
 //-----------------------------------------------------------------------------------------------
 class Entity
@@ -40,6 +53,9 @@ public:
 	Vec2        GetForwardNormal() const;
 	void		WrapAroundScreen();
 	void		spawnRandomEdge();
+
+	void InitializeBoxes();
+	void AddVertsForMe( std::vector<Vertex>& verts ) const;
 
 	RandomNumberGenerator g_rng;
 
@@ -60,5 +76,13 @@ public:
 	bool		m_noClip = false;
 	Vec2		m_desiredMoveDirection = Vec2(0.f,0.f);
 	Vec2		m_desiredTurretDirection = Vec2(0.f,0.f);
-
+	Texture*	m_bodyTexture = nullptr;
+	Texture*	m_turretTexture = nullptr;
+	AABB2*			m_turretABB2 = nullptr;
+	AABB2*			m_bodyABB2 = nullptr;
+	EntityFaction	m_faction = FACTION_NEUTRAL;
+	bool			m_isPushedByEntities = false;
+	bool			m_doesPushEntities = false;
+	bool			m_isPushedByWalls = false;
+	bool			m_isHitByBullets = false;
 };

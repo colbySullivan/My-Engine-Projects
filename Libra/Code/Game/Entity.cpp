@@ -1,9 +1,11 @@
 #include "Entity.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Engine.hpp"
+#include "Engine/Core/VertexUtils.hpp"
 #include "Game/App.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+
 
 Entity::Entity(Game* owner, Vec2 const& startPos )
 {
@@ -125,6 +127,20 @@ void Entity::spawnRandomEdge()
 		m_position.y = -m_cosmeticRadius;
 		break;
 	}
+}
+
+void Entity::InitializeBoxes()
+{
+	m_turretABB2 = new AABB2( Vec2( 0, 0 ), Vec2( 1, 1 ) );
+	m_bodyABB2 = new AABB2( Vec2( 0, 0 ), Vec2( 1, 1 ) );
+}
+
+void Entity::AddVertsForMe( std::vector<Vertex>& verts ) const
+{
+	Vec2 mins( -0.5f, -0.5f );
+	Vec2 maxs( 0.5f, 0.5f );
+	AABB2 localBox( mins, maxs );
+	AddVertsForAABB2D( verts, localBox, Rgba8(255,255,255,0 ));
 }
 
 //-----------------------------------------------------------------------------------------------

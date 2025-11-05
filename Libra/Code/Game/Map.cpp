@@ -4,6 +4,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Game/Scorpio.hpp"
 
 //------------------------------------------------------------------------------
 Map::Map( Game* game, IntVec2 dimensions )
@@ -14,6 +15,7 @@ Map::Map( Game* game, IntVec2 dimensions )
 	m_debugCamera = false;
 	BuildMapTiles();
 	AddToEntityVector(new Player(m_game, Vec2(1.5f, 1.5f)));
+	AddToEntityVector(new Scorpio(m_game, Vec2(5.f, 1.5f)));
 }
 
 //-----------------------------------------------------------------------------------------------
