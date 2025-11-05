@@ -62,6 +62,7 @@ public:
 	void AddToEntityVector( Entity* e );
 	bool HasLineOfSight( Vec2 posA, Vec2 posB) const;
 	//RaycastResult2D	RaycastVsTiles2( Vec2 startPos, Vec2 fwdNormal, float maxDist );
+	Entity* SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees );
 
 
 private:

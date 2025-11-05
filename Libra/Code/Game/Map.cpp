@@ -6,6 +6,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Game/Scorpio.hpp"
 #include "Game/Leo.hpp"
+#include "Game/Aries.hpp"
 
 
 //------------------------------------------------------------------------------
@@ -16,10 +17,15 @@ Map::Map( Game* game, IntVec2 dimensions )
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
-	AddToEntityVector(new Player(m_game, Vec2(1.5f, 1.5f)));
-	AddToEntityVector(new Scorpio(m_game, Vec2(5.f, 1.5f)));
-	AddToEntityVector( new Leo( m_game, Vec2( 5.f, 5.f ) ) );
+	AddToEntityVector(SpawnNewEntity(ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f));
+	AddToEntityVector(SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f ));
+	AddToEntityVector(SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f ));
+	AddToEntityVector( SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f ) );
 
+
+	//AddToEntityVector( new Player( m_game, Vec2( 1.5f, 1.5f ) ) );
+	//AddToEntityVector( new Scorpio( m_game, Vec2( 5.f, 1.5f ) ) );
+	//AddToEntityVector( new Leo( m_game, Vec2( 5.f, 5.f ) ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -340,4 +346,17 @@ void Map::UpdateEntities( float deltaSeconds )
 			}
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees )
+{
+	switch ( type )
+	{
+		case ENTITY_TYPE_GOOD_PLAYER:		return new Player( m_game, position);
+		case ENTITY_TYPE_EVIL_LEO:			return new Leo( m_game, position);
+		case ENTITY_TYPE_EVIL_SCORPIO:		return new Scorpio( m_game, position);
+		case ENTITY_TYPE_EVIL_ARIES:		return new Aries( m_game, position );
+	}
+
 }

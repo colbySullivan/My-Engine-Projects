@@ -46,6 +46,9 @@
     <ClCompile Include="Scorpio.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Aries.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -79,6 +82,9 @@
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Scorpio.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Aries.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
