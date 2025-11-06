@@ -49,6 +49,9 @@
     <ClCompile Include="Aries.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -85,6 +88,9 @@
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Aries.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,8 @@
 #include "Game/Scorpio.hpp"
 #include "Game/Leo.hpp"
 #include "Game/Aries.hpp"
+#include "Game/Bullet.hpp"
+
 
 
 //------------------------------------------------------------------------------
@@ -21,6 +23,8 @@ Map::Map( Game* game, IntVec2 dimensions )
 	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f );
+	SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, Vec2( 7.f, 7.f ), 0.f );
+
 
 
 	//AddToEntityVector( new Player( m_game, Vec2( 1.5f, 1.5f ) ) );
@@ -368,6 +372,9 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 		break;
 	case ENTITY_TYPE_EVIL_ARIES:
 		newEntity = new Aries( m_game, position );
+		break;
+	case ENTITY_TYPE_GOOD_BULLET:
+		newEntity = new Bullet( m_game, position );
 		break;
 	default:
 		return nullptr;
