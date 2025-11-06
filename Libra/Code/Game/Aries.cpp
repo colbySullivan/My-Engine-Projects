@@ -4,8 +4,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees )
-	: Entity( owner, startPos, orientationDegrees )
+Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
+	: Entity( owner, startPos, orientationDegrees, faction )
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;

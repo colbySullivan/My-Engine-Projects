@@ -4,8 +4,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Scorpio::Scorpio( Game* owner, Vec2 const& startPos, float orientationDegrees )
-	: Entity( owner, startPos, orientationDegrees )
+Scorpio::Scorpio( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
+	: Entity( owner, startPos, orientationDegrees, faction )
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;

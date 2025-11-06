@@ -4,7 +4,7 @@
 class Bullet : public Entity
 {
 public:
-	Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees );
+	Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction );
 	~Bullet();
 
 public:

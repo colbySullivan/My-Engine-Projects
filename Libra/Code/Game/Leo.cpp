@@ -4,8 +4,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees )
-	: Entity( owner, startPos, orientationDegrees )
+Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
+	: Entity( owner, startPos, orientationDegrees, faction )
 {
 	m_physicsRadius = 0.4f;
 	m_cosmeticRadius = 0.5f;
@@ -30,7 +30,7 @@ Leo::~Leo()
 void Leo::Update( float deltaSeconds )
 {
 	Entity::Update(deltaSeconds);
-	Entity::TryShoot(m_orientationDegrees, deltaSeconds);
+	Entity::TryShoot(m_orientationDegrees, deltaSeconds, m_faction);
 	//Entity* player = m_map->m_entitiesTypeType[ENTITY_TYPE_GOOD_PLAYER][0];
 
 	//if ( m_map->IsAllive( player ) )

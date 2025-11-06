@@ -5,8 +5,8 @@
 #include "Engine/Renderer/Renderer.hpp"  
 
 //------------------------------------------------------------------------------
-Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees)
-	: Entity(owner, startPos, orientationDegrees)
+Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
+	: Entity(owner, startPos, orientationDegrees, faction)
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
@@ -44,7 +44,7 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 	}
 	if ( g_engine->m_input->IsKeyDown( ' ' ) || g_engine->m_input->GetController( 0 ).GetRightTrigger() > 0.5f )
 	{
-		TryShoot( m_turretOrientationDegrees, deltaSeconds );
+		TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
 	}
 	m_position += m_velocity * deltaSeconds;
 }

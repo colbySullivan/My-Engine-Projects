@@ -8,12 +8,13 @@
 #include "Game/Map.hpp"
 
 
-Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees )
+Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
 {
 	m_game = owner;
 	m_position = startPos;
 	m_startingHealth = m_health;
 	m_orientationDegrees = orientationDegrees;
+	m_faction = faction;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -173,7 +174,7 @@ void Entity::Wander( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Entity::TryShoot( float fireOrientation, float deltaSeconds )
+void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction faction )
 {
 	m_timeSinceLastShot -= deltaSeconds;
 
@@ -187,7 +188,8 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds )
 		m_game->m_currentMap->SpawnNewEntity(
 			ENTITY_TYPE_GOOD_BULLET,
 			bulletSpawnPos,
-			fireOrientation
+			fireOrientation,
+			faction
 		);
 		m_timeSinceLastShot = SHOOT_COOLDOWN_TIME;
 	}

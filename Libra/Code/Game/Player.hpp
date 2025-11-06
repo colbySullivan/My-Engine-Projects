@@ -12,7 +12,7 @@ class Game;
 class Player : public Entity
 {
 public:
-	Player(Game* owner, Vec2 const& startPos, float orientationDegrees);
+	Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction);
 	~Player();
 
 	virtual void Update(float deltaSeconds) override;
