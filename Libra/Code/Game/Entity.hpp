@@ -49,7 +49,7 @@ public:
 	virtual void Die();
 	virtual bool IsPlayer() const;
 	virtual EntityType GetEntityType() const;
-	virtual void TryShoot( float deltaSeconds );
+	virtual void TryShoot( float fireOrientation, float deltaSeconds );
 
 	void		Wander( float deltaSeconds );
 	bool        IsOffscreen() const;

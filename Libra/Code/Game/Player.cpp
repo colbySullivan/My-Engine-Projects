@@ -42,8 +42,10 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 	{
 		m_velocity = Vec2( 0.f, 0.f );
 	}
-
-	TryShoot( deltaSeconds );
+	if ( g_engine->m_input->IsKeyDown( ' ' ) || g_engine->m_input->GetController( 0 ).GetRightTrigger() > 0.5f )
+	{
+		TryShoot( m_turretOrientationDegrees, deltaSeconds );
+	}
 	m_position += m_velocity * deltaSeconds;
 }
 

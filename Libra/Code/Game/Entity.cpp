@@ -173,23 +173,21 @@ void Entity::Wander( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Entity::TryShoot( float deltaSeconds )
+void Entity::TryShoot( float fireOrientation, float deltaSeconds )
 {
 	m_timeSinceLastShot -= deltaSeconds;
-	bool wantsToShoot = g_engine->m_input->IsKeyDown( ' ' ) ||
-		g_engine->m_input->GetController( 0 ).GetRightTrigger() > 0.5f;
 
-	if ( wantsToShoot && m_timeSinceLastShot < 0 )
+	if ( m_timeSinceLastShot < 0 )
 	{
 		// Calculate bullet spawn position at turret tip
 		float bulletSpawnDist = m_cosmeticRadius; // Or slightly beyond
-		Vec2 turretForward = Vec2::MakeFromPolarDegrees( m_turretOrientationDegrees );
+		Vec2 turretForward = Vec2::MakeFromPolarDegrees( fireOrientation );
 		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
 
 		m_game->m_currentMap->SpawnNewEntity(
 			ENTITY_TYPE_GOOD_BULLET,
 			bulletSpawnPos,
-			m_turretOrientationDegrees
+			fireOrientation
 		);
 		m_timeSinceLastShot = SHOOT_COOLDOWN_TIME;
 	}

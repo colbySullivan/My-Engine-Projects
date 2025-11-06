@@ -30,7 +30,7 @@ Leo::~Leo()
 void Leo::Update( float deltaSeconds )
 {
 	Entity::Update(deltaSeconds);
-
+	Entity::TryShoot(m_orientationDegrees, deltaSeconds);
 	//Entity* player = m_map->m_entitiesTypeType[ENTITY_TYPE_GOOD_PLAYER][0];
 
 	//if ( m_map->IsAllive( player ) )
@@ -79,12 +79,6 @@ void Leo::Render() const
 		DebugRender();
 	}
 }
-
-void Leo::Shoot()
-{
-
-}
-
 //-----------------------------------------------------------------------------------------------
 void Leo::DriveForward( float deltaSeconds )
 {

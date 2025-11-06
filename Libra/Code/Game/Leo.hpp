@@ -11,7 +11,6 @@ public:
 	virtual void Update( float deltaSeconds ) override;
 	virtual void Render() const override;
 
-	void Shoot();
 	void DriveForward( float deltaSeconds );
 	void Wander( float deltaSeconds );
 
