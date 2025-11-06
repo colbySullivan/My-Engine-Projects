@@ -13,6 +13,7 @@ public:
 
 	void Shoot();
 	void DriveForward( float deltaSeconds );
+	void Wander( float deltaSeconds );
 
 private:
 

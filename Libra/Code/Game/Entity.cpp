@@ -144,7 +144,28 @@ void Entity::AddVertsForMe( std::vector<Vertex>& verts ) const
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Entity::IsPlayer()
+bool Entity::IsPlayer() const
 {
 	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+EntityType Entity::GetEntityType() const
+{
+	return m_entityType;  // TODO make neutral
+}
+
+//-----------------------------------------------------------------------------------------------
+void Entity::Wander( float deltaSeconds )
+{
+	m_wanderTimer -= deltaSeconds;
+
+	if ( m_wanderTimer <= 0.f )
+	{
+		m_orientationDegrees = g_rng.RollRandomFloatInRange( 0.f, 360.f );
+		m_velocity = Vec2::MakeFromPolarDegrees( m_orientationDegrees, 0.5f );
+		m_wanderTimer = 2.0f;
+	}
+
+	m_position += m_velocity * deltaSeconds;
 }

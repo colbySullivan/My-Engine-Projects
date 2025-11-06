@@ -28,11 +28,7 @@ void Aries::Update( float deltaSeconds )
 {
 	Entity::Update( deltaSeconds );
 
-	m_velocity = Vec2( 1.f, 0.f );
-
-	m_turretOrientationDegrees += deltaSeconds * 45.f;
-
-	m_position += m_velocity * deltaSeconds;
+	Entity::Wander( deltaSeconds );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -58,11 +54,11 @@ void Aries::Render() const
 //-----------------------------------------------------------------------------------------------
 void Aries::Shoot()
 {
-
+	
 }
 
 //-----------------------------------------------------------------------------------------------
 void Aries::DriveForward( float deltaSeconds )
 {
-
+	
 }

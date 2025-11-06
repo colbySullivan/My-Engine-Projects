@@ -8,18 +8,6 @@
 #include <vector>
 
 class Entity;
-//------------------------------------------------------------------------------
-//enum TileType {
-//	GRASS,
-//	STONE
-//};
-//
-////------------------------------------------------------------------------------
-//class Tile {
-//public:
-//	IntVec2 m_tileCoords;
-//	TileType m_type = GRASS;
-//};
 
 //------------------------------------------------------------------------------
 class Map
@@ -27,7 +15,7 @@ class Map
 	RandomNumberGenerator g_rng;
 
 	std::vector< Tile > m_tiles; // Note: this is NOT a 2D array!
-	std::vector< Entity* > m_entities;
+	//std::vector< Entity* > m_entities;
 	IntVec2 m_dimensions; // # of tiles wide (x) and high (y)
 	int m_numTilesInViewVertically;
 	bool m_debugCamera;
@@ -63,6 +51,10 @@ public:
 	bool HasLineOfSight( Vec2 posA, Vec2 posB) const;
 	//RaycastResult2D	RaycastVsTiles2( Vec2 startPos, Vec2 fwdNormal, float maxDist );
 	Entity* SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees );
+	void AddEntityToMap( Entity& e );
+	void RemoveEntityFromMap( Entity& e );
+	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
+	EntityList m_allEntities;
 
 
 private:

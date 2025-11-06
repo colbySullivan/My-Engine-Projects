@@ -10,6 +10,10 @@ Player::Player(Game* owner, Vec2 const& startPos)
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
+	m_isPushedByWalls = true;
+	m_isPushedByEntities = true;
+	m_doesPushEntities = true;
+	m_isHitByBullets = true;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
@@ -206,7 +210,7 @@ bool Player::TurretControlKeyboard()
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Player::IsPlayer()
+bool Player::IsPlayer() const
 {
 	return true;
 }

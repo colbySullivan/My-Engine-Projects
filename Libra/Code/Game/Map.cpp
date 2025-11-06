@@ -17,10 +17,10 @@ Map::Map( Game* game, IntVec2 dimensions )
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
-	AddToEntityVector(SpawnNewEntity(ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f));
-	AddToEntityVector(SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f ));
-	AddToEntityVector(SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f ));
-	AddToEntityVector( SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f ) );
+	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f );
 
 
 	//AddToEntityVector( new Player( m_game, Vec2( 1.5f, 1.5f ) ) );
@@ -125,11 +125,11 @@ void Map::Render() const
 void Map::UpdateCameras()
 {
 	Player* player = nullptr;
-	for ( int i = 0; i < m_entities.size(); i++ )
+	for ( int i = 0; i < static_cast< int >( m_allEntities.size() ); i++ )
 	{
-		if ( m_entities[i] && m_entities[i]->IsPlayer() )
+		if ( m_allEntities[i] && m_allEntities[i]->IsPlayer() )
 		{
-			player = ( Player* )m_entities[i];
+			player = ( Player* )m_allEntities[i];
 			break;
 		}
 	}
@@ -200,14 +200,15 @@ void Map::RenderTiles() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map:: RenderEntities() const
+void Map::RenderEntities() const
 {
-	for ( int entityIndex = 0; entityIndex < m_entities.size(); entityIndex++ )
+	for ( int i = 0; i < static_cast< int >( m_allEntities.size() ); i++ )
 	{
-		if ( m_entities[entityIndex] )
-		{
-			m_entities[entityIndex]->Render();
-		}
+		Entity* entity = m_allEntities[i];
+		if ( entity == nullptr )
+			continue;
+
+		entity->Render();
 	}
 }
 
@@ -291,8 +292,8 @@ void Map::GrassTileSetup()
 //-----------------------------------------------------------------------------------------------
 void Map::AddToEntityVector( Entity* e )
 {
-	m_entities.reserve( static_cast< int >( m_entities.size() ) + 1 );
-	m_entities.push_back( e );
+	/*m_entities.reserve( static_cast< int >( m_entities.size() ) + 1 );
+	m_entities.push_back( e );*/
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -334,16 +335,17 @@ bool Map::HasLineOfSight( Vec2 posA, Vec2 posB ) const
 //-----------------------------------------------------------------------------------------------
 void Map::UpdateEntities( float deltaSeconds )
 {
-	for (int entityIndex = 0; entityIndex < m_entities.size() ; entityIndex++)
+	for ( int i = 0; i < static_cast< int >( m_allEntities.size() ); i++ )
 	{
-		Entity* entityAtIndex = m_entities[entityIndex];
-		if ( entityAtIndex )
+		Entity* entity = m_allEntities[i];
+		if ( entity == nullptr )
+			continue;
+
+		entity->Update( deltaSeconds );
+
+		if ( entity->m_isPushedByWalls )
 		{
-			entityAtIndex->Update( deltaSeconds );
-			if ( entityAtIndex->m_isPushedByWalls )
-			{
-				PushEntityOutOfWalls( *entityAtIndex, deltaSeconds );
-			}
+			PushEntityOutOfWalls( *entity, deltaSeconds );
 		}
 	}
 }
@@ -351,12 +353,48 @@ void Map::UpdateEntities( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees )
 {
+	Entity* newEntity = nullptr;
+
 	switch ( type )
 	{
-		case ENTITY_TYPE_GOOD_PLAYER:		return new Player( m_game, position);
-		case ENTITY_TYPE_EVIL_LEO:			return new Leo( m_game, position);
-		case ENTITY_TYPE_EVIL_SCORPIO:		return new Scorpio( m_game, position);
-		case ENTITY_TYPE_EVIL_ARIES:		return new Aries( m_game, position );
+	case ENTITY_TYPE_GOOD_PLAYER:
+		newEntity = new Player( m_game, position );
+		break;
+	case ENTITY_TYPE_EVIL_LEO:
+		newEntity = new Leo( m_game, position );
+		break;
+	case ENTITY_TYPE_EVIL_SCORPIO:
+		newEntity = new Scorpio( m_game, position );
+		break;
+	case ENTITY_TYPE_EVIL_ARIES:
+		newEntity = new Aries( m_game, position );
+		break;
+	default:
+		return nullptr;
 	}
 
+	if ( newEntity )
+	{
+		AddEntityToMap( *newEntity );
+	}
+
+	return newEntity;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::AddEntityToMap( Entity& e )
+{
+	EntityType type = e.GetEntityType();
+	m_entityListsByType[type].push_back( &e );
+	m_allEntities.push_back( &e );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::RemoveEntityFromMap( Entity& e )
+{
+	EntityType type = e.GetEntityType();
+	EntityList& listByType = m_entityListsByType[type];
+	listByType.erase( std::remove( listByType.begin(), listByType.end(), &e ), listByType.end() );
+	m_allEntities.erase( std::remove( m_allEntities.begin(), m_allEntities.end(), &e ), m_allEntities.end() );
 }

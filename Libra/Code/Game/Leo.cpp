@@ -13,6 +13,7 @@ Leo::Leo( Game* owner, Vec2 const& startPos )
 	m_isPushedByEntities = true;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
+	m_wanderTimer = 2.0f;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTank4.png" );
 	g_engine->m_render->BindTexture( nullptr );
 }
@@ -28,8 +29,6 @@ Leo::~Leo()
 void Leo::Update( float deltaSeconds )
 {
 	Entity::Update(deltaSeconds);
-
-	m_velocity = Vec2(1.f,0.f);
 
 	//Entity* player = m_map->m_entitiesTypeType[ENTITY_TYPE_GOOD_PLAYER][0];
 
@@ -58,7 +57,7 @@ void Leo::Update( float deltaSeconds )
 	//{
 	//	Wander
 	//}
-	m_position += m_velocity * deltaSeconds;
+	Entity::Wander( deltaSeconds );
 }
 
 void Leo::Render() const
@@ -85,8 +84,10 @@ void Leo::Shoot()
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void Leo::DriveForward( float deltaSeconds )
 {
 
 }
+
 
