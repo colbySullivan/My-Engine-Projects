@@ -40,7 +40,7 @@ typedef std::vector<Entity*> EntityList;
 class Entity
 {
 public:
-	Entity(Game* owner, Vec2 const& startPos);
+	Entity(Game* owner, Vec2 const& startPos, float orientationDegrees);
 	virtual ~Entity();
 
 	virtual void Update(float deltaSeconds) = 0;
@@ -49,7 +49,7 @@ public:
 	virtual void Die();
 	virtual bool IsPlayer() const;
 	virtual EntityType GetEntityType() const;
-
+	virtual void TryShoot( float deltaSeconds );
 
 	void		Wander( float deltaSeconds );
 	bool        IsOffscreen() const;
@@ -92,4 +92,6 @@ public:
 	float			m_wanderDuration = 2.f;
 	EntityType		m_entityType = NUM_ENTITY_TYPES;
 
+private:
+	float			m_timeSinceLastShot;
 };

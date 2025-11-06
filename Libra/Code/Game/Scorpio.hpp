@@ -5,7 +5,7 @@
 class Scorpio : public Entity
 {
 public:
-	Scorpio( Game* owner, Vec2 const& startPos );
+	Scorpio( Game* owner, Vec2 const& startPos, float orientationDegrees );
 	~Scorpio();
 
 public:

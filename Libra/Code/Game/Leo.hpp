@@ -4,7 +4,7 @@
 class Leo : public Entity
 {
 public:
-	Leo( Game* owner, Vec2 const& startPos );
+	Leo( Game* owner, Vec2 const& startPos, float orientationDegrees );
 	~Leo();
 
 public:

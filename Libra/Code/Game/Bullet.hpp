@@ -4,7 +4,7 @@
 class Bullet : public Entity
 {
 public:
-	Bullet( Game* owner, Vec2 const& startPos );
+	Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees );
 	~Bullet();
 
 public:
@@ -18,5 +18,7 @@ public:
 	void Wander( float deltaSeconds );
 
 private:
-
+	float			m_bulletLifeTime;
+	int				m_bouncesRemaining = 2;
+	void CheckEntityCollisions();
 };

@@ -362,19 +362,19 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 	switch ( type )
 	{
 	case ENTITY_TYPE_GOOD_PLAYER:
-		newEntity = new Player( m_game, position );
+		newEntity = new Player( m_game, position, orientationDegrees );
 		break;
 	case ENTITY_TYPE_EVIL_LEO:
-		newEntity = new Leo( m_game, position );
+		newEntity = new Leo( m_game, position, orientationDegrees );
 		break;
 	case ENTITY_TYPE_EVIL_SCORPIO:
-		newEntity = new Scorpio( m_game, position );
+		newEntity = new Scorpio( m_game, position, orientationDegrees );
 		break;
 	case ENTITY_TYPE_EVIL_ARIES:
-		newEntity = new Aries( m_game, position );
+		newEntity = new Aries( m_game, position, orientationDegrees );
 		break;
 	case ENTITY_TYPE_GOOD_BULLET:
-		newEntity = new Bullet( m_game, position );
+		newEntity = new Bullet( m_game, position, orientationDegrees );
 		break;
 	default:
 		return nullptr;

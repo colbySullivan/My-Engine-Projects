@@ -5,8 +5,8 @@
 #include "Engine/Renderer/Renderer.hpp"  
 
 //------------------------------------------------------------------------------
-Player::Player(Game* owner, Vec2 const& startPos)
-	: Entity(owner, startPos)
+Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees)
+	: Entity(owner, startPos, orientationDegrees)
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
@@ -16,6 +16,7 @@ Player::Player(Game* owner, Vec2 const& startPos)
 	m_isHitByBullets = true;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
+	m_faction = FACTION_GOOD;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
 	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
 
@@ -42,6 +43,7 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 		m_velocity = Vec2( 0.f, 0.f );
 	}
 
+	TryShoot( deltaSeconds );
 	m_position += m_velocity * deltaSeconds;
 }
 

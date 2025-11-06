@@ -5,7 +5,7 @@
 class Aries : public Entity
 {
 public:
-	Aries( Game* owner, Vec2 const& startPos );
+	Aries( Game* owner, Vec2 const& startPos, float orientationDegrees );
 	~Aries();
 
 public:

@@ -21,10 +21,8 @@ constexpr float SCREEN_CENTER_X = SCREEN_SIZE_X / 2.f;
 constexpr float SCREEN_CENTER_Y = SCREEN_SIZE_Y / 2.f;
 
 constexpr float BULLET_LIFETIME_SECONDS = 2.0f;
-constexpr float BULLET_SPEED = 50.f;
-constexpr float BULLET_PHYSICS_RADIUS = 1.5f;
-constexpr float BULLET_COSMETIC_RADIUS = 3.0f;
-constexpr float BULLET_BASE_COOLDOWN = 0.1f;
+constexpr float BULLET_PHYSICS_RADIUS = 0.1f;
+constexpr float BULLET_COSMETIC_RADIUS = 0.15f;
 
 constexpr int NUM_BLACK_HOLE_VERTS = 192;
 constexpr int NUM_BLACK_HOLE_TRIS = 64;
@@ -52,6 +50,8 @@ const IntVec2 STEP_NW = IntVec2( -1, 1 );
 const IntVec2 STEP_SE = IntVec2( 1, -1 );  
 const IntVec2 STEP_SW = IntVec2( -1, -1 ); 
 
+constexpr float SHOOT_COOLDOWN_TIME = 1.0f;
+constexpr float BULLET_SPEED = 8.0f;
 
 //------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);

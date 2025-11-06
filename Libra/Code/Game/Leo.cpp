@@ -4,8 +4,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Leo::Leo( Game* owner, Vec2 const& startPos )
-	: Entity( owner, startPos )
+Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees )
+	: Entity( owner, startPos, orientationDegrees )
 {
 	m_physicsRadius = 0.4f;
 	m_cosmeticRadius = 0.5f;
@@ -14,6 +14,7 @@ Leo::Leo( Game* owner, Vec2 const& startPos )
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
 	m_wanderTimer = 2.0f;
+	m_faction = FACTION_EVIL;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTank4.png" );
 	g_engine->m_render->BindTexture( nullptr );
 }

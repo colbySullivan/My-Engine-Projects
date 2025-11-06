@@ -5,13 +5,15 @@
 #include "Game/App.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
+#include "Game/Map.hpp"
 
 
-Entity::Entity(Game* owner, Vec2 const& startPos )
+Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees )
 {
 	m_game = owner;
 	m_position = startPos;
 	m_startingHealth = m_health;
+	m_orientationDegrees = orientationDegrees;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -168,4 +170,27 @@ void Entity::Wander( float deltaSeconds )
 	}
 
 	m_position += m_velocity * deltaSeconds;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Entity::TryShoot( float deltaSeconds )
+{
+	m_timeSinceLastShot -= deltaSeconds;
+	bool wantsToShoot = g_engine->m_input->IsKeyDown( ' ' ) ||
+		g_engine->m_input->GetController( 0 ).GetRightTrigger() > 0.5f;
+
+	if ( wantsToShoot && m_timeSinceLastShot < 0 )
+	{
+		// Calculate bullet spawn position at turret tip
+		float bulletSpawnDist = m_cosmeticRadius; // Or slightly beyond
+		Vec2 turretForward = Vec2::MakeFromPolarDegrees( m_turretOrientationDegrees );
+		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
+
+		m_game->m_currentMap->SpawnNewEntity(
+			ENTITY_TYPE_GOOD_BULLET,
+			bulletSpawnPos,
+			m_turretOrientationDegrees
+		);
+		m_timeSinceLastShot = SHOOT_COOLDOWN_TIME;
+	}
 }

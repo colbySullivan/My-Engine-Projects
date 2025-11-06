@@ -4,8 +4,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Aries::Aries( Game* owner, Vec2 const& startPos )
-	: Entity( owner, startPos )
+Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees )
+	: Entity( owner, startPos, orientationDegrees )
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
@@ -13,6 +13,7 @@ Aries::Aries( Game* owner, Vec2 const& startPos )
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
+	m_faction = FACTION_EVIL;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyAries.png" );
 	g_engine->m_render->BindTexture( nullptr );
 }

@@ -34,5 +34,5 @@ bool Tile::IsSolid() const
 {
 	//TileDef const& myDef = TileDef::s_tileDefs[m_tileType];
 	//return myDef.m_isSolid;
-	return true; // TODO
+	return false; // TODO
 }

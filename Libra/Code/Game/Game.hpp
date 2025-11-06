@@ -37,11 +37,11 @@ enum SoundPriority
 //-----------------------------------------------------------------------------------------------
 class Game
 {
-	Map* m_currentMap = nullptr;
-
 public:
 	Game();
 	~Game();
+
+	Map* m_currentMap = nullptr;
 
 	void Startup();
 	void Update( float deltaSeconds );
