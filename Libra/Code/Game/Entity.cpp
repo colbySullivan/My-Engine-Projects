@@ -194,3 +194,15 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 		m_timeSinceLastShot = SHOOT_COOLDOWN_TIME;
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
+void Entity::TakeDamage()
+{
+	if ( m_health <= 0 )
+	{
+		m_isDead = true;
+		return;
+	}
+	m_health -= 1;
+}
+

@@ -27,6 +27,7 @@ public:
 	int GetTileIndexForTileCoords(IntVec2 tileCoords) const;
 	IntVec2 GetTileCoordsForIndex(int tileCoords) const;
 	bool IsTileSolidAtTileCoords(IntVec2 tileCoords) const;
+	void PushEntityOutOfEachOther() const;
 	void PushEntityOutOfTileIfSolid( Entity& e, IntVec2 const& tileCoords );
 	void PushEntityOutOfWalls( Entity& e, float deltaSeconds );
 	AABB2 GetTileBounds( IntVec2 const& tileCoords ) const;
