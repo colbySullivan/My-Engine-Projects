@@ -21,7 +21,10 @@ Map::Map( Game* game, IntVec2 dimensions )
 	BuildMapTiles();
 	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f, FACTION_EVIL );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f, FACTION_EVIL );
+	for (int Index = 0; Index < 3 ; ++Index)
+	{
+		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f, FACTION_EVIL );
+	}
 	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
 	//SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, Vec2( 7.f, 7.f ), 0.f, FACTION_EVIL );
 
@@ -83,8 +86,14 @@ void Map::PushEntityOutOfEachOther() const
 				Entity* otherEntity = m_allEntities[otherEntityIndex];
 				if ( otherEntity )
 				{
+					bool sameFaction = ( firstEntity->m_faction == otherEntity->m_faction );
+					bool eitherIsBullet = ( firstEntity->m_entityType == ENTITY_TYPE_GOOD_BULLET ) || ( otherEntity->m_entityType == ENTITY_TYPE_GOOD_BULLET );
+					if ( sameFaction && eitherIsBullet )
+						continue;
+
 					bool isBPushed = firstEntity->m_doesPushEntities && otherEntity->m_isPushedByEntities;
 					bool isAPushed = otherEntity->m_doesPushEntities && firstEntity->m_isPushedByEntities;
+
 					if ( isBPushed && !isAPushed )
 					{
 						PushDiscOutOfFixedDisc2D( otherEntity->m_position, otherEntity->m_physicsRadius, firstEntity->m_position, firstEntity->m_physicsRadius );

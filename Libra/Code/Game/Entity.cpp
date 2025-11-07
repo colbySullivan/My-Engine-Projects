@@ -162,15 +162,17 @@ EntityType Entity::GetEntityType() const
 void Entity::Wander( float deltaSeconds )
 {
 	m_wanderTimer -= deltaSeconds;
-
 	if ( m_wanderTimer <= 0.f )
 	{
-		m_orientationDegrees = g_rng.RollRandomFloatInRange( 0.f, 360.f );
-		m_velocity = Vec2::MakeFromPolarDegrees( m_orientationDegrees, 0.5f );
-		m_wanderTimer = 2.0f;
+		m_goalOrientationDegrees = g_rng.RollRandomFloatInRange( 0.f, 360.f );
+		m_wanderTimer = g_rng.RollRandomFloatInRange( 1.0f, 3.0f );
 	}
-
-	m_position += m_velocity * deltaSeconds;
+	float turnSpeed = 180.f;
+	float maxTurnThisFrame = turnSpeed * deltaSeconds;
+	m_orientationDegrees = GetTurnedTowardDegrees(m_orientationDegrees, m_goalOrientationDegrees, maxTurnThisFrame);
+	Vec2 forwardDir = GetForwardNormal();
+	m_velocity = forwardDir;
+	m_position += m_velocity * deltaSeconds * 0.5;
 }
 
 //-----------------------------------------------------------------------------------------------

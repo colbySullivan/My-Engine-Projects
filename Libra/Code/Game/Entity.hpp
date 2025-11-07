@@ -92,6 +92,7 @@ public:
 	float			m_wanderTimer = 0.f;
 	float			m_wanderDuration = 2.f;
 	EntityType		m_entityType = NUM_ENTITY_TYPES;
+	float			m_goalOrientationDegrees;
 
 private:
 	float			m_timeSinceLastShot;
