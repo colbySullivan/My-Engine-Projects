@@ -20,10 +20,10 @@ Map::Map( Game* game, IntVec2 dimensions )
 	m_debugCamera = false;
 	BuildMapTiles();
 	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f, FACTION_EVIL );
-	for (int Index = 0; Index < 3 ; ++Index)
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL);
+	for (int Index = 0; Index < 10 ; ++Index)
 	{
-		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
 	}
 	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
 	//SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, Vec2( 7.f, 7.f ), 0.f, FACTION_EVIL );
@@ -398,6 +398,17 @@ void Map::UpdateEntities( float deltaSeconds )
 			PushEntityOutOfWalls( *entity, deltaSeconds );
 		}
 	}
+}
+
+Vec2 Map::GetRandomValidPointInMap()
+{
+	IntVec2 newTileCoords = IntVec2(0,0);
+	while ( IsTileSolidAtTileCoords( newTileCoords ) )
+	{
+		newTileCoords = IntVec2( g_rng.RollRandomIntInRange( 5, m_dimensions.x ), g_rng.RollRandomIntInRange( 5, m_dimensions.y ) );
+	}
+	return (Vec2( static_cast<float>(newTileCoords.x), static_cast<float>(newTileCoords.y)));
+		
 }
 
 //-----------------------------------------------------------------------------------------------

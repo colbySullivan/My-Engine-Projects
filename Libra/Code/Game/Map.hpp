@@ -63,4 +63,5 @@ public:
 private:
 	Game* m_game = nullptr;
 	void UpdateEntities( float deltaSeconds );
+	Vec2 GetRandomValidPointInMap();
 };

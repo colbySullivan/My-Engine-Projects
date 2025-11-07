@@ -165,7 +165,7 @@ void Entity::Wander( float deltaSeconds )
 	if ( m_wanderTimer <= 0.f )
 	{
 		m_goalOrientationDegrees = g_rng.RollRandomFloatInRange( 0.f, 360.f );
-		m_wanderTimer = g_rng.RollRandomFloatInRange( 1.0f, 3.0f );
+		m_wanderTimer = m_wanderDuration;
 	}
 	float turnSpeed = 180.f;
 	float maxTurnThisFrame = turnSpeed * deltaSeconds;
