@@ -1,13 +1,13 @@
 #include "Game/Tile.hpp"
 #include "Game/TileDefinitions.hpp"
 
-//TileDef TileDef::s_tileDefs[NUM_TILE_TYPE];
+TileDef TileDef::s_tileDefs[NUM_TILE_TYPE];
 
 //-----------------------------------------------------------------------------------------------
 void TileDef::InitializeTileDefs()
 {
-	//s_tileDefs[TILE_TYPE_GRASS].m_isSolid = false;
-	//s_tileDefs[TILE_TYPE_STONE].m_isSolid = true;
+	s_tileDefs[TILE_TYPE_GRASS].m_isSolid = false;
+	s_tileDefs[TILE_TYPE_STONE].m_isSolid = true;
 
 	//s_tileDefs[TILE_TYPE_STONE].m_UVs = g_terrainSpriteSheet.GetUVsForSpriteCoords( 2, 1 );
 
@@ -32,7 +32,6 @@ Tile::~Tile()
 
 bool Tile::IsSolid() const
 {
-	//TileDef const& myDef = TileDef::s_tileDefs[m_tileType];
-	//return myDef.m_isSolid;
-	return false; // TODO
+	TileDef const& myDef = TileDef::s_tileDefs[m_type];
+	return myDef.m_isSolid;
 }

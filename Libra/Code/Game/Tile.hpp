@@ -9,16 +9,15 @@ struct TileDefinitions;
 
 class TileDef
 {
-	bool	m_isSolid = false;
 
 public:
 	static			void InitializeTileDefs();
 	AABB2			m_UVs = AABB2(Vec2(0.f,0.f), Vec2(1.f,1.f));
 	Rgba8			m_tint = Rgba8( 255, 255, 255, 255 );
 
-private:
-	//static const	TileDef s_tileDefs[NUM_TILE_TYPE];
+	static	TileDef s_tileDefs[NUM_TILE_TYPE];
 
+	bool	m_isSolid = false;
 };
 
 class Tile

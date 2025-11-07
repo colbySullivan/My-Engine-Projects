@@ -71,7 +71,7 @@ bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
 	{
 		return true;
 	}
-	return m_tiles[GetTileIndexForTileCoords(tileCoords)].m_type != TILE_TYPE_GRASS;
+	return m_tiles[GetTileIndexForTileCoords(tileCoords)].IsSolid();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -267,6 +267,7 @@ void Map::RenderEntities() const
 //-----------------------------------------------------------------------------------------------
 void Map::BuildMapTiles()
 {
+	TileDef::InitializeTileDefs();
 	int totalTiles = m_dimensions.x * m_dimensions.y;
 	m_tiles.resize(totalTiles);
 
@@ -275,9 +276,6 @@ void Map::BuildMapTiles()
 	OutEdgeStoneSetup();
 	BarrierTileSetup();
 }
-
-
-
 
 //------------------------------------------------------------------------------
 // Tile Setups
