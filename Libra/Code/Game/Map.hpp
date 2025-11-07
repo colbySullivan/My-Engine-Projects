@@ -54,6 +54,8 @@ public:
 	Entity* SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees, EntityFaction faction );
 	void AddEntityToMap( Entity& e );
 	void RemoveEntityFromMap( Entity& e );
+	void DestroyGarbageEntities();
+
 	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
 	EntityList m_allEntities;
 

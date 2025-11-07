@@ -21,4 +21,5 @@ private:
 	float			m_bulletLifeTime;
 	int				m_bouncesRemaining = 2;
 	void CheckEntityCollisions();
+	void SpawnAndShoot( float deltaSeconds );
 };

@@ -13,7 +13,6 @@ Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, Entit
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
-	m_faction = FACTION_EVIL;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyAries.png" );
 	g_engine->m_render->BindTexture( nullptr );
 }
