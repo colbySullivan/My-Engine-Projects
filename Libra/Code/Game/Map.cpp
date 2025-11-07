@@ -19,11 +19,11 @@ Map::Map( Game* game, IntVec2 dimensions )
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
-	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f );
-	SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, Vec2( 7.f, 7.f ), 0.f );
+	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, Vec2( 5.f, 1.5f ), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.f, 5.f ), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
+	//SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, Vec2( 7.f, 7.f ), 0.f, FACTION_EVIL );
 
 
 
@@ -39,9 +39,11 @@ void Map::Update( float deltaSeconds)
 	{
 		m_debugCamera = !m_debugCamera;
 	}
-
+	PushEntityOutOfEachOther();
 	UpdateCameras();
 	UpdateEntities( deltaSeconds );
+	DestroyGarbageEntities();
+	m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER];
 }
 
 //------------------------------------------------------------------------------
@@ -61,7 +63,44 @@ IntVec2 Map::GetTileCoordsForIndex(int tileCoords) const
 //------------------------------------------------------------------------------
 bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
 {
+	if ( tileCoords.x < 0 || tileCoords.x >= m_dimensions.x ||
+		tileCoords.y < 0 || tileCoords.y >= m_dimensions.y )
+	{
+		return true;
+	}
 	return m_tiles[GetTileIndexForTileCoords(tileCoords)].m_type != TILE_TYPE_GRASS;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::PushEntityOutOfEachOther() const
+{
+	for (int entityIndex = 0; entityIndex < m_allEntities.size() ; ++entityIndex)
+	{
+		Entity* firstEntity = m_allEntities[entityIndex];
+		if ( firstEntity )
+			for ( int otherEntityIndex = entityIndex + 1; otherEntityIndex < m_allEntities.size(); ++otherEntityIndex )
+			{
+				Entity* otherEntity = m_allEntities[otherEntityIndex];
+				if ( otherEntity )
+				{
+					bool isBPushed = firstEntity->m_doesPushEntities && otherEntity->m_isPushedByEntities;
+					bool isAPushed = otherEntity->m_doesPushEntities && firstEntity->m_isPushedByEntities;
+					if ( isBPushed && !isAPushed )
+					{
+						PushDiscOutOfFixedDisc2D( otherEntity->m_position, otherEntity->m_physicsRadius, firstEntity->m_position, firstEntity->m_physicsRadius );
+					}
+					if ( isAPushed && !isBPushed )
+					{
+						PushDiscOutOfFixedDisc2D( firstEntity->m_position, firstEntity->m_physicsRadius, otherEntity->m_position, otherEntity->m_physicsRadius );
+					}
+					else
+					{
+						PushDiscsOutOfEachOther2D( firstEntity->m_position, firstEntity->m_physicsRadius, otherEntity->m_position, otherEntity->m_physicsRadius );
+					}
+					
+				}
+			}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -355,26 +394,26 @@ void Map::UpdateEntities( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees )
+Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees, EntityFaction faction )
 {
 	Entity* newEntity = nullptr;
 
 	switch ( type )
 	{
 	case ENTITY_TYPE_GOOD_PLAYER:
-		newEntity = new Player( m_game, position, orientationDegrees );
+		newEntity = new Player( m_game, position, orientationDegrees, faction );
 		break;
 	case ENTITY_TYPE_EVIL_LEO:
-		newEntity = new Leo( m_game, position, orientationDegrees );
+		newEntity = new Leo( m_game, position, orientationDegrees, faction );
 		break;
 	case ENTITY_TYPE_EVIL_SCORPIO:
-		newEntity = new Scorpio( m_game, position, orientationDegrees );
+		newEntity = new Scorpio( m_game, position, orientationDegrees, faction );
 		break;
 	case ENTITY_TYPE_EVIL_ARIES:
-		newEntity = new Aries( m_game, position, orientationDegrees );
+		newEntity = new Aries( m_game, position, orientationDegrees, faction );
 		break;
 	case ENTITY_TYPE_GOOD_BULLET:
-		newEntity = new Bullet( m_game, position, orientationDegrees );
+		newEntity = new Bullet( m_game, position, orientationDegrees, faction );
 		break;
 	default:
 		return nullptr;
@@ -404,4 +443,17 @@ void Map::RemoveEntityFromMap( Entity& e )
 	EntityList& listByType = m_entityListsByType[type];
 	listByType.erase( std::remove( listByType.begin(), listByType.end(), &e ), listByType.end() );
 	m_allEntities.erase( std::remove( m_allEntities.begin(), m_allEntities.end(), &e ), m_allEntities.end() );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::DestroyGarbageEntities()
+{
+	for (int entityIndex = 0; entityIndex < m_allEntities.size() ; ++entityIndex)
+	{
+		Entity* grabageEntity = m_allEntities[entityIndex];
+		if ( grabageEntity && grabageEntity->m_isGarbage )
+		{
+			RemoveEntityFromMap(*grabageEntity);
+		}
+	}
 }

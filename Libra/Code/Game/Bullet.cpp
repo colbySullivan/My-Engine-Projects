@@ -5,8 +5,8 @@
 #include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees )
-	: Entity( owner, startPos, orientationDegrees )
+Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
+	: Entity( owner, startPos, orientationDegrees, faction )
 {
 	m_physicsRadius = BULLET_PHYSICS_RADIUS;
 	m_cosmeticRadius = BULLET_COSMETIC_RADIUS;
@@ -14,7 +14,6 @@ Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees )
 	m_isPushedByEntities = false;
 	m_doesPushEntities = false;
 	m_isHitByBullets = false;
-	m_velocity = Vec2::MakeFromPolarDegrees( orientationDegrees, BULLET_SPEED );
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/FriendlyShell.png" );
 	m_entityType = ENTITY_TYPE_GOOD_BULLET;
 	g_engine->m_render->BindTexture( nullptr );
@@ -31,42 +30,15 @@ Bullet::~Bullet()
 //-----------------------------------------------------------------------------------------------
 void Bullet::Update( float deltaSeconds )
 {
-	if ( m_bulletLifeTime < 0 )
+	if ( m_bulletLifeTime < 0 || m_isDead )
 	{
 		m_isDead = true;
+		Die();
 		return;
 	}
 
 	Entity::Update( deltaSeconds );
-	m_bulletLifeTime -= deltaSeconds;
-
-	Vec2 nextPosition = m_position + m_velocity * deltaSeconds;
-	IntVec2 nextTileCoords = m_game->m_currentMap->GetTileCoordsForWorldPos( nextPosition );
-	IntVec2 currentTileCoords = m_game->m_currentMap->GetTileCoordsForWorldPos( m_position );
-
-	if ( m_game->m_currentMap->IsTileSolidAtTileCoords( nextTileCoords ) )
-	{
-		Vec2 surfaceNormal = Vec2( static_cast<float>( currentTileCoords.x - nextTileCoords.x ), static_cast<float>( currentTileCoords.y - nextTileCoords.y ) );
-		surfaceNormal.Normalize();
-
-		m_velocity = m_velocity.GetReflected( surfaceNormal );
-		m_orientationDegrees = m_velocity.GetOrientationDegrees();
-
-		if ( m_entityType == ENTITY_TYPE_GOOD_BULLET )
-		{
-			m_bouncesRemaining--;
-			if ( m_bouncesRemaining < 0 )
-			{
-				m_isDead = true;
-				return;
-			}
-		}
-	}
-	else
-	{
-		m_position = nextPosition;
-	}
-
+	SpawnAndShoot( deltaSeconds );
 	CheckEntityCollisions();
 }
 
@@ -112,10 +84,42 @@ void Bullet::CheckEntityCollisions()
 		{
 			if ( DoDiscsOverlap( m_position, m_physicsRadius, other->m_position, other->m_physicsRadius ) )
 			{
-				// TODO Deal damage
+				other->TakeDamage();
 				m_isDead = true;
 				return;
 			}
 		}
+	}
+}
+
+void Bullet::SpawnAndShoot( float deltaSeconds )
+{
+	m_bulletLifeTime -= deltaSeconds;
+	m_velocity = Vec2::MakeFromPolarDegrees( m_orientationDegrees, BULLET_SPEED );
+	Vec2 nextPosition = m_position + m_velocity * deltaSeconds;
+	IntVec2 nextTileCoords = m_game->m_currentMap->GetTileCoordsForWorldPos( nextPosition );
+	IntVec2 currentTileCoords = m_game->m_currentMap->GetTileCoordsForWorldPos( m_position );
+
+	if ( m_game->m_currentMap->IsTileSolidAtTileCoords( nextTileCoords ) )
+	{
+		Vec2 surfaceNormal = Vec2( static_cast< float >( currentTileCoords.x - nextTileCoords.x ), static_cast< float >( currentTileCoords.y - nextTileCoords.y ) );
+		surfaceNormal.Normalize();
+
+		m_velocity = m_velocity.GetReflected( surfaceNormal );
+		m_orientationDegrees = m_velocity.GetOrientationDegrees();
+
+		if ( m_entityType == ENTITY_TYPE_GOOD_BULLET )
+		{
+			m_bouncesRemaining--;
+			if ( m_bouncesRemaining < 0 )
+			{
+				m_isDead = true;
+				return;
+			}
+		}
+	}
+	else
+	{
+		m_position = nextPosition;
 	}
 }
