@@ -20,19 +20,12 @@ Map::Map( Game* game, IntVec2 dimensions )
 	m_debugCamera = false;
 	BuildMapTiles();
 	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL);
-	for (int Index = 0; Index < 10 ; ++Index)
+	for (int Index = 0; Index < 5 ; ++Index)
 	{
+		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
 	}
-	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
-	//SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, Vec2( 7.f, 7.f ), 0.f, FACTION_EVIL );
-
-
-
-	//AddToEntityVector( new Player( m_game, Vec2( 1.5f, 1.5f ) ) );
-	//AddToEntityVector( new Scorpio( m_game, Vec2( 5.f, 1.5f ) ) );
-	//AddToEntityVector( new Leo( m_game, Vec2( 5.f, 5.f ) ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -267,7 +260,6 @@ void Map::RenderEntities() const
 //-----------------------------------------------------------------------------------------------
 void Map::BuildMapTiles()
 {
-	TileDef::InitializeTileDefs();
 	int totalTiles = m_dimensions.x * m_dimensions.y;
 	m_tiles.resize(totalTiles);
 

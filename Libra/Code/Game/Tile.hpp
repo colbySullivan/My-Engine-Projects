@@ -29,7 +29,7 @@ public:
 	bool IsSolid() const;
 
 public:
-	IntVec2		m_tileCoords = IntVec2(2,1);
+	IntVec2		m_tileCoords = IntVec2(-1,-1);
 	TileTypes	m_type = TILE_TYPE_GRASS;
 
 private:

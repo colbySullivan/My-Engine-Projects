@@ -72,7 +72,7 @@ public:
 	float			m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise
 	float			m_physicsRadius = 5.f;
 	float			m_cosmeticRadius = 10.f;
-	int				m_health = 1;
+	int				m_health = 3;
 	int				m_startingHealth = 1;
 	int				m_debrisAmount = 3;
 	bool			m_isDead = false;  // gameplay idea

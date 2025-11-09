@@ -5,9 +5,10 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Math/OBB2.hpp"
+#include "Engine/Renderer/SimpleTriangleFont.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
-#include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Map.hpp"
 #include "Game/Player.hpp"
@@ -16,6 +17,7 @@
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
+SpriteSheet* g_testSpriteSheet = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
@@ -27,7 +29,16 @@ Game::Game()
 	LoadSounds();
 	InitializePauseVerts();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
-	//TileDef::InitializeTileDefs(); // TODO
+	TileDef::InitializeTileDefs();
+	//Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile("TODO");
+	//g_testSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2(4,4));
+
+	//
+	/*AABB2 screenSpaceBox(10.f,10.f,60.f,60.f);
+	std::vector<Vertex> testQuadVerts;
+	AddVertsForAABB2D( testQuadVerts, screenSpaceBox, Rgba8(255,255,255));
+	g_engine->m_render->BindTexture( &g_testSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( testQuadVerts );*/
 }
 
 //-----------------------------------------------------------------------------------------------

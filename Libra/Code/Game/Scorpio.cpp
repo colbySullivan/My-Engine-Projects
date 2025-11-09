@@ -29,6 +29,7 @@ void Scorpio::Update( float deltaSeconds )
 {
 	Entity::Update(deltaSeconds);
 	m_turretOrientationDegrees += deltaSeconds * 45.f;
+	Entity::TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
 }
 
 //-----------------------------------------------------------------------------------------------
