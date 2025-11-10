@@ -5,8 +5,8 @@
 #include "Engine/Renderer/Renderer.hpp"  
 
 //------------------------------------------------------------------------------
-Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
-	: Entity(owner, startPos, orientationDegrees, faction)
+Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+	: Entity(owner, startPos, orientationDegrees, faction, map, type)
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
@@ -17,7 +17,7 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_health = 100;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
-	m_faction = FACTION_GOOD;
+	m_faction = faction;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
 	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
 

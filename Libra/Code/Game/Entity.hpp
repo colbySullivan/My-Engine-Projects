@@ -12,6 +12,7 @@ class Game;
 class Texture;
 class Entity;
 struct AABB2;
+class Map;
 
 //-----------------------------------------------------------------------------------------------
 enum EntityType
@@ -40,7 +41,7 @@ typedef std::vector<Entity*> EntityList;
 class Entity
 {
 public:
-	Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction);
+	Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type);
 	virtual ~Entity();
 
 	virtual void Update(float deltaSeconds) = 0;
@@ -57,6 +58,7 @@ public:
 	Vec2        GetForwardNormal() const;
 	void		WrapAroundScreen();
 	void		spawnRandomEdge();
+	void		SearchForPlayerAndTryToShoot( float deltaSeconds );
 
 	void InitializeBoxes();
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
@@ -93,7 +95,8 @@ public:
 	float			m_wanderDuration = 2.f;
 	EntityType		m_entityType = NUM_ENTITY_TYPES;
 	float			m_goalOrientationDegrees;
-
+	Map*			m_map = nullptr;
+	Vec2			m_targetPos;
 private:
 	float			m_timeSinceLastShot;
 };

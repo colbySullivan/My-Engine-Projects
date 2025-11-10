@@ -12,19 +12,25 @@
 
 
 //------------------------------------------------------------------------------
-Map::Map( Game* game, IntVec2 dimensions )
+Map::Map(Game* game, MapDef const& mapDefinition)
 	: m_game( game )
-	, m_dimensions( dimensions )
+	, m_dimensions( mapDefinition.m_dimensions )
+	, m_fillTileType( mapDefinition.m_fillTileType)
+	, m_edgeTileType( mapDefinition.m_edgeTileType )
+	, m_sprinkle1TileType( mapDefinition.m_sprinkle1TileType )
+	, m_barrierTileType( mapDefinition.m_barrierTileType )
 {
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
 	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.5f, 5.5f ), 0.f, FACTION_EVIL );
+
 	for (int Index = 0; Index < 5 ; ++Index)
 	{
 		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
+		//SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
 	}
 }
 
@@ -36,10 +42,10 @@ void Map::Update( float deltaSeconds)
 		m_debugCamera = !m_debugCamera;
 	}
 	PushEntityOutOfEachOther();
+	CheckLineOfSights();
 	UpdateCameras();
 	UpdateEntities( deltaSeconds );
 	DestroyGarbageEntities();
-	m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER];
 }
 
 //------------------------------------------------------------------------------
@@ -91,11 +97,11 @@ void Map::PushEntityOutOfEachOther() const
 					{
 						PushDiscOutOfFixedDisc2D( otherEntity->m_position, otherEntity->m_physicsRadius, firstEntity->m_position, firstEntity->m_physicsRadius );
 					}
-					if ( isAPushed && !isBPushed )
+					else if ( isAPushed && !isBPushed )
 					{
 						PushDiscOutOfFixedDisc2D( firstEntity->m_position, firstEntity->m_physicsRadius, otherEntity->m_position, otherEntity->m_physicsRadius );
 					}
-					else
+					else if ( isBPushed && isAPushed )
 					{
 						PushDiscsOutOfEachOther2D( firstEntity->m_position, firstEntity->m_physicsRadius, otherEntity->m_position, otherEntity->m_physicsRadius );
 					}
@@ -263,26 +269,26 @@ void Map::BuildMapTiles()
 	int totalTiles = m_dimensions.x * m_dimensions.y;
 	m_tiles.resize(totalTiles);
 
-	GrassTileSetup();
-	StoneTileSetup();
-	OutEdgeStoneSetup();
-	BarrierTileSetup();
+	FillTile1Setup();
+	SprinkleTileSetup();
+	OutEdgeTileSetup();
+	SpawnBarrierTileSetup();
 }
 
 //------------------------------------------------------------------------------
 // Tile Setups
 //------------------------------------------------------------------------------
-void Map::BarrierTileSetup()
+void Map::SpawnBarrierTileSetup()
 {
-	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = TILE_TYPE_STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(3, 4))].m_type = TILE_TYPE_STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 4))].m_type = TILE_TYPE_STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 3))].m_type = TILE_TYPE_STONE;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 2))].m_type = TILE_TYPE_STONE;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(3, 4))].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 4))].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 3))].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 2))].m_type = m_barrierTileType;
 }
 
 //------------------------------------------------------------------------------
-void Map::OutEdgeStoneSetup()
+void Map::OutEdgeTileSetup()
 {
 	for (int tileY = 0; tileY < m_dimensions.y; ++tileY)
 	{
@@ -294,14 +300,14 @@ void Map::OutEdgeStoneSetup()
 			if (isEdge)
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
-				m_tiles[tileIndex].m_type = TILE_TYPE_STONE;
+				m_tiles[tileIndex].m_type = m_edgeTileType;
 			}
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void Map::StoneTileSetup()
+void Map::SprinkleTileSetup()
 {
 	for (int tileY = 1; tileY < m_dimensions.y - 1; ++tileY)
 	{
@@ -311,14 +317,14 @@ void Map::StoneTileSetup()
 			if (g_rng.RollRandomFloatZeroToOne() < 0.1f && (tileX > 5 || tileY > 5))
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
-				m_tiles[tileIndex].m_type = TILE_TYPE_STONE;
+				m_tiles[tileIndex].m_type = m_sprinkle1TileType;
 			}
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void Map::GrassTileSetup()
+void Map::FillTile1Setup()
 {
 	for (int tileY = 0; tileY < m_dimensions.y; ++tileY)
 	{
@@ -326,7 +332,7 @@ void Map::GrassTileSetup()
 		{
 			int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 			m_tiles[tileIndex].m_tileCoords = IntVec2(tileX, tileY);
-			m_tiles[tileIndex].m_type = TILE_TYPE_GRASS;
+			m_tiles[tileIndex].m_type = m_fillTileType;
 		}
 	}
 }
@@ -341,38 +347,37 @@ void Map::AddToEntityVector( Entity* e )
 //-----------------------------------------------------------------------------------------------
 bool Map::HasLineOfSight( Vec2 posA, Vec2 posB ) const
 {
-	Vec2 fwdNormal = (posA - posB ).GetNormalized();
+	Vec2 fwdNormal = ( posB - posA ).GetNormalized();
 	float maxDist = GetDistance2D( posA, posB );
-	//RaycastResult2D result = RaycastVsTiles( posA, fwdNormal, maxDist );
-	//return !result.m_didImpact;
-	return false;
+	RaycastResult2D result = RaycastVsTiles( posA, fwdNormal, maxDist );
+	return !result.m_didImpact;
 }
 
 //-----------------------------------------------------------------------------------------------
-//RaycastResult2D Map::RaycastVsTiles2( Vec2 startPos, Vec2 fwdNormal, float maxDist )
-//{
-//	constexpr float TINY_STEPS_PER_UNIT = 10.f;
-//	int numSteps = static_cast<float>(maxDist * TINY_STEPS_PER_UNIT);
-//	Vec2 tinyStepForward = fwdNormal * (maxDist / numSteps);
-//	Vec2 currentPos = startPos;
-//	for (int i = 0; i < numSteps ; ++i)
-//	{
-//		currentPos += tinyStepForward;
-//		if ( IsPointInSolid( currentPos ) )
-//		{
-//			RaycastResult2D hitResult;
-//			hitResult.m_didImpact = true;
-//			hitResult.m_impactPos = currentPos;
-//			hitResult.m_impactDist = GetDistance2D( startPos, currentPos );
-//			return hitResult;
-//		}
-//	}
-//	RaycastResult2D missResult;
-//	hitResult.m_didImpact = false;
-//	hitResult.m_impactPos = startPos + (fwdNormal * maxDist);
-//	hitResult.m_impactDist = maxDist;
-//	return hitResult;
-//}
+RaycastResult2D Map::RaycastVsTiles( Vec2 startPos, Vec2 fwdNormal, float maxDist ) const
+{
+	constexpr float TINY_STEPS_PER_UNIT = 10.f;
+	int numSteps = static_cast<int>(maxDist * TINY_STEPS_PER_UNIT);
+	Vec2 tinyStepForward = fwdNormal * (maxDist / numSteps);
+	Vec2 currentPos = startPos;
+	RaycastResult2D hitResult;
+	for (int i = 0; i < numSteps ; ++i)
+	{
+		currentPos += tinyStepForward;
+		if ( IsTileSolidAtTileCoords( IntVec2(static_cast<int>(currentPos.x), static_cast<int>(currentPos.y) ) ) )
+		{
+			hitResult.m_didImpact = true;
+			hitResult.m_impactPos = currentPos;
+			hitResult.m_impactDist = GetDistance2D( startPos, currentPos );
+			return hitResult;
+		}
+	}
+	RaycastResult2D missResult;
+	hitResult.m_didImpact = false;
+	hitResult.m_impactPos = startPos + (fwdNormal * maxDist);
+	hitResult.m_impactDist = maxDist;
+	return hitResult;
+}
 
 //-----------------------------------------------------------------------------------------------
 void Map::UpdateEntities( float deltaSeconds )
@@ -404,29 +409,34 @@ Vec2 Map::GetRandomValidPointInMap()
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::CheckLineOfSights()
+{
+	for ( int playerIndex = 0; playerIndex < m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER].size(); ++playerIndex )
+	{
+		Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][playerIndex];
+		if ( player )
+		{
+			for (int enemyIndex = 0; enemyIndex < m_allEntities.size() ; ++enemyIndex)
+			{
+				
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees, EntityFaction faction )
 {
 	Entity* newEntity = nullptr;
 
 	switch ( type )
 	{
-	case ENTITY_TYPE_GOOD_PLAYER:
-		newEntity = new Player( m_game, position, orientationDegrees, faction );
-		break;
-	case ENTITY_TYPE_EVIL_LEO:
-		newEntity = new Leo( m_game, position, orientationDegrees, faction );
-		break;
-	case ENTITY_TYPE_EVIL_SCORPIO:
-		newEntity = new Scorpio( m_game, position, orientationDegrees, faction );
-		break;
-	case ENTITY_TYPE_EVIL_ARIES:
-		newEntity = new Aries( m_game, position, orientationDegrees, faction );
-		break;
-	case ENTITY_TYPE_GOOD_BULLET:
-		newEntity = new Bullet( m_game, position, orientationDegrees, faction );
-		break;
-	default:
-		return nullptr;
+		case ENTITY_TYPE_GOOD_PLAYER:	newEntity = new Player( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_PLAYER );	break;
+		case ENTITY_TYPE_EVIL_LEO:		newEntity = new Leo( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_LEO );		break;
+		case ENTITY_TYPE_EVIL_SCORPIO:	newEntity = new Scorpio( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SCORPIO );	break;
+		case ENTITY_TYPE_EVIL_ARIES:	newEntity = new Aries( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_ARIES );	break;
+		case ENTITY_TYPE_GOOD_BULLET:	newEntity = new Bullet( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_BULLET );	break;
+		default:																										return nullptr;
 	}
 
 	if ( newEntity )

@@ -8,13 +8,15 @@
 #include "Game/Map.hpp"
 
 
-Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
+Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
 {
 	m_game = owner;
 	m_position = startPos;
 	m_startingHealth = m_health;
 	m_orientationDegrees = orientationDegrees;
 	m_faction = faction;
+	m_map = map;
+	m_entityType = type;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -58,6 +60,10 @@ void Entity::DebugRender() const
 	DebugDrawLine(m_position, forwardDebugLine, 0.03f, Rgba8(255, 0, 0)); // Forward line
 	DebugDrawLine(m_position, rotatedDebugLine, 0.03f, Rgba8(0, 255, 0)); // Right line
 	DebugDrawLine(m_position, velocityDebugLine, 0.01f, Rgba8(255,255,0)); // Velocity line
+	if ( m_targetPos != Vec2( 0.f, 0.f ) )
+	{
+		DebugDrawLine( m_position, m_targetPos, 0.01f, Rgba8( 255, 255, 0 ) ); // Point goal line
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -132,12 +138,48 @@ void Entity::spawnRandomEdge()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+void Entity::SearchForPlayerAndTryToShoot( float deltaSeconds )
+{
+	Entity* player = m_map->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+	if ( m_map->HasLineOfSight( player->m_position, m_position ) && !player->m_isDead)
+	{
+		m_targetPos = player->m_position;
+		Vec2 toPlayerPos = player->m_position - m_position;
+		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
+		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, Atan2Degrees( directionToPlayer.y, directionToPlayer.x ), 10.f );
+	}
+	if ( m_targetPos != Vec2( 0.f, 0.f ) && m_position != m_targetPos)
+	{
+		//TurnedTowardPosition( player->m_position, deltaSeconds );
+
+		if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 90.f, LEO_MAX_VIS ) )
+		{
+			//DriveForward( deltaSeconds );
+			Vec2 forwardDir = GetForwardNormal();
+			m_velocity = forwardDir;
+			m_position += m_velocity * deltaSeconds * 0.5;
+
+			if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 10.f, LEO_MAX_VIS ) )
+			{
+				TryShoot( m_orientationDegrees, deltaSeconds, m_faction );
+			}
+		}
+	}
+	else
+	{
+		Wander( deltaSeconds );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void Entity::InitializeBoxes()
 {
 	m_turretABB2 = new AABB2( Vec2( 0, 0 ), Vec2( 1, 1 ) );
 	m_bodyABB2 = new AABB2( Vec2( 0, 0 ), Vec2( 1, 1 ) );
 }
 
+//-----------------------------------------------------------------------------------------------
 void Entity::AddVertsForMe( std::vector<Vertex>& verts ) const
 {
 	Vec2 mins( -0.5f, -0.5f );
@@ -187,7 +229,7 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 		Vec2 turretForward = Vec2::MakeFromPolarDegrees( fireOrientation );
 		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
 
-		m_game->m_currentMap->SpawnNewEntity(
+		m_map->SpawnNewEntity(
 			ENTITY_TYPE_GOOD_BULLET,
 			bulletSpawnPos,
 			fireOrientation,

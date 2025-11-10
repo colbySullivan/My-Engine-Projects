@@ -4,11 +4,12 @@
 #include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
-	: Entity( owner, startPos, orientationDegrees, faction )
+Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
 	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
+	m_entityType = type;
 	m_isPushedByWalls = true;
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;

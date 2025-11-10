@@ -2,10 +2,11 @@
 #include "Game/Game.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
-	: Entity( owner, startPos, orientationDegrees, faction )
+Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_physicsRadius = 0.4f;
 	m_cosmeticRadius = 0.5f;
@@ -29,36 +30,9 @@ Leo::~Leo()
 void Leo::Update( float deltaSeconds )
 {
 	Entity::Update(deltaSeconds);
-	Entity::TryShoot(m_orientationDegrees, deltaSeconds, m_faction);
-	//Entity* player = m_map->m_entitiesTypeType[ENTITY_TYPE_GOOD_PLAYER][0];
-
-	//if ( m_map->IsAllive( player ) )
-	//{
-		//if ( m_map->HasLineOfSight( player->m_position, m_position ) )
-	//	{
-	//		//m_targetPos = Player position;
-	//	}
-	//}
-	//if ( m_targetPos != Vec2 ZERO )
-	//{
-	//	TurnedTowardPosition( player->m_position, deltaSeconds );
-
-	//	if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 90.f, LEO_MAX_VIS) ); //10.f
-	//	{
-	//		DriveForward( deltaSeconds );
-
-	//		if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 10.f, LEO_MAX_VIS ) )
-	//		{
-	//			TryToShoot();
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	Wander
-	//}
-	Entity::Wander( deltaSeconds );
+	Entity::SearchForPlayerAndTryToShoot(deltaSeconds);
 }
+
 
 void Leo::Render() const
 {

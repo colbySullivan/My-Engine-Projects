@@ -53,6 +53,8 @@ const IntVec2 STEP_SW = IntVec2( -1, -1 );
 constexpr float SHOOT_COOLDOWN_TIME = 1.0f;
 constexpr float BULLET_SPEED = 8.0f;
 
+constexpr float LEO_MAX_VIS = 10.f;
+
 //------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);
 void DebugDrawLine(Vec2 const& entity1Pos, Vec2 const& entity2Pos, float thickness, Rgba8 const& color);

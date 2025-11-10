@@ -5,8 +5,8 @@
 #include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction )
-	: Entity( owner, startPos, orientationDegrees, faction )
+Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_physicsRadius = BULLET_PHYSICS_RADIUS;
 	m_cosmeticRadius = BULLET_COSMETIC_RADIUS;
