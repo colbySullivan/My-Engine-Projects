@@ -219,8 +219,10 @@ void Map::UpdateCameras()
 //-----------------------------------------------------------------------------------------------
 void Map::RenderTiles() const
 {
+	//Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Terrain_8x8.png" );
+	//SpriteSheet* tilesSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2( 8, 8 ) );
+	//g_engine->m_render->BindTexture( &tilesSpriteSheet->GetTexture() );
 	std::vector<Vertex> tileVerts;
-
 	int totalTiles = static_cast< int >( m_tiles.size() );
 	tileVerts.reserve( totalTiles * 6 );
 
@@ -228,27 +230,23 @@ void Map::RenderTiles() const
 	{
 		Tile const& tile = m_tiles[tileIndex];
 
+		TileDefinition const& tileDef = TileDefinition::s_definitions[tile.m_type];
+
 		float minX = static_cast< float >( tile.m_tileCoords.x );
 		float minY = static_cast< float >( tile.m_tileCoords.y );
 		float maxX = minX + 1.0f;
 		float maxY = minY + 1.0f;
 
 		AABB2 box = AABB2( minX, minY, maxX, maxY );
-		Rgba8 tileColor;
-		if ( tile.m_type == TILE_TYPE_GRASS )
-		{
-			tileColor = GRASS_COLOR;
-		}
-		else
-		{
-			tileColor = STONE_COLOR;
-		}
 
-		AddVertsForAABB2D( tileVerts, box, tileColor );
+		AddVertsForAABB2D( tileVerts, box, tileDef.m_tint, tileDef.m_uvs.m_mins, tileDef.m_uvs.m_maxs );
 	}
-	TransformVertexArrayXY3D( static_cast< int >( tileVerts.size() ), tileVerts.data(), 1.0f, 0.0f, Vec2( 0.0f, 0.0f ) );
+
+	g_engine->m_render->BindTexture( &m_game->m_tilesSpriteSheet->GetTexture() );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts.size() ), tileVerts.data() );
+	g_engine->m_render->BindTexture( nullptr );
 }
+
 
 //-----------------------------------------------------------------------------------------------
 void Map::RenderEntities() const
@@ -404,7 +402,7 @@ Vec2 Map::GetRandomValidPointInMap()
 	{
 		newTileCoords = IntVec2( g_rng.RollRandomIntInRange( 5, m_dimensions.x ), g_rng.RollRandomIntInRange( 5, m_dimensions.y ) );
 	}
-	return (Vec2( static_cast<float>(newTileCoords.x), static_cast<float>(newTileCoords.y)));
+	return (Vec2( static_cast<float>(newTileCoords.x + 0.5f), static_cast<float>(newTileCoords.y + 0.5f)));
 		
 }
 

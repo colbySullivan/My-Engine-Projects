@@ -75,6 +75,8 @@ public:
 	float				m_spawnBuffer;
 	std::vector<MapDef> m_maps = {};
 	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
+	SpriteSheet*		m_tilesSpriteSheet;
+
 
 
 
