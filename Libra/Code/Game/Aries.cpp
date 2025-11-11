@@ -14,6 +14,7 @@ Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, Entit
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
+	m_bulletCooldown = 1.3f;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyAries.png" );
 	g_engine->m_render->BindTexture( nullptr );
 }

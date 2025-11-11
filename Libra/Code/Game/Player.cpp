@@ -15,6 +15,7 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
 	m_health = 100;
+	m_bulletCooldown = 0.1;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;

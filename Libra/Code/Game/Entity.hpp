@@ -97,6 +97,7 @@ public:
 	float			m_goalOrientationDegrees;
 	Map*			m_map = nullptr;
 	Vec2			m_targetPos;
-private:
 	float			m_timeSinceLastShot;
+	float			m_bulletCooldown;
+
 };

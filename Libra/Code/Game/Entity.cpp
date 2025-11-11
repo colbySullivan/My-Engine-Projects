@@ -147,7 +147,7 @@ void Entity::SearchForPlayerAndTryToShoot( float deltaSeconds )
 		m_targetPos = player->m_position;
 		Vec2 toPlayerPos = player->m_position - m_position;
 		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, Atan2Degrees( directionToPlayer.y, directionToPlayer.x ), 10.f );
+		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, Atan2Degrees( directionToPlayer.y, directionToPlayer.x ), .5f );
 	}
 	if ( m_targetPos != Vec2( 0.f, 0.f ) && m_position != m_targetPos)
 	{
@@ -160,7 +160,7 @@ void Entity::SearchForPlayerAndTryToShoot( float deltaSeconds )
 			m_velocity = forwardDir;
 			m_position += m_velocity * deltaSeconds * 0.5;
 
-			if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 10.f, LEO_MAX_VIS ) )
+			if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 5.f, LEO_MAX_VIS ) )
 			{
 				TryShoot( m_orientationDegrees, deltaSeconds, m_faction );
 			}
@@ -197,7 +197,7 @@ bool Entity::IsPlayer() const
 //-----------------------------------------------------------------------------------------------
 EntityType Entity::GetEntityType() const
 {
-	return m_entityType;  // TODO make neutral
+	return m_entityType;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 			fireOrientation,
 			faction
 		);
-		m_timeSinceLastShot = SHOOT_COOLDOWN_TIME;
+		m_timeSinceLastShot = m_bulletCooldown;
 	}
 }
 

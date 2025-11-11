@@ -54,6 +54,8 @@ constexpr float SHOOT_COOLDOWN_TIME = 1.0f;
 constexpr float BULLET_SPEED = 8.0f;
 
 constexpr float LEO_MAX_VIS = 10.f;
+constexpr float SCORPIO_MAX_VIS = 10.f;
+
 
 //------------------------------------------------------------------------------
 void DebugDrawRing(Vec2 const& center, float radius, float thickness, Rgba8 const& color);
