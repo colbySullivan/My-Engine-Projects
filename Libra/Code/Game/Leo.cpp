@@ -16,7 +16,7 @@ Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFac
 	m_isHitByBullets = true;
 	m_bulletCooldown = 1.3f;
 	m_wanderTimer = 2.0f;
-	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTank4.png" );
+	m_bodyTexture = m_game->m_leoBodyTexture;
 	g_engine->m_render->BindTexture( nullptr );
 }
 

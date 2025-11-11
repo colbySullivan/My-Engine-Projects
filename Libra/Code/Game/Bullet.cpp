@@ -14,7 +14,14 @@ Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	m_isPushedByEntities = false;
 	m_doesPushEntities = false;
 	m_isHitByBullets = false;
-	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/FriendlyShell.png" );
+	if ( faction == FACTION_EVIL )
+	{
+		m_bodyTexture = m_game->m_badBulletTexture;
+	}
+	else
+	{
+		m_bodyTexture = m_game->m_goodBulletTexture;
+	}
 	m_entityType = ENTITY_TYPE_GOOD_BULLET;
 	g_engine->m_render->BindTexture( nullptr );
 	m_bulletLifeTime = BULLET_LIFETIME_SECONDS;

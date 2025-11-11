@@ -7,6 +7,7 @@
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -14,6 +15,7 @@
 #include "Game/Player.hpp"
 #include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
+
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
@@ -30,15 +32,7 @@ Game::Game()
 	InitializePauseVerts();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	TileDef::InitializeTileDefs();
-	//Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile("TODO");
-	//g_testSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2(4,4));
-
-	//
-	/*AABB2 screenSpaceBox(10.f,10.f,60.f,60.f);
-	std::vector<Vertex> testQuadVerts;
-	AddVertsForAABB2D( testQuadVerts, screenSpaceBox, Rgba8(255,255,255));
-	g_engine->m_render->BindTexture( &g_testSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( testQuadVerts );*/
+	LoadTextures();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -48,12 +42,6 @@ Game::~Game()
 	{
 		delete m_currentMap;
 		m_currentMap = nullptr;
-	}
-
-	if (m_player)
-	{
-		delete m_player;
-		m_player = nullptr;
 	}
 
 	delete g_game;
@@ -144,7 +132,23 @@ void Game::Render() const
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
-		RenderAttractMode();
+		//RenderAttractMode();
+		m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+		g_engine->m_render->BeginCamera( *m_screenCamera );
+
+		//Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Terrain_8x8.png" );
+		//g_testSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2( 8, 8 ) );
+		const SpriteDefinition& testSprite = g_testSpriteSheet->GetSpriteDef(9);
+
+		Vec2 uvAtMins, uvAtMaxs;
+		testSprite.GetUVs(uvAtMins, uvAtMaxs);
+		std::vector<Vertex> testVerts;
+		AABB2 screenSpaceBox( 10.f, 10.f, 600.f, 600.f );
+		AddVertsForAABB2D( testVerts, screenSpaceBox, Rgba8( 255, 255, 255 ), uvAtMins, uvAtMaxs);
+		g_engine->m_render->BindTexture( &g_testSpriteSheet->GetTexture() );
+		g_engine->m_render->DrawVertexArray( testVerts );
+
+		g_engine->m_render->EndCamera( *m_screenCamera );
 		return;
 	}
 
@@ -519,4 +523,21 @@ void Game::MovePlayerToNewMap()
 	player->m_map = m_nextMap;
 	m_currentMap->RemoveEntityFromMap( *player );
 	m_nextMap->AddEntityToMap( *player );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::LoadTextures()
+{
+	Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Terrain_8x8.png" );
+	g_testSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2( 8, 8 ) );
+	m_scorpioBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyCannon.png" );
+	m_playerBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
+	m_playerTurretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
+	m_scorpioBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTurretBase.png" );
+	m_scorpioTurretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyCannon.png" );
+	m_leoBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTank4.png" );
+	m_ariesBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyAries.png" );
+	m_goodBulletTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/FriendlyShell.png" );
+	m_badBulletTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyBullet.png" );
+	//const SpriteDefinition& testSprite = g_testSpriteSheet->GetSpriteDef( 5 );
 }

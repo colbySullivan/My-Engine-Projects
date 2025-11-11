@@ -73,9 +73,21 @@ public:
 	float 				m_roundTime;	
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
+	std::vector<MapDef> m_maps = {};
+	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
+
+
 
 	// Entities
-	Player* m_player = nullptr;
+	Texture* m_playerBodyTexture;
+	Texture* m_playerTurretTexture;
+	Texture* m_scorpioBodyTexture;
+	Texture* m_scorpioTurretTexture;
+	Texture* m_leoBodyTexture;
+	Texture* m_ariesBodyTexture;
+	Texture* m_goodBulletTexture;
+	Texture* m_badBulletTexture;
+
 
 	// Camera
 	Camera* m_worldCamera = nullptr;
@@ -100,24 +112,22 @@ private:
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void RenderAttractMode() const;
 	void RenderEntities() const;
+	void RenderPauseSreen() const;
 
 	void UpdateCameras( float deltaSeconds );
 	void UpdateAttractMode( float deltaSeconds );
 	void UpdateEntities( float deltaSeconds );
+	void UpdateBlackHole();
 
 	void LoadSounds();
-	void UpdateBlackHole();
+	void InitializePauseVerts();
+	void MovePlayerToNewMap();
+	void LoadTextures();
+	MapDef CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile );
 
 	App*			m_app = nullptr;
 	// Black hole
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
-
-	void RenderPauseSreen() const;
-	void InitializePauseVerts();
-	Vertex			m_pauseScreenVerts[NUM_PLAYER_VERTS];
-	MapDef CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile );
-	std::vector<MapDef> m_maps = {};
-	void MovePlayerToNewMap();
 };

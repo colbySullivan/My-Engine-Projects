@@ -19,8 +19,8 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;
-	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
-	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
+	m_bodyTexture = m_game->m_playerBodyTexture;
+	m_turretTexture = m_game->m_playerTurretTexture;
 
 	g_engine->m_render->BindTexture( nullptr );
 }

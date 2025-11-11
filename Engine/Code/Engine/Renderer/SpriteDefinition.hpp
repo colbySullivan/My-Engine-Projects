@@ -12,8 +12,6 @@ public:
 	SpriteSheet const&	GetSpriteSheet() const;
 	Texture&			GetTexture() const;
 	float               GetAspect() const;
-
-protected:
 	SpriteSheet const& m_spriteSheet;
 	int                 m_spriteIndex = -1;
 	Vec2                m_uvAtMins = Vec2(0.f,0.f);

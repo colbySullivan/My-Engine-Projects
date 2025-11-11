@@ -5,20 +5,20 @@
 SpriteSheet::SpriteSheet( Texture& texture, IntVec2 const& simpleGridLayout )
 	: m_texture( texture )
 {
-	/*int numSprites = simpleGridLayout.x * simpleGridLayout.y;
-	m_spriteDefs.resize( numSprites );
+	int numSprites = simpleGridLayout.x * simpleGridLayout.y;
+	m_spriteDefs.reserve( numSprites );
 
 	for ( int spriteY = 0; spriteY < simpleGridLayout.y; ++spriteY )
 	{
 		for ( int spriteX = 0; spriteX < simpleGridLayout.x; ++spriteX )
 		{
-			int spriteIndex = spriteX + ( simpleGridLayout.x * spriteX );
-			SpriteDefinition& spriteDef = m_spriteDefs[spriteIndex];*/
-			//spriteDef.m_UVs.m_mins.x = static_cast< float >( spriteX ) / static_cast< float >( simpleGridLayout.x ); // TODO
+			int spriteIndex = spriteX + ( simpleGridLayout.x * spriteY );
+			Vec2 uvAtMins( static_cast< float >( spriteX ) / simpleGridLayout.x, static_cast< float >( spriteY ) / simpleGridLayout.y );
+			Vec2 uvAtMaxs( static_cast< float >( spriteX + 1 ) / simpleGridLayout.x, static_cast< float >( spriteY + 1 ) / simpleGridLayout.y );
 
-			//spriteDef.m_uvAtMins.x = static_cast< float >( spriteX ) / static_cast< float >( simpleGridLayout.x );
-		//}
-	//}
+			m_spriteDefs.emplace_back( *this, spriteIndex, uvAtMins, uvAtMaxs );
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

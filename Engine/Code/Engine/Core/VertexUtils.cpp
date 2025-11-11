@@ -83,6 +83,22 @@ void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgb
 
 }
 
+void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba8 color, Vec2 const& uvAtMins, Vec2 const& uvAtMaxs )
+{
+	float minX = alignedBox.m_mins.x;
+	float minY = alignedBox.m_mins.y;
+	float maxX = alignedBox.m_maxs.x;
+	float maxY = alignedBox.m_maxs.y;
+
+	verts.push_back( Vertex( Vec3( minX, minY, 0.f ), color, Vec2( uvAtMins.x, uvAtMins.y ) ) );
+	verts.push_back( Vertex( Vec3( maxX, minY, 0.f ), color, Vec2( uvAtMaxs.x, uvAtMins.y ) ) );
+	verts.push_back( Vertex( Vec3( maxX, maxY, 0.f ), color, Vec2( uvAtMaxs.x, uvAtMaxs.y ) ) );
+	verts.push_back( Vertex( Vec3( minX, minY, 0.f ), color, Vec2( uvAtMins.x, uvAtMins.y ) ) );
+	verts.push_back( Vertex( Vec3( maxX, maxY, 0.f ), color, Vec2( uvAtMaxs.x, uvAtMaxs.y ) ) );
+	verts.push_back( Vertex( Vec3( minX, maxY, 0.f ), color, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
+}
+
+
 //------------------------------------------------------------------------------
 void AddVertsForOBB2D( std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba8 color )
 {
