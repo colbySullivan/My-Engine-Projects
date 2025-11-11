@@ -14,7 +14,7 @@ Scorpio::Scorpio( Game* owner, Vec2 const& startPos, float orientationDegrees, E
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
-	m_bulletCooldown = 0.3;
+	m_bulletCooldown = 0.3f;
 	m_bodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTurretBase.png" );
 	m_turretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyCannon.png" );
 	g_engine->m_render->BindTexture( nullptr );

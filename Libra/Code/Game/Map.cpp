@@ -23,7 +23,7 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
-	SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
+	//SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.5f, 5.5f ), 0.f, FACTION_EVIL );
 
 	for (int Index = 0; Index < 5 ; ++Index)

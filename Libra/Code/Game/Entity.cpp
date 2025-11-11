@@ -224,17 +224,11 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 
 	if ( m_timeSinceLastShot < 0 )
 	{
-		// Calculate bullet spawn position at turret tip
-		float bulletSpawnDist = m_cosmeticRadius; // Or slightly beyond
+		float bulletSpawnDist = m_cosmeticRadius;
 		Vec2 turretForward = Vec2::MakeFromPolarDegrees( fireOrientation );
 		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
 
-		m_map->SpawnNewEntity(
-			ENTITY_TYPE_GOOD_BULLET,
-			bulletSpawnPos,
-			fireOrientation,
-			faction
-		);
+		m_map->SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, bulletSpawnPos, fireOrientation, faction );
 		m_timeSinceLastShot = m_bulletCooldown;
 	}
 }

@@ -15,7 +15,7 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
 	m_health = 100;
-	m_bulletCooldown = 0.1;
+	m_bulletCooldown = 0.1f;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;
@@ -46,7 +46,7 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 	}
 	if ( g_engine->m_input->IsKeyDown( ' ' ) || g_engine->m_input->GetController( 0 ).GetRightTrigger() > 0.5f )
 	{
-		TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
+ 		TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
 	}
 	m_position += m_velocity * deltaSeconds;
 }

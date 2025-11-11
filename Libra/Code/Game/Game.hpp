@@ -5,6 +5,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Game/Player.hpp"
+#include "Game/Tile.hpp"
 
 class App;
 class Entity;
@@ -14,6 +15,7 @@ class XboxController;
 class AudioSystem;
 class Player;
 class Map;
+struct MapDef;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -42,6 +44,8 @@ public:
 	~Game();
 
 	Map* m_currentMap = nullptr;
+	Map* m_nextMap = nullptr;
+	int m_currentMapNumber = 0;
 
 	void Startup();
 	void Update( float deltaSeconds );
@@ -113,4 +117,7 @@ private:
 	void RenderPauseSreen() const;
 	void InitializePauseVerts();
 	Vertex			m_pauseScreenVerts[NUM_PLAYER_VERTS];
+	MapDef CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile );
+	std::vector<MapDef> m_maps = {};
+	void MovePlayerToNewMap();
 };

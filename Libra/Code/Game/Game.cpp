@@ -71,8 +71,19 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
-	m_currentMap = new Map(g_game, IntVec2(MAP_SIZE_X, MAP_SIZE_Y));
+	MapDef map1Def = CreateMapDef(IntVec2( 25, 35 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE);
+	MapDef map2Def = CreateMapDef( IntVec2( 50, 30 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE );
+	MapDef map3Def = CreateMapDef( IntVec2( 23, 50 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE );
+
+	m_maps.push_back( map1Def );
+	m_maps.push_back( map2Def );
+	m_maps.push_back( map3Def );
+
+	//Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
+	
+	m_currentMap = new Map( g_game, m_maps[m_currentMapNumber]);
+	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
+	m_nextMap = m_currentMap;
 	m_isPaused = false;
 }
 
@@ -83,6 +94,12 @@ void Game::Update(float deltaSeconds)
 
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
+
+	if ( m_currentMap != m_nextMap )
+	{
+		MovePlayerToNewMap();
+		m_currentMap = m_nextMap;
+	}
 
 	if ( m_currentGameState != m_nextGameState )
 	{
@@ -202,7 +219,8 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	if (g_engine->m_input->WasKeyJustPressed('I'))
 	{
-
+		m_currentMapNumber = ( m_currentMapNumber + 1 ) % static_cast<int>(m_maps.size());
+		m_nextMap = new Map( g_game, m_maps[m_currentMapNumber] );
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
@@ -476,4 +494,29 @@ void Game::InitializePauseVerts()
 	{
 		m_pauseScreenVerts[vertIndex].m_color = Rgba8( 0, 0, 0, 100 );
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+MapDef Game::CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile )
+{
+	MapDef mapDef;
+
+	mapDef.m_dimensions = dimensions;
+	mapDef.m_fillTileType = fillTile;
+	mapDef.m_edgeTileType = edgeTile;
+	mapDef.m_sprinkle1TileType = sprinkleTile1;
+	mapDef.m_sprinkle2TileType = sprinkleTile2;
+	mapDef.m_barrierTileType = barrierTile;
+
+	return mapDef;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::MovePlayerToNewMap()
+{
+	Entity* player = m_currentMap->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+	player->m_position = Vec2( 1.5f, 1.5f );
+	player->m_map = m_nextMap;
+	m_currentMap->RemoveEntityFromMap( *player );
+	m_nextMap->AddEntityToMap( *player );
 }
