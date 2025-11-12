@@ -19,7 +19,6 @@
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
-//SpriteSheet* g_testSpriteSheet = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
@@ -59,15 +58,13 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	MapDef map1Def = CreateMapDef(IntVec2( 25, 35 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE);
-	MapDef map2Def = CreateMapDef( IntVec2( 50, 30 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE );
-	MapDef map3Def = CreateMapDef( IntVec2( 23, 50 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE );
+	MapDef map1Def = CreateMapDef(IntVec2( 25, 35 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER);
+	MapDef map2Def = CreateMapDef( IntVec2( 50, 30 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
+	MapDef map3Def = CreateMapDef( IntVec2( 23, 50 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER );
 
 	m_maps.push_back( map1Def );
 	m_maps.push_back( map2Def );
 	m_maps.push_back( map3Def );
-
-	//Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	
 	m_currentMap = new Map( g_game, m_maps[m_currentMapNumber]);
 	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
@@ -106,6 +103,7 @@ void Game::Update(float deltaSeconds)
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
+		PlayerSwapMap();
 		if ( m_isSlowMo ) // T pressed
 		{
 			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
@@ -497,6 +495,16 @@ MapDef Game::CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edg
 	mapDef.m_barrierTileType = barrierTile;
 
 	return mapDef;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::PlayerSwapMap()
+{
+	if ( m_currentMap->IsPlayerOnPortal() )
+	{
+		MovePlayerToNewMap();
+		m_currentMap = m_nextMap;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

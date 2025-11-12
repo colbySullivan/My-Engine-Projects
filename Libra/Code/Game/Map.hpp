@@ -84,6 +84,7 @@ public:
 	void AddEntityToMap( Entity& e );
 	void RemoveEntityFromMap( Entity& e );
 	void DestroyGarbageEntities();
+	bool IsPlayerOnPortal();
 
 	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
 	EntityList m_allEntities;
@@ -96,6 +97,7 @@ private:
 	void CheckLineOfSights();
 	TileTypes m_fillTileType;
 	TileTypes m_sprinkle1TileType;
+	TileTypes m_sprinkle2TileType;
 	TileTypes m_edgeTileType;
 	TileTypes m_barrierTileType;
 };

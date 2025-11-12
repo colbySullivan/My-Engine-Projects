@@ -18,6 +18,7 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	, m_fillTileType( mapDefinition.m_fillTileType)
 	, m_edgeTileType( mapDefinition.m_edgeTileType )
 	, m_sprinkle1TileType( mapDefinition.m_sprinkle1TileType )
+	, m_sprinkle2TileType( mapDefinition.m_sprinkle2TileType )
 	, m_barrierTileType( mapDefinition.m_barrierTileType )
 {
 	m_numTilesInViewVertically = 10;
@@ -278,11 +279,37 @@ void Map::BuildMapTiles()
 //------------------------------------------------------------------------------
 void Map::SpawnBarrierTileSetup()
 {
+	// Bottom left
+	for (int barrierBoxFloorX = 1; barrierBoxFloorX < 5 ; ++barrierBoxFloorX)
+	{
+		for ( int barrierBoxFloorY = 1; barrierBoxFloorY < 5; ++barrierBoxFloorY ) 
+		{
+			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = TILE_TYPE_STONE_FLOOR;
+		}
+	}	
 	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = m_barrierTileType;
 	m_tiles[GetTileIndexForTileCoords(IntVec2(3, 4))].m_type = m_barrierTileType;
 	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 4))].m_type = m_barrierTileType;
 	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 3))].m_type = m_barrierTileType;
 	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 2))].m_type = m_barrierTileType;
+
+	// Top right
+	for ( int barrierBoxFloorX = m_dimensions.x - 5; barrierBoxFloorX < m_dimensions.x - 1; ++barrierBoxFloorX )
+	{
+		for ( int barrierBoxFloorY = m_dimensions.y - 5; barrierBoxFloorY < m_dimensions.y - 1; ++barrierBoxFloorY )
+		{
+			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = TILE_TYPE_STONE_FLOOR;
+		}
+	}
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 3, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 4, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 3 ) )].m_type = m_barrierTileType;
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 4 ) )].m_type = m_barrierTileType;
+
+	m_tiles[GetTileIndexForTileCoords( IntVec2( 1, 1 ) )].m_type = TILE_TYPE_START;
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 2, m_dimensions.y - 2 ) )].m_type = TILE_TYPE_PORTAL;
+
 }
 
 //------------------------------------------------------------------------------
@@ -312,10 +339,15 @@ void Map::SprinkleTileSetup()
 		for (int tileX = 1; tileX < m_dimensions.x - 1; ++tileX)
 		{
 
-			if (g_rng.RollRandomFloatZeroToOne() < 0.1f && (tileX > 5 || tileY > 5))
+			if (g_rng.RollRandomFloatZeroToOne() < 0.15f && (tileX > 5 || tileY > 5))
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 				m_tiles[tileIndex].m_type = m_sprinkle1TileType;
+			}
+			else if( g_rng.RollRandomFloatZeroToOne() < 0.05f && ( tileX > 5 || tileY > 5 ) )
+			{
+				int tileIndex = GetTileIndexForTileCoords( IntVec2( tileX, tileY ) );
+				m_tiles[tileIndex].m_type = m_sprinkle2TileType;
 			}
 		}
 	}
@@ -474,4 +506,12 @@ void Map::DestroyGarbageEntities()
 			RemoveEntityFromMap(*grabageEntity);
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Map::IsPlayerOnPortal()
+{
+	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+	Vec2 portalPosition( m_dimensions.x - 2.f, m_dimensions.y - 2.f );
+ 	return ( player->m_position - portalPosition ).GetLengthSquared() < 0.5f;
 }

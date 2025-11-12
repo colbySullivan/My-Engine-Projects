@@ -35,7 +35,7 @@ Player::~Player()
 void Player::Update([[maybe_unused]] float deltaSeconds)
 {
 	m_isMoving = false;
-	m_velocity = GetForwardNormal();
+	m_velocity = GetForwardNormal() * PLAYER_SPEED;
 	Entity::Update(deltaSeconds);
 	UpdateFromKeyboard(deltaSeconds);
 	UpdateFromController(deltaSeconds);
