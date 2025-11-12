@@ -53,10 +53,10 @@ void Leo::Render() const
 		DebugRender();
 	}
 }
+
 //-----------------------------------------------------------------------------------------------
-void Leo::DriveForward( float deltaSeconds )
+void Leo::Respawn()
 {
 
 }
-
 

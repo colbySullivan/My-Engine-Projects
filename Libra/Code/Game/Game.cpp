@@ -29,6 +29,7 @@ Game::Game()
 	m_roundNumber = 1;
 	LoadSounds();
 	InitializePauseVerts();
+	InitializeWinLoseVerts();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	TileDefinition::InitializeTileDefs();
 	LoadTextures();
@@ -58,15 +59,18 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	MapDef map1Def = CreateMapDef(IntVec2( 25, 35 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER);
-	MapDef map2Def = CreateMapDef( IntVec2( 50, 30 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
-	MapDef map3Def = CreateMapDef( IntVec2( 23, 50 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER );
+	m_endGameDelayTimer = 3.0f;
+	m_maps.clear();
 
-	m_maps.push_back( map1Def );
-	m_maps.push_back( map2Def );
-	m_maps.push_back( map3Def );
+	MapDef map1Def = CreateMapDef(IntVec2( 25, 35 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER);
+	MapDef map2Def = CreateMapDef( IntVec2( 20, 50 ), TILE_TYPE_GRASS, TILE_TYPE_BRICK_STONE, TILE_TYPE_BRICK_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
+	MapDef map3Def = CreateMapDef( IntVec2( 30, 20 ), TILE_TYPE_SAND, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
+
+	m_maps.push_back( new Map( g_game, map1Def ) );
+	m_maps.push_back( new Map( g_game, map2Def ) );
+	m_maps.push_back( new Map( g_game, map3Def ) );
 	
-	m_currentMap = new Map( g_game, m_maps[m_currentMapNumber]);
+	m_currentMap = m_maps[m_currentMapNumber];
 	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
 	m_nextMap = m_currentMap;
 	m_isPaused = false;
@@ -98,15 +102,40 @@ void Game::Update(float deltaSeconds)
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
+		m_hasWon = false;
+		m_isPaused = false;
+		m_endGame = false;
+		m_currentMapNumber = 0;
 		UpdateAttractMode( deltaSeconds );
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
-		PlayerSwapMap();
+		if ( m_endGame )
+		{
+			m_endGameDelayTimer -= deltaSeconds;
+			if ( m_endGameDelayTimer <= 0.f )
+			{
+				m_nextGameState = GAMESTATE_ATTRACT;
+			}
+		return;
+		}
+		PlayerPortalEndConditionCheck();
 		if ( m_isSlowMo ) // T pressed
 		{
 			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+		}
+
+		if ( m_isFastMo ) // T pressed
+		{
+			deltaSeconds = deltaSeconds * 3; // Run at 1/10th the speed
+		}
+
+		if ( m_hasWon || m_currentMap->m_lostGame )
+		{
+			m_endGame = true;
+			m_isPaused = true;
+			return;
 		}
 
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
@@ -127,9 +156,9 @@ void Game::Render() const
 {
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	
-
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
+		g_engine->m_render->BindTexture( nullptr );
 		RenderAttractMode();
 		return;
 	}
@@ -142,7 +171,17 @@ void Game::Render() const
 		g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderUI();
 		RenderEntities();
-		if ( m_isPaused )
+		if ( m_hasWon )
+		{
+			g_engine->m_audio->StartSound( 8, false, 0.8f ); // TODO fix repeat sounds
+			RenderWinLoseSreen( m_endWinScreen );
+		}
+		if ( m_currentMap->m_lostGame )
+		{
+			g_engine->m_audio->StartSound( 9, false, 0.8f );
+			RenderWinLoseSreen( m_endLoseScreen );
+		}
+		if ( m_isPaused && ( !m_currentMap->m_lostGame && !m_hasWon ))
 		{
 			RenderPauseSreen();
 		}
@@ -183,6 +222,8 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
 
+	m_isFastMo =  g_engine->m_input->IsKeyDown('F');
+
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{
 		m_isPaused = !m_isPaused; // Switch pause
@@ -203,16 +244,23 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		}
 	}
 
-	if (g_engine->m_input->WasKeyJustPressed('I'))
+	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F9))
 	{
-		m_currentMapNumber = ( m_currentMapNumber + 1 ) % static_cast<int>(m_maps.size());
-		m_nextMap = new Map( g_game, m_maps[m_currentMapNumber] );
+		m_currentMapNumber += 1;
+		if ( m_currentMapNumber < m_maps.size() )
+		{
+			m_nextMap = m_maps[m_currentMapNumber];
+		}
+		
+		//RenderWinLoseSreen( m_endWinScreen );
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
 		g_drawDebug = !g_drawDebug;
 	}
+	if ( m_currentMap )
+		m_currentMap->UpdatePlayerDevControls( controller );
 
 	g_engine->m_input->EndFrame();
 }
@@ -227,8 +275,24 @@ void Game::RenderPauseSreen() const
 		tempPauseWorldVerts[vertIndex] = m_pauseScreenVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempPauseWorldVerts, 100.f, 0.0f, Vec2(0.0f, 0.0f));
+	 TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempPauseWorldVerts, 100.f, 0.0f, Vec2(0.0f, 0.0f));
 	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempPauseWorldVerts );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderWinLoseSreen( Texture* texture ) const
+{
+	Vertex tempPauseWorldVerts[NUM_PLAYER_VERTS];
+
+	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
+	{
+		tempPauseWorldVerts[vertIndex] = m_winLoseScreen[vertIndex];
+	}
+
+	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempPauseWorldVerts, 10.f, 0.0f, Vec2(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f));
+	g_engine->m_render->BindTexture( texture );
+	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempPauseWorldVerts );
+	g_engine->m_render->BindTexture( nullptr );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -239,9 +303,6 @@ void Game::RenderUI() const
 
 	g_engine->m_render->BeginCamera( *m_screenCamera );
 
-	char textBuffer[64];
-	snprintf(textBuffer, sizeof(textBuffer), "Time: %.2f", m_roundTime);
-	RenderText(textBuffer, Vec2(700.f, 750.f), 20.f, Rgba8(50, 150, 255, 255));
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
@@ -378,6 +439,13 @@ void Game::LoadSounds()
 	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Tank!.mp3" );		//	SoundID = 0
 	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/tragic.mp3");				//	SoundID = 1
 	m_gameMusicPlaybackID = g_engine->m_audio->CreateOrGetSound("Data/Audio/lobby.mp3");	//	SoundID = 2
+	m_shootSound = g_engine->m_audio->CreateOrGetSound("Data/Audio/PlayerShootNormal.ogg"); //	SoundID = 3
+	m_enemyDied = g_engine->m_audio->CreateOrGetSound( "Data/Audio/EnemyDied.wav" );		//	SoundID = 4
+	m_bulletBounce = g_engine->m_audio->CreateOrGetSound( "Data/Audio/BulletRicochet.wav" );	//	SoundID = 5
+	m_enemyHit = g_engine->m_audio->CreateOrGetSound( "Data/Audio/EnemyHit.wav" );			//	SoundID = 6
+	m_playerHit = g_engine->m_audio->CreateOrGetSound( "Data/Audio/PlayerHit.wav" );		//	SoundID = 7
+	m_victorySound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );		//	SoundID = 8
+	m_lossSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );			//	SoundID = 9
 
 }
 
@@ -483,6 +551,17 @@ void Game::InitializePauseVerts()
 }
 
 //-----------------------------------------------------------------------------------------------
+void Game::InitializeWinLoseVerts()
+{
+	m_winLoseScreen[0] = Vertex( Vec3( -1.0f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
+	m_winLoseScreen[1] = Vertex( Vec3( 1.0f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 0.f ) );
+	m_winLoseScreen[2] = Vertex( Vec3( 1.0f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
+	m_winLoseScreen[3] = Vertex( Vec3( -1.0f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
+	m_winLoseScreen[4] = Vertex( Vec3( 1.0f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
+	m_winLoseScreen[5] = Vertex( Vec3( -1.0f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 1.f ) );
+}
+
+//-----------------------------------------------------------------------------------------------
 MapDef Game::CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile )
 {
 	MapDef mapDef;
@@ -498,10 +577,20 @@ MapDef Game::CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edg
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::PlayerSwapMap()
+void Game::PlayerPortalEndConditionCheck()
 {
 	if ( m_currentMap->IsPlayerOnPortal() )
 	{
+		if ( m_currentMapNumber == (m_maps.size() - 1) )
+		{
+			m_hasWon = true;
+			m_isPaused = true;
+			g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
+			return;
+		}
+
+		m_currentMapNumber = ( m_currentMapNumber + 1 ) % static_cast< int >( m_maps.size() );
+		m_nextMap = m_maps[m_currentMapNumber];
 		MovePlayerToNewMap();
 		m_currentMap = m_nextMap;
 	}
@@ -531,4 +620,6 @@ void Game::LoadTextures()
 	m_ariesBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyAries.png" );
 	m_goodBulletTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/FriendlyShell.png" );
 	m_badBulletTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyBullet.png" );
+	m_endWinScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/VictoryScreen.jpg" );
+	m_endLoseScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/YouDiedScreen.png" );
 }

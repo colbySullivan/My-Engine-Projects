@@ -58,9 +58,12 @@ public:
 	bool				m_isQuitting = false;
 	bool				m_isPaused = false;
 	bool				m_isSlowMo = false;
+	bool				m_isFastMo = false;
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
 	bool				m_playingEndSound = false;
+	bool				m_hasWon = false;
+	bool				m_endGame = false;
 
 	// Utility
 	int					m_roundNumber = 1;
@@ -70,11 +73,12 @@ public:
 	float				m_shipAnimationTimer = 0.0f;
 	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
-	float 				m_roundTime;	
+	float 				m_endGameDelayTimer = 3.0f;	
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
-	std::vector<MapDef> m_maps = {};
+	std::vector<Map*> m_maps = {};
 	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
+	Vertex				m_winLoseScreen[NUM_PLAYER_VERTS];
 	SpriteSheet*		m_tilesSpriteSheet;
 
 
@@ -89,6 +93,8 @@ public:
 	Texture* m_ariesBodyTexture;
 	Texture* m_goodBulletTexture;
 	Texture* m_badBulletTexture;
+	Texture* m_endWinScreen;
+	Texture* m_endLoseScreen;
 
 
 	// Camera
@@ -101,9 +107,17 @@ public:
 	SoundPlaybackID		m_gameMusicPlaybackID = MISSING_SOUND_ID;
 	SoundPlaybackID		m_currentSound = MISSING_SOUND_ID;
 	SoundPlaybackID		m_roundChangeSound = MISSING_SOUND_ID;
+	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
+	SoundPlaybackID		m_enemyDied = MISSING_SOUND_ID;
+	SoundPlaybackID		m_bulletBounce = MISSING_SOUND_ID;
+	SoundPlaybackID		m_enemyHit = MISSING_SOUND_ID;
+	SoundPlaybackID		m_playerHit = MISSING_SOUND_ID;
+	SoundPlaybackID		m_victorySound = MISSING_SOUND_ID;
+	SoundPlaybackID		m_lossSound = MISSING_SOUND_ID;
+
+
 	SoundPriority		m_currentSoundPriority = PRIORITY_LOW;
 	float				m_soundDurationTimer = 0.f;
-	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
 	float				m_shotSoundDurationTimer = 0.f;
 
 
@@ -115,6 +129,7 @@ private:
 	void RenderAttractMode() const;
 	void RenderEntities() const;
 	void RenderPauseSreen() const;
+	void RenderWinLoseSreen( Texture* texture ) const;
 
 	void UpdateCameras( float deltaSeconds );
 	void UpdateAttractMode( float deltaSeconds );
@@ -123,6 +138,7 @@ private:
 
 	void LoadSounds();
 	void InitializePauseVerts();
+	void InitializeWinLoseVerts();
 	void MovePlayerToNewMap();
 	void LoadTextures();
 	MapDef CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile );
@@ -132,5 +148,5 @@ private:
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
-	void PlayerSwapMap();
+	void PlayerPortalEndConditionCheck();
 };

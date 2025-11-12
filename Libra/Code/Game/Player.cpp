@@ -1,5 +1,6 @@
 #include "Game/Player.hpp"
 #include "Game/Game.hpp"
+#include "Game/Map.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
@@ -14,13 +15,15 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_isPushedByEntities = true;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
-	m_health = 100;
+	m_health = PLAYER_HEALTH;
+	m_lives = PLAYER_LIVES;
 	m_bulletCooldown = 0.1f;
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;
 	m_bodyTexture = m_game->m_playerBodyTexture;
 	m_turretTexture = m_game->m_playerTurretTexture;
+	m_map = map;
 
 	g_engine->m_render->BindTexture( nullptr );
 }
@@ -34,11 +37,19 @@ Player::~Player()
 //------------------------------------------------------------------------------
 void Player::Update([[maybe_unused]] float deltaSeconds)
 {
+	if ( m_health <= 0 )
+	{
+		return;
+	}
 	m_isMoving = false;
 	m_velocity = GetForwardNormal() * PLAYER_SPEED;
-	Entity::Update(deltaSeconds);
 	UpdateFromKeyboard(deltaSeconds);
 	UpdateFromController(deltaSeconds);
+
+	if ( m_lives <= 0 )
+	{
+		m_map->m_lostGame = true;
+	}
 
 	if ( !m_isMoving )
 	{
@@ -49,11 +60,16 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
  		TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
 	}
 	m_position += m_velocity * deltaSeconds;
+
 }
 
 //------------------------------------------------------------------------------
 void Player::Render() const
 {
+	if ( m_health <= 0 )
+	{
+		return;
+	}
 	RenderPlayer();
 	RenderTurret();
 }
@@ -246,11 +262,6 @@ void Player::InitializeTurretVerts()
 //------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 {
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_F3 ) )
-	{
-		m_noClip = !m_noClip;
-	}
-
 	m_isMoving = PlayerControlKeyboard();
 	TurretControlKeyboard();
 }
@@ -258,7 +269,12 @@ void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 //------------------------------------------------------------------------------
 void Player::Respawn()
 {
-
+	if ( m_lives > 1 )
+	{
+		m_isDead = false;
+	}
+	m_lives -= 1;
+	m_health = PLAYER_HEALTH;
 }
 
 //------------------------------------------------------------------------------

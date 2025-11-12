@@ -13,8 +13,7 @@ public:
 	virtual void Render() const override;
 	virtual bool TakeDamage(  Vec2 bulletPos ) override;
 
-	void Shoot();
-	void DriveForward( float deltaSeconds );
+	void Respawn() override;
 
 private:
 

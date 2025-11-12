@@ -25,23 +25,13 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	m_debugCamera = false;
 	BuildMapTiles();
 	//SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
-	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.5f, 5.5f ), 0.f, FACTION_EVIL );
 
-	for (int Index = 0; Index < 10 ; ++Index)
-	{
-		//SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		//SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
-	}
+	CreateInitialEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::Update( float deltaSeconds)
 {
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_F4 ) )
-	{
-		m_debugCamera = !m_debugCamera;
-	}
 	PushEntityOutOfEachOther();
 	CheckLineOfSights();
 	UpdateCameras();
@@ -368,10 +358,30 @@ void Map::FillTile1Setup()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::AddToEntityVector( Entity* e )
+void Map::UpdatePlayerDevControls( XboxController const& controller )
 {
-	/*m_entities.reserve( static_cast< int >( m_entities.size() ) + 1 );
-	m_entities.push_back( e );*/
+	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F3 ) )
+	{
+		player->m_noClip = !player->m_noClip;
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F2 ) )
+	{
+
+		player->m_isProtected = !player->m_isProtected;
+	}
+
+	if (( g_engine->m_input->WasKeyJustPressed( 'R' ) || controller.WasButtonJustPressed(XboxButtonID::A) ) && player->m_isDead )
+	{
+		player->Respawn();
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F4 ) )
+	{
+		m_debugCamera = !m_debugCamera;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -427,6 +437,7 @@ void Map::UpdateEntities( float deltaSeconds )
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 Vec2 Map::GetRandomValidPointInMap()
 {
 	IntVec2 newTileCoords = IntVec2(0,0);
@@ -451,6 +462,17 @@ void Map::CheckLineOfSights()
 				
 			}
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::CreateInitialEntities()
+{
+	for ( int Index = 0; Index < 10; ++Index )
+	{
+		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
 	}
 }
 
@@ -514,4 +536,11 @@ bool Map::IsPlayerOnPortal()
 	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
 	Vec2 portalPosition( m_dimensions.x - 2.f, m_dimensions.y - 2.f );
  	return ( player->m_position - portalPosition ).GetLengthSquared() < 0.5f;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Map::IsPlayerAlive()
+{
+	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+	return !player->m_isDead;
 }

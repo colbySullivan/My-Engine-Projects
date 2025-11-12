@@ -11,7 +11,7 @@ public:
 	virtual void Update( float deltaSeconds ) override;
 	virtual void Render() const override;
 
-	void DriveForward( float deltaSeconds );
+	void Respawn() override;
 	void Wander( float deltaSeconds );
 
 private:

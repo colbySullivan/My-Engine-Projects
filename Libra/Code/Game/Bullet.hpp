@@ -11,10 +11,9 @@ public:
 	virtual void Update( float deltaSeconds ) override;
 	virtual void Render() const override;
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
+	void Die() override;
 
-
-	void Shoot();
-	void DriveForward( float deltaSeconds );
+	void Respawn() override;
 	void Wander( float deltaSeconds );
 
 private:

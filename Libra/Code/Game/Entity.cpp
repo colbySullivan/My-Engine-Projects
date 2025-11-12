@@ -47,6 +47,10 @@ void Entity::DebugRender() const
 	{
 		DebugDrawRing(m_position, m_physicsRadius, 0.01f, Rgba8(255,0,255)); // Outer circle
 	}
+	if ( m_isProtected )
+	{
+		DebugDrawRing( m_position, m_physicsRadius + 0.1f, 0.1f, Rgba8( 255, 100, 255 ) ); // Outer circle
+	}
 	DebugDrawRing(m_position, m_cosmeticRadius, 0.01f, Rgba8(0,255,255)); // Inner circle
 
 	Vec2 forwardDebugLine = m_position + GetForwardNormal() * m_cosmeticRadius;
@@ -69,6 +73,7 @@ void Entity::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	m_game->m_enemyDied = g_engine->m_audio->StartSound( 4, false, 0.8f );
 	m_isGarbage = true;
 	m_isDead = true;
 }
@@ -141,8 +146,9 @@ void Entity::spawnRandomEdge()
 //-----------------------------------------------------------------------------------------------
 void Entity::SearchForPlayerAndTryToShoot( float deltaSeconds )
 {
+	m_targetPos = Vec2( 0.f, 0.f );
 	Entity* player = m_map->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
-	if ( m_map->HasLineOfSight( player->m_position, m_position ) && !player->m_isDead)
+	if ( m_map->HasLineOfSight( player->m_position, m_position ) && m_map->IsPlayerAlive())
 	{
 		m_targetPos = player->m_position;
 		Vec2 toPlayerPos = player->m_position - m_position;
@@ -195,6 +201,12 @@ bool Entity::IsPlayer() const
 }
 
 //-----------------------------------------------------------------------------------------------
+void Entity::Respawn()
+{
+
+}
+
+//-----------------------------------------------------------------------------------------------
 EntityType Entity::GetEntityType() const
 {
 	return m_entityType;
@@ -228,19 +240,24 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 		Vec2 turretForward = Vec2::MakeFromPolarDegrees( fireOrientation );
 		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
 
+		m_game->m_shootSound = g_engine->m_audio->StartSound( 3, false, 0.8f );
 		m_map->SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, bulletSpawnPos, fireOrientation, faction );
 		m_timeSinceLastShot = m_bulletCooldown;
 	}
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Entity::TakeDamage( Vec2 [[maybe_unused]] bulletPos )
+bool Entity::TakeDamage( [[maybe_unused]] Vec2 bulletPos )
 {
 	if ( m_health <= 0 )
 	{
 		m_isDead = true;
 	}
-	m_health -= 1;
+	if ( !m_isProtected )
+	{
+		m_health -= 1;
+	}
+	m_game->m_playerHit = g_engine->m_audio->StartSound( 7, false, 0.8f );
 	return true;
 }
 

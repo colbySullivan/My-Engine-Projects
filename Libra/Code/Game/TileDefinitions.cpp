@@ -62,6 +62,20 @@ void TileDefinition::InitializeTileDefs()
 	s_definitions[TILE_TYPE_START].m_uvs = AABB2( startMins, startMaxs );
 	s_definitions[TILE_TYPE_START].m_isSolid = false;
 	s_definitions[TILE_TYPE_START].m_tint = Rgba8( 255, 255, 255, 255 );
+
+	const SpriteDefinition& brickStoneSprite = tilesSpriteSheet->GetSpriteDef( 16 );
+	Vec2 brickStoneMins, brickStoneMaxs;
+	brickStoneSprite.GetUVs( brickStoneMins, brickStoneMaxs );
+	s_definitions[TILE_TYPE_BRICK_STONE].m_uvs = AABB2( brickStoneMins, brickStoneMaxs );
+	s_definitions[TILE_TYPE_BRICK_STONE].m_isSolid = true;
+	s_definitions[TILE_TYPE_BRICK_STONE].m_tint = Rgba8( 255, 255, 255, 255 );
+
+	const SpriteDefinition& sandSprite = tilesSpriteSheet->GetSpriteDef( 47 );
+	Vec2 sandMins, sandMaxs;
+	sandSprite.GetUVs( sandMins, sandMaxs );
+	s_definitions[TILE_TYPE_SAND].m_uvs = AABB2( sandMins, sandMaxs );
+	s_definitions[TILE_TYPE_SAND].m_isSolid = false;
+	s_definitions[TILE_TYPE_SAND].m_tint = Rgba8( 255, 255, 255, 255 );
  }
 
 TileDefinition::TileDefinition()

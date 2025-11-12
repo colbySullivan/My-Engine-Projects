@@ -30,9 +30,9 @@ Aries::~Aries()
 void Aries::Update( float deltaSeconds )
 {
 	Entity::Update( deltaSeconds );
-
+	m_targetPos = Vec2( 0.f, 0.f );
 	Entity* player = m_map->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
-	if ( m_map->HasLineOfSight( player->m_position, m_position ) && !player->m_isDead )
+	if ( m_map->HasLineOfSight( player->m_position, m_position ) && m_map->IsPlayerAlive() )
 	{
 		m_targetPos = player->m_position;
 		Vec2 toPlayerPos = player->m_position - m_position;
@@ -79,6 +79,7 @@ bool Aries::TakeDamage( Vec2 bulletPos )
 {
 	if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
 	{
+		m_game->m_bulletBounce = g_engine->m_audio->StartSound( 5, false, 2.8f );
 		return false;
 	}
 	else
@@ -94,15 +95,8 @@ bool Aries::TakeDamage( Vec2 bulletPos )
 	}
 }
 
-
 //-----------------------------------------------------------------------------------------------
-void Aries::Shoot()
+void Aries::Respawn()
 {
-	
-}
 
-//-----------------------------------------------------------------------------------------------
-void Aries::DriveForward( float deltaSeconds )
-{
-	
 }

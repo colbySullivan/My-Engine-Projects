@@ -18,21 +18,18 @@ public:
 	virtual void Update(float deltaSeconds) override;
 	virtual void Render() const override;
 	virtual bool IsPlayer() const override;
-	//void Die() override;
 
-	int					m_lives = 4;
+	int					m_lives = 1;
+	void Respawn() override;
 
 private:
 	void InitializePlayerVerts();
 	void UpdateFromKeyboard(float deltaSeconds);
 	//void Shoot();
-	void Respawn();
-
 	void UpdateFromController(float deltaSeconds);
 	void InitializeTurretVerts();
 	void RenderPlayer() const;
 	void RenderTurret() const;
-	void ControlOrientationTurning( float m_orientationDegrees );
 
 	bool PlayerControlKeyboard();
 	bool TurretControlKeyboard();

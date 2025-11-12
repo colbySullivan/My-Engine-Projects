@@ -72,19 +72,23 @@ public:
 	void SprinkleTileSetup();
 	void FillTile1Setup();
 
-	//IsPointInSolid(), (), RaycastVsTiles()
+	// Update
+	void Update( float deltaSeconds );
+	void UpdatePlayerDevControls( XboxController const& controller );
 
 	// Utility
-	void Update( float deltaSeconds );
 	void AddToEntityVector( Entity* e );
 	bool HasLineOfSight( Vec2 posA, Vec2 posB) const;
 	RaycastResult2D RaycastVsTiles( Vec2 startPos, Vec2 fwdNormal, float maxDist ) const;
-	//RaycastResult2D	RaycastVsTiles2( Vec2 startPos, Vec2 fwdNormal, float maxDist );
 	Entity* SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees, EntityFaction faction );
 	void AddEntityToMap( Entity& e );
 	void RemoveEntityFromMap( Entity& e );
 	void DestroyGarbageEntities();
 	bool IsPlayerOnPortal();
+	bool IsPlayerAlive();
+	void CreateInitialEntities();
+
+	bool m_lostGame = false;
 
 	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
 	EntityList m_allEntities;

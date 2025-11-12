@@ -49,6 +49,7 @@ public:
 	virtual void DebugRender() const;
 	virtual void Die();
 	virtual bool IsPlayer() const;
+	virtual void Respawn();
 	virtual EntityType GetEntityType() const;
 	virtual void TryShoot( float fireOrientation, float deltaSeconds, EntityFaction faction );
 	virtual bool TakeDamage( Vec2 bulletPos );
@@ -99,5 +100,6 @@ public:
 	Vec2			m_targetPos;
 	float			m_timeSinceLastShot;
 	float			m_bulletCooldown;
+	bool			m_isProtected = false;
 
 };

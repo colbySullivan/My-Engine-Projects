@@ -78,6 +78,19 @@ void Bullet::AddVertsForMe( std::vector<Vertex>& verts ) const
 }
 
 //-----------------------------------------------------------------------------------------------
+void Bullet::Die()
+{
+	m_isGarbage = true;
+	m_isDead = true;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Bullet::Respawn()
+{
+
+}
+
+//-----------------------------------------------------------------------------------------------
 void Bullet::CheckEntityCollisions()
 {
 	EntityList const& entities = m_game->m_currentMap->m_allEntities;
