@@ -27,11 +27,11 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	//SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, Vec2( 5.5f, 5.5f ), 0.f, FACTION_EVIL );
 
-	for (int Index = 0; Index < 5 ; ++Index)
+	for (int Index = 0; Index < 10 ; ++Index)
 	{
-		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		//SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
+		//SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+		//SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, Vec2( 6.f, 6.f ), 0.f, FACTION_EVIL );
 	}
 }
 

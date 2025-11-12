@@ -28,7 +28,7 @@ Entity::~Entity()
 //-----------------------------------------------------------------------------------------------
 void Entity::Update( [[maybe_unused]] float deltaSeconds)
 {
-	if (m_health <= 0 && !m_isDead)
+	if (m_health <= 0 || m_isDead)
 	{
 		Die();
 	}
@@ -234,13 +234,13 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 }
 
 //-----------------------------------------------------------------------------------------------
-void Entity::TakeDamage()
+bool Entity::TakeDamage( Vec2 [[maybe_unused]] bulletPos )
 {
 	if ( m_health <= 0 )
 	{
 		m_isDead = true;
-		return;
 	}
 	m_health -= 1;
+	return true;
 }
 

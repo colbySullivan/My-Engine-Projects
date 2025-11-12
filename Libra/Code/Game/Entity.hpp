@@ -51,8 +51,8 @@ public:
 	virtual bool IsPlayer() const;
 	virtual EntityType GetEntityType() const;
 	virtual void TryShoot( float fireOrientation, float deltaSeconds, EntityFaction faction );
+	virtual bool TakeDamage( Vec2 bulletPos );
 
-	void		TakeDamage();
 	void		Wander( float deltaSeconds );
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;

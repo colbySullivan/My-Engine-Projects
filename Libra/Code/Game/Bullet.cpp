@@ -24,7 +24,6 @@ Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	}
 	m_entityType = ENTITY_TYPE_GOOD_BULLET;
 	g_engine->m_render->BindTexture( nullptr );
-	m_bulletLifeTime = BULLET_LIFETIME_SECONDS;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -37,7 +36,7 @@ Bullet::~Bullet()
 //-----------------------------------------------------------------------------------------------
 void Bullet::Update( float deltaSeconds )
 {
-	if ( m_bulletLifeTime < 0 || m_isDead )
+	if ( m_isDead )
 	{
 		m_isDead = true;
 		Die();
@@ -85,14 +84,22 @@ void Bullet::CheckEntityCollisions()
 	for ( int i = 0; i < entities.size(); i++ )
 	{
 		Entity* other = entities[i];
-		if ( !other || other->m_isDead || other == this ) // TODO skip if bullet
+		if ( !other || other->m_isDead || other == this )
 			continue;
 		if ( other->m_faction != m_faction )
 		{
 			if ( DoDiscsOverlap( m_position, m_physicsRadius, other->m_position, other->m_physicsRadius ) )
 			{
-				other->TakeDamage();
-				m_isDead = true;
+				if ( other->TakeDamage( m_position ) )
+				{
+					m_isDead = true;
+				}
+				else
+				{
+					Vec2 reflectNormal = ( m_position - other->m_position ).GetNormalized();
+					m_velocity = m_velocity.GetReflected( reflectNormal );
+					m_orientationDegrees = m_velocity.GetOrientationDegrees();
+				}
 				return;
 			}
 		}
@@ -101,7 +108,6 @@ void Bullet::CheckEntityCollisions()
 
 void Bullet::SpawnAndShoot( float deltaSeconds )
 {
-	m_bulletLifeTime -= deltaSeconds;
 	m_velocity = Vec2::MakeFromPolarDegrees( m_orientationDegrees, BULLET_SPEED );
 	Vec2 nextPosition = m_position + m_velocity * deltaSeconds;
 	IntVec2 nextTileCoords = m_game->m_currentMap->GetTileCoordsForWorldPos( nextPosition );

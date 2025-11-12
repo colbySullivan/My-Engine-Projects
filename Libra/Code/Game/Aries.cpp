@@ -1,5 +1,6 @@
 #include "Game/Aries.hpp"
 #include "Game/Game.hpp"
+#include "Game/Map.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 
@@ -30,7 +31,27 @@ void Aries::Update( float deltaSeconds )
 {
 	Entity::Update( deltaSeconds );
 
-	Entity::Wander( deltaSeconds );
+	Entity* player = m_map->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+	if ( m_map->HasLineOfSight( player->m_position, m_position ) && !player->m_isDead )
+	{
+		m_targetPos = player->m_position;
+		Vec2 toPlayerPos = player->m_position - m_position;
+		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
+		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, Atan2Degrees( directionToPlayer.y, directionToPlayer.x ), .5f );
+	}
+	if ( m_targetPos != Vec2( 0.f, 0.f ) && m_position != m_targetPos )
+	{
+		if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 90.f, LEO_MAX_VIS ) )
+		{
+			Vec2 forwardDir = GetForwardNormal();
+			m_velocity = forwardDir;
+			m_position += m_velocity * deltaSeconds * 0.5;
+		}
+	}
+	else
+	{
+		Wander( deltaSeconds );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -52,6 +73,27 @@ void Aries::Render() const
 		DebugRender();
 	}
 }
+
+//-----------------------------------------------------------------------------------------------
+bool Aries::TakeDamage( Vec2 bulletPos )
+{
+	if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
+	{
+		return false;
+	}
+	else
+	{
+		m_health -= 1;
+
+		if ( m_health <= 0 )
+		{
+			m_isDead = true;
+			return true;
+		}
+		return true;
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void Aries::Shoot()
