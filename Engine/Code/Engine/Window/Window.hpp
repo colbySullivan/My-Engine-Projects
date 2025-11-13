@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Engine/Math/Vec2.hpp"
 
 //------------------------------------------------------------------------------
 struct Rgba8;
@@ -23,6 +24,7 @@ public:
 	void Shutdown();
 	void BeginFrame();
 	void EndFrame();
+	Vec2 GetNormalizedMouseUV() const;
 
 	WindowConfig	m_config;
 	void*			m_displayDeviceContext = 0;

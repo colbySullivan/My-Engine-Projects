@@ -20,6 +20,8 @@ unsigned char const KEYCODE_DOWNARROW = 0x28;
 unsigned char const KEYCODE_UPARROW = 0x26;
 unsigned char const KEYCODE_LEFTARROW = 0x25;
 unsigned char const KEYCODE_RIGHTARROW = 0x27;
+unsigned char const KEYCODE_LEFT_MOUSE = VK_LBUTTON;
+unsigned char const KEYCODE_RIGHT_MOUSE = VK_RBUTTON;
 
 InputSystem::InputSystem( InputConfig const& config ) 
 	: m_config( config )

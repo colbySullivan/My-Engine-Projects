@@ -77,6 +77,24 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 		g_engine->m_input->HandleKeyReleased( asKey );
 		break;
 	}
+
+	case WM_LBUTTONDOWN: // Like WM_KEYDOWN but for left mouse button
+	{
+		if( g_engine->m_input )
+		{
+			g_engine->m_input->HandleKeyPressed( KEYCODE_LEFT_MOUSE );
+		}
+		return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+	}
+
+	case WM_LBUTTONUP: // Like WM_KEYUP but for left mouse button
+	{
+		if( g_engine->m_input )
+		{
+			g_engine->m_input->HandleKeyReleased( KEYCODE_LEFT_MOUSE );
+		}
+		return 0; // "Consumes" this message (tells Windows "okay, we handled it")
+	}
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
@@ -196,4 +214,21 @@ void Window::RunMessagePump()
 		TranslateMessage( &queuedMessage );
 		DispatchMessage( &queuedMessage ); // This tells Windows to call our "WindowsMessageHandlingProcedure" (a.k.a. "WinProc") function
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+// Returns the mouse cursor's current position relative to the interior client area of our
+// window, in normalized UV coordinates -- (0,0) is bottom-left, (1,1) is top-right.
+//-------------------------------------------------------------------------------------------
+Vec2 Window::GetNormalizedMouseUV() const
+{
+    HWND windowHandle = static_cast< HWND >( m_windowHandle ); // Need to add this new void* member!
+    POINT cursorCoords;
+    RECT clientRect;
+    ::GetCursorPos( &cursorCoords ); // in Windows screen coordinates; (0,0) is top-left
+    ::ScreenToClient( windowHandle, &cursorCoords ); // get cursor relative to this window's client area
+    ::GetClientRect( windowHandle, &clientRect ); // dimensions of client area (0,0 to width,height)
+    float cursorX = static_cast< float >( cursorCoords.x ) / static_cast< float >( clientRect.right );
+    float cursorY = static_cast< float >( cursorCoords.y ) / static_cast< float >( clientRect.bottom );
+    return Vec2( cursorX, 1.f - cursorY ); // Flip Y; we want (0,0) bottom-left, not top-left
 }
