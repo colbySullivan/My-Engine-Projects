@@ -69,10 +69,6 @@ void Game::UpdateKeyboardInput()
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
-	//if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) )
-	//{
-	//	Startup();
-	//}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
