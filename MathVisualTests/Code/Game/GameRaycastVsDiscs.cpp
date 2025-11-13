@@ -7,19 +7,14 @@
 GameRaycastVsDiscs::GameRaycastVsDiscs( App* app )
 	: Game( app )
 {
+	// TODO randomize this
+	m_tailPos = Vec2( 0.f, 0.f );
+	m_tipPos = Vec2( 150.f, 75.f );
 }
 
 GameRaycastVsDiscs::~GameRaycastVsDiscs()
 {
-	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
-	{
-		if ( m_testShapes[Index] != nullptr )
-		{
-			delete m_testShapes[Index];
-			m_testShapes[Index] = nullptr;
-		}
-	}
-	m_testShapes.clear();
+	
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -45,6 +40,9 @@ void GameRaycastVsDiscs::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		m_pauseAfterNextUpdate = false;
 	}
+	//UpdateLine();
+	UpdateKeyboardPoints();
+	AddShapeVerts();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -59,10 +57,9 @@ void GameRaycastVsDiscs::Render() const
 	std::vector<Vertex> ring;
 	AddVertsForDisc2D( ring, Vec2( 150.f, 75.f ), 20.f, Rgba8( 0, 0, 255, 200 ) );
 	g_engine->m_render->DrawVertexArray( ring );
+	g_engine->m_render->DrawVertexArray( m_lineVerts );
 
 	Game::RenderGameText( GAMEMODE_RAYCAST_VS_DISCS );
-
-	RenderShapes();
 
 	g_engine->m_render->EndCamera( *m_worldCamera );
 }
@@ -70,21 +67,56 @@ void GameRaycastVsDiscs::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::AddShapeVerts()
 {
-	TestShape* infiniteLine = new TestShapeLine( Vec2( 10.f, 10.f ), Vec2( 190.f, 90.f ), Vec2( 0.5f, 0.5f ), Rgba8( 255, 0, 0, 255 ) );
-	m_testShapes.push_back( infiniteLine );
+	m_lineVerts.clear();
+	//AddVertsForArrow2D( m_lineVerts, Vec2( 0.f, 0.f ), Vec2( 150.f, 75.f ), 20.f, 1.f, Rgba8( 255, 255, 255 ) );
+	AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 20.f, 1.f, Rgba8( 255, 255, 255 ) );
+
 }
 
+//-----------------------------------------------------------------------------------------------
+void GameRaycastVsDiscs::UpdateLine()
+{
+	// TODO figure out how to use mouse pos to transform
+	TransformVertexArrayXY3D( static_cast< int >( m_lineVerts.size() ), m_lineVerts.data(), 1.f, 0.f, Vec2(1.f,1.f) );
+}
 
 //-----------------------------------------------------------------------------------------------
-void GameRaycastVsDiscs::RenderShapes() const
+void GameRaycastVsDiscs::UpdateKeyboardPoints()
 {
-	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
+	// Tail point
+	if ( g_engine->m_input->IsKeyDown( 'W' ) )
 	{
-		TestShape* shape = m_testShapes[Index];
-		if ( shape != nullptr )
-		{
-			shape->Render();
-		}
+		m_tailPos = m_tailPos + Vec2(0.f,1.f);
+	}
+	if ( g_engine->m_input->IsKeyDown( 'A' ) )
+	{
+		m_tailPos = m_tailPos + Vec2( -1.f, 0.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'S' ) )
+	{
+		m_tailPos = m_tailPos + Vec2( 0.f, -1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'D' ) )
+	{
+		m_tailPos = m_tailPos + Vec2( 1.f, 0.f );
+	}
+
+	// Head point
+	if ( g_engine->m_input->IsKeyDown( 'I' ) )
+	{
+		m_tipPos = m_tipPos + Vec2( 0.f, 1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'J' ) )
+	{
+		m_tipPos = m_tipPos + Vec2( -1.f, 0.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'K' ) )
+	{
+		m_tipPos = m_tipPos + Vec2( 0.f, -1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'L' ) )
+	{
+		m_tipPos = m_tipPos + Vec2( 1.f, 0.f );
 	}
 }
 

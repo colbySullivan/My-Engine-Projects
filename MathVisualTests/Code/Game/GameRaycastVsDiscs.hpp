@@ -19,7 +19,10 @@ public:
 
 private:
 	void AddShapeVerts();
-	void RenderShapes() const;
-	std::vector<TestShape*> m_testShapes;
+	void UpdateLine();
+	void UpdateKeyboardPoints();
 
+	std::vector<Vertex> m_lineVerts;
+	Vec2				m_tailPos;
+	Vec2				m_tipPos;
 };

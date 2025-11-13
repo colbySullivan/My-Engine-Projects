@@ -4,6 +4,21 @@
 #include "Engine/Math/OBB2.hpp"
 #define _USE_MATH_DEFINES // Used for PI
 
+//-----------------------------------------------------------------------------------------------
+struct RaycastResult2D
+{
+	// Basic raycast result information (required)
+	bool	m_didImpact = false;
+	float	m_impactDist = 0.f;
+	Vec2	m_impactPos;
+	Vec2	m_impactNormal;
+
+	// Original raycast information (optional)
+	Vec2	m_rayStartPos;
+	Vec2	m_rayFwdNormal;
+	float	m_rayMaxLength = 1.f;
+};
+
 //-----------------------------------------------------------------------------------
 // Forward type declarations
 struct Vec2;
@@ -71,6 +86,7 @@ bool    IsPointInsideAABB2D(Vec2 point, AABB2 const& alignedBox);
 bool    IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox);
 bool    IsPointInsideCapsule2D(Vec2 point, Vec2 boneStart, Vec2 boneEnd, float radius);
 bool    IsPointInsideTriangle2D(Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2); // Counter-Clockwise (positive winding)
+RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 discCenter, float discRadius );
 
 //-----------------------------------------------------------------------------------------------
 Vec2    GetNearestPointOnAABB2D(Vec2 referencePos, AABB2 const& alignedBox);

@@ -195,3 +195,10 @@ void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, 
 	verts.push_back( Vertex( Vec3( c.x, c.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
 	verts.push_back( Vertex( Vec3( d.x, d.y, 0.f ), color, Vec2( 0.f, 0.f ) ) );
 }
+
+//-----------------------------------------------------------------------------------------------
+void AddVertsForArrow2D( std::vector<Vertex>& verts, Vec2 tailPos, Vec2 tipPos, float arrowSize, float lineThickness, Rgba8 color )
+{
+	AddVertsForLineSegment2D( verts, tailPos, tipPos, Vec2( ( lineThickness * 0.5f ), ( lineThickness * 0.5f ) ), color );
+
+}

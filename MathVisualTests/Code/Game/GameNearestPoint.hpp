@@ -9,6 +9,7 @@
 #include "Game/TestShapeCapsule.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 
+class Window;
 
 //-----------------------------------------------------------------------------------------------
 class GameNearestPoint : public Game {
@@ -33,4 +34,5 @@ private:
 	//TestShapeLine*	m_line;
 	Vec2 m_pointPos = Vec2( 10.f, 60.f );
 	float m_speed = 50.f;
+	void* m_windowHandle = nullptr;
 };

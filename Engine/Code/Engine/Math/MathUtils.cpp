@@ -406,6 +406,17 @@ bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 }
 
 //-----------------------------------------------------------------------------------------------
+RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 discCenter, float discRadius )
+{
+	RaycastResult2D result;
+	result.m_didImpact = true;
+	result.m_impactDist = maxDist;
+	result.m_impactPos = startPos;
+	result.m_impactNormal = fwdNormal;
+	return result;
+}
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnAABB2D( Vec2 referencePos, AABB2 const& alignedBox )
 {
 	if ( IsPointInsideAABB2D( referencePos, alignedBox ) )
