@@ -10,6 +10,7 @@ GameRaycastVsDiscs::GameRaycastVsDiscs( App* app )
 	// TODO randomize this
 	m_tailPos = Vec2( 0.f, 0.f );
 	m_tipPos = Vec2( 150.f, 75.f );
+	//m_windowHandle = Window::m_windowHandle;
 }
 
 GameRaycastVsDiscs::~GameRaycastVsDiscs()
@@ -40,9 +41,8 @@ void GameRaycastVsDiscs::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		m_pauseAfterNextUpdate = false;
 	}
-	//UpdateLine();
+	UpdateLine();
 	UpdateKeyboardPoints();
-	AddShapeVerts();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -54,11 +54,12 @@ void GameRaycastVsDiscs::Render() const
 
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 
-	std::vector<Vertex> ring;
+	/*std::vector<Vertex> ring;
 	AddVertsForDisc2D( ring, Vec2( 150.f, 75.f ), 20.f, Rgba8( 0, 0, 255, 200 ) );
-	g_engine->m_render->DrawVertexArray( ring );
-	g_engine->m_render->DrawVertexArray( m_lineVerts );
+	g_engine->m_render->DrawVertexArray( ring );*/
 
+	RenderShapes();
+	g_engine->m_render->DrawVertexArray( m_lineVerts );
 	Game::RenderGameText( GAMEMODE_RAYCAST_VS_DISCS );
 
 	g_engine->m_render->EndCamera( *m_worldCamera );
@@ -67,17 +68,35 @@ void GameRaycastVsDiscs::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::AddShapeVerts()
 {
-	m_lineVerts.clear();
-	//AddVertsForArrow2D( m_lineVerts, Vec2( 0.f, 0.f ), Vec2( 150.f, 75.f ), 20.f, 1.f, Rgba8( 255, 255, 255 ) );
-	AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 20.f, 1.f, Rgba8( 255, 255, 255 ) );
+	TestShape* disc = new TestShapeDisc(
+		GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+		10.0f,
+		Rgba8( 0, 0, 255, 255 )
+	);
+	m_testShapes.push_back( disc );
+}
 
+//-----------------------------------------------------------------------------------------------
+void GameRaycastVsDiscs::RenderShapes() const
+{
+	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
+	{
+		TestShape* shape = m_testShapes[Index];
+		if ( shape != nullptr )
+		{
+			shape->Render();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::UpdateLine()
 {
 	// TODO figure out how to use mouse pos to transform
-	TransformVertexArrayXY3D( static_cast< int >( m_lineVerts.size() ), m_lineVerts.data(), 1.f, 0.f, Vec2(1.f,1.f) );
+	//TransformVertexArrayXY3D( static_cast< int >( m_lineVerts.size() ), m_lineVerts.data(), 1.f, 0.f, Vec2(1.f,1.f) );
+
+	m_lineVerts.clear();
+	AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 20.f, 1.f, Rgba8( 255, 255, 255 ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -120,3 +139,8 @@ void GameRaycastVsDiscs::UpdateKeyboardPoints()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+Vec2 GameRaycastVsDiscs::GetRandomPosition( float minX, float maxX, float minY, float maxY )
+{
+	return Vec2( g_rng->RollRandomFloatInRange( minX, maxX ), g_rng->RollRandomFloatInRange( minY, maxY ) );
+}
