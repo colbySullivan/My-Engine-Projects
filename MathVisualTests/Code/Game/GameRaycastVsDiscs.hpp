@@ -6,7 +6,7 @@
 #include "Game/TestShapeDisc.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 
-class Window;
+//class Window;
 
 //-----------------------------------------------------------------------------------------------
 class GameRaycastVsDiscs : public Game {
@@ -31,5 +31,5 @@ private:
 	std::vector<Vertex> m_lineVerts;
 	Vec2				m_tailPos;
 	Vec2				m_tipPos;
-	void*				m_windowHandle = nullptr;
+	//void*				m_windowHandle = nullptr;
 };

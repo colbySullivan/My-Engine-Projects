@@ -95,6 +95,24 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 		}
 		return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 	}
+
+	case WM_RBUTTONDOWN:
+	{
+		if ( g_engine->m_input )
+		{
+			g_engine->m_input->HandleKeyPressed( KEYCODE_RIGHT_MOUSE );
+		}
+		return 0;
+	}
+
+	case WM_RBUTTONUP:
+	{
+		if ( g_engine->m_input )
+		{
+			g_engine->m_input->HandleKeyReleased( KEYCODE_RIGHT_MOUSE );
+		}
+		return 0;
+	}
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)

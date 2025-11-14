@@ -137,6 +137,18 @@ void GameRaycastVsDiscs::UpdateKeyboardPoints()
 	{
 		m_tipPos = m_tipPos + Vec2( 1.f, 0.f );
 	}
+
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
+	{
+		AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
+		m_tailPos = screenSize.GetPointAtUV(g_engine->m_window->GetNormalizedMouseUV());
+	}
+
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_RIGHT_MOUSE ) )
+	{
+		AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
+		m_tipPos = screenSize.GetPointAtUV( g_engine->m_window->GetNormalizedMouseUV() );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
