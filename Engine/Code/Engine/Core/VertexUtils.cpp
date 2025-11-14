@@ -199,6 +199,21 @@ void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, 
 //-----------------------------------------------------------------------------------------------
 void AddVertsForArrow2D( std::vector<Vertex>& verts, Vec2 tailPos, Vec2 tipPos, float arrowSize, float lineThickness, Rgba8 color )
 {
-	AddVertsForLineSegment2D( verts, tailPos, tipPos, Vec2( ( lineThickness * 0.5f ), ( lineThickness * 0.5f ) ), color );
+	Vec2 lineThicknessVec = Vec2( ( lineThickness * 0.5f ), ( lineThickness * 0.5f ) );
+
+	Vec2 direction = tipPos - tailPos;
+	direction.Normalize();
+	Vec2 perpendicular = direction.GetRotatedBy90Degrees();
+	Vec2 arrowBase = tipPos - direction * arrowSize;
+
+	Vec2 wingLeft = arrowBase + perpendicular * ( arrowSize * 0.5f );
+	Vec2 wingRight = arrowBase - perpendicular * ( arrowSize * 0.5f );
+
+	// Main line
+	AddVertsForLineSegment2D( verts, tailPos, tipPos, lineThicknessVec, color );
+
+	// Arrow head
+	AddVertsForLineSegment2D( verts, tipPos, wingLeft, lineThicknessVec, color );
+	AddVertsForLineSegment2D( verts, tipPos, wingRight, lineThicknessVec, color );
 
 }

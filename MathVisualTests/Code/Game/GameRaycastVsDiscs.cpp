@@ -96,7 +96,7 @@ void GameRaycastVsDiscs::UpdateLine()
 	//TransformVertexArrayXY3D( static_cast< int >( m_lineVerts.size() ), m_lineVerts.data(), 1.f, 0.f, Vec2(1.f,1.f) );
 
 	m_lineVerts.clear();
-	AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 20.f, 1.f, Rgba8( 255, 255, 255 ) );
+	AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
 }
 
 //-----------------------------------------------------------------------------------------------
