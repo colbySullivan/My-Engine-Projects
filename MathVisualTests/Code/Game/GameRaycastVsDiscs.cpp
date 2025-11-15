@@ -68,8 +68,13 @@ void GameRaycastVsDiscs::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::AddShapeVerts()
 {
-	TestShape* disc = new TestShapeDisc(
+	/*TestShape* disc = new TestShapeDisc(
 		GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+		10.0f,
+		Rgba8( 0, 0, 255, 255 )
+	);*/
+	TestShape* disc = new TestShapeDisc(
+		Vec2( 150.f, 75.f ),
 		10.0f,
 		Rgba8( 0, 0, 255, 255 )
 	);
@@ -92,11 +97,28 @@ void GameRaycastVsDiscs::RenderShapes() const
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::UpdateLine()
 {
-	// TODO figure out how to use mouse pos to transform
-	//TransformVertexArrayXY3D( static_cast< int >( m_lineVerts.size() ), m_lineVerts.data(), 1.f, 0.f, Vec2(1.f,1.f) );
-
 	m_lineVerts.clear();
-	AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
+
+	Vec2 fwdLine = m_tipPos - m_tailPos;
+	float length = fwdLine.GetLength();
+	fwdLine.Normalize();
+
+	RaycastResult2D result = RaycastVsDisc2D( m_tailPos, fwdLine, length, Vec2( 150.f, 75.f ), 10.f );
+
+	if ( result.m_didImpact )
+	{
+		AddVertsForArrow2D( m_lineVerts, m_tailPos, result.m_impactPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
+
+		float normalLength = 10.f;
+		Vec2 normalImpactExtended = result.m_impactPos + ( result.m_impactNormal * normalLength );
+		AddVertsForArrow2D( m_lineVerts, result.m_impactPos, normalImpactExtended, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
+		AddVertsForArrow2D( m_lineVerts, result.m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
+	}
+	else
+	{
+		// Draw full ray from tail to tip (white)
+		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -141,13 +163,15 @@ void GameRaycastVsDiscs::UpdateKeyboardPoints()
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
 	{
 		AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
-		m_tailPos = screenSize.GetPointAtUV(g_engine->m_window->GetNormalizedMouseUV());
+		Vec2 screenMouseUV = g_engine->m_window->GetNormalizedMouseUV();
+		m_tailPos = screenSize.GetPointAtUV(screenMouseUV);
 	}
 
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_RIGHT_MOUSE ) )
 	{
 		AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
-		m_tipPos = screenSize.GetPointAtUV( g_engine->m_window->GetNormalizedMouseUV() );
+		Vec2 screenMouseUV = g_engine->m_window->GetNormalizedMouseUV();
+		m_tipPos = screenSize.GetPointAtUV( screenMouseUV );
 	}
 }
 

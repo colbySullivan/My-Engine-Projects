@@ -409,10 +409,55 @@ bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 discCenter, float discRadius )
 {
 	RaycastResult2D result;
+	Vec2 const& i = fwdNormal;
+	Vec2 j = fwdNormal.GetRotatedBy90Degrees();
+	Vec2 SC = discCenter - startPos;
+	float SCj = DotProduct2D( SC, j );
+	if ( SCj >= discRadius )
+	{
+		return result; // Too far to the left
+	}
+	if ( SCj <= -discRadius )
+	{
+		return result; // Too far to the right
+	}
+
+	float SCi = DotProduct2D( SC, i );
+	if ( SCi >= maxDist + discRadius )
+	{
+		return result; // Too late; disc is after ray end
+	}
+	if ( SCi <= -discRadius )
+	{
+		return result; // Too early; disc is before ray start
+	}
+
+	if ( IsPointInsideDisc2D( startPos, discCenter, discRadius ) )
+	{
+		// Hit started inside the disc
+		result.m_didImpact = true;
+		result.m_impactDist = 0.f;
+		result.m_impactPos = startPos;
+		result.m_impactNormal = -fwdNormal;
+		return result;
+	}	
+
+	float adjustmentDistance = sqrtf( ( discRadius * discRadius ) - ( SCj * SCj ) );
+	float impactDist = SCi - adjustmentDistance;
+
+	if ( impactDist >= maxDist )
+	{
+		return result; // Too late; impact point on dic would be after end of ray 
+	}
+	if ( impactDist <= 0.f )
+	{
+		return result; // Too early; impact point on dic would be before start of ray 
+	}
+
 	result.m_didImpact = true;
-	result.m_impactDist = maxDist;
-	result.m_impactPos = startPos;
-	result.m_impactNormal = fwdNormal;
+	result.m_impactDist = impactDist;
+	result.m_impactPos = startPos + ( fwdNormal * result.m_impactDist);
+	result.m_impactNormal = (result.m_impactPos - discCenter).GetNormalized();
 	return result;
 }
 
