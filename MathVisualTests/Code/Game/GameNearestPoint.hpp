@@ -19,6 +19,7 @@ public:
 	~GameNearestPoint();
 
 	void Startup() override;
+	void Shutdown() override;
 	void Update( float deltaSeconds ) override;
 	void Render() const override;
 

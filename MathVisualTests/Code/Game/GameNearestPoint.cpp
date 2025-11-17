@@ -12,15 +12,7 @@ GameNearestPoint::GameNearestPoint(App* app)
 
 GameNearestPoint::~GameNearestPoint()
 {
-	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
-	{
-		if ( m_testShapes[Index] != nullptr )
-		{
-			delete m_testShapes[Index];
-			m_testShapes[Index] = nullptr;
-		}
-	}
-	m_testShapes.clear();
+	Shutdown();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -28,6 +20,13 @@ void GameNearestPoint::Startup()
 {
 	Game::Startup();
 	AddShapeVerts();
+}
+
+//-----------------------------------------------------------------------------------------------
+void GameNearestPoint::Shutdown()
+{
+	m_testShapes.clear();
+	m_pointVerts.clear();
 }
 
 //-----------------------------------------------------------------------------------------------

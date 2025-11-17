@@ -23,7 +23,7 @@ public:
 	virtual void Startup();
 	virtual void Update( float deltaSeconds ) = 0;
 	virtual void Render() const = 0;
-	void Shutdown();
+	virtual void Shutdown();
 
 	// Game State
 	bool				m_isQuitting = false;

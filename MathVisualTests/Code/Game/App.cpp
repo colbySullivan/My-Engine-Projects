@@ -22,7 +22,6 @@ App::App()
 	g_gameMode = GAMEMODE_NEAREST_POINT;
 
 	m_game = new GameNearestPoint( this );
-	g_theGame = m_game;
 
 	m_game->Startup();
 }
@@ -66,11 +65,22 @@ void App::Update( float deltaSeconds )
 		return;
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F6 ) )
 	{
+		g_gameMode = static_cast< GameType >( ( g_gameMode + (GAME_NUM_TYPES - 1) ) % GAME_NUM_TYPES );
+
 		m_game->Shutdown();
 		delete m_game;
 		m_game = CreateNewGameOfType( g_gameMode );
+		m_game->Startup();
+		return;
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	{
+		m_game->Shutdown();
+		/*delete m_game;
+		m_game = CreateNewGameOfType( g_gameMode );*/
 		m_game->Startup();
 		return;
 	}

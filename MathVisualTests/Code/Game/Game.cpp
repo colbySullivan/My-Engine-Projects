@@ -37,8 +37,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
-	m_isPaused = false;
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -69,7 +68,7 @@ void Game::UpdateKeyboardInput()
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
-
+		
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
 		g_drawDebug = !g_drawDebug;
@@ -101,8 +100,8 @@ void Game::RenderGameText( GameType type ) const
 	char powerUpText[128];
 	switch ( type )
 	{
-		case GAMEMODE_NEAREST_POINT:			snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Nearest point (2D)");							break;
-		case GAMEMODE_RAYCAST_VS_DISCS:         snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Raycast vs Discs (2D) - NOT YET IMPLEMENTED");	break;
+		case GAMEMODE_NEAREST_POINT:		snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Nearest point (2D)");		break;
+		case GAMEMODE_RAYCAST_VS_DISCS:     snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Raycast vs Discs (2D)");	break;
 	}
 	RenderText( powerUpText, Vec2( 1.f, 95.f ), 2.f, Rgba8( 255, 215, 0, 255 ) );
 	RenderText( "F8 to randomize; WASD/Arrows = move reference point, hold T = slow", Vec2( 1.f, 93.f ), 2.f, Rgba8( 100, 120, 180, 255 ) );

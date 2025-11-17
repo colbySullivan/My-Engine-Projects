@@ -10,12 +10,11 @@ GameRaycastVsDiscs::GameRaycastVsDiscs( App* app )
 	// TODO randomize this
 	m_tailPos = Vec2( 0.f, 0.f );
 	m_tipPos = Vec2( 150.f, 75.f );
-	//m_windowHandle = Window::m_windowHandle;
 }
 
 GameRaycastVsDiscs::~GameRaycastVsDiscs()
 {
-	
+	Shutdown();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -23,6 +22,12 @@ void GameRaycastVsDiscs::Startup()
 {
 	Game::Startup();
 	AddShapeVerts();
+}
+
+//-----------------------------------------------------------------------------------------------
+void GameRaycastVsDiscs::Shutdown()
+{
+	m_testShapes.clear();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -55,10 +60,6 @@ void GameRaycastVsDiscs::Render() const
 
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 
-	/*std::vector<Vertex> ring;
-	AddVertsForDisc2D( ring, Vec2( 150.f, 75.f ), 20.f, Rgba8( 0, 0, 255, 200 ) );
-	g_engine->m_render->DrawVertexArray( ring );*/
-
 	RenderShapes();
 	g_engine->m_render->DrawVertexArray( m_lineVerts );
 	Game::RenderGameText( GAMEMODE_RAYCAST_VS_DISCS );
@@ -78,12 +79,6 @@ void GameRaycastVsDiscs::AddShapeVerts()
 		);
 		m_testShapes.push_back( disc );
 	}
-	/*TestShape* disc = new TestShapeDisc(
-		Vec2( 150.f, 75.f ),
-		10.0f,
-		Rgba8( 0, 0, 255, 255 )
-	);
-	m_testShapes.push_back( disc );*/
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -115,7 +110,6 @@ void GameRaycastVsDiscs::UpdateLine()
 	}
 	else
 	{
-		// Draw full ray from tail to tip (white)
 		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
 	}
 }
@@ -183,7 +177,7 @@ Vec2 GameRaycastVsDiscs::GetRandomPosition( float minX, float maxX, float minY, 
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::UpdateCheckDiscsRaycast()
 {
-	float smallestImpactDist = 99999999.f;
+	float smallestImpactDist = 99999.f;
 	m_raycastResult.m_impactDist = 0.f;
 	m_raycastResult.m_didImpact = false;
 	Vec2 fwdLine = m_tipPos - m_tailPos;

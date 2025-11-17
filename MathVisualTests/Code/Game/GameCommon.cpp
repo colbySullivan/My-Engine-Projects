@@ -6,7 +6,7 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "App.hpp"
 
-Game* g_theGame = nullptr;
+//Game* g_theGame = nullptr;
 GameType g_gameMode = GAMEMODE_NEAREST_POINT;
 
 //-----------------------------------------------------------------------------------------------

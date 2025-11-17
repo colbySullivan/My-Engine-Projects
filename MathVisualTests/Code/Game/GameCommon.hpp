@@ -83,7 +83,7 @@ enum GameType
 	GAME_NUM_TYPES
 };
 
-extern Game* g_theGame;
+//extern Game* g_theGame;
 extern GameType g_gameMode;
 
 //------------------------------------------------------------------------------
