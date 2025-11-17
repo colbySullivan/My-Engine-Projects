@@ -41,6 +41,7 @@ void GameRaycastVsDiscs::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		m_pauseAfterNextUpdate = false;
 	}
+	UpdateCheckDiscsRaycast();
 	UpdateLine();
 	UpdateKeyboardPoints();
 }
@@ -68,17 +69,21 @@ void GameRaycastVsDiscs::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::AddShapeVerts()
 {
+	for ( int discNumber = 0; discNumber < m_numberOfDiscs; ++discNumber )
+	{
+		TestShapeDisc* disc = new TestShapeDisc(
+			GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+			10.0f,
+			Rgba8( 0, 0, 255, 255 )
+		);
+		m_testShapes.push_back( disc );
+	}
 	/*TestShape* disc = new TestShapeDisc(
-		GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
-		10.0f,
-		Rgba8( 0, 0, 255, 255 )
-	);*/
-	TestShape* disc = new TestShapeDisc(
 		Vec2( 150.f, 75.f ),
 		10.0f,
 		Rgba8( 0, 0, 255, 255 )
 	);
-	m_testShapes.push_back( disc );
+	m_testShapes.push_back( disc );*/
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -86,7 +91,7 @@ void GameRaycastVsDiscs::RenderShapes() const
 {
 	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
 	{
-		TestShape* shape = m_testShapes[Index];
+		TestShapeDisc* shape = m_testShapes[Index];
 		if ( shape != nullptr )
 		{
 			shape->Render();
@@ -99,20 +104,14 @@ void GameRaycastVsDiscs::UpdateLine()
 {
 	m_lineVerts.clear();
 
-	Vec2 fwdLine = m_tipPos - m_tailPos;
-	float length = fwdLine.GetLength();
-	fwdLine.Normalize();
-
-	RaycastResult2D result = RaycastVsDisc2D( m_tailPos, fwdLine, length, Vec2( 150.f, 75.f ), 10.f );
-
-	if ( result.m_didImpact )
+	if ( m_raycastResult.m_didImpact )
 	{
-		AddVertsForArrow2D( m_lineVerts, m_tailPos, result.m_impactPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
+		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_raycastResult.m_impactPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
 
 		float normalLength = 10.f;
-		Vec2 normalImpactExtended = result.m_impactPos + ( result.m_impactNormal * normalLength );
-		AddVertsForArrow2D( m_lineVerts, result.m_impactPos, normalImpactExtended, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
-		AddVertsForArrow2D( m_lineVerts, result.m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
+		Vec2 normalImpactExtended = m_raycastResult.m_impactPos + ( m_raycastResult.m_impactNormal * normalLength );
+		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, normalImpactExtended, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
+		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
 	}
 	else
 	{
@@ -179,4 +178,29 @@ void GameRaycastVsDiscs::UpdateKeyboardPoints()
 Vec2 GameRaycastVsDiscs::GetRandomPosition( float minX, float maxX, float minY, float maxY )
 {
 	return Vec2( g_rng->RollRandomFloatInRange( minX, maxX ), g_rng->RollRandomFloatInRange( minY, maxY ) );
+}
+
+//-----------------------------------------------------------------------------------------------
+void GameRaycastVsDiscs::UpdateCheckDiscsRaycast()
+{
+	float smallestImpactDist = 99999999.f;
+	m_raycastResult.m_impactDist = 0.f;
+	m_raycastResult.m_didImpact = false;
+	Vec2 fwdLine = m_tipPos - m_tailPos;
+	float length = fwdLine.GetLength();
+	fwdLine.Normalize();
+
+	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
+	{
+		TestShapeDisc* shape = m_testShapes[Index];
+		if ( shape != nullptr )
+		{
+			RaycastResult2D raycastTestCheck = RaycastVsDisc2D( m_tailPos, fwdLine, length, shape->m_center, 10.f );
+			if ( raycastTestCheck.m_didImpact == true && raycastTestCheck.m_impactDist < smallestImpactDist )
+			{
+				smallestImpactDist = raycastTestCheck.m_impactDist;
+				m_raycastResult = raycastTestCheck;
+			}
+		}
+	}
 }
