@@ -146,7 +146,7 @@ void GameNearestPoint::AddShapeVerts()
 void GameNearestPoint::UpdatePointPosition( float deltaSeconds )
 {
 
-	Vec2 moveDirection = Vec2(0.f,0.f);
+	/*Vec2 moveDirection = Vec2(0.f,0.f);
 	if ( g_engine->m_input->IsKeyDown( 'W' ) ) {
 		moveDirection.y += 1.f;
 	}
@@ -158,11 +158,35 @@ void GameNearestPoint::UpdatePointPosition( float deltaSeconds )
 	}
 	if ( g_engine->m_input->IsKeyDown( 'D' ) ) {
 		moveDirection.x = 1.f;
+	}*/
+
+	if ( g_engine->m_input->IsKeyDown( 'W' ) )
+	{
+		m_pointPos = m_pointPos + Vec2( 0.f, 1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'A' ) )
+	{
+		m_pointPos = m_pointPos + Vec2( -1.f, 0.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'S' ) )
+	{
+		m_pointPos = m_pointPos + Vec2( 0.f, -1.f );
+	}
+	if ( g_engine->m_input->IsKeyDown( 'D' ) )
+	{
+		m_pointPos = m_pointPos + Vec2( 1.f, 0.f );
 	}
 
-	if ( moveDirection.GetLengthSquared() > 0.f ) {
+	/*if ( moveDirection.GetLengthSquared() > 0.f ) {
 		moveDirection.Normalize();
 		m_pointPos += moveDirection * m_speed * deltaSeconds;
+	}*/
+
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
+	{
+		AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
+		Vec2 screenMouseUV = g_engine->m_window->GetNormalizedMouseUV();
+		m_pointPos = screenSize.GetPointAtUV( screenMouseUV );
 	}
 }
 
