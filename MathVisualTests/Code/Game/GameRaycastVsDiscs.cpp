@@ -101,16 +101,21 @@ void GameRaycastVsDiscs::UpdateLine()
 
 	if ( m_raycastResult.m_didImpact )
 	{
-		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_raycastResult.m_impactPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
+		// Line before impact
+		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_raycastResult.m_impactPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
 
 		float normalLength = 10.f;
 		Vec2 normalImpactExtended = m_raycastResult.m_impactPos + ( m_raycastResult.m_impactNormal * normalLength );
-		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, normalImpactExtended, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
-		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
+		
+		// Normalized reflect
+		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, normalImpactExtended, 2.f, .5f, Rgba8( 255, 255, 0, 255 ) );
+
+		// Line after impact
+		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 200, 200, 200, 255 ) );
 	}
 	else
 	{
-		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 255, 255, 255, 255 ) );
+		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
 	}
 }
 
@@ -183,7 +188,7 @@ void GameRaycastVsDiscs::UpdateCheckDiscsRaycast()
 	Vec2 fwdLine = m_tipPos - m_tailPos;
 	float length = fwdLine.GetLength();
 	fwdLine.Normalize();
-
+	
 	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
 	{
 		TestShapeDisc* shape = m_testShapes[Index];
@@ -192,8 +197,18 @@ void GameRaycastVsDiscs::UpdateCheckDiscsRaycast()
 			RaycastResult2D raycastTestCheck = RaycastVsDisc2D( m_tailPos, fwdLine, length, shape->m_center, 10.f );
 			if ( raycastTestCheck.m_didImpact == true && raycastTestCheck.m_impactDist < smallestImpactDist )
 			{
+				if ( m_lastClosestShape )
+				{
+					m_lastClosestShape->ChangeColor( Rgba8( 0, 0, 255 ) );
+				}
+				shape->ChangeColor( Rgba8( 0, 0, 150 ) );
+				m_lastClosestShape = shape;
 				smallestImpactDist = raycastTestCheck.m_impactDist;
 				m_raycastResult = raycastTestCheck;
+			}
+			else if ( shape )
+			{
+				shape->ChangeColor( Rgba8( 0, 0, 255 ) );
 			}
 		}
 	}

@@ -31,6 +31,7 @@ private:
 	Vec2 GetRandomPosition( float minX, float maxX, float minY, float maxY );
 	std::vector<TestShapeDisc*> m_testShapes;
 	std::vector<Vertex> m_lineVerts;
+	TestShapeDisc*		m_lastClosestShape = nullptr;
 	Vec2				m_tailPos;
 	Vec2				m_tipPos;
 	int					m_numberOfDiscs = 10;

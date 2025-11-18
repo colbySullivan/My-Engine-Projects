@@ -145,21 +145,6 @@ void GameNearestPoint::AddShapeVerts()
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::UpdatePointPosition( float deltaSeconds )
 {
-
-	/*Vec2 moveDirection = Vec2(0.f,0.f);
-	if ( g_engine->m_input->IsKeyDown( 'W' ) ) {
-		moveDirection.y += 1.f;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'S' ) ) {
-		moveDirection.y = -1.f;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'A' ) ) {
-		moveDirection.x = -1.f;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'D' ) ) {
-		moveDirection.x = 1.f;
-	}*/
-
 	if ( g_engine->m_input->IsKeyDown( 'W' ) )
 	{
 		m_pointPos = m_pointPos + Vec2( 0.f, 1.f );
@@ -176,11 +161,6 @@ void GameNearestPoint::UpdatePointPosition( float deltaSeconds )
 	{
 		m_pointPos = m_pointPos + Vec2( 1.f, 0.f );
 	}
-
-	/*if ( moveDirection.GetLengthSquared() > 0.f ) {
-		moveDirection.Normalize();
-		m_pointPos += moveDirection * m_speed * deltaSeconds;
-	}*/
 
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
 	{
