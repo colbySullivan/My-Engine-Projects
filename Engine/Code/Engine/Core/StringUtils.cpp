@@ -41,6 +41,27 @@ const std::string Stringf( int maxLength, char const* format, ... )
 	return returnValue;
 }
 
+//-----------------------------------------------------------------------------------------------
+Strings SplitStringOnDelimiter( std::string const& originalString, char delimiterToSplitOn )
+{
+	Strings splitWords;
+	std::string newWord;
+	for (int charIndex = 0; charIndex < originalString.size() ; ++charIndex)
+	{
+		char character = originalString[charIndex];
+		if ( character != delimiterToSplitOn )
+		{
+			newWord.push_back( character );
+		}
+		else
+		{
+			splitWords.push_back( newWord );
+			newWord = "";
+		}
+	}
+	splitWords.push_back( newWord );
+	return splitWords;
+}
 
 
 

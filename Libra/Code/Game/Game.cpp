@@ -16,7 +16,6 @@
 #include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
 
-
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
 

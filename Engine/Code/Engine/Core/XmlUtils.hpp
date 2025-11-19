@@ -2,15 +2,14 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include "Thirdparty/TinyXML2/tinyxml2.h"
 #include <string>
-#include <vector>
 
 typedef tinyxml2::XMLDocument		XmlDocument;
 typedef tinyxml2::XMLElement		XmlElement;
 typedef tinyxml2::XMLAttribute		XmlAttribute;
 typedef tinyxml2::XMLError			XmlError;
-typedef std::vector<std::string>	Strings;
 
 
 //-----------------------------------------------------------------------------------------------
