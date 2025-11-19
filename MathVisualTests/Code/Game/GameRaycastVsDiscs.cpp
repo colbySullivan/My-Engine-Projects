@@ -2,6 +2,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 //------------------------------------------------------------------------------
 GameRaycastVsDiscs::GameRaycastVsDiscs( App* app )
@@ -102,7 +103,9 @@ void GameRaycastVsDiscs::UpdateLine()
 	if ( m_raycastResult.m_didImpact )
 	{
 		// Line before impact
-		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_raycastResult.m_impactPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
+		Rgba8 color;
+		color.SetFromText("255, 0, 0, 255");
+		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_raycastResult.m_impactPos, 2.f, .5f, color );
 
 		float normalLength = 10.f;
 		Vec2 normalImpactExtended = m_raycastResult.m_impactPos + ( m_raycastResult.m_impactNormal * normalLength );

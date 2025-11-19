@@ -27,6 +27,7 @@ public:
 	// Mutators (non-const methods)
 	void            Rotate90Degrees();
 	void            RotateMinus90Degrees();
+	void			SetFromText( char const* text );
 
 	// Operators (self-mutating / non-const)
 	void operator=(const IntVec2& copyFrom);           // IntVec2 = IntVec2

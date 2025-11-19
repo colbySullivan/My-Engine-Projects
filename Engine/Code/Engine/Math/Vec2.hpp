@@ -66,4 +66,6 @@ public:
 
     Vec2 const          GetReflected( Vec2 const& normalOfSurfaceToReflectOffOf ) const;
     void                Reflect( Vec2 const& normalOfSurfaceToReflectOffOf );
+
+    void                SetFromText( char const* text );
 };

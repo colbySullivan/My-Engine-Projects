@@ -1,10 +1,7 @@
 #include "Engine/Math/Vec2.hpp"
-#include "MathUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include<math.h>
-
-//#include "Engine/Math/MathUtils.hpp"
-//#include "Engine/Core/EngineCommon.hpp"
-
 
 //-----------------------------------------------------------------------------------------------
 Vec2::Vec2( Vec2 const& copy )
@@ -272,6 +269,14 @@ Vec2 const Vec2::GetReflected( Vec2 const& normalOfSurfaceToReflectOffOf ) const
 void Vec2::Reflect( Vec2 const& normalOfSurfaceToReflectOffOf )
 {
 	*this = GetReflected( normalOfSurfaceToReflectOffOf );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Vec2::SetFromText( char const* text )
+{
+	Strings splitVec2 = SplitStringOnDelimiter( text, ',' );
+	x = atof( splitVec2[0].c_str() );
+	y = atof( splitVec2[1].c_str() );
 }
 
 //-----------------------------------------------------------------------------------------------

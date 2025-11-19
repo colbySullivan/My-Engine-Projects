@@ -1,6 +1,8 @@
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Core/StringUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include<math.h>
-#include "MathUtils.hpp"
+
 
 IntVec2::IntVec2(IntVec2 const& copyFrom)
 	: x(copyFrom.x)
@@ -73,6 +75,14 @@ void IntVec2::RotateMinus90Degrees()
 	int buffer = x;
 	x = y;
 	y = -buffer;
+}
+
+//-----------------------------------------------------------------------------------------------
+void IntVec2::SetFromText( char const* text )
+{
+	Strings splitVec2 = SplitStringOnDelimiter( text, ',' );
+	x = atoi( splitVec2[0].c_str() );
+	y = atoi( splitVec2[1].c_str() );
 }
 
 //-----------------------------------------------------------------------------------------------
