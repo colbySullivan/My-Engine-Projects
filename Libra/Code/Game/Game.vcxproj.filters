@@ -11,6 +11,9 @@
     <Filter Include="Entities">
       <UniqueIdentifier>{6074fbad-7db7-40bd-87a6-1f46c1ebb144}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{262e3e25-4d3c-43ec-9525-3cf68ea3e9ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -93,5 +96,13 @@
     <ClInclude Include="Bullet.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

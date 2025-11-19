@@ -222,7 +222,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
 
-	m_isFastMo =  g_engine->m_input->IsKeyDown('F');
+	m_isFastMo =  g_engine->m_input->IsKeyDown('X');
 
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{
