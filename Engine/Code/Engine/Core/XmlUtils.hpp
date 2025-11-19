@@ -1,9 +1,9 @@
 #pragma once
+#include "Thirdparty/TinyXML2/tinyxml2.h"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/StringUtils.hpp"
-#include "Thirdparty/TinyXML2/tinyxml2.h"
 #include <string>
 
 typedef tinyxml2::XMLDocument		XmlDocument;
@@ -11,14 +11,10 @@ typedef tinyxml2::XMLElement		XmlElement;
 typedef tinyxml2::XMLAttribute		XmlAttribute;
 typedef tinyxml2::XMLError			XmlError;
 
-
 //-----------------------------------------------------------------------------------------------
 class XmlUtils
 {
 public:
-	XmlUtils();
-	~XmlUtils();
-
 	int ParseXmlAttribute( XmlElement const& element, char const* attributeName, int defaultValue );
 	char ParseXmlAttribute( XmlElement const& element, char const* attributeName, char defaultValue );
 	bool ParseXmlAttribute( XmlElement const& element, char const* attributeName, bool defaultValue );

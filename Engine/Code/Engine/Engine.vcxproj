@@ -163,6 +163,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp" />
     <ClCompile Include="Audio\AudioSystem.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\ErrorWarningAssert.cpp" />
@@ -203,6 +204,8 @@
     <ClInclude Include="..\ThirdParty\fmod\fmod_dsp_effects.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod_errors.h" />
     <ClInclude Include="..\ThirdParty\fmod\fmod_output.h" />
+    <ClInclude Include="..\ThirdParty\stb\stb_image.h" />
+    <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h" />
     <ClInclude Include="Audio\AudioSystem.hpp" />
     <ClInclude Include="Core\Engine.hpp" />
     <ClInclude Include="Core\ErrorWarningAssert.hpp" />
@@ -233,6 +236,10 @@
     <ClInclude Include="Renderer\SpriteDefinition.hpp" />
     <ClInclude Include="Renderer\SpriteSheet.hpp" />
     <ClInclude Include="Window\Window.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\ThirdParty\fmod\fmod64_vc.lib" />
+    <Library Include="..\ThirdParty\fmod\fmod_vc.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,6 +20,9 @@
     <Filter Include="Window">
       <UniqueIdentifier>{3c00cb0a-6a6a-4f52-aa3c-dc1ffd01cde5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{72868663-0649-4ed8-ad47-8394c553aa47}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vec2.cpp">
@@ -111,6 +114,9 @@
     </ClCompile>
     <ClCompile Include="Core\XmlUtils.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\TinyXML2\tinyxml2.cpp">
+      <Filter>ThirdParty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -228,5 +234,19 @@
     <ClInclude Include="Core\XmlUtils.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\stb\stb_image.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\TinyXML2\tinyxml2.h">
+      <Filter>ThirdParty</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\ThirdParty\fmod\fmod_vc.lib">
+      <Filter>ThirdParty</Filter>
+    </Library>
+    <Library Include="..\ThirdParty\fmod\fmod64_vc.lib">
+      <Filter>ThirdParty</Filter>
+    </Library>
   </ItemGroup>
 </Project>

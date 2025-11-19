@@ -275,8 +275,8 @@ void Vec2::Reflect( Vec2 const& normalOfSurfaceToReflectOffOf )
 void Vec2::SetFromText( char const* text )
 {
 	Strings splitVec2 = SplitStringOnDelimiter( text, ',' );
-	x = atof( splitVec2[0].c_str() );
-	y = atof( splitVec2[1].c_str() );
+	x = static_cast<float>(atof( splitVec2[0].c_str() ));
+	y = static_cast<float>(atof( splitVec2[1].c_str() ));
 }
 
 //-----------------------------------------------------------------------------------------------

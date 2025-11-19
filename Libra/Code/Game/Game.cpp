@@ -8,6 +8,7 @@
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
+#include "Engine/Core/XmlUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -17,6 +18,7 @@
 #include "Game/Tile.hpp"
 
 RandomNumberGenerator g_rng;
+XmlUtils m_xml;
 Game* g_game = nullptr;
 
 //-----------------------------------------------------------------------------------------------
@@ -60,14 +62,32 @@ void Game::Startup()
 {
 	m_endGameDelayTimer = 3.0f;
 	m_maps.clear();
+	XmlDocument doc;
+	XmlError eResult = doc.LoadFile( "Data/Definitions/MapDefinitions.xml" );
+	if ( eResult == 0 )
+	{
+		XmlElement* rootElement = doc.RootElement();
+		if ( rootElement )
+		{
+			XmlElement* mapDefElement = rootElement->FirstChildElement( "MapDefinition" );
+			while ( mapDefElement )
+			{
+				IntVec2 dimensions = m_xml.ParseXmlAttribute( *mapDefElement, "dimensions", IntVec2( 25, 25 ) );
 
-	MapDef map1Def = CreateMapDef(IntVec2( 25, 35 ), TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER);
-	MapDef map2Def = CreateMapDef( IntVec2( 20, 50 ), TILE_TYPE_GRASS, TILE_TYPE_BRICK_STONE, TILE_TYPE_BRICK_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
-	MapDef map3Def = CreateMapDef( IntVec2( 30, 20 ), TILE_TYPE_SAND, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
+				MapDef mapDef = CreateMapDef( dimensions, TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER );
+				m_maps.push_back( new Map( g_game, mapDef ) );
 
-	m_maps.push_back( new Map( g_game, map1Def ) );
-	m_maps.push_back( new Map( g_game, map2Def ) );
-	m_maps.push_back( new Map( g_game, map3Def ) );
+				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
+			}
+		}
+	}
+	//MapDef map1Def = CreateMapDef( map1Dim, TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER);
+	//MapDef map2Def = CreateMapDef( IntVec2( 20, 50 ), TILE_TYPE_GRASS, TILE_TYPE_BRICK_STONE, TILE_TYPE_BRICK_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
+	//MapDef map3Def = CreateMapDef( IntVec2( 30, 20 ), TILE_TYPE_SAND, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
+
+	//m_maps.push_back( new Map( g_game, map1Def ) );
+	//m_maps.push_back( new Map( g_game, map2Def ) );
+	//m_maps.push_back( new Map( g_game, map3Def ) );
 	
 	m_currentMap = m_maps[m_currentMapNumber];
 	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );

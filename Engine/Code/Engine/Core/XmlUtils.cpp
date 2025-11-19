@@ -1,22 +1,11 @@
 #include "Engine/Core/XmlUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
-XmlUtils::XmlUtils()
-{
-	
-}
-
-//-----------------------------------------------------------------------------------------------
-XmlUtils::~XmlUtils()
-{
-}
-
-//-----------------------------------------------------------------------------------------------
 int XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, int defaultValue )
 {
 	int queriedInt = defaultValue;
 	XmlError result = element.QueryIntAttribute( attributeName, &queriedInt );
-	if ( result )
+	if ( result == 0 )
 	{
 		return queriedInt;
 	}
@@ -44,7 +33,7 @@ float XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attrib
 {
 	float queriedFloat = defaultValue;
 	XmlError result = element.QueryFloatAttribute( attributeName, &queriedFloat );
-	if ( result )
+	if ( result == 0 )
 	{
 		return queriedFloat;
 	}
@@ -54,11 +43,13 @@ float XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attrib
 //-----------------------------------------------------------------------------------------------
 Rgba8 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, Rgba8 const& defaultValue )
 {
-	const char* queriedFloat;
-	XmlError result = element.QueryAttribute( attributeName, &queriedFloat );
-	if ( result )
+	const char* queriedRgba8;
+	XmlError result = element.QueryAttribute( attributeName, &queriedRgba8 );
+	if ( result == 0 )
 	{
-		//Rgba8 foundRgba8 = Rgba8( queriedFloat[]); // Need ti splitstring
+		Rgba8 queriedColor;
+		queriedColor.SetFromText( queriedRgba8 );
+		return queriedColor;
 	}
 	return defaultValue;
 }
@@ -66,29 +57,63 @@ Rgba8 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attrib
 //-----------------------------------------------------------------------------------------------
 Vec2 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, Vec2 const& defaultValue )
 {
+	const char* queriedResult;
+	XmlError result = element.QueryAttribute( attributeName, &queriedResult );
+	if ( result == 0 )
+	{
+		Vec2 queriedPoint;
+		queriedPoint.SetFromText( queriedResult );
+		return queriedPoint;
+	}
 	return defaultValue;
 }
 
 //-----------------------------------------------------------------------------------------------
 IntVec2 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, IntVec2 const& defaultValue )
 {
+	const char* queriedResult;
+	XmlError result = element.QueryAttribute( attributeName, &queriedResult );
+	if ( result == 0 )
+	{
+		IntVec2 queriedIntVec;
+		queriedIntVec.SetFromText( queriedResult );
+		return queriedIntVec;
+	}
 	return defaultValue;
 }
 
 //-----------------------------------------------------------------------------------------------
 std::string XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, std::string const& defaultValue )
 {
+	const char* queriedString;
+	XmlError result = element.QueryAttribute( attributeName, &queriedString );
+	if ( result == 0 )
+	{
+		return static_cast<std::string>( queriedString );
+	}
 	return defaultValue;
 }
 
 //-----------------------------------------------------------------------------------------------
 std::string XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, char const* defaultValue )
 {
-	return defaultValue;
+	const char* queriedString;
+	XmlError result = element.QueryAttribute( attributeName, &queriedString );
+	if ( result == 0 )
+	{
+		return static_cast< std::string >( queriedString );
+	}
+	return static_cast< std::string >( defaultValue );
 }
 
 //-----------------------------------------------------------------------------------------------
 Strings XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, Strings const& defaultValues, char delimiter /*= ',' */ )
 {
+	const char* queriedString;
+	XmlError result = element.QueryAttribute( attributeName, &queriedString );
+	if ( result == 0 )
+	{
+		return SplitStringOnDelimiter( queriedString, delimiter );
+	}
 	return defaultValues;
 }

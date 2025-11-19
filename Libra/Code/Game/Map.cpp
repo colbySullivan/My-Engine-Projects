@@ -25,7 +25,6 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	m_debugCamera = false;
 	BuildMapTiles();
 	//SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
-
 	CreateInitialEntities();
 }
 
