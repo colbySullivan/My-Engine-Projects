@@ -104,5 +104,8 @@
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml">
       <Filter>Data</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

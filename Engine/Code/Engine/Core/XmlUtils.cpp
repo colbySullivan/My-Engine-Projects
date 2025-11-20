@@ -16,7 +16,8 @@ int XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attribut
 char XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, char defaultValue )
 {
 	const char* queriedChar = element.Attribute( attributeName );
-	if ( *queriedChar || queriedChar[0] != '\0' ) {
+	if ( *queriedChar || queriedChar[0] != '\0' ) 
+	{
 		return queriedChar[0];
 	}
 	return defaultValue;

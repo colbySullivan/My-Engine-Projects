@@ -219,6 +219,7 @@
     <ClInclude Include="TileDefinitions.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
   </ItemGroup>
