@@ -1,5 +1,4 @@
 #include "Engine/Core/NamedStrings.hpp"
-#include <algorithm>
 
 //-----------------------------------------------------------------------------------------------
 void NamedStrings::PopulateFromXmlElementAttributes( XmlElement const& element )
@@ -39,7 +38,6 @@ bool NamedStrings::GetValue( std::string const& keyName, bool defaultValue ) con
 	if ( searchedValue != m_keyValuePairs.end() )
 	{
 		std::string stringBool = searchedValue->second;
-		transform( stringBool.begin(), stringBool.end(), stringBool.begin(), ::tolower );
 		if ( stringBool == "yes" || stringBool == "true" || stringBool == "t" )
 		{
 			return true;
@@ -65,7 +63,7 @@ float NamedStrings::GetValue( std::string const& keyName, float defaultValue ) c
 	auto searchedValue = m_keyValuePairs.find( keyName );
 	if ( searchedValue != m_keyValuePairs.end() )
 	{
-		return static_cast<int>(atof( searchedValue->second.c_str() ));
+		return static_cast<float>(atof( searchedValue->second.c_str() ));
 	}
 	return defaultValue;
 }

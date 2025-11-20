@@ -3,12 +3,7 @@
 //-----------------------------------------------------------------------------------------------
 int XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, int defaultValue )
 {
-	int queriedInt = defaultValue;
-	XmlError result = element.QueryIntAttribute( attributeName, &queriedInt );
-	if ( result == 0 )
-	{
-		return queriedInt;
-	}
+	XmlError result = element.QueryIntAttribute( attributeName, &defaultValue );
 	return defaultValue;
 }
 
@@ -26,7 +21,13 @@ char XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attribu
 //-----------------------------------------------------------------------------------------------
 bool XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, bool defaultValue )
 {
-	return element.BoolAttribute( attributeName, defaultValue );
+	const char* stringBool;
+	element.QueryAttribute( attributeName, &stringBool );
+	if ( stringBool == "yes" || stringBool == "true" || stringBool == "t" )
+	{
+		return true;
+	}
+	return defaultValue;
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -1,4 +1,7 @@
 #include "Engine/Renderer/SpriteDefinition.hpp"
+#include "Engine/Renderer/Texture.hpp"      
+#include "Engine/Math/IntVec2.hpp"          
+#include "Engine/Renderer/SpriteSheet.hpp"
 
 //-----------------------------------------------------------------------------------------------
 void SpriteDefinition::GetUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs ) const

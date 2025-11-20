@@ -1,6 +1,9 @@
 #pragma once
-#include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/AABB2.hpp"
 
+class SpriteSheet;
+class Texture;  
 
 //----------------------------------------------------------------------------------------
 class SpriteDefinition

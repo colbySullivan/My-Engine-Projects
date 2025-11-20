@@ -4,7 +4,6 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Window/Window.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "Engine/Renderer/Texture.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -242,6 +241,45 @@ Texture* Renderer::GetTextureForFileName( char const* imageFilePath )
 			return texture;
 		}
 	}
-
 	return nullptr;
+}
+
+//-----------------------------------------------------------------------------------------------
+BitmapFont* Renderer::CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension )
+{
+	// See if we already have this font previously loaded
+	BitmapFont* existingBitmapFont = GetFontForFileName( bitmapFontFilePathWithNoExtension );
+	if ( existingBitmapFont )
+	{
+		return existingBitmapFont;
+	}
+
+	// Never seen this texture before!  Let's load it.
+	BitmapFont* newFont = CreateFontFromFile( bitmapFontFilePathWithNoExtension );
+	return newFont;
+}
+
+//-----------------------------------------------------------------------------------------------
+BitmapFont* Renderer::GetFontForFileName( char const* bitmapFontFilePathWithNoExtension )
+{
+	for ( int fontIndex = 0; fontIndex < m_loadedFonts.size(); ++fontIndex )
+	{
+		BitmapFont* font = m_loadedFonts[fontIndex];
+		if ( font->m_fontFilePathNameWithNoExtension == bitmapFontFilePathWithNoExtension )
+		{
+			return font;
+		}
+	}
+	return nullptr;
+}
+
+//-----------------------------------------------------------------------------------------------
+BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension )
+{
+	std::string fontTextureFilePath = bitmapFontFilePathWithNoExtension;
+	fontTextureFilePath += ".png";
+	Texture* fontTexture = CreateOrGetTextureFromFile( fontTextureFilePath.c_str() );
+	BitmapFont* newFont = new BitmapFont( bitmapFontFilePathWithNoExtension, *fontTexture );
+	m_loadedFonts.push_back( newFont );
+	return newFont;
 }

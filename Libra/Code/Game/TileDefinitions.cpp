@@ -1,5 +1,5 @@
 #include "Game/TileDefinitions.hpp"
-#include "Engine/Core/Texture.hpp"
+#include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"

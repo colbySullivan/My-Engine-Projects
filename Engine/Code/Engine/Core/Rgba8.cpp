@@ -1,6 +1,8 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/StringUtils.hpp"
 
+Rgba8 const WHITE(255, 255, 255, 255);
+
 //-----------------------------------------------------------------------------------------------
 Rgba8::Rgba8(unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte)
 	: r(redByte)

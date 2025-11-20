@@ -1,11 +1,13 @@
 #pragma once
-#include "Engine/Core/Texture.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Texture.hpp"
 #include <vector>
 
 //------------------------------------------------------------------------------
 struct Rgba8;
 struct Vertex;
 class Camera;
+class BitmapFont;
 
 //-----------------------------------------------------------------------------------------------
 struct RenderConfig
@@ -33,9 +35,15 @@ public:
 	void DrawVertexArray( std::vector<Vertex> const& verts );
 	Texture* CreateTextureFromData( char const* name, IntVec2 dimensions, int bytesPerTexel, uint8_t* texelData );
 	void BindTexture( Texture* texture );
-	Texture* CreateTextureFromFile( char const* imageFilePath );
-	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
-	Texture* GetTextureForFileName( char const* imageFilePath );
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
+	std::vector< BitmapFont* > m_loadedFonts;
+	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
+
+private:
+	Texture* GetTextureForFileName( char const* imageFilePath );
+	Texture* CreateTextureFromFile( char const* imageFilePath );
+	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension ); // or std::string const&
+	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
+	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
 };

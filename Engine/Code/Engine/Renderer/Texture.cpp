@@ -1,4 +1,4 @@
-#include "Engine/Core/Texture.hpp"
+#include "Engine/Renderer/Texture.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Texture::Texture()
