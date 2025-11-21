@@ -39,11 +39,11 @@ public:
 	std::vector< Texture* > m_loadedTextures;
 	std::vector< BitmapFont* > m_loadedFonts;
 	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
+	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension ); // or std::string const&
 
 private:
 	Texture* GetTextureForFileName( char const* imageFilePath );
 	Texture* CreateTextureFromFile( char const* imageFilePath );
-	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension ); // or std::string const&
 	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
 };

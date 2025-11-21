@@ -17,19 +17,29 @@ Texture& BitmapFont::GetTexture()
 //-----------------------------------------------------------------------------------------------
 void BitmapFont::AddVertsForText2D( std::vector<Vertex>& vertexArray, Vec2 textMins, float cellHeight, std::string const& text, Rgba8 tint, float cellAspectScale )
 {
-	float textWidth = GetTextWidth( cellHeight, text, cellAspectScale);
+	float cellWidth = cellHeight * cellAspectScale;
+	Vec2 currentMins = textMins;
 
-	float minX = textMins.x;
-	float minY = textMins.y;
-	float maxX = textMins.x + textWidth;
-	float maxY = textMins.y + textWidth;
+	for (int charIndex = 0; charIndex < text.size() ; ++charIndex)
+	{
+		SpriteDefinition const& sprite = m_fontGlyphsSpriteSheet.GetSpriteDef( text[charIndex] );
+		Vec2 uvMins, uvMaxs;
+		sprite.GetUVs( uvMins, uvMaxs );
 
-	vertexArray.push_back( Vertex( Vec3( minX, minY, 0.f ), tint, Vec2( 0.f, 0.f ) ) );
-	vertexArray.push_back( Vertex( Vec3( maxX, minY, 0.f ), tint, Vec2( 1.f, 0.f ) ) );
-	vertexArray.push_back( Vertex( Vec3( maxX, maxY, 0.f ), tint, Vec2( 1.f, 1.f ) ) );
-	vertexArray.push_back( Vertex( Vec3( minX, minY, 0.f ), tint, Vec2( 0.f, 0.f ) ) );
-	vertexArray.push_back( Vertex( Vec3( maxX, maxY, 0.f ), tint, Vec2( 1.f, 1.f ) ) );
-	vertexArray.push_back( Vertex( Vec3( minX, maxY, 0.f ), tint, Vec2( 0.f, 1.f ) ) );
+		float minX = currentMins.x;
+		float minY = currentMins.y;
+		float maxX = currentMins.x + cellWidth;
+		float maxY = currentMins.y + cellHeight;
+
+		vertexArray.push_back( Vertex( Vec3( minX, minY, 0.f ), tint, Vec2( uvMins.x, uvMins.y ) ) );
+		vertexArray.push_back( Vertex( Vec3( maxX, minY, 0.f ), tint, Vec2( uvMaxs.x, uvMins.y ) ) );
+		vertexArray.push_back( Vertex( Vec3( maxX, maxY, 0.f ), tint, Vec2( uvMaxs.x, uvMaxs.y ) ) );
+		vertexArray.push_back( Vertex( Vec3( minX, minY, 0.f ), tint, Vec2( uvMins.x, uvMins.y ) ) );
+		vertexArray.push_back( Vertex( Vec3( maxX, maxY, 0.f ), tint, Vec2( uvMaxs.x, uvMaxs.y ) ) );
+		vertexArray.push_back( Vertex( Vec3( minX, maxY, 0.f ), tint, Vec2( uvMins.x, uvMaxs.y ) ) );
+
+		currentMins.x += cellWidth;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

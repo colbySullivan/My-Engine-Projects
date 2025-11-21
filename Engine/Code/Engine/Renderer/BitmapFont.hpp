@@ -17,7 +17,7 @@ public:
 	Texture& GetTexture();
 
 	void AddVertsForText2D( std::vector<Vertex>& vertexArray, Vec2 textMins,
-		float cellHeight, std::string const& text, Rgba8 tint =	Rgba8::WHITE, float cellAspectScale = 1.f);
+		float cellHeight, std::string const& text, Rgba8 tint =	Rgba8( 255, 255, 255, 255 ), float cellAspectScale = 1.f);
 
 	float GetTextWidth( float cellHeight, std::string const& text, float cellAspectScale = 1.f );
 

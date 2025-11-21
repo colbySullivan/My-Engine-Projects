@@ -98,6 +98,8 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::Update(float deltaSeconds)
 {
+	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" ); // DO NOT SPECIFY FILE .EXTENSION!!  (Important later )
+
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
 	UpdateCameras( deltaSeconds );
@@ -414,7 +416,7 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
 
 	// Title
-	char title[32] = "Libra";
+	/*char title[32] = "Libra";
 	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };
@@ -433,7 +435,13 @@ void Game::RenderAttractMode() const
 		int offsetColorB = g_rng.RollRandomIntInRange( 0, 255 );
 		RenderText( singleChar, Vec2( 390.f + charIndex * 40.f, 50.f ), 40.0f, Rgba8( static_cast< unsigned char >( offsetColorR ), static_cast< unsigned char >( offsetColorG ), static_cast< unsigned char >( offsetColorB ) ) );
 
-	}
+	}*/
+
+	std::vector<Vertex> textVerts;
+	g_testFont->AddVertsForText2D( textVerts, Vec2( 100.f, 200.f ), 30.f, "Welcome Libra", Rgba8( 0, 0, 0 ) );
+	g_testFont->AddVertsForText2D( textVerts, Vec2( 250.f, 400.f ), 15.f, "Don't fall in!", Rgba8( 0, 0, 0 ) );
+	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
+	g_engine->m_render->DrawVertexArray( textVerts );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }

@@ -15,6 +15,7 @@ class XboxController;
 class AudioSystem;
 class Player;
 class Map;
+class BitmapFont;
 struct MapDef;
 
 //-----------------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ public:
 	Map* m_currentMap = nullptr;
 	Map* m_nextMap = nullptr;
 	int m_currentMapNumber = 0;
+	BitmapFont* g_testFont = nullptr;
 
 	void Startup();
 	void Update( float deltaSeconds );

@@ -13,8 +13,8 @@ SpriteSheet::SpriteSheet( Texture& texture, IntVec2 const& simpleGridLayout )
 		for ( int spriteX = 0; spriteX < simpleGridLayout.x; ++spriteX )
 		{
 			int spriteIndex = spriteX + ( simpleGridLayout.x * spriteY );
-			Vec2 uvAtMins( static_cast< float >( spriteX ) / simpleGridLayout.x, static_cast< float >( spriteY ) / simpleGridLayout.y );
-			Vec2 uvAtMaxs( static_cast< float >( spriteX + 1 ) / simpleGridLayout.x, static_cast< float >( spriteY + 1 ) / simpleGridLayout.y );
+			Vec2 uvAtMins( static_cast< float >( spriteX ) / simpleGridLayout.x, 1.0f - static_cast< float >( spriteY + 1 ) / simpleGridLayout.y );
+			Vec2 uvAtMaxs( static_cast< float >( spriteX + 1 ) / simpleGridLayout.x, 1.0f - static_cast< float >( spriteY ) / simpleGridLayout.y );
 			SpriteSheet const& spriteSheet = *this;
 
 			m_spriteDefs[spriteIndex].m_spriteSheet = &spriteSheet;
