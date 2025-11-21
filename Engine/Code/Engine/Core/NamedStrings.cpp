@@ -17,7 +17,7 @@ void NamedStrings::PopulateFromXmlElementAttributes( XmlElement const& element )
 //-----------------------------------------------------------------------------------------------
 void NamedStrings::SetValue( std::string const& keyName, std::string const& newValue )
 {
-	m_keyValuePairs[keyName] = newValue;
+	m_keyValuePairs.emplace(keyName, newValue);
 }
 
 //-----------------------------------------------------------------------------------------------

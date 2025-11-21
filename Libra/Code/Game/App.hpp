@@ -7,9 +7,11 @@
 class Player;
 class App;
 class Game;
+class NamedStrings;
 
 //------------------------------------------------------------------------------
 extern App* g_theApp;
+extern NamedStrings* g_gameConfig;
 
 //------------------------------------------------------------------------------
 class App
@@ -24,6 +26,7 @@ public:
 
 	void SetIsQuitting();
 	bool IsQuitting() const;
+	void LoadXmlMap();
 
 
 public:

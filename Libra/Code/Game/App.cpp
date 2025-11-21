@@ -5,10 +5,11 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Game/Game.hpp"
 
-
 App* g_app = nullptr;
+NamedStrings* g_gameConfig = nullptr;
 
 App::App()
 {
@@ -19,6 +20,7 @@ App::App()
 
 	g_app = this;
 	m_game = new Game();
+	LoadXmlMap();
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -69,5 +71,18 @@ void App::SetIsQuitting()
 bool App::IsQuitting() const
 {
 	return m_game->m_isQuitting;
+}
+
+//-----------------------------------------------------------------------------------------------
+void App::LoadXmlMap()
+{
+	g_gameConfig = new NamedStrings();
+	XmlDocument config;
+	XmlError configeResult = config.LoadFile( "Data/Definitions/GameConfig.xml" );
+	if ( configeResult == 0 )
+	{
+		XmlElement* rootElement = config.RootElement();
+		g_gameConfig->PopulateFromXmlElementAttributes( *rootElement );
+	}
 }
 
