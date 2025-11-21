@@ -127,7 +127,7 @@
     <ClCompile Include="Renderer\BitmapFont.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Core\HeatMaps.cpp">
+    <ClCompile Include="Core\TileHeatMap.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -261,7 +261,7 @@
     <ClInclude Include="Renderer\BitmapFont.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Core\HeatMaps.hpp">
+    <ClInclude Include="Core\TileHeatMap.hpp">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
