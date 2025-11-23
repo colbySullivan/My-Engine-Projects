@@ -62,6 +62,18 @@ int RoundDownToInt(float value)
 }
 
 //-----------------------------------------------------------------------------------------------
+float NormalizeByte( unsigned char byte )
+{
+	return byte / 255.f;
+}
+
+//-----------------------------------------------------------------------------------------------
+unsigned char DenormalizeByte( float value )
+{
+	return static_cast<unsigned char>(value * 255.f);
+}
+
+//-----------------------------------------------------------------------------------------------
 float ConvertDegreesToRadians(float degrees)
 {
     return degrees * static_cast<float>( M_PI / 180.f );

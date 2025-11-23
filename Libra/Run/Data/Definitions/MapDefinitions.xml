@@ -2,7 +2,7 @@
 
 	<MapDefinition
 		name="Approach"
-		dimensions="408,240"
+		dimensions="10,10"
 		fillTileType="LongGrass"
 		edgeTileType="RockWall"
 		worm1TileType="DarkGrass"	worm1Count="15"	worm1MaxLength="12"

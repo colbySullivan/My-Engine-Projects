@@ -15,3 +15,5 @@ public:
 
 	static const Rgba8 WHITE;
 };
+
+Rgba8 Interpolate( Rgba8 start, Rgba8 end, float fractionOfEnd );

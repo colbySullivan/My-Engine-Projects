@@ -2,6 +2,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
+#include "Engine/Core/HeatMaps.hpp"
 #include "Game/Game.hpp"
 #include "Game/TileDefinitions.hpp"
 #include "Game/Tile.hpp"
@@ -72,6 +73,7 @@ public:
 	bool IsPlayerOnPortal();
 	bool IsPlayerAlive();
 	void CreateInitialEntities();
+	void PopulateDijkstraMap( TileHeatMap& out_dijkstraMap, IntVec2 startCoords, float maxCost, bool treatWaterAsSolid=true );
 
 	bool m_lostGame = false;
 
@@ -92,4 +94,5 @@ private:
 	TileTypes m_sprinkle2TileType;
 	TileTypes m_edgeTileType;
 	TileTypes m_barrierTileType;
+	TileHeatMap* m_heatMap;
 };

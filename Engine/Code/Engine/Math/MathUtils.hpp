@@ -28,6 +28,9 @@ float   GetFractionWithinRange(float value, float rangeStart, float rangeEnd);
 float   RangeMap(float inValue, float inStart, float inEnd, float outStart, float outEnd);
 float   RangeMapClamped(float inValue, float inStart, float inEnd, float outStart, float outEnd);
 int     RoundDownToInt(float value);
+float	NormalizeByte( unsigned char byte );
+unsigned char DenormalizeByte( float value );
+
 
 //-----------------------------------------------------------------------------------
 // Angle utilities

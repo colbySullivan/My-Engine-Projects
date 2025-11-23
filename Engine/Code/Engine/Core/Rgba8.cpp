@@ -1,5 +1,6 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 Rgba8 const WHITE(255, 255, 255, 255);
 
@@ -23,4 +24,14 @@ void Rgba8::SetFromText( char const* text )
 	{
 		a = static_cast<unsigned char>(atof( splitVec2[3].c_str() ));
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+Rgba8 Interpolate( Rgba8 start, Rgba8 end, float fractionOfEnd )
+{
+	float r = Interpolate( NormalizeByte( start.r ), NormalizeByte( end.r ), fractionOfEnd );
+	float g = Interpolate( NormalizeByte( start.g ), NormalizeByte( end.g ), fractionOfEnd );
+	float b = Interpolate( NormalizeByte( start.b ), NormalizeByte( end.b ), fractionOfEnd );
+	float a = Interpolate( NormalizeByte( start.a ), NormalizeByte( end.a ), fractionOfEnd );
+	return Rgba8( DenormalizeByte(r), DenormalizeByte(g), DenormalizeByte(b) ,DenormalizeByte(a) );
 }

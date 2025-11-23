@@ -127,7 +127,7 @@
     <ClCompile Include="Renderer\BitmapFont.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Core\TileHeatMap.cpp">
+    <ClCompile Include="Core\HeatMaps.cpp">
       <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -234,9 +234,6 @@
     <ClInclude Include="Core\Image.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Texture.hpp">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer\SpriteSheet.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -261,8 +258,11 @@
     <ClInclude Include="Renderer\BitmapFont.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Core\TileHeatMap.hpp">
+    <ClInclude Include="Core\HeatMaps.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Texture.hpp">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

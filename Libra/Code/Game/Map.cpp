@@ -4,6 +4,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/HeatMaps.hpp"
 #include "Game/Scorpio.hpp"
 #include "Game/Leo.hpp"
 #include "Game/Aries.hpp"
@@ -22,6 +23,7 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	, m_barrierTileType( mapDefinition.m_barrierTileType )
 	//, m_distMapFromStartToPlayer( mapDefinition.m_dimensions )
 {
+	m_heatMap = new TileHeatMap( m_dimensions );
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
@@ -36,6 +38,7 @@ void Map::Update( float deltaSeconds)
 	UpdateCameras();
 	UpdateEntities( deltaSeconds );
 	DestroyGarbageEntities();
+	PopulateDijkstraMap( *m_heatMap, IntVec2(1,1), 999999.f);
 }
 
 //------------------------------------------------------------------------------
@@ -213,6 +216,7 @@ void Map::RenderTiles() const
 	//SpriteSheet* tilesSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2( 8, 8 ) );
 	//g_engine->m_render->BindTexture( &tilesSpriteSheet->GetTexture() );
 	std::vector<Vertex> tileVerts;
+	std::vector<Vertex> tileVerts2;
 	int totalTiles = static_cast< int >( m_tiles.size() );
 	tileVerts.reserve( totalTiles * 6 );
 
@@ -232,9 +236,15 @@ void Map::RenderTiles() const
 		AddVertsForAABB2D( tileVerts, box, tileDef.m_tint, tileDef.m_uvs.m_mins, tileDef.m_uvs.m_maxs );
 	}
 
-	g_engine->m_render->BindTexture( &m_game->m_tilesSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts.size() ), tileVerts.data() );
+	//g_engine->m_render->BindTexture( &m_game->m_tilesSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
 	g_engine->m_render->BindTexture( nullptr );
+
+	AABB2 mapbox = AABB2( 0.0f, 0.0f, static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
+	FloatRange mapFloatRange = FloatRange( 0.0f, m_dimensions.x );
+	m_heatMap->AddVertsForDebugDraw( tileVerts2, mapbox, mapFloatRange );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
+
 }
 
 
@@ -472,6 +482,54 @@ void Map::CreateInitialEntities()
 		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::PopulateDijkstraMap( TileHeatMap& out_dijkstraMap, IntVec2 startCoords, float maxCost, bool treatWaterAsSolid )
+{
+	out_dijkstraMap.SetAllValues( maxCost );
+	out_dijkstraMap.Set( startCoords, 0.f );
+
+	int mapSize = out_dijkstraMap.GetMapSize();
+	bool changedAnyValue = true;
+	int checkedValue = 0;
+	while ( changedAnyValue )
+	{
+		changedAnyValue = false;
+
+		for ( int mapIndex = 0; mapIndex < mapSize; ++mapIndex )
+		{
+			int xCoord = mapIndex % out_dijkstraMap.m_dimensions.x;
+			int yCoord = mapIndex / out_dijkstraMap.m_dimensions.x;
+
+			IntVec2 currentCoords( xCoord, yCoord );
+			float currentValueAtCoord = out_dijkstraMap.Get( currentCoords );
+
+			IntVec2 neighbors[4] = {
+				IntVec2( xCoord, yCoord + 1 ),
+				IntVec2( xCoord, yCoord - 1 ),
+				IntVec2( xCoord + 1, yCoord ),
+				IntVec2( xCoord - 1, yCoord ) 
+			};
+			if ( currentValueAtCoord == checkedValue)
+			{
+				for ( int i = 0; i < 4; ++i )
+				{
+					IntVec2 neighborCoords = neighbors[i];
+
+					float newCost = checkedValue + 1.f;
+					float neighborValue = out_dijkstraMap.Get( neighborCoords );
+
+					if ( newCost < neighborValue && !IsTileSolidAtTileCoords( neighborCoords ) )
+					{
+						out_dijkstraMap.Set( neighborCoords, newCost );
+						changedAnyValue = true;
+					}
+				}
+			}
+		}
+		checkedValue++;
 	}
 }
 
