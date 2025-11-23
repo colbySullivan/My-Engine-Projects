@@ -4,13 +4,14 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
+#include "Engine/Core/NamedStrings.hpp"
 
 //------------------------------------------------------------------------------
 Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
 	: Entity(owner, startPos, orientationDegrees, faction, map, type)
 {
-	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
-	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
+	m_physicsRadius = g_gameConfig->GetValue("playerPhysicsRadius", 0.3f);
+	m_cosmeticRadius = g_gameConfig->GetValue("playerCosmeticRadius", 0.5f);
 	m_isPushedByWalls = true;
 	m_isPushedByEntities = true;
 	m_doesPushEntities = true;
@@ -42,7 +43,7 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 		return;
 	}
 	m_isMoving = false;
-	m_velocity = GetForwardNormal() * PLAYER_SPEED;
+	m_velocity = GetForwardNormal() * g_gameConfig->GetValue("playerSpeed", 1.0f);
 	UpdateFromKeyboard(deltaSeconds);
 	UpdateFromController(deltaSeconds);
 

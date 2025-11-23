@@ -101,5 +101,6 @@ public:
 	float			m_timeSinceLastShot;
 	float			m_bulletCooldown;
 	bool			m_isProtected = false;
+	//TileHeatMap*	m_heatMap = nullptr; // [[MAYBE]] TODO personal heat map used for pathing
 
 };

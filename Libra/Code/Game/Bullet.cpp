@@ -2,14 +2,15 @@
 #include "Game/Game.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
-	m_physicsRadius = BULLET_PHYSICS_RADIUS;
-	m_cosmeticRadius = BULLET_COSMETIC_RADIUS;
+	m_physicsRadius = g_gameConfig->GetValue("bulletPhysicsRadius", 0.1f);
+	m_cosmeticRadius = g_gameConfig->GetValue("bulletCosmeticRadius", 0.15f);
 	m_isPushedByWalls = false;
 	m_isPushedByEntities = false;
 	m_doesPushEntities = false;

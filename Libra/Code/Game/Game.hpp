@@ -124,6 +124,8 @@ public:
 
 
 private:
+	App* m_app = nullptr;
+
 	void UpdateKeyboardInput( XboxController const& controller );
 
 	void RenderUI() const;
@@ -136,19 +138,12 @@ private:
 	void UpdateCameras( float deltaSeconds );
 	void UpdateAttractMode( float deltaSeconds );
 	void UpdateEntities( float deltaSeconds );
-	void UpdateBlackHole();
 
 	void LoadSounds();
 	void InitializePauseVerts();
 	void InitializeWinLoseVerts();
 	void MovePlayerToNewMap();
+	void PlayerPortalEndConditionCheck();
 	void LoadTextures();
 	MapDef CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile );
-
-	App*			m_app = nullptr;
-	// Black hole
-	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
-	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
-	int				m_roundBlackHoleAmount = 2;
-	void PlayerPortalEndConditionCheck();
 };

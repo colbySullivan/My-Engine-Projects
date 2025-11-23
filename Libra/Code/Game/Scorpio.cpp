@@ -2,14 +2,15 @@
 #include "Game/Game.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Core/NamedStrings.hpp"
 #include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Scorpio::Scorpio( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
-	m_physicsRadius = PLAYER_PHYSICS_RADIUS;
-	m_cosmeticRadius = PLAYER_COSMETIC_RADIUS;
+	m_physicsRadius = g_gameConfig->GetValue("scorpioPhysicsRadius", 0.3f);
+	m_cosmeticRadius = g_gameConfig->GetValue("scorpioCosmeticRadius", 0.5f);
 	m_isPushedByWalls = true;
 	m_isPushedByEntities = false;
 	m_doesPushEntities = true;

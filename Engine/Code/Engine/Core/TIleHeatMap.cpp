@@ -13,7 +13,7 @@ TileHeatMap::~TileHeatMap()
 }
 
 //-----------------------------------------------------------------------------------------------
-float TileHeatMap::Get( IntVec2 coordinates )
+float TileHeatMap::Get( IntVec2 coordinates ) const
 {
 	return 255.f;
 }

@@ -362,10 +362,7 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	{
 		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
 	}
-
 	m_shipAnimationTimer += deltaSeconds;
-
-	UpdateBlackHole();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -400,20 +397,6 @@ void Game::RenderAttractMode() const
 		0.f,
 		Vec2( 0.f, 0.f ) );
 	g_engine->m_render->DrawVertexArray( 6, background );
-
-	// Black hole
-	Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
-	for ( int vertIndex = 0; vertIndex < NUM_BLACK_HOLE_VERTS; ++vertIndex )
-	{
-		tempHoleWorldVerts[vertIndex] = m_blackHoleVerts[vertIndex];
-	}
-	TransformVertexArrayXY3D(
-		NUM_BLACK_HOLE_VERTS,
-		tempHoleWorldVerts,
-		150.0f,
-		0.f,
-		Vec2( 800.f, 400.f ) );
-	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
 
 	// Title
 	/*char title[32] = "Libra";
@@ -507,57 +490,6 @@ void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float so
 	m_currentSound = soundID;
 	m_currentSoundPriority = priority;
 	m_soundDurationTimer = soundDuration;
-}
-
-void Game::UpdateBlackHole()
-{
-	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
-	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
-	{
-		holeRadii[sideNum] = g_rng.RollRandomFloatInRange( 1.9f, 2.0f );
-	}
-
-	// Precompute 2D vertex offsets
-	constexpr float degreesPerBlackHoleSide = 360.f / static_cast<float>(NUM_BLACK_HOLE_SIDES);
-	Vec2 blackholeLocalVertPositions[NUM_BLACK_HOLE_SIDES] = {};
-
-	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
-	{
-		float degrees = degreesPerBlackHoleSide * static_cast<float>(sideNum);
-		float radius = holeRadii[sideNum];
-		blackholeLocalVertPositions[sideNum].x = radius * CosDegrees( degrees );
-		blackholeLocalVertPositions[sideNum].y = radius * SinDegrees( degrees );
-	}
-
-	// Build triangles
-	for ( int triNum = 0; triNum < NUM_BLACK_HOLE_TRIS; ++triNum )
-	{
-		int startRadiusIndex = triNum;
-		int endRadiusIndex = ( triNum + 1 ) % NUM_BLACK_HOLE_SIDES;
-		int firstVertIndex = ( triNum * 3 ) + 0;
-		int secondVertIndex = ( triNum * 3 ) + 1;
-		int thirdVertIndex = ( triNum * 3 ) + 2;
-		Vec2 secondVertOfs = blackholeLocalVertPositions[startRadiusIndex];
-		Vec2 thirdVertOfs = blackholeLocalVertPositions[endRadiusIndex];
-		m_blackHoleVerts[firstVertIndex].m_position = Vec3( 0.f, 0.f, 0.f );
-		m_blackHoleVerts[secondVertIndex].m_position = Vec3( secondVertOfs.x, secondVertOfs.y, 0.f );
-		m_blackHoleVerts[thirdVertIndex].m_position = Vec3( thirdVertOfs.x, thirdVertOfs.y, 0.f );
-	}
-
-	// Set colors
-	for ( int triNum = 0; triNum < NUM_BLACK_HOLE_TRIS; ++triNum )
-	{
-		int firstVertIndex = ( triNum * 3 ) + 0;
-		int secondVertIndex = ( triNum * 3 ) + 1;
-		int thirdVertIndex = ( triNum * 3 ) + 2;
-
-		// Center vertex
-		m_blackHoleVerts[firstVertIndex].m_color = Rgba8( 0, 0, 0, 255 );
-
-		// Edge vertices
-		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
-		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
-	}
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -20,11 +20,11 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	, m_sprinkle1TileType( mapDefinition.m_sprinkle1TileType )
 	, m_sprinkle2TileType( mapDefinition.m_sprinkle2TileType )
 	, m_barrierTileType( mapDefinition.m_barrierTileType )
+	//, m_distMapFromStartToPlayer( mapDefinition.m_dimensions )
 {
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
-	//SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
 	CreateInitialEntities();
 }
 

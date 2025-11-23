@@ -29,19 +29,15 @@
     playerSpeed="1.0"
     playerHealth="3"
     playerLives="3"
+	
+	scorpioPhysicsRadius="0.3"
+    scorpioCosmeticRadius="0.5"
+	
+	AriesPhysicsRadius="0.3"
+    AriesCosmeticRadius="0.5"
     
     shootCooldownTime="1.0"
     
     leoMaxVis="10.0"
     scorpioMaxVis="10.0"
-    
-    grassColorR="50"
-    grassColorG="100"
-    grassColorB="50"
-    grassColorA="255"
-    
-    stoneColorR="180"
-    stoneColorG="180"
-    stoneColorB="180"
-    stoneColorA="255"
 />

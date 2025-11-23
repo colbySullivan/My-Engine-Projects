@@ -78,6 +78,9 @@ public:
 	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
 	EntityList m_allEntities;
 
+	//TileHeatMap		m_distMapFromStartToPlayer;
+	//TileHeatMap		m_visibilityMap;
+
 
 private:
 	Game* m_game = nullptr;
