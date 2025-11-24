@@ -26,8 +26,7 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	m_heatMap = new TileHeatMap( m_dimensions );
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
-	BuildMapTiles();
-	CreateInitialEntities();
+	CreateValidMapWithEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -246,7 +245,7 @@ void Map::RenderHeatMapTiles() const
 {
 	std::vector<Vertex> tileVerts2;
 	AABB2 mapbox = AABB2( 0.0f, 0.0f, static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
-	FloatRange mapFloatRange = FloatRange( 0.0f, static_cast< float >( m_dimensions.x ) );
+	FloatRange mapFloatRange = FloatRange( 0.0f, static_cast< float >( ( m_dimensions.x + m_dimensions.y ) ) );
 	m_heatMap->AddVertsForDebugDraw( tileVerts2, mapbox, mapFloatRange );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
 }
@@ -379,7 +378,7 @@ void Map::WormFillTiles()
 		IntVec2 spawnPos = GetRandomValidPointInMapIntVec2();
 		int tileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
 		m_tiles[tileIndex].m_type = m_edgeTileType;
-		int wormHealth = g_rng.RollRandomIntInRange( 5, 20 );
+		int wormHealth = g_rng.RollRandomIntInRange( 3, 10 );
 		while ( wormHealth >= 0 )
 		{
 			IntVec2 legalMoves[4] = {
@@ -390,9 +389,9 @@ void Map::WormFillTiles()
 			};
 			int move = g_rng.RollRandomIntInRange( 0, 3 );
 			spawnPos = legalMoves[move];
-			int tileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
-			if ( tileIndex > 0 && tileIndex < m_tiles.size() )
-				m_tiles[tileIndex].m_type = TILE_TYPE_PORTAL;
+			int newtileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
+			if ( newtileIndex > 0 && newtileIndex < m_tiles.size() )
+				m_tiles[newtileIndex].m_type = TILE_TYPE_BRICK_STONE;
 			wormHealth--;
 		}
 	}
@@ -530,6 +529,43 @@ void Map::SwtichMapRenderMode() const
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::CreateValidMapWithEntities()
+{
+	IntVec2 endCheckpoint = IntVec2( m_dimensions.x - 2, m_dimensions.y - 2 );
+	bool notValid = true;
+	int invalidTries = 0;
+	while ( notValid &&  invalidTries < 1000 )
+	{
+		BuildMapTiles();
+		PopulateDijkstraMap( *m_heatMap, IntVec2( 1, 1 ), 999999.f );
+		if ( m_heatMap->Get( endCheckpoint ) < 999999.f ) //TODO don't hardcode // special
+		{
+			FillInImpossibleTiles();
+			CreateInitialEntities();
+			notValid = false;
+		}
+		invalidTries++;
+	}
+
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::FillInImpossibleTiles()
+{
+	for ( int tileY = 0; tileY < m_dimensions.y; ++tileY )
+	{
+		for ( int tileX = 0; tileX < m_dimensions.x; ++tileX )
+		{
+			int tileIndex = GetTileIndexForTileCoords( IntVec2( tileX, tileY ) );
+			if ( m_heatMap->Get( IntVec2( tileX, tileY ) ) == 999999.f && m_tiles[tileIndex].m_type == m_fillTileType )
+			{
+				m_tiles[tileIndex].m_type = TILE_TYPE_PORTAL;
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void Map::CreateInitialEntities()
 {
 	for ( int Index = 0; Index < 10; ++Index )
@@ -567,7 +603,7 @@ void Map::PopulateDijkstraMap( TileHeatMap& out_dijkstraMap, IntVec2 startCoords
 				IntVec2( xCoord + 1, yCoord ),
 				IntVec2( xCoord - 1, yCoord ) 
 			};
-			if ( currentValueAtCoord == checkedValue)
+			if ( currentValueAtCoord == checkedValue )
 			{
 				for ( int i = 0; i < 4; ++i )
 				{

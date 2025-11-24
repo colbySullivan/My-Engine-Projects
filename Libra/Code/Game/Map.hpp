@@ -99,4 +99,6 @@ private:
 	TileTypes m_barrierTileType;
 	TileHeatMap* m_heatMap;
 	void SwtichMapRenderMode() const;
+	void CreateValidMapWithEntities();
+	void FillInImpossibleTiles();
 };
