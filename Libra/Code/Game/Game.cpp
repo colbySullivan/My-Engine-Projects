@@ -281,7 +281,15 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		g_drawDebug = !g_drawDebug;
 	}
 	if ( m_currentMap )
+	{
 		m_currentMap->UpdatePlayerDevControls( controller );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F6 ) )
+	{
+		m_mapRenderMode = static_cast<MapRenderMode>( ( m_mapRenderMode + 1 ) % NUM_MAP_MODES );
+	}
+
 
 	g_engine->m_input->EndFrame();
 }

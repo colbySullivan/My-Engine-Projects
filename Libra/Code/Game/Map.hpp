@@ -50,6 +50,7 @@ public:
 	// Rendering
 	void Render() const;
 	void RenderTiles() const;
+	void RenderHeatMapTiles() const;
 	void RenderEntities() const;
 	void UpdateCameras();
 	void BuildMapTiles();
@@ -57,6 +58,7 @@ public:
 	void OutEdgeTileSetup();
 	void SprinkleTileSetup();
 	void FillTile1Setup();
+	void WormFillTiles();
 
 	// Update
 	void Update( float deltaSeconds );
@@ -87,7 +89,8 @@ public:
 private:
 	Game* m_game = nullptr;
 	void UpdateEntities( float deltaSeconds );
-	Vec2 GetRandomValidPointInMap();
+	Vec2 GetRandomValidPointInMapVec2();
+	IntVec2 GetRandomValidPointInMapIntVec2();
 	void CheckLineOfSights();
 	TileTypes m_fillTileType;
 	TileTypes m_sprinkle1TileType;
@@ -95,4 +98,5 @@ private:
 	TileTypes m_edgeTileType;
 	TileTypes m_barrierTileType;
 	TileHeatMap* m_heatMap;
+	void SwtichMapRenderMode() const;
 };

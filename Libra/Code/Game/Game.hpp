@@ -37,6 +37,13 @@ enum SoundPriority
 	NUM_SOUND_PRIORITIES
 };
 
+enum MapRenderMode
+{
+	REGULAR_MAP_MODE,
+	HEAT_MAP_MODE,
+	NUM_MAP_MODES
+};
+
 //-----------------------------------------------------------------------------------------------
 class Game
 {
@@ -75,6 +82,7 @@ public:
 	float				m_shipAnimationTimer = 0.0f;
 	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
+	MapRenderMode		m_mapRenderMode = REGULAR_MAP_MODE;
 	float 				m_endGameDelayTimer = 3.0f;	
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;

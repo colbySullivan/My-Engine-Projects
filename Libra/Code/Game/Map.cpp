@@ -161,7 +161,7 @@ IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
 //-----------------------------------------------------------------------------------------------
 void Map::Render() const
 {
-	RenderTiles();
+	SwtichMapRenderMode();
 	RenderEntities();
 }
 
@@ -216,7 +216,6 @@ void Map::RenderTiles() const
 	//SpriteSheet* tilesSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2( 8, 8 ) );
 	//g_engine->m_render->BindTexture( &tilesSpriteSheet->GetTexture() );
 	std::vector<Vertex> tileVerts;
-	std::vector<Vertex> tileVerts2;
 	int totalTiles = static_cast< int >( m_tiles.size() );
 	tileVerts.reserve( totalTiles * 6 );
 
@@ -236,17 +235,21 @@ void Map::RenderTiles() const
 		AddVertsForAABB2D( tileVerts, box, tileDef.m_tint, tileDef.m_uvs.m_mins, tileDef.m_uvs.m_maxs );
 	}
 
-	//g_engine->m_render->BindTexture( &m_game->m_tilesSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
+	g_engine->m_render->BindTexture( &m_game->m_tilesSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts.size() ), tileVerts.data() );
 	g_engine->m_render->BindTexture( nullptr );
-
-	AABB2 mapbox = AABB2( 0.0f, 0.0f, static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
-	FloatRange mapFloatRange = FloatRange( 0.0f, m_dimensions.x );
-	m_heatMap->AddVertsForDebugDraw( tileVerts2, mapbox, mapFloatRange );
-	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
 
 }
 
+//-----------------------------------------------------------------------------------------------
+void Map::RenderHeatMapTiles() const
+{
+	std::vector<Vertex> tileVerts2;
+	AABB2 mapbox = AABB2( 0.0f, 0.0f, static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
+	FloatRange mapFloatRange = FloatRange( 0.0f, static_cast< float >( m_dimensions.x ) );
+	m_heatMap->AddVertsForDebugDraw( tileVerts2, mapbox, mapFloatRange );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
+}
 
 //-----------------------------------------------------------------------------------------------
 void Map::RenderEntities() const
@@ -269,6 +272,7 @@ void Map::BuildMapTiles()
 
 	FillTile1Setup();
 	SprinkleTileSetup();
+	WormFillTiles();
 	OutEdgeTileSetup();
 	SpawnBarrierTileSetup();
 }
@@ -367,6 +371,34 @@ void Map::FillTile1Setup()
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::WormFillTiles()
+{
+	int numOfWorms = g_rng.RollRandomIntInRange( 10, 20 );
+	for (int wormNum = 0; wormNum < numOfWorms ; ++wormNum)
+	{
+		IntVec2 spawnPos = GetRandomValidPointInMapIntVec2();
+		int tileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
+		m_tiles[tileIndex].m_type = m_edgeTileType;
+		int wormHealth = g_rng.RollRandomIntInRange( 5, 20 );
+		while ( wormHealth >= 0 )
+		{
+			IntVec2 legalMoves[4] = {
+				IntVec2( spawnPos.x, spawnPos.y + 1 ),
+				IntVec2( spawnPos.x, spawnPos.y - 1 ),
+				IntVec2( spawnPos.x + 1, spawnPos.y ),
+				IntVec2( spawnPos.x - 1, spawnPos.y )
+			};
+			int move = g_rng.RollRandomIntInRange( 0, 3 );
+			spawnPos = legalMoves[move];
+			int tileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
+			if ( tileIndex > 0 && tileIndex < m_tiles.size() )
+				m_tiles[tileIndex].m_type = TILE_TYPE_PORTAL;
+			wormHealth--;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void Map::UpdatePlayerDevControls( XboxController const& controller )
 {
 	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
@@ -447,7 +479,7 @@ void Map::UpdateEntities( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-Vec2 Map::GetRandomValidPointInMap()
+Vec2 Map::GetRandomValidPointInMapVec2()
 {
 	IntVec2 newTileCoords = IntVec2(0,0);
 	while ( IsTileSolidAtTileCoords( newTileCoords ) )
@@ -455,7 +487,17 @@ Vec2 Map::GetRandomValidPointInMap()
 		newTileCoords = IntVec2( g_rng.RollRandomIntInRange( 5, m_dimensions.x ), g_rng.RollRandomIntInRange( 5, m_dimensions.y ) );
 	}
 	return (Vec2( static_cast<float>(newTileCoords.x + 0.5f), static_cast<float>(newTileCoords.y + 0.5f)));
-		
+}
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 Map::GetRandomValidPointInMapIntVec2()
+{
+	IntVec2 newTileCoords = IntVec2(0,0);
+	while ( IsTileSolidAtTileCoords( newTileCoords ) )
+	{
+		newTileCoords = IntVec2( g_rng.RollRandomIntInRange( 1, m_dimensions.x ), g_rng.RollRandomIntInRange( 1, m_dimensions.y ) );
+	}
+	return newTileCoords;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -475,13 +517,26 @@ void Map::CheckLineOfSights()
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::SwtichMapRenderMode() const
+{
+	switch ( m_game->m_mapRenderMode )
+	{
+	case REGULAR_MAP_MODE:	RenderTiles();			break;
+	case HEAT_MAP_MODE:		RenderHeatMapTiles();	break;
+
+	default:
+		break;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void Map::CreateInitialEntities()
 {
 	for ( int Index = 0; Index < 10; ++Index )
 	{
-		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMap(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 	}
 }
 
