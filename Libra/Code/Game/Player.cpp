@@ -5,6 +5,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 //------------------------------------------------------------------------------
 Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )

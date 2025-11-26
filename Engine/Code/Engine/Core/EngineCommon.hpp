@@ -3,7 +3,7 @@
 class NamedStrings;
 
 //-----------------------------------------------------------------------------------------------
-extern NamedStrings g_gameConfigBlackboard;
+extern NamedStrings* g_gameConfig;
 
 //-----------------------------------------------------------------------------------------------
 class EngineCommon

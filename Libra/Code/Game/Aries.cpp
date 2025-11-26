@@ -4,6 +4,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )

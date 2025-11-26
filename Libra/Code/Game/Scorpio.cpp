@@ -3,6 +3,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------

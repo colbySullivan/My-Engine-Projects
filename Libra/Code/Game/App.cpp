@@ -6,10 +6,10 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/Game.hpp"
 
 App* g_app = nullptr;
-NamedStrings* g_gameConfig = nullptr;
 
 App::App()
 {

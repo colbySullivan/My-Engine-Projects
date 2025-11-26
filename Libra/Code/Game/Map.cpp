@@ -577,7 +577,7 @@ void Map::CreateInitialEntities()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::PopulateDijkstraMap( TileHeatMap& out_dijkstraMap, IntVec2 startCoords, float maxCost, bool treatWaterAsSolid )
+void Map::PopulateDijkstraMap( TileHeatMap& out_dijkstraMap, IntVec2 startCoords, float maxCost, [[maybe_unused]] bool treatWaterAsSolid )
 {
 	out_dijkstraMap.SetAllValues( maxCost );
 	out_dijkstraMap.Set( startCoords, 0.f );
