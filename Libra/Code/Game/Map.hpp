@@ -12,11 +12,19 @@
 struct MapDef
 {
 	IntVec2		m_dimensions;
-	TileTypes	m_fillTileType		= INVALID_TILE_TYPE;
-	TileTypes	m_edgeTileType		= INVALID_TILE_TYPE;
-	TileTypes	m_barrierTileType	= INVALID_TILE_TYPE;
-	TileTypes	m_sprinkle1TileType = INVALID_TILE_TYPE;
-	TileTypes	m_sprinkle2TileType = INVALID_TILE_TYPE;
+	std::string	m_fillTileType		= "INVALID_TILE_TYPE";
+	std::string	m_edgeTileType		= "INVALID_TILE_TYPE";
+	std::string	m_barrierTileType	= "INVALID_TILE_TYPE";
+	std::string	m_sprinkle1TileType = "INVALID_TILE_TYPE";
+	std::string	m_sprinkle2TileType = "INVALID_TILE_TYPE";
+	std::string	m_worm1TileType		= "INVALID_TILE_TYPE";
+	std::string	m_worm2TileType		= "INVALID_TILE_TYPE";
+	int			m_worm1Count		= 15;
+	int			m_worm1MaxLength	= 12;
+	int			m_worm2Count		= 60;
+	int			m_worm2MaxLength	= 8;
+
+
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -92,11 +100,11 @@ private:
 	Vec2 GetRandomValidPointInMapVec2();
 	IntVec2 GetRandomValidPointInMapIntVec2();
 	void CheckLineOfSights();
-	TileTypes m_fillTileType;
-	TileTypes m_sprinkle1TileType;
-	TileTypes m_sprinkle2TileType;
-	TileTypes m_edgeTileType;
-	TileTypes m_barrierTileType;
+	std::string m_fillTileType;
+	std::string m_sprinkle1TileType;
+	std::string m_sprinkle2TileType;
+	std::string m_edgeTileType;
+	std::string m_barrierTileType;
 	TileHeatMap* m_heatMap;
 	void SwtichMapRenderMode() const;
 	void CreateValidMapWithEntities();

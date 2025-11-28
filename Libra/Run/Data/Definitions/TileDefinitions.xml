@@ -19,7 +19,7 @@
 	<TileDefinition name="RockWall"		isSolid="true"	spriteCoords="5,3"	mapColor="220,180,180"/>
 	<TileDefinition name="IronWall"		isSolid="true"	spriteCoords="5,6"/>
 	<TileDefinition name="RedWall"		isSolid="true"	spriteCoords="4,5"/>
-	<TileDefinition name="Water"		isSolid="false"	spriteCoords="5,7"	isWater="true"/>
+	<TileDefinition name="Water"		isSolid="true"	spriteCoords="5,7"	isWater="true"/>
 	<TileDefinition name="MapEntry"		isSolid="false"	spriteCoords="0,7"	tint="200,200,200"/>
 	<TileDefinition name="MapExit"		isSolid="false"	spriteCoords="1,7"	tint="255,255,255"/>
 

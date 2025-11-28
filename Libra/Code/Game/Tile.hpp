@@ -12,12 +12,12 @@ class Tile
 {
 public:
 	Tile();
-	Tile( IntVec2 tileCoords, TileTypes type );
+	Tile( IntVec2 tileCoords, std::string type );
 	~Tile();
 
 	bool IsSolid() const;
-	TileDefinition const& GetDefinition() const;
+	std::string const& GetDefinition() const;
 
 	IntVec2 m_tileCoords = IntVec2( -1, -1 );
-	TileTypes m_type = NUM_TILE_TYPES;
+	std::string m_type = "INVALID_TILE_TYPES";
 };

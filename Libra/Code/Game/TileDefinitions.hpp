@@ -2,28 +2,15 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include <vector>
-
-enum TileTypes
-{
-	INVALID_TILE_TYPE = -1,
-	TILE_TYPE_GRASS,
-	TILE_TYPE_STONE,
-	TILE_TYPE_MUD,
-	TILE_TYPE_PORTAL,
-	TILE_TYPE_STONE_BARRIER,
-	TILE_TYPE_STONE_FLOOR,
-	TILE_TYPE_START,
-	TILE_TYPE_BRICK_STONE,
-	TILE_TYPE_SAND,
-	NUM_TILE_TYPES
-};
+#include <string>
+#include <map>
 
 class SpriteSheet;
 
 class TileDefinition
 {
 public:
-	static std::vector<TileDefinition> s_definitions;
+	static std::map<std::string, TileDefinition> s_definitions;
 
 	static void InitializeTileDefs();
 

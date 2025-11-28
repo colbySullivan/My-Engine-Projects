@@ -61,34 +61,7 @@ Game::~Game()
 void Game::Startup()
 {
 	m_endGameDelayTimer = 3.0f;
-	m_maps.clear();
-	XmlDocument doc;
-	XmlError eResult = doc.LoadFile( "Data/Definitions/MapDefinitions.xml" );
-	if ( eResult == 0 )
-	{
-		XmlElement* rootElement = doc.RootElement();
-		if ( rootElement )
-		{
-			XmlElement* mapDefElement = rootElement->FirstChildElement( "MapDefinition" );
-			while ( mapDefElement )
-			{
-				IntVec2 dimensions = m_xml.ParseXmlAttribute( *mapDefElement, "dimensions", IntVec2( 25, 25 ) );
-
-				MapDef mapDef = CreateMapDef( dimensions, TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER );
-				m_maps.push_back( new Map( g_game, mapDef ) );
-
-				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
-			}
-		}
-	}
-	//MapDef map1Def = CreateMapDef( map1Dim, TILE_TYPE_GRASS, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_STONE_BARRIER);
-	//MapDef map2Def = CreateMapDef( IntVec2( 20, 50 ), TILE_TYPE_GRASS, TILE_TYPE_BRICK_STONE, TILE_TYPE_BRICK_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
-	//MapDef map3Def = CreateMapDef( IntVec2( 30, 20 ), TILE_TYPE_SAND, TILE_TYPE_STONE, TILE_TYPE_STONE, TILE_TYPE_MUD, TILE_TYPE_STONE_BARRIER );
-
-	//m_maps.push_back( new Map( g_game, map1Def ) );
-	//m_maps.push_back( new Map( g_game, map2Def ) );
-	//m_maps.push_back( new Map( g_game, map3Def ) );
-	
+	ConstructMapFromXML();
 	m_currentMap = m_maps[m_currentMapNumber];
 	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
 	m_nextMap = m_currentMap;
@@ -529,7 +502,7 @@ void Game::InitializeWinLoseVerts()
 }
 
 //-----------------------------------------------------------------------------------------------
-MapDef Game::CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile )
+MapDef Game::CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile )
 {
 	MapDef mapDef;
 
@@ -541,6 +514,40 @@ MapDef Game::CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edg
 	mapDef.m_barrierTileType = barrierTile;
 
 	return mapDef;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::ConstructMapFromXML()
+{
+	m_maps.clear();
+	XmlDocument doc;
+	XmlError eResult = doc.LoadFile( "Data/Definitions/MapDefinitions.xml" );
+	if ( eResult == 0 )
+	{
+		XmlElement* rootElement = doc.RootElement();
+		if ( rootElement )
+		{
+			XmlElement* mapDefElement = rootElement->FirstChildElement( "MapDefinition" );
+			while ( mapDefElement )
+			{
+				IntVec2 dimensions = m_xml.ParseXmlAttribute( *mapDefElement, "dimensions", IntVec2( 25, 25 ) );
+				std::string wormTile;
+				std::string fillTileType = m_xml.ParseXmlAttribute( *mapDefElement, "fileTileType", "LongGrass" );
+				std::string edgeTileType = m_xml.ParseXmlAttribute( *mapDefElement, "edgeTileType", "LongGrass" );
+				std::string worm1TileType = m_xml.ParseXmlAttribute( *mapDefElement, "worm1TileType", "LongGrass" );	/*worm1Count = "15"	worm1MaxLength = "12"*/
+				std::string worm2TileType = m_xml.ParseXmlAttribute( *mapDefElement, "worm2TileType", "LongGrass" );	/*worm2Count = "60"	worm2MaxLength = "8"*/
+				std::string startFloorTileType = m_xml.ParseXmlAttribute( *mapDefElement, "startFloorTileType", "LongGrass" );
+				std::string startBunkerTileType = m_xml.ParseXmlAttribute( *mapDefElement, "startBunkerTileType", "LongGrass" );
+				std::string endFloorTileType = m_xml.ParseXmlAttribute( *mapDefElement, "endFloorTileType", "LongGrass" );
+				std::string endBunkerTileType = m_xml.ParseXmlAttribute( *mapDefElement, "endBunkerTileType", "LongGrass" );
+
+				MapDef mapDef = CreateMapDef( dimensions, fillTileType, edgeTileType, worm1TileType, worm2TileType, startBunkerTileType );
+				m_maps.push_back( new Map( g_game, mapDef ) );
+
+				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

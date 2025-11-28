@@ -4,6 +4,7 @@
 //-----------------------------------------------------------------------------------------------
 SpriteSheet::SpriteSheet( Texture& texture, IntVec2 const& simpleGridLayout )
 	: m_texture( texture )
+	, m_dimensions( simpleGridLayout )
 {
 	int numSprites = simpleGridLayout.x * simpleGridLayout.y;
 	m_spriteDefs.resize( numSprites );
@@ -40,6 +41,13 @@ int SpriteSheet::GetNumSprites() const
 //-----------------------------------------------------------------------------------------------
 SpriteDefinition const& SpriteSheet::GetSpriteDef( int spriteIndex ) const
 {
+	return m_spriteDefs[spriteIndex];
+}
+
+//-----------------------------------------------------------------------------------------------
+SpriteDefinition const& SpriteSheet::GetSpriteDefAtCoords( IntVec2 sprintCoords ) const
+{
+	int spriteIndex =  ( sprintCoords.y * m_dimensions.x ) + sprintCoords.x;
 	return m_spriteDefs[spriteIndex];
 }
 

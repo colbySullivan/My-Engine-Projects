@@ -86,7 +86,7 @@ public:
 	float 				m_endGameDelayTimer = 3.0f;	
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
-	std::vector<Map*> m_maps = {};
+	std::vector<Map*>	m_maps = {};
 	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
 	Vertex				m_winLoseScreen[NUM_PLAYER_VERTS];
 	SpriteSheet*		m_tilesSpriteSheet;
@@ -153,5 +153,6 @@ private:
 	void MovePlayerToNewMap();
 	void PlayerPortalEndConditionCheck();
 	void LoadTextures();
-	MapDef CreateMapDef( IntVec2 dimensions, TileTypes fillTile, TileTypes edgeTile, TileTypes sprinkleTile1, TileTypes sprinkleTile2, TileTypes barrierTile );
+	MapDef CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile );
+	void ConstructMapFromXML();
 };

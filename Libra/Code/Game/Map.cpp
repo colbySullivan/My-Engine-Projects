@@ -286,7 +286,7 @@ void Map::SpawnBarrierTileSetup()
 	{
 		for ( int barrierBoxFloorY = 1; barrierBoxFloorY < 5; ++barrierBoxFloorY ) 
 		{
-			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = TILE_TYPE_STONE_FLOOR;
+			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = "Concrete";
 		}
 	}	
 	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = m_barrierTileType;
@@ -300,7 +300,7 @@ void Map::SpawnBarrierTileSetup()
 	{
 		for ( int barrierBoxFloorY = m_dimensions.y - 5; barrierBoxFloorY < m_dimensions.y - 1; ++barrierBoxFloorY )
 		{
-			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = TILE_TYPE_STONE_FLOOR;
+			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = "Concrete";
 		}
 	}
 	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 3, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
@@ -309,8 +309,8 @@ void Map::SpawnBarrierTileSetup()
 	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 3 ) )].m_type = m_barrierTileType;
 	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 4 ) )].m_type = m_barrierTileType;
 
-	m_tiles[GetTileIndexForTileCoords( IntVec2( 1, 1 ) )].m_type = TILE_TYPE_START;
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 2, m_dimensions.y - 2 ) )].m_type = TILE_TYPE_PORTAL;
+	m_tiles[GetTileIndexForTileCoords( IntVec2( 1, 1 ) )].m_type = "MapEntry";
+	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 2, m_dimensions.y - 2 ) )].m_type = "MapExit";
 
 }
 
@@ -391,7 +391,7 @@ void Map::WormFillTiles()
 			spawnPos = legalMoves[move];
 			int newtileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
 			if ( newtileIndex > 0 && newtileIndex < m_tiles.size() )
-				m_tiles[newtileIndex].m_type = TILE_TYPE_BRICK_STONE;
+				m_tiles[newtileIndex].m_type = m_sprinkle2TileType;
 			wormHealth--;
 		}
 	}
@@ -559,7 +559,7 @@ void Map::FillInImpossibleTiles()
 			int tileIndex = GetTileIndexForTileCoords( IntVec2( tileX, tileY ) );
 			if ( m_heatMap->Get( IntVec2( tileX, tileY ) ) == 999999.f && m_tiles[tileIndex].m_type == m_fillTileType )
 			{
-				m_tiles[tileIndex].m_type = TILE_TYPE_PORTAL;
+				m_tiles[tileIndex].m_type = m_sprinkle2TileType;
 			}
 		}
 	}

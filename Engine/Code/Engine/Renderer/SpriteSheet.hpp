@@ -14,10 +14,13 @@ public:
 	Texture& GetTexture() const;
 	int                 GetNumSprites() const;
 	SpriteDefinition const& GetSpriteDef( int spriteIndex ) const;
+	SpriteDefinition const& GetSpriteDefAtCoords( IntVec2 sprintCoords ) const;
 	void                GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, int spriteIndex ) const;
 	AABB2               GetSpriteUVs( int spriteIndex ) const;
 
 protected:
 	Texture& m_texture; // reference members must be set in constructor's initializer list
 	std::vector<SpriteDefinition>   m_spriteDefs;
+private:
+	IntVec2 const m_dimensions;
 };
