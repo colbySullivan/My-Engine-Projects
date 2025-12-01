@@ -23,8 +23,6 @@ struct MapDef
 	int			m_worm1MaxLength	= 12;
 	int			m_worm2Count		= 60;
 	int			m_worm2MaxLength	= 8;
-
-
 };
 
 //-----------------------------------------------------------------------------------------------
