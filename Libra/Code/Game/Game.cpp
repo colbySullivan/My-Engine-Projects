@@ -276,7 +276,7 @@ void Game::RenderPauseSreen() const
 		tempPauseWorldVerts[vertIndex] = m_pauseScreenVerts[vertIndex];
 	}
 
-	 TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempPauseWorldVerts, 100.f, 0.0f, Vec2(0.0f, 0.0f));
+	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempPauseWorldVerts, 100.f, 0.0f, Vec2(0.0f, 0.0f));
 	g_engine->m_render->DrawVertexArray( NUM_PLAYER_VERTS, tempPauseWorldVerts );
 }
 
@@ -400,9 +400,18 @@ void Game::RenderAttractMode() const
 
 	}*/
 
+	std::vector<Vertex> verts;
+	Vec2 mins( 0.0f, 0.0f );
+	Vec2 maxs( SCREEN_SIZE_X, SCREEN_SIZE_Y );
+	AABB2 localBox( mins, maxs );
+	AddVertsForAABB2D( verts, localBox, Rgba8( 255, 255, 255, 255 ) );
+	g_engine->m_render->BindTexture( m_startScreen );
+	g_engine->m_render->DrawVertexArray( verts );
+	g_engine->m_render->BindTexture( nullptr );
+
 	std::vector<Vertex> textVerts;
-	g_testFont->AddVertsForText2D( textVerts, Vec2( 100.f, 200.f ), 30.f, "Welcome Libra", Rgba8( 0, 0, 0 ) );
-	g_testFont->AddVertsForText2D( textVerts, Vec2( 250.f, 400.f ), 15.f, "Don't fall in!", Rgba8( 0, 0, 0 ) );
+	g_testFont->AddVertsForText2D( textVerts, Vec2( 100.f, 200.f ), 30.f, "Welcome Libra", Rgba8( 100, 0, 0 ) );
+	g_testFont->AddVertsForText2D( textVerts, Vec2( 650.f, 400.f ), 15.f, "Don't fall in!", Rgba8( 70, 0, 80 ) );
 	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
 	g_engine->m_render->DrawVertexArray( textVerts );
 
@@ -595,4 +604,5 @@ void Game::LoadTextures()
 	m_badBulletTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyBullet.png" );
 	m_endWinScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/VictoryScreen.jpg" );
 	m_endLoseScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/YouDiedScreen.png" );
+	m_startScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/AttractScreen.png" );
 }

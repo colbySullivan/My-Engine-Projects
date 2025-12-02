@@ -105,6 +105,7 @@ public:
 	Texture* m_goodBulletTexture;
 	Texture* m_badBulletTexture;
 	Texture* m_endWinScreen;
+	Texture* m_startScreen;
 	Texture* m_endLoseScreen;
 
 
