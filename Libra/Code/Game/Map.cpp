@@ -251,6 +251,28 @@ void Map::RenderHeatMapTiles() const
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::RenderSolidMapTiles() const
+{
+	std::vector<Vertex> tileVerts2;
+	AABB2 mapbox = AABB2( 0.0f, 0.0f, static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
+	FloatRange mapFloatRange = FloatRange( 0.0f, 0.0f );
+	m_heatMap->AddVertsForDebugDraw( tileVerts2, mapbox, mapFloatRange );
+
+	for ( int i = 0; i < static_cast< int >( m_entityListsByType[ENTITY_TYPE_EVIL_SCORPIO].size() ); i++ )
+	{
+		Entity* entity = m_entityListsByType[ENTITY_TYPE_EVIL_SCORPIO][i];
+		if ( entity == nullptr )
+			continue;
+
+		Vec2 solidPosition = entity->m_position;
+		m_heatMap->Set(IntVec2((int)solidPosition.x, (int)solidPosition.y ), 999999.f );
+	}
+
+	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
+}
+
+
+//-----------------------------------------------------------------------------------------------
 void Map::RenderEntities() const
 {
 	for ( int i = 0; i < static_cast< int >( m_allEntities.size() ); i++ )
@@ -522,6 +544,7 @@ void Map::SwtichMapRenderMode() const
 	{
 	case REGULAR_MAP_MODE:	RenderTiles();			break;
 	case HEAT_MAP_MODE:		RenderHeatMapTiles();	break;
+	case SOLID_MAP_MODE:	RenderSolidMapTiles();	break;
 
 	default:
 		break;

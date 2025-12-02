@@ -41,6 +41,7 @@ enum MapRenderMode
 {
 	REGULAR_MAP_MODE,
 	HEAT_MAP_MODE,
+	SOLID_MAP_MODE,
 	NUM_MAP_MODES
 };
 

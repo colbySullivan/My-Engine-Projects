@@ -21,7 +21,6 @@ public:
 	void AddVertsForDebugDraw( std::vector<Vertex>& verts, AABB2 totalBounds, FloatRange valueRange = FloatRange( 0.f, 50.f ),
 		Rgba8 lowColor = Rgba8( 0, 0, 0, 100 ), Rgba8 highColor = Rgba8( 255, 255, 255, 100 ), float specialValue = 999999.f, Rgba8 specialColor = Rgba8( 255, 0, 255 ) );
 
-
 	IntVec2			m_dimensions;
 private:
 	int GetTileIndexForCoords( IntVec2 coordinates ) const;

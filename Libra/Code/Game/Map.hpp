@@ -57,6 +57,7 @@ public:
 	void Render() const;
 	void RenderTiles() const;
 	void RenderHeatMapTiles() const;
+	void RenderSolidMapTiles() const;
 	void RenderEntities() const;
 	void UpdateCameras();
 	void BuildMapTiles();
