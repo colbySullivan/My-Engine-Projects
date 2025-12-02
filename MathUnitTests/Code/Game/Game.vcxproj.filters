@@ -28,6 +28,9 @@
     <ClCompile Include="UnitTests_MP1A04.cpp">
       <Filter>Unit Tests</Filter>
     </ClCompile>
+    <ClCompile Include="UnitTests_MP1A07.cpp">
+      <Filter>Unit Tests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -50,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="EngineBuildPreferences.hpp">
       <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTests_MP1A07.hpp">
+      <Filter>Unit Tests</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

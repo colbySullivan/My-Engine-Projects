@@ -1,8 +1,6 @@
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/MathUtils.hpp"
 #include<math.h>
-#include "MathUtils.hpp"
-//#include "Engine/Math/MathUtils.hpp"
-//#include "Engine/Core/EngineCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
