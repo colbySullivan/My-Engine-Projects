@@ -20,7 +20,6 @@
 #include "App.hpp"
 #include <Engine/Core/Engine.hpp>
 #include "Engine/Input/InputSystem.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
 
 //-----------------------------------------------------------------------------------------------
 // #SD1ToDo: Later we will move this useful macro to a more central place, e.g. Engine/Core/EngineCommon.hpp

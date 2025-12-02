@@ -1,7 +1,4 @@
-#include "Engine.hpp"
-#include "Engine/Renderer/Renderer.hpp"
-#include "Engine/Input/InputSystem.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/Engine.hpp"
 #include "Engine/Window/Window.hpp"
 
 Engine* g_engine = nullptr;
