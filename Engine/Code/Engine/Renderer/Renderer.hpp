@@ -15,6 +15,13 @@ struct RenderConfig
 	bool	m_isEnabled = true;
 };
 
+//-----------------------------------------------------------------------------------------------
+enum class BlendMode
+{
+	ALPHA,
+	ADDITIVE,
+};
+
 //------------------------------------------------------------------------------
 class Renderer
 {
@@ -46,4 +53,5 @@ private:
 	Texture* CreateTextureFromFile( char const* imageFilePath );
 	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
+	void SetBlendMode( BlendMode blendMode );
 };

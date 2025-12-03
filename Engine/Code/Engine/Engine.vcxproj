@@ -251,10 +251,6 @@
     <ClInclude Include="Renderer\Texture.hpp" />
     <ClInclude Include="Window\Window.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\ThirdParty\fmod\fmod64_vc.lib" />
-    <Library Include="..\ThirdParty\fmod\fmod_vc.lib" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -283,12 +283,4 @@
       <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\ThirdParty\fmod\fmod_vc.lib">
-      <Filter>ThirdParty</Filter>
-    </Library>
-    <Library Include="..\ThirdParty\fmod\fmod64_vc.lib">
-      <Filter>ThirdParty</Filter>
-    </Library>
-  </ItemGroup>
 </Project>

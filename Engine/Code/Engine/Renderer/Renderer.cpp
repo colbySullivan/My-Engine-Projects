@@ -283,3 +283,20 @@ BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoEx
 	m_loadedFonts.push_back( newFont );
 	return newFont;
 }
+
+//-----------------------------------------------------------------------------------------------
+void Renderer::SetBlendMode( BlendMode blendMode )
+{
+	if ( blendMode == BlendMode::ALPHA ) // enum class BlendMode, defined near top of Renderer.hpp
+	{
+		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	}
+	else if ( blendMode == BlendMode::ADDITIVE )
+	{
+		glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+	}
+	else
+	{
+		ERROR_AND_DIE( Stringf( "Unknown / unsupported blend mode #%i", blendMode ) );
+	}
+}
