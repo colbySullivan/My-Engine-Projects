@@ -184,67 +184,68 @@ float const* Mat44::GetAsFloatArray() const
 //-----------------------------------------------------------------------------------------------
 Vec2 const Mat44::GetIBasis2D() const
 {
-	return Vec2( 0.f, 0.f );
+	return Vec2( m_values[Ix], m_values[Iy] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec2 const Mat44::GetJBasis2D() const
 {
-	return Vec2( 0.f, 0.f );
+	return Vec2( m_values[Jx], m_values[Jy] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec2 const Mat44::GetTranslation2D() const
 {
-	return Vec2( 0.f, 0.f );
+	return Vec2( m_values[Tx], m_values[Ty] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec3 const Mat44::GetIBasis3D() const
 {
-	return Vec3( 0.f, 0.f, 0.f );
+	return Vec3( m_values[Ix], m_values[Iy], m_values[Iz] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec3 const Mat44::GetJBasis3D() const
 {
-	return Vec3( 0.f, 0.f, 0.f );
+	return Vec3( m_values[Jx], m_values[Jy], m_values[Jz] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec3 const Mat44::GetKBasis3D() const
 {
-	return Vec3( 0.f, 0.f, 0.f );
+	return Vec3( m_values[Kx], m_values[Ky], m_values[Kz] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec3 const Mat44::GetTranslation3D() const
 {
-	return Vec3( 0.f, 0.f, 0.f );
+	return Vec3( m_values[Tx], m_values[Ty], m_values[Tz] );
+
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec4 const Mat44::GetIBasis4D() const
 {
-	return Vec4( 0.f, 0.f, 0.f, 0.f );
+	return Vec4( m_values[Ix], m_values[Iy], m_values[Iz], m_values[Iw]);
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec4 const Mat44::GetJBasis4D() const
 {
-	return Vec4( 0.f, 0.f, 0.f, 0.f );
+	return Vec4( m_values[Jx], m_values[Jy], m_values[Jz], m_values[Jw] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec4 const Mat44::GetKBasis4D() const
 {
-	return Vec4( 0.f, 0.f, 0.f, 0.f );
+	return Vec4( m_values[Kx], m_values[Ky], m_values[Kz], m_values[Kw] );
 }
 
 //-----------------------------------------------------------------------------------------------
 Vec4 const Mat44::GetTranslation4D() const
 {
-	return Vec4( 0.f, 0.f, 0.f, 0.f );
+	return Vec4( m_values[Tx], m_values[Ty], m_values[Tz], m_values[Tw] );
 }
 
 //-----------------------------------------------------------------------------------------------
