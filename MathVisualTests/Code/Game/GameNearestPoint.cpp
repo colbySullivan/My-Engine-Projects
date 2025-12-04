@@ -143,7 +143,7 @@ void GameNearestPoint::AddShapeVerts()
 }
 
 //-----------------------------------------------------------------------------------------------
-void GameNearestPoint::UpdatePointPosition( float deltaSeconds )
+void GameNearestPoint::UpdatePointPosition( [[maybe_unused]] float deltaSeconds )
 {
 	if ( g_engine->m_input->IsKeyDown( 'W' ) )
 	{
