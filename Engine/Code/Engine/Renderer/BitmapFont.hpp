@@ -5,6 +5,12 @@
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include <vector>
 
+enum TextBoxMode
+{
+	SHRINK_TO_FIT,
+	OVERRUN
+};
+
 //------------------------------------------------------------------------------------------------
 class BitmapFont
 {
@@ -18,6 +24,9 @@ public:
 
 	void AddVertsForText2D( std::vector<Vertex>& vertexArray, Vec2 textMins,
 		float cellHeight, std::string const& text, Rgba8 tint =	Rgba8( 255, 255, 255, 255 ), float cellAspectScale = 1.f);
+
+	void AddVertsForTextInBox2D( std::vector<Vertex>& verts, std::string const& text, AABB2 const& box, float cellHeight, Rgba8 tint = Rgba8::WHITE,
+		float cellAspectScale = 1.f, Vec2 alignment = Vec2(.5f, .5f), TextBoxMode mode = TextBoxMode::SHRINK_TO_FIT, int maxGlyphsToDraw = 99999999);
 
 	float GetTextWidth( float cellHeight, std::string const& text, float cellAspectScale = 1.f );
 

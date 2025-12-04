@@ -15,6 +15,7 @@
 #include "Game/Player.hpp"
 #include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
+#include <cmath>
 
 RandomNumberGenerator g_rng;
 XmlUtils m_xml;
@@ -343,6 +344,18 @@ void Game::UpdateAttractMode(float deltaSeconds)
 		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
 	}
 	m_shipAnimationTimer += deltaSeconds;
+
+	m_textOffset.x = std::fmod(m_textOffset.x + deltaSeconds, 1.f);
+	if (m_textOffset.x < 0.f)
+	{
+		m_textOffset.x += 1.f;
+	}
+	m_textOffset.y = std::fmod(m_textOffset.y + deltaSeconds, 1.f);
+
+	if (m_textOffset.y < 0.f)
+	{
+		m_textOffset.y += 1.f;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -410,10 +423,22 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->BindTexture( nullptr );
 
 	std::vector<Vertex> textVerts;
-	g_testFont->AddVertsForText2D( textVerts, Vec2( 100.f, 200.f ), 30.f, "Welcome Libra", Rgba8( 100, 0, 0 ) );
-	g_testFont->AddVertsForText2D( textVerts, Vec2( 650.f, 400.f ), 15.f, "Don't fall in!", Rgba8( 70, 0, 80 ) );
+	std::vector<Vertex> textVerts2;
+	std::vector<Vertex> boxOutlineVerts;
+	std::vector<Vertex> boxOutlineVerts2;
+	//g_testFont->AddVertsForText2D(textVerts, Vec2(100.f, 200.f), 30.f, "Welcome Libra", Rgba8(100, 0, 0));
+	//g_testFont->AddVertsForText2D(textVerts, Vec2(650.f, 400.f), 15.f, "Don't fall in!", Rgba8(70, 0, 80));
+	AddVertsForAABB2D( boxOutlineVerts, AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), Rgba8( 0.f, 0.f, 0.f ) );
+	AddVertsForAABB2D( boxOutlineVerts2, AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), Rgba8( 0.f, 0.f, 0.f ) );
+	g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo is awesome?", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
+	g_testFont->AddVertsForTextInBox2D(textVerts2, "Teemo is awesome!", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
+	//g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo is awesome :)", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, Vec2(0.5f, 0.5f), TextBoxMode::SHRINK_TO_FIT);
+	
+	g_engine->m_render->DrawVertexArray( boxOutlineVerts );
+	g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
 	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
 	g_engine->m_render->DrawVertexArray( textVerts );
+	g_engine->m_render->DrawVertexArray( textVerts2 );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }

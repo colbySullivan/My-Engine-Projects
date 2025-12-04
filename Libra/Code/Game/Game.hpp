@@ -91,6 +91,7 @@ public:
 	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
 	Vertex				m_winLoseScreen[NUM_PLAYER_VERTS];
 	SpriteSheet*		m_tilesSpriteSheet;
+	Vec2				m_textOffset = Vec2(0.f, 0.f);
 
 
 

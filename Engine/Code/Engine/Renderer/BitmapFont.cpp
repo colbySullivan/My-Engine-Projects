@@ -42,17 +42,38 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex>& vertexArray, Vec2 textM
 	}
 }
 
+//------------------------------------------------------------------------------
+void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string const& text, AABB2 const& box, 
+	float cellHeight, Rgba8 tint, float cellAspectScale, Vec2 alignment, TextBoxMode mode, int maxGlyphsToDraw)
+{
+	Vec2 boxDimensions = box.GetDimensions();
+	float textWidth = GetTextWidth(cellHeight, text, cellAspectScale);
+
+	if (mode == SHRINK_TO_FIT)
+	{
+		if (textWidth > boxDimensions.x)
+		{
+			float scale = boxDimensions.x / textWidth;
+			cellHeight *= scale;
+			textWidth = GetTextWidth(cellHeight, text, cellAspectScale);
+		}
+	}
+
+	Vec2 startPos = box.m_mins;
+	Vec2 offset;
+	offset.x = (boxDimensions.x - textWidth) * alignment.x;
+	offset.y = (boxDimensions.y - cellHeight) * alignment.y;
+	startPos = box.m_mins + offset;
+
+	AddVertsForText2D(verts, startPos, cellHeight, text, tint, cellAspectScale);
+}
+
 //-----------------------------------------------------------------------------------------------
 float BitmapFont::GetTextWidth( float cellHeight, std::string const& text, float cellAspectScale )
 {
 	float cellWidth = cellHeight * cellAspectScale;
-	float gapWidth = cellWidth * cellAspectScale;
 	float numCells = static_cast<float>( text.length() );
-	float numGaps = numCells - 1.f;
-	if ( numGaps < 0.f )
-		numGaps = 0.f;
-
-	float totalWidth = ( numCells * cellWidth ) + ( numGaps * gapWidth );
+	float totalWidth = ( numCells * cellWidth );
 	return totalWidth;
 }
 
