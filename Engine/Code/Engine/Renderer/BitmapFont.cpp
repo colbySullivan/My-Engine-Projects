@@ -71,8 +71,6 @@ void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string 
 			textWidth *= scale;
 		}
 
-		paragraphHeight = cellHeight * static_cast<float>( splitStrings.size() );
-
 		if (paragraphHeight > boxDimensions.y)
 		{
 			float scale = boxDimensions.y / paragraphHeight;
@@ -89,7 +87,7 @@ void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string 
 
 	int glyphsDrawn = 0;
 	int splitStringSize = splitStrings.size() - 1;
-	for (int stringIndex = splitStringSize; stringIndex >= 0; --stringIndex)
+	for (int stringIndex = 0; stringIndex <= splitStringSize; ++stringIndex)
 	{
 		Vec2 linePos = startPos;
 		linePos.y += cellHeight * ( splitStringSize - stringIndex );
