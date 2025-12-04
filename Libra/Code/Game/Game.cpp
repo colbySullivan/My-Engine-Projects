@@ -430,8 +430,8 @@ void Game::RenderAttractMode() const
 	//g_testFont->AddVertsForText2D(textVerts, Vec2(650.f, 400.f), 15.f, "Don't fall in!", Rgba8(70, 0, 80));
 	AddVertsForAABB2D( boxOutlineVerts, AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), Rgba8( 0.f, 0.f, 0.f ) );
 	AddVertsForAABB2D( boxOutlineVerts2, AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), Rgba8( 0.f, 0.f, 0.f ) );
-	g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo is awesome?", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
-	g_testFont->AddVertsForTextInBox2D(textVerts2, "Teemo is awesome!", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
+	g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo\nis\nawesome?????", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
+	g_testFont->AddVertsForTextInBox2D(textVerts2, "Teemo is awesome! \n and >", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
 	//g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo is awesome :)", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, Vec2(0.5f, 0.5f), TextBoxMode::SHRINK_TO_FIT);
 	
 	g_engine->m_render->DrawVertexArray( boxOutlineVerts );

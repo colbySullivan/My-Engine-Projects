@@ -1,4 +1,5 @@
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 BitmapFont::BitmapFont( char const* fontFilePathNameWithNoExtension, Texture& fontTexture )
@@ -46,8 +47,20 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex>& vertexArray, Vec2 textM
 void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string const& text, AABB2 const& box, 
 	float cellHeight, Rgba8 tint, float cellAspectScale, Vec2 alignment, TextBoxMode mode, int maxGlyphsToDraw)
 {
+	Strings splitStrings = SplitStringOnDelimiter(text, '\n');
 	Vec2 boxDimensions = box.GetDimensions();
-	float textWidth = GetTextWidth(cellHeight, text, cellAspectScale);
+
+	float textWidth = 0.f;
+	for (int stringIndex = 0; stringIndex < splitStrings.size(); ++stringIndex)
+	{
+		float lineWidth = GetTextWidth(cellHeight, splitStrings[stringIndex], cellAspectScale);
+		if (lineWidth > textWidth)
+		{
+			textWidth = lineWidth;
+		}
+	}
+
+	float paragraphHeight = cellHeight * static_cast<float>( splitStrings.size() );
 
 	if (mode == SHRINK_TO_FIT)
 	{
@@ -55,17 +68,48 @@ void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string 
 		{
 			float scale = boxDimensions.x / textWidth;
 			cellHeight *= scale;
-			textWidth = GetTextWidth(cellHeight, text, cellAspectScale);
+			textWidth *= scale;
+		}
+
+		paragraphHeight = cellHeight * static_cast<float>( splitStrings.size() );
+
+		if (paragraphHeight > boxDimensions.y)
+		{
+			float scale = boxDimensions.y / paragraphHeight;
+			cellHeight *= scale;
+			textWidth *= scale;
+			paragraphHeight = boxDimensions.y;
 		}
 	}
 
-	Vec2 startPos = box.m_mins;
 	Vec2 offset;
 	offset.x = (boxDimensions.x - textWidth) * alignment.x;
-	offset.y = (boxDimensions.y - cellHeight) * alignment.y;
-	startPos = box.m_mins + offset;
+	offset.y = (boxDimensions.y - paragraphHeight) * alignment.y;
+	Vec2 startPos = box.m_mins + offset;
 
-	AddVertsForText2D(verts, startPos, cellHeight, text, tint, cellAspectScale);
+	int glyphsDrawn = 0;
+	int splitStringSize = splitStrings.size() - 1;
+	for (int stringIndex = splitStringSize; stringIndex >= 0; --stringIndex)
+	{
+		Vec2 linePos = startPos;
+		linePos.y += cellHeight * ( splitStringSize - stringIndex );
+
+		if ( glyphsDrawn <= maxGlyphsToDraw )
+		{
+			int lengthNextString = static_cast<int>( splitStrings[stringIndex].length() );
+			if ( lengthNextString + glyphsDrawn < maxGlyphsToDraw )
+			{
+				float lineWidth = GetTextWidth(cellHeight, splitStrings[stringIndex], cellAspectScale);
+				linePos.x = box.m_mins.x + (boxDimensions.x - lineWidth) * alignment.x;
+				AddVertsForText2D( verts, linePos, cellHeight, splitStrings[stringIndex], tint, cellAspectScale );
+				glyphsDrawn += static_cast<int>( splitStrings[stringIndex].length() );
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
