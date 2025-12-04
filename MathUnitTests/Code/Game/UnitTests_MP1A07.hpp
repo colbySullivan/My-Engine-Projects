@@ -13,12 +13,12 @@ void RunTests_MP1A07();
 // YOU MAY COMMENT THESE OUT TEMPORARILY to disable certain test sets while you work.
 // For every assignment submission, all test sets must be enabled.
 //
-//#define ENABLE_TestSet_MP1A07_MatrixConstruction
-//#define ENABLE_TestSet_MP1A07_MatrixAccessors
-//#define ENABLE_TestSet_MP1A07_MatrixMutators
-//#define ENABLE_TestSet_MP1A07_MatrixStaticCreates
-//#define ENABLE_TestSet_MP1A07_MatrixTransforms
-//#define ENABLE_TestSet_MP1A07_MatrixAppends
+#define ENABLE_TestSet_MP1A07_MatrixConstruction
+#define ENABLE_TestSet_MP1A07_MatrixAccessors
+#define ENABLE_TestSet_MP1A07_MatrixMutators
+#define ENABLE_TestSet_MP1A07_MatrixStaticCreates
+#define ENABLE_TestSet_MP1A07_MatrixTransforms
+#define ENABLE_TestSet_MP1A07_MatrixAppends
 
 
 //-----------------------------------------------------------------------------------------------
