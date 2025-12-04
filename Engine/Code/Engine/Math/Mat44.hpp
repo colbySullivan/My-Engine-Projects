@@ -22,7 +22,7 @@ struct Mat44
 
 	Mat44(); // Default constructor is IDENTITY matrix!
 	explicit Mat44( Vec2 const& iBasis2D, Vec2 const& jBasis2D, Vec2 const& translation2D );
-	explicit Mat44( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& translation3D );
+	//explicit Mat44( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& translation3D );
 	explicit Mat44( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& kBasis3D, Vec3 const& translation3D );
 	explicit Mat44( Vec4 const& iBasis4D, Vec4 const& jBasis4D, Vec4 const& kBasis4D, Vec4 const& translation4D );
 	explicit Mat44( float const* sixteenValuesBasisMajor );
@@ -60,7 +60,7 @@ struct Mat44
 	void SetTranslation2D( Vec2 const& translationXY );     // Sets translationZ = 0, translationW = 1
 	void SetTranslation3D( Vec3 const& translationXYZ );    // Sets translationW = 1
 	void SetIJ2D( Vec2 const& iBasis2D, Vec2 const& jBasis2D ); // Sets row K for i & j; does not modify k or t
-	void SetIJ12D( Vec2 const& iBasis2D, Vec2 const& jBasis2D, Vec2 const& translationXY ); // Sets z=0, w=0 for ij, w=1 for t; does not modify k
+	void SetIJT2D( Vec2 const& iBasis2D, Vec2 const& jBasis2D, Vec2 const& translationXY ); // Sets z=0, w=0 for ij, w=1 for t; does not modify k
 	void SetIJK3D( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& kBasis3D );       // Sets w=0 for ijk; does not modify t
 	void SetIJKT3D( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& kBasis3D, Vec3 const& translationXYZ ); // Sets w=0 for ijk, w=1 for t
 	void SetIJKT4D( Vec4 const& iBasis4D, Vec4 const& jBasis4D, Vec4 const& kBasis4D, Vec4 const& translation4D ); // All 16 values provided
