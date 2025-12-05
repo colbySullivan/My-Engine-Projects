@@ -6,6 +6,8 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Game/Player.hpp"
 #include "Game/Tile.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
+
 
 class App;
 class Entity;
@@ -91,7 +93,10 @@ public:
 	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
 	Vertex				m_winLoseScreen[NUM_PLAYER_VERTS];
 	SpriteSheet*		m_tilesSpriteSheet;
+	SpriteSheet*		m_explosionSpriteSheet;
+	SpriteAnimDefinition* m_tilesSpriteSheetAnim;
 	Vec2				m_textOffset = Vec2(0.f, 0.f);
+	float				m_frameTime = 0.0f;
 
 
 

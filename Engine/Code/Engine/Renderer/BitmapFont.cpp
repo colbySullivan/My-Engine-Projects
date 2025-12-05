@@ -86,7 +86,7 @@ void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string 
 	Vec2 startPos = box.m_mins + offset;
 
 	int glyphsDrawn = 0;
-	int splitStringSize = splitStrings.size() - 1;
+	int splitStringSize = static_cast<int>( splitStrings.size() ) - 1;
 	for (int stringIndex = 0; stringIndex <= splitStringSize; ++stringIndex)
 	{
 		Vec2 linePos = startPos;

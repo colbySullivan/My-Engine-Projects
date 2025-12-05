@@ -7,6 +7,7 @@
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Renderer/SpriteDefinition.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
@@ -71,7 +72,7 @@ void Game::Startup()
 //-----------------------------------------------------------------------------------------------
 void Game::Update(float deltaSeconds)
 {
-	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" ); // DO NOT SPECIFY FILE .EXTENSION!!  (Important later )
+	m_frameTime += deltaSeconds;
 
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
@@ -422,20 +423,38 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->DrawVertexArray( verts );
 	g_engine->m_render->BindTexture( nullptr );
 
+	std::vector<Vertex> explosionVerts;
 	std::vector<Vertex> textVerts;
 	std::vector<Vertex> textVerts2;
 	std::vector<Vertex> boxOutlineVerts;
 	std::vector<Vertex> boxOutlineVerts2;
-	//g_testFont->AddVertsForText2D(textVerts, Vec2(100.f, 200.f), 30.f, "Welcome Libra", Rgba8(100, 0, 0));
-	//g_testFont->AddVertsForText2D(textVerts, Vec2(650.f, 400.f), 15.f, "Don't fall in!", Rgba8(70, 0, 80));
-	AddVertsForAABB2D( boxOutlineVerts, AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), Rgba8( 0.f, 0.f, 0.f ) );
-	AddVertsForAABB2D( boxOutlineVerts2, AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), Rgba8( 0.f, 0.f, 0.f ) );
+
+	AddVertsForAABB2D( boxOutlineVerts, AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), Rgba8( 0, 0, 0 ) );
+	AddVertsForAABB2D( boxOutlineVerts2, AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), Rgba8( 0, 0, 0 ) );
 	g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo\nis\nawesome?????", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
 	g_testFont->AddVertsForTextInBox2D(textVerts2, "Teemo\nis\nawesome?????", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 50.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
-	//g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo is awesome :)", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, Vec2(0.5f, 0.5f), TextBoxMode::SHRINK_TO_FIT);
 	
 	g_engine->m_render->DrawVertexArray( boxOutlineVerts );
 	g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
+
+	std::vector<Vertex> tileVerts;
+
+	const SpriteDefinition& explosionSprite = m_tilesSpriteSheetAnim->GetSpriteDefAtTime( m_frameTime );
+	Vec2 explosionMins, explosionMaxs;
+	explosionSprite.GetUVs( explosionMins, explosionMaxs );
+
+	float minX = 400.0f;
+	float minY = 400.0f;
+	float maxX = minX + 100.0f;
+	float maxY = minY + 100.0f;
+	AABB2 box = AABB2( minX, minY, maxX, maxY );
+
+	AddVertsForAABB2D( explosionVerts, box, Rgba8(255,255,255), explosionMins, explosionMaxs);
+	
+	g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( explosionVerts );
+
+	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
 	g_engine->m_render->DrawVertexArray( textVerts );
 	g_engine->m_render->DrawVertexArray( textVerts2 );
@@ -630,4 +649,8 @@ void Game::LoadTextures()
 	m_endWinScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/VictoryScreen.jpg" );
 	m_endLoseScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/YouDiedScreen.png" );
 	m_startScreen = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/AttractScreen.png" );
+	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" ); 
+	Texture* spriteSheetTextureExplosion = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Explosion_5x5.png" );
+	m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTextureExplosion, IntVec2( 5, 5 ) );
+	m_tilesSpriteSheetAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::PINGPONG );
 }
