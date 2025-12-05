@@ -23,14 +23,17 @@
     <Filter Include="ThirdParty">
       <UniqueIdentifier>{72868663-0649-4ed8-ad47-8394c553aa47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Vec">
+      <UniqueIdentifier>{845ac0cd-41bb-4b84-892a-82491b07bfeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\Boxes">
+      <UniqueIdentifier>{7556ce78-e661-4dd9-82c7-f6d2a5afdfce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer\Sprite">
+      <UniqueIdentifier>{9477cc71-0d49-4794-ab6c-e050855e4454}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Math\Vec2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\Vec3.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Rgba8.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -60,12 +63,6 @@
     </ClCompile>
     <ClCompile Include="Core\VertexUtils.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\AABB2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Math\IntVec2.cpp">
-      <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="Core\Time.cpp">
       <Filter>Core</Filter>
@@ -97,19 +94,10 @@
     <ClCompile Include="Math\FloatRange.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Math\OBB2.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Core\Image.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\Texture.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\SpriteSheet.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer\SpriteDefinition.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Core\XmlUtils.cpp">
@@ -136,20 +124,38 @@
     <ClCompile Include="Math\Mat44.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Core\DevConsole.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vec2.cpp">
+      <Filter>Math\Vec</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vec3.cpp">
+      <Filter>Math\Vec</Filter>
+    </ClCompile>
     <ClCompile Include="Math\Vec4.cpp">
-      <Filter>Math</Filter>
+      <Filter>Math\Vec</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\IntVec2.cpp">
+      <Filter>Math\Vec</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\AABB2.cpp">
+      <Filter>Math\Boxes</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\OBB2.cpp">
+      <Filter>Math\Boxes</Filter>
     </ClCompile>
     <ClCompile Include="Renderer\SpriteAnimDefinition.cpp">
-      <Filter>Renderer</Filter>
+      <Filter>Renderer\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\SpriteDefinition.cpp">
+      <Filter>Renderer\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\SpriteSheet.cpp">
+      <Filter>Renderer\Sprite</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Math\Vec2.hpp">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Vec3.hpp">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Rgba8.hpp">
       <Filter>Core</Filter>
     </ClInclude>
@@ -179,12 +185,6 @@
     </ClInclude>
     <ClInclude Include="Core\VertexUtils.hpp">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\AABB2.hpp">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\IntVec2.hpp">
-      <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Core\Time.hpp">
       <Filter>Core</Filter>
@@ -240,17 +240,8 @@
     <ClInclude Include="Math\FloatRange.hpp">
       <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="Math\OBB2.hpp">
-      <Filter>Math</Filter>
-    </ClInclude>
     <ClInclude Include="Core\Image.hpp">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\SpriteSheet.hpp">
-      <Filter>Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\SpriteDefinition.hpp">
-      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Core\XmlUtils.hpp">
       <Filter>Core</Filter>
@@ -282,11 +273,35 @@
     <ClInclude Include="Math\Mat44.hpp">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Core\DevConsole.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vec2.hpp">
+      <Filter>Math\Vec</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vec3.hpp">
+      <Filter>Math\Vec</Filter>
+    </ClInclude>
     <ClInclude Include="Math\Vec4.hpp">
-      <Filter>Math</Filter>
+      <Filter>Math\Vec</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\IntVec2.hpp">
+      <Filter>Math\Vec</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\AABB2.hpp">
+      <Filter>Math\Boxes</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\OBB2.hpp">
+      <Filter>Math\Boxes</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\SpriteAnimDefinition.hpp">
-      <Filter>Renderer</Filter>
+      <Filter>Renderer\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\SpriteDefinition.hpp">
+      <Filter>Renderer\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\SpriteSheet.hpp">
+      <Filter>Renderer\Sprite</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,9 +1,11 @@
 #pragma once
+#include "Engine/Core/NamedStrings.hpp"
 #include <string>
 #include <map>
 #include <vector>
 
-typedef void (*EventSystemCallbackFunctionPtr)(); //void (*)()
+typedef NamedStrings EventArgs;
+typedef bool (*EventSystemCallbackFunctionPtr)( EventArgs& ); //void (*)()
 typedef std::vector<EventSystemCallbackFunctionPtr> SubscriberList;
 //typedef int (*AddTwoIntsPtr)( int, int );
 
@@ -20,6 +22,7 @@ public:
 
 	//void SubscribeEventCallbackFunction( std::string const& eventName, void (*callbackFunction)() );
 	void SubscribeEventCallbackFunction( std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr );
+	void FireEvent( std::string const& eventName, EventArgs& args );
 	void FireEvent( std::string const& eventName );
 
 private:
