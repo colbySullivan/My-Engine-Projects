@@ -1,5 +1,6 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/Engine.hpp" 
+#include "Engine/Core/VertexUtils.hpp"
 
 const Rgba8 DevConsole::ERROR_COLOR = Rgba8(255, 50, 50);		
 const Rgba8 DevConsole::WARNING_COLOR = Rgba8(255, 200, 0);		
@@ -49,7 +50,7 @@ void DevConsole::EndFrame()
 }
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::Execute( std::string const& consoleCommandText )
+void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText )
 {
 
 }
@@ -102,8 +103,13 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fontAspect) const
 {
-	std::vector<Vertex> verts;
-	font.AddVertsForTextInBox2D(verts, "[", bounds, m_lines[0].m_cellHeight, INFO_MAJOR_COLOR, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
+	std::vector<Vertex> boxVerts;
+	AddVertsForAABB2D(boxVerts, bounds, Rgba8(0, 0, 0, 200));
+	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->DrawVertexArray(boxVerts);
+
+	std::vector<Vertex> textVerts;
+	font.AddVertsForTextInBox2D(textVerts, "[", bounds, m_lines[0].m_cellHeight, INFO_MAJOR_COLOR, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
 	float currentY = bounds.m_mins.y + m_lines[0].m_cellHeight;
 	for (int lineIndex = (int)m_lines.size() - 1; lineIndex >= 0; lineIndex--)
 	{
@@ -112,7 +118,7 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 		lineBounds.m_mins = Vec2(bounds.m_mins.x, currentY);
 		lineBounds.m_maxs = Vec2(bounds.m_maxs.x, currentY + line.m_cellHeight);
 		std::string textWithFrameNumber = "[Frame:" + std::to_string(line.m_frameNumber) + " FrameTime: " + std::to_string(line.m_timestamp) + "] " + line.m_text;
-		font.AddVertsForTextInBox2D(verts, textWithFrameNumber, lineBounds, line.m_cellHeight, line.m_color, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
+		font.AddVertsForTextInBox2D(textVerts, textWithFrameNumber, lineBounds, line.m_cellHeight, line.m_color, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
 		currentY += line.m_cellHeight;
 
 		if (currentY > bounds.m_maxs.y)
@@ -121,5 +127,5 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 		}
 	}
 	g_engine->m_render->BindTexture(&font.GetTexture());
-	g_engine->m_render->DrawVertexArray(verts);
+	g_engine->m_render->DrawVertexArray(textVerts);
 }
