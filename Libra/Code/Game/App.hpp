@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Game.hpp"
 
 
@@ -25,6 +26,8 @@ public:
 
 	void SetIsQuitting();
 	bool IsQuitting() const;
+	bool HandleQuit();
+	static bool Event_Quit(EventArgs& args);
 	void LoadXmlMap();
 
 

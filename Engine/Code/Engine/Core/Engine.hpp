@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Window/Window.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Core/EventSystem.hpp"
 
 //------------------------------------------------------------------------------
 class Engine;   // Forward declaration; simply states that "an Engine class exists"
@@ -12,6 +13,7 @@ class Renderer; // Forward declaration; simply states that "a Renderer class exi
 class InputSystem; // Forward declaration; simply states that "an InputSystem class exists" 
 class AudioSystem;
 class DevConsole;
+class EventSystem;
 
 //------------------------------------------------------------------------------
 extern Engine* g_engine; // Advertisement that this global exists, so external people can use it
@@ -24,6 +26,7 @@ struct EngineConfig
     RenderConfig m_renderConfig;
     WindowConfig m_windowConfig;
 	DevConsoleConfig m_devConsoleConfig;
+	EventSystemConfig m_eventSystemConfig;
 };
 
 //------------------------------------------------------------------------------
@@ -36,9 +39,10 @@ public:
     void EndFrame();
 
 public:
-    Window*         m_window    = nullptr;
-    Renderer*       m_render    = nullptr;
-	InputSystem*    m_input     = nullptr; 
-    AudioSystem*    m_audio     = nullptr;
-    DevConsole*     m_console   = nullptr;
+    Window*         m_window        = nullptr;
+    Renderer*       m_render        = nullptr;
+	InputSystem*    m_input         = nullptr; 
+    AudioSystem*    m_audio         = nullptr;
+    DevConsole*     m_console       = nullptr;
+    EventSystem*    m_eventSystem   = nullptr;
 };

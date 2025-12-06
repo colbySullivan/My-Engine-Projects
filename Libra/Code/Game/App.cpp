@@ -23,6 +23,9 @@ App::App()
 
 	g_UICamera = new Camera();
 	g_UICamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(g_gameConfig->GetValue("screenSizeX", 0.f), g_gameConfig->GetValue("screenSizeY", 0.f)));
+
+	SubscribeEventCallbackFunction("Quit", App::Event_Quit);
+	//UnsubscribeEventCallbackFunction("Quit", App::Event_Quit);
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -79,6 +82,19 @@ void App::SetIsQuitting()
 bool App::IsQuitting() const
 {
 	return m_game->m_isQuitting;
+}
+
+bool App::HandleQuit()
+{
+	m_game->m_isQuitting = true;
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool App::Event_Quit( [[maybe_unused]] EventArgs& args) 
+{
+	g_theApp->HandleQuit();
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------

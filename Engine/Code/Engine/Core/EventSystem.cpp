@@ -1,4 +1,36 @@
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/Engine.hpp"
+
+//------------------------------------------------------------------------------
+EventSystem::EventSystem( EventSystemConfig const& config )
+	: m_config( config )
+{
+
+}
+
+//------------------------------------------------------------------------------
+void EventSystem::Startup()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void EventSystem::Shutdown()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void EventSystem::BeginFrame()
+{
+
+}
+
+//------------------------------------------------------------------------------
+void EventSystem::EndFrame()
+{
+
+}
 
 //-----------------------------------------------------------------------------------------------
 void EventSystem::SubscribeEventCallbackFunction( std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr )
@@ -6,9 +38,22 @@ void EventSystem::SubscribeEventCallbackFunction( std::string const& eventName, 
 	m_listOfSubscribersByEventName[eventName].push_back( functionPtr );
 }
 
+//------------------------------------------------------------------------------
+void EventSystem::UnsubscribeEventCallbackFunction(std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr)
+{
+	SubscriberList& subscribers = m_listOfSubscribersByEventName[eventName];
+
+	for (int i = 0; i < subscribers.size(); i++)
+	{
+		if (subscribers[i] == functionPtr)
+		{
+			subscribers[i] = nullptr;
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------------------------
-void EventSystem::FireEvent( std::string const& eventName, EventArgs& args )
+int EventSystem::FireEvent( std::string const& eventName, EventArgs& args )
 {
 	SubscriberList& subscribers =  m_listOfSubscribersByEventName[ eventName ];
 	for (int i = 0; i < subscribers.size() ; ++i)
@@ -18,22 +63,55 @@ void EventSystem::FireEvent( std::string const& eventName, EventArgs& args )
 			bool wasConsumed = subscribers[i]( args );
 			if ( wasConsumed )
 			{
-				break; // don't call any other callbacks; event was consumed
+				return 1;
 			}
 		}
 	}
+	return 0;
 }
 
 //-----------------------------------------------------------------------------------------------
-void EventSystem::FireEvent( std::string const& eventName )
+int EventSystem::FireEvent( std::string const& eventName )
 {
 	EventArgs args;
-	FireEvent( eventName, args );
+	return FireEvent( eventName, args );
+}
+
+//------------------------------------------------------------------------------
+void SubscribeEventCallbackFunction(std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr)
+{
+	if ( g_engine && g_engine->m_eventSystem )
+	{
+		g_engine->m_eventSystem->SubscribeEventCallbackFunction( eventName, functionPtr );
+	}
+}
+
+//------------------------------------------------------------------------------
+void UnsubscribeEventCallbackFunction(std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr)
+{
+	if (g_engine && g_engine->m_eventSystem)
+	{
+		g_engine->m_eventSystem->UnsubscribeEventCallbackFunction(eventName, functionPtr);
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
 int FireEvent( std::string const& eventName )
 {
-	//return Engine->event system FireEvent
+	if ( g_engine && g_engine->m_eventSystem )
+	{
+		EventArgs args;
+		return g_engine->m_eventSystem->FireEvent( eventName, args );
+	}
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+int FireEvent(std::string const& eventName, EventArgs& args)
+{
+	if (g_engine && g_engine->m_eventSystem)
+	{
+		return g_engine->m_eventSystem->FireEvent(eventName, args);
+	}
 	return 0;
 }

@@ -57,8 +57,7 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
 	case WM_CLOSE:
 	{
-		//g_theApp->SetIsQuitting();
-		ERROR_AND_DIE( " Hacky hack exit " );
+		FireEvent("Quit");
 		//return 0; // "Consumes" this message (tells Windows "okay, we handled it")
 	}
 
