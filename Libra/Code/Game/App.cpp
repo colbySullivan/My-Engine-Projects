@@ -20,6 +20,9 @@ App::App()
 	g_app = this;
 	m_game = new Game();
 	LoadXmlMap();
+
+	g_UICamera = new Camera();
+	g_UICamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(g_gameConfig->GetValue("screenSizeX", 0.f), g_gameConfig->GetValue("screenSizeY", 0.f)));
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -27,6 +30,9 @@ App::~App()
 {
 	m_game = nullptr;
 	delete m_game;
+
+	delete g_UICamera;
+	g_UICamera = nullptr;
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -58,6 +64,9 @@ void App::Update(float deltaSeconds)
 void App::Render() const
 {
 	m_game->Render();
+	g_engine->m_render->BeginCamera( *g_UICamera );
+	g_engine->m_console->Render(AABB2(g_UICamera->GetOrthoBottomLeft(), g_UICamera->GetOrthoTopRight()), *m_game->g_testFont, 1.f);
+	g_engine->m_render->EndCamera(*g_UICamera);
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -84,4 +93,3 @@ void App::LoadXmlMap()
 		g_gameConfig->PopulateFromXmlElementAttributes( *rootElement );
 	}
 }
-

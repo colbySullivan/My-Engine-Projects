@@ -9,6 +9,7 @@
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Core/DevConsole.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -195,6 +196,19 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateKeyboardInput( XboxController const& controller )
 {
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_TILDA ))
+	{
+		g_engine->m_console->ToggleMode( DevConsoleMode::HIDDEN );
+		if ( g_engine->m_console->GetMode() == DevConsoleMode::HIDDEN )
+		{
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Closed dev console", 20.f, m_frameTime );
+		}
+		else if ( g_engine->m_console->GetMode() == DevConsoleMode::OPEN_FULL )
+		{
+			g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "Opened dev console", 20.f, m_frameTime);
+		}
+	}
+
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT && m_isPaused )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;

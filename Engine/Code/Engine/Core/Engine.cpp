@@ -10,11 +10,13 @@ Engine::Engine( EngineConfig const& config )
 	m_render = new Renderer( config.m_renderConfig);
 	m_input = new InputSystem( config.m_inputConfig );
 	m_audio = new AudioSystem( config.m_audioConfig );
+	m_console = new DevConsole( config.m_devConsoleConfig );
 
 	m_window->Startup();
 	m_render->Startup();
 	m_input->Startup();
 	m_audio->Startup();
+	m_console->Startup();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -24,14 +26,17 @@ Engine::~Engine()
 	m_input->Shutdown();
 	m_render->Shutdown();
 	m_audio->Shutdown();
+	m_console->Shutdown();
 	delete m_window;
 	delete m_input;
 	delete m_render;
 	delete m_audio;
+	delete m_console;
 	m_window = nullptr;
 	m_input = nullptr;
 	m_render = nullptr;
 	m_audio = nullptr;
+	m_console = nullptr;
 }
 
 void Engine::BeginFrame()
@@ -40,6 +45,7 @@ void Engine::BeginFrame()
 	m_input->BeginFrame();
 	m_render->BeginFrame();
 	m_audio->BeginFrame();
+	m_console->BeginFrame();
 }
 
 void Engine::EndFrame()
@@ -48,4 +54,5 @@ void Engine::EndFrame()
 	m_input->EndFrame();
 	m_render->EndFrame();
 	m_audio->EndFrame();
+	m_console->EndFrame();
 }

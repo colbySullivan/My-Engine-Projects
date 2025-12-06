@@ -15,6 +15,7 @@ unsigned char const KEYCODE_F10 = 0x79;
 unsigned char const KEYCODE_F11 = 0x7A;
 unsigned char const KEYCODE_F12 = 0x7B;
 unsigned char const KEYCODE_ESC = 0x1B;
+unsigned char const KEYCODE_TILDA = 0xC0;
 unsigned char const KEYCODE_DOWNARROW = 0x28;
 unsigned char const KEYCODE_UPARROW = 0x26;
 unsigned char const KEYCODE_LEFTARROW = 0x25;
