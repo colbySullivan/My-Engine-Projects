@@ -666,5 +666,5 @@ void Game::LoadTextures()
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" ); 
 	Texture* spriteSheetTextureExplosion = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Explosion_5x5.png" );
 	m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTextureExplosion, IntVec2( 5, 5 ) );
-	m_tilesSpriteSheetAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::PINGPONG );
+	m_tilesSpriteSheetAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::ONCE );
 }

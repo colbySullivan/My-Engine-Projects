@@ -39,6 +39,7 @@ Player::~Player()
 //------------------------------------------------------------------------------
 void Player::Update([[maybe_unused]] float deltaSeconds)
 {
+	m_frameTimeEntity += deltaSeconds;
 	if ( m_health <= 0 )
 	{
 		return;
@@ -69,7 +70,8 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 void Player::Render() const
 {
 	if ( m_health <= 0 )
-	{
+	{		
+		PlayDeathExplosion();
 		return;
 	}
 	RenderPlayer();
@@ -79,8 +81,10 @@ void Player::Render() const
 //-----------------------------------------------------------------------------------------------
 void Player::RenderPlayer() const
 {
-	if ( m_isDead )
+	if (m_isDead)
+	{
 		return;
+	}
 
 	Vertex tempShipWorldVerts[NUM_PLAYER_VERTS];
 

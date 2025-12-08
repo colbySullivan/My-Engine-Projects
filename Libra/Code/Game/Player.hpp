@@ -25,7 +25,7 @@ public:
 private:
 	void InitializePlayerVerts();
 	void UpdateFromKeyboard(float deltaSeconds);
-	//void Shoot();
+	//void Shoot(); 
 	void UpdateFromController(float deltaSeconds);
 	void InitializeTurretVerts();
 	void RenderPlayer() const;

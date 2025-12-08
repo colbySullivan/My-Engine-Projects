@@ -63,6 +63,7 @@ public:
 
 	void InitializeBoxes();
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
+	void PlayDeathExplosion() const;
 
 	RandomNumberGenerator g_rng;
 
@@ -101,6 +102,7 @@ public:
 	float			m_timeSinceLastShot;
 	float			m_bulletCooldown;
 	bool			m_isProtected = false;
+	float			m_frameTimeEntity = 0.f;
 	//TileHeatMap*	m_heatMap = nullptr; // [[MAYBE]] TODO personal heat map used for pathing
 
 };

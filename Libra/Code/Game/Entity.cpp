@@ -28,6 +28,7 @@ Entity::~Entity()
 //-----------------------------------------------------------------------------------------------
 void Entity::Update( [[maybe_unused]] float deltaSeconds)
 {
+	m_frameTimeEntity += deltaSeconds;
 	if (m_health <= 0 || m_isDead)
 	{
 		Die();
@@ -73,6 +74,7 @@ void Entity::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	PlayDeathExplosion();
 	m_game->m_enemyDied = g_engine->m_audio->StartSound( 4, false, 0.8f );
 	m_isGarbage = true;
 	m_isDead = true;
@@ -192,6 +194,27 @@ void Entity::AddVertsForMe( std::vector<Vertex>& verts ) const
 	Vec2 maxs( 0.5f, 0.5f );
 	AABB2 localBox( mins, maxs );
 	AddVertsForAABB2D( verts, localBox, Rgba8(255,255,255,255 ));
+}
+
+//------------------------------------------------------------------------------
+void Entity::PlayDeathExplosion() const
+{
+	std::vector<Vertex> explosionVerts;
+	std::vector<Vertex> tileVerts;
+
+	const SpriteDefinition& explosionSprite = g_game->m_tilesSpriteSheetAnim->GetSpriteDefAtTime(m_frameTimeEntity);
+	Vec2 explosionMins, explosionMaxs;
+	explosionSprite.GetUVs(explosionMins, explosionMaxs);
+
+	Vec2 mins(m_position.x - 0.5f, m_position.y - 0.5f);
+	Vec2 maxs(m_position.x + 0.5f, m_position.y + 0.5f);
+	AABB2 localBox(mins, maxs);
+
+	AddVertsForAABB2D(explosionVerts, localBox, Rgba8(255, 255, 255), explosionMins, explosionMaxs);
+
+	g_engine->m_render->BindTexture(&g_game->m_explosionSpriteSheet->GetTexture());
+	g_engine->m_render->DrawVertexArray(explosionVerts);
+ 	g_engine->m_render->BindTexture(nullptr);
 }
 
 //-----------------------------------------------------------------------------------------------
