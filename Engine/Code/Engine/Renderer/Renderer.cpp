@@ -233,7 +233,7 @@ Texture* Renderer::CreateOrGetTextureFromFile( char const* imageFilePath )
 //-----------------------------------------------------------------------------------------------
 Texture* Renderer::GetTextureForFileName( char const* imageFilePath )
 {
-	for ( int textureIndex = 0; textureIndex < m_loadedTextures.size(); ++textureIndex )
+	for ( int textureIndex = 0; textureIndex < static_cast<int>(m_loadedTextures.size()); ++textureIndex )
 	{
 		Texture* texture = m_loadedTextures[textureIndex];
 		if ( texture->m_name == imageFilePath )
@@ -262,7 +262,7 @@ BitmapFont* Renderer::CreateOrGetBitmapFont( char const* bitmapFontFilePathWithN
 //-----------------------------------------------------------------------------------------------
 BitmapFont* Renderer::GetFontForFileName( char const* bitmapFontFilePathWithNoExtension )
 {
-	for ( int fontIndex = 0; fontIndex < m_loadedFonts.size(); ++fontIndex )
+	for ( int fontIndex = 0; fontIndex < static_cast<int>(m_loadedFonts.size()); ++fontIndex )
 	{
 		BitmapFont* font = m_loadedFonts[fontIndex];
 		if ( font->m_fontFilePathNameWithNoExtension == bitmapFontFilePathWithNoExtension )

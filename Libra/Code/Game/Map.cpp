@@ -68,11 +68,11 @@ bool Map::IsTileSolidAtTileCoords(IntVec2 tileCoords) const
 //-----------------------------------------------------------------------------------------------
 void Map::PushEntityOutOfEachOther() const
 {
-	for (int entityIndex = 0; entityIndex < m_allEntities.size() ; ++entityIndex)
+	for (int entityIndex = 0; entityIndex < static_cast<int>(m_allEntities.size()) ; ++entityIndex)
 	{
 		Entity* firstEntity = m_allEntities[entityIndex];
 		if ( firstEntity )
-			for ( int otherEntityIndex = entityIndex + 1; otherEntityIndex < m_allEntities.size(); ++otherEntityIndex )
+			for ( int otherEntityIndex = entityIndex + 1; otherEntityIndex < static_cast<int>(m_allEntities.size()); ++otherEntityIndex )
 			{
 				Entity* otherEntity = m_allEntities[otherEntityIndex];
 				if ( otherEntity )
@@ -412,7 +412,7 @@ void Map::WormFillTiles()
 			int move = g_rng.RollRandomIntInRange( 0, 3 );
 			spawnPos = legalMoves[move];
 			int newtileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
-			if ( newtileIndex > 0 && newtileIndex < m_tiles.size() )
+			if ( newtileIndex > 0 && newtileIndex < static_cast<int>(m_tiles.size()) )
 				m_tiles[newtileIndex].m_type = m_sprinkle2TileType;
 			wormHealth--;
 		}
@@ -524,12 +524,12 @@ IntVec2 Map::GetRandomValidPointInMapIntVec2()
 //-----------------------------------------------------------------------------------------------
 void Map::CheckLineOfSights()
 {
-	for ( int playerIndex = 0; playerIndex < m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER].size(); ++playerIndex )
+	for ( int playerIndex = 0; playerIndex < static_cast<int>(m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER].size()); ++playerIndex )
 	{
 		Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][playerIndex];
 		if ( player )
 		{
-			for (int enemyIndex = 0; enemyIndex < m_allEntities.size() ; ++enemyIndex)
+			for (int enemyIndex = 0; enemyIndex < static_cast<int>(m_allEntities.size()) ; ++enemyIndex)
 			{
 				
 			}
@@ -691,7 +691,7 @@ void Map::RemoveEntityFromMap( Entity& e )
 //-----------------------------------------------------------------------------------------------
 void Map::DestroyGarbageEntities()
 {
-	for (int entityIndex = 0; entityIndex < m_allEntities.size() ; ++entityIndex)
+	for (int entityIndex = 0; entityIndex < static_cast<int>(m_allEntities.size()) ; ++entityIndex)
 	{
 		Entity* grabageEntity = m_allEntities[entityIndex];
 		if ( grabageEntity && grabageEntity->m_isGarbage )

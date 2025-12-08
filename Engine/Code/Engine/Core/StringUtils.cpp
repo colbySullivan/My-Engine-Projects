@@ -46,7 +46,7 @@ Strings SplitStringOnDelimiter( std::string const& originalString, char delimite
 {
 	Strings splitWords;
 	std::string newWord;
-	for (int charIndex = 0; charIndex < originalString.size() ; ++charIndex)
+	for (int charIndex = 0; charIndex < static_cast<int>(originalString.size()) ; ++charIndex)
 	{
 		char character = originalString[charIndex];
 		if ( character != delimiterToSplitOn )

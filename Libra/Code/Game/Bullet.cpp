@@ -96,7 +96,7 @@ void Bullet::Respawn()
 void Bullet::CheckEntityCollisions()
 {
 	EntityList const& entities = m_game->m_currentMap->m_allEntities;
-	for ( int i = 0; i < entities.size(); i++ )
+	for ( int i = 0; i < static_cast<int>(entities.size()); i++ )
 	{
 		Entity* other = entities[i];
 		if ( !other || other->m_isDead || other == this )

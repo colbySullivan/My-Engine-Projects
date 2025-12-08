@@ -43,7 +43,7 @@ void EventSystem::UnsubscribeEventCallbackFunction(std::string const& eventName,
 {
 	SubscriberList& subscribers = m_listOfSubscribersByEventName[eventName];
 
-	for (int i = 0; i < subscribers.size(); i++)
+	for (int i = 0; i < static_cast<int>(subscribers.size()); i++)
 	{
 		if (subscribers[i] == functionPtr)
 		{
@@ -56,7 +56,7 @@ void EventSystem::UnsubscribeEventCallbackFunction(std::string const& eventName,
 int EventSystem::FireEvent( std::string const& eventName, EventArgs& args )
 {
 	SubscriberList& subscribers =  m_listOfSubscribersByEventName[ eventName ];
-	for (int i = 0; i < subscribers.size() ; ++i)
+	for (int i = 0; i < static_cast<int>(subscribers.size()) ; ++i)
 	{
 		if ( subscribers[i] != nullptr ) 
 		{

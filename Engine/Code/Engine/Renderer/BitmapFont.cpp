@@ -21,7 +21,7 @@ void BitmapFont::AddVertsForText2D( std::vector<Vertex>& vertexArray, Vec2 textM
 	float cellWidth = cellHeight * cellAspectScale;
 	Vec2 currentMins = textMins;
 
-	for (int charIndex = 0; charIndex < text.size() ; ++charIndex)
+	for (int charIndex = 0; charIndex < static_cast<int>(text.size()) ; ++charIndex)
 	{
 		SpriteDefinition const& sprite = m_fontGlyphsSpriteSheet.GetSpriteDef( text[charIndex] );
 		Vec2 uvMins, uvMaxs;
@@ -51,7 +51,7 @@ void BitmapFont::AddVertsForTextInBox2D(std::vector<Vertex>& verts, std::string 
 	Vec2 boxDimensions = box.GetDimensions();
 
 	float textWidth = 0.f;
-	for (int stringIndex = 0; stringIndex < splitStrings.size(); ++stringIndex)
+	for (int stringIndex = 0; stringIndex < static_cast<int>(splitStrings.size()); ++stringIndex)
 	{
 		float lineWidth = GetTextWidth(cellHeight, splitStrings[stringIndex], cellAspectScale);
 		if (lineWidth > textWidth)

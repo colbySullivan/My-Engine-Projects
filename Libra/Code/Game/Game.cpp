@@ -256,7 +256,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F9))
 	{
 		m_currentMapNumber += 1;
-		if ( m_currentMapNumber < m_maps.size() )
+		if ( m_currentMapNumber < static_cast<int>(m_maps.size()) )
 		{
 			m_nextMap = m_maps[m_currentMapNumber];
 		}
@@ -621,7 +621,7 @@ void Game::PlayerPortalEndConditionCheck()
 {
 	if ( m_currentMap->IsPlayerOnPortal() )
 	{
-		if ( m_currentMapNumber == (m_maps.size() - 1) )
+		if ( m_currentMapNumber == static_cast<int>(m_maps.size() - 1) )
 		{
 			m_hasWon = true;
 			m_isPaused = true;
