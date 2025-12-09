@@ -85,7 +85,7 @@ void GameRaycastVsDiscs::AddShapeVerts()
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::RenderShapes() const
 {
-	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
+	for ( int Index = 0; Index <  static_cast<int>(m_testShapes.size()); Index++ )
 	{
 		TestShapeDisc* shape = m_testShapes[Index];
 		if ( shape != nullptr )
@@ -192,7 +192,7 @@ void GameRaycastVsDiscs::UpdateCheckDiscsRaycast()
 	float length = fwdLine.GetLength();
 	fwdLine.Normalize();
 	
-	for ( int Index = 0; Index < m_testShapes.size(); Index++ )
+	for ( int Index = 0; Index <  static_cast<int>(m_testShapes.size()); Index++ )
 	{
 		TestShapeDisc* shape = m_testShapes[Index];
 		if ( shape != nullptr )

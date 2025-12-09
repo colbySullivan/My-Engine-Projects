@@ -57,7 +57,7 @@ void GameNearestPoint::Render() const
 
 	RenderShapes();
 	Vertex tempPointWorldVerts[DISC_VERTS];
-	for ( int vertIndex = 0; vertIndex < m_pointVerts.size(); ++vertIndex )
+	for ( int vertIndex = 0; vertIndex < static_cast<int>(m_pointVerts.size()); ++vertIndex )
 	{
 		tempPointWorldVerts[vertIndex] = m_pointVerts[vertIndex];
 	}
@@ -173,7 +173,7 @@ void GameNearestPoint::UpdatePointPosition( [[maybe_unused]] float deltaSeconds 
 //-----------------------------------------------------------------------------------------------
 void GameNearestPoint::RenderShapes() const
 {
-	for (int Index = 0; Index < m_testShapes.size() ; Index++)
+	for (int Index = 0; Index <  static_cast<int>(m_testShapes.size()) ; Index++)
 	{
 		TestShape* shape = m_testShapes[Index];
 		if ( shape != nullptr )

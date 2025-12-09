@@ -56,7 +56,7 @@ void TestShapeAABB2::AddVertsForMe( std::vector<Vertex>& verts ) const
 //-----------------------------------------------------------------------------------------------
 void TestShapeAABB2::ChangeColor( Rgba8 newColor )
 {
-	for ( int i = 0; i < m_lineVerts.size(); ++i )
+	for ( int i = 0; i <  static_cast<int>(m_lineVerts.size()); ++i )
 	{
 		m_lineVerts[i].m_color = newColor;
 	}
