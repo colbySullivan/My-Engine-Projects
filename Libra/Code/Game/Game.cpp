@@ -445,15 +445,15 @@ void Game::RenderAttractMode() const
 
 	AddVertsForAABB2D( boxOutlineVerts, AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), Rgba8( 0, 0, 0 ) );
 	AddVertsForAABB2D( boxOutlineVerts2, AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), Rgba8( 0, 0, 0 ) );
-	g_testFont->AddVertsForTextInBox2D(textVerts, "Teemo\nis\nawesome?????", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
-	g_testFont->AddVertsForTextInBox2D(textVerts2, "Teemo\nis\nawesome?????", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 50.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
+	g_testFont->AddVertsForTextInBox2D(textVerts, "This\nis\nshrink to fit", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
+	g_testFont->AddVertsForTextInBox2D(textVerts2, "This\nis\noverrun", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 50.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
 	
-	g_engine->m_render->DrawVertexArray( boxOutlineVerts );
-	g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
+	//g_engine->m_render->DrawVertexArray( boxOutlineVerts );
+	//g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
 
 	std::vector<Vertex> tileVerts;
 
-	const SpriteDefinition& explosionSprite = m_tilesSpriteSheetAnim->GetSpriteDefAtTime( m_frameTime );
+	const SpriteDefinition& explosionSprite = m_tilesSpriteSheetAnimPingPong->GetSpriteDefAtTime( m_frameTime );
 	Vec2 explosionMins, explosionMaxs;
 	explosionSprite.GetUVs( explosionMins, explosionMaxs );
 
@@ -465,13 +465,13 @@ void Game::RenderAttractMode() const
 
 	AddVertsForAABB2D( explosionVerts, box, Rgba8(255,255,255), explosionMins, explosionMaxs);
 	
-	g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( explosionVerts );
+	//g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
+	//g_engine->m_render->DrawVertexArray( explosionVerts );
 
-	g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
-	g_engine->m_render->DrawVertexArray( textVerts );
-	g_engine->m_render->DrawVertexArray( textVerts2 );
+	//g_engine->m_render->BindTexture( nullptr );
+	//g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
+	//g_engine->m_render->DrawVertexArray( textVerts );
+	//g_engine->m_render->DrawVertexArray( textVerts2 );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
@@ -667,4 +667,5 @@ void Game::LoadTextures()
 	Texture* spriteSheetTextureExplosion = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Explosion_5x5.png" );
 	m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTextureExplosion, IntVec2( 5, 5 ) );
 	m_tilesSpriteSheetAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::ONCE );
+	m_tilesSpriteSheetAnimPingPong = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::PINGPONG);
 }

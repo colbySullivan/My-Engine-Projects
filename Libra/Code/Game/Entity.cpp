@@ -74,6 +74,11 @@ void Entity::DebugRender() const
 //-----------------------------------------------------------------------------------------------
 void Entity::Die()
 {
+	if ( !m_justDied )
+	{
+		m_frameTimeEntity = 0.0f;
+		m_justDied = true;
+	}
 	PlayDeathExplosion();
 	m_game->m_enemyDied = g_engine->m_audio->StartSound( 4, false, 0.8f );
 	m_isGarbage = true;

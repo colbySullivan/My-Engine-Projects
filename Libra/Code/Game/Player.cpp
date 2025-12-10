@@ -42,6 +42,11 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 	m_frameTimeEntity += deltaSeconds;
 	if ( m_health <= 0 )
 	{
+		if ( !m_justDied )
+		{
+			m_frameTimeEntity = 0.0f;
+			m_justDied = true;
+		}
 		return;
 	}
 	m_isMoving = false;

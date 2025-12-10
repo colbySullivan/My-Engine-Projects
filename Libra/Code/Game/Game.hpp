@@ -163,4 +163,5 @@ private:
 	void LoadTextures();
 	MapDef CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile );
 	void ConstructMapFromXML();
+	SpriteAnimDefinition* m_tilesSpriteSheetAnimPingPong;
 };

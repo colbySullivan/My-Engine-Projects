@@ -103,6 +103,7 @@ public:
 	float			m_bulletCooldown;
 	bool			m_isProtected = false;
 	float			m_frameTimeEntity = 0.f;
+	bool			m_justDied = false;
 	//TileHeatMap*	m_heatMap = nullptr; // [[MAYBE]] TODO personal heat map used for pathing
 
 };
