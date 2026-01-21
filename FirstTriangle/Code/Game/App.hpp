@@ -1,12 +1,10 @@
 #pragma once
 #include "Engine/Renderer/Camera.hpp"
-#include "Game.hpp"
 
 
 //------------------------------------------------------------------------------
 class PlayerShip;
 class App;
-class Game;
 
 //------------------------------------------------------------------------------
 extern App* g_theApp;
@@ -25,10 +23,7 @@ public:
 	void SetIsQuitting();
 	bool IsQuitting() const;
 
-
-public:
-	Game*		m_game = nullptr;
-
 private:
+	bool			m_isQuitting = false;
 	float           m_lastFrameTime = 0.f;
 };

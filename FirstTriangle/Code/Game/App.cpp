@@ -5,7 +5,6 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Game/Game.hpp"
 
 
 App* g_app = nullptr;
@@ -14,19 +13,14 @@ App::App()
 {
 	EngineConfig config;
 	config.m_windowConfig.m_clientAspect = 2.0f;
-	config.m_windowConfig.m_windowTitle = "Protogame2D";
+	config.m_windowConfig.m_windowTitle = "FirstTriangle";
 	g_engine = new Engine( config );
-
 	g_app = this;
-	m_game = new Game();
-	m_game->Startup();
 }
 //-----------------------------------------------------------------------------------------------
 
 App::~App()
 {
-	m_game = nullptr;
-	delete m_game;
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -39,36 +33,31 @@ void App::RunFrame()
 	g_engine->BeginFrame();
 	Update(deltaSeconds);
 	Render();
-	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------
 
-void App::Update(float deltaSeconds)
+void App::Update([[maybe_unused]] float deltaSeconds)
 {
-	m_game->Update(deltaSeconds);
-	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_ESC ) )
 	{
-		delete m_game;
-		m_game = nullptr;
-		m_game = new Game();
+		SetIsQuitting();
 	}
 }
 //-----------------------------------------------------------------------------------------------
 
 void App::Render() const
 {
-	m_game->Render();
 }
 //-----------------------------------------------------------------------------------------------
 
 void App::SetIsQuitting()
 {
-	m_game->m_isQuitting = true;
+	m_isQuitting = true;
 }
 //-----------------------------------------------------------------------------------------------
 
 bool App::IsQuitting() const
 {
-	return m_game->m_isQuitting;
+	return m_isQuitting;
 }
 
