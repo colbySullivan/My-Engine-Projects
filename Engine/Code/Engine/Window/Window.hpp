@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 //------------------------------------------------------------------------------
 struct Rgba8;
@@ -25,10 +26,13 @@ public:
 	void BeginFrame();
 	void EndFrame();
 	Vec2 GetNormalizedMouseUV() const;
+	void* GetHwnd() const;
+	IntVec2 GetClientDimensions() const;
 
 	WindowConfig	m_config;
 	void*			m_displayDeviceContext = 0;
 	void*			m_windowHandle = nullptr;
+
 private:
 	void CreateOSWindow();
 	void RunMessagePump();

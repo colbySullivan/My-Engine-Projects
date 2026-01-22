@@ -14,6 +14,7 @@ public:
 	void SetFromText( char const* text );
 
 	static const Rgba8 WHITE;
+	void GetAsFloats( float* colorAsFloats ) const;
 };
 
 Rgba8 Interpolate( Rgba8 start, Rgba8 end, float fractionOfEnd );

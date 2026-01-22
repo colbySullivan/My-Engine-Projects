@@ -233,6 +233,21 @@ void Window::RunMessagePump()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+void* Window::GetHwnd() const
+{
+	return m_windowHandle;
+}
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 Window::GetClientDimensions() const
+{
+	HWND windowHandle = static_cast< HWND >( m_windowHandle ); // Need to add this new void* member!
+	RECT clientRect;
+	::GetClientRect( windowHandle, &clientRect );
+	return IntVec2( clientRect.right, clientRect.bottom );
+}
+
 //-------------------------------------------------------------------------------------------
 // Returns the mouse cursor's current position relative to the interior client area of our
 // window, in normalized UV coordinates -- (0,0) is bottom-left, (1,1) is top-right.

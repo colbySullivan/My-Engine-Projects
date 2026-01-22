@@ -27,6 +27,15 @@ void Rgba8::SetFromText( char const* text )
 }
 
 //-----------------------------------------------------------------------------------------------
+void Rgba8::GetAsFloats( float* colorAsFloats ) const
+{
+	colorAsFloats[0] = RangeMap( ( float )r, 0.f, 255.f, 0.f, 1.f );
+	colorAsFloats[1] = RangeMap( ( float )g, 0.f, 255.f, 0.f, 1.f );
+	colorAsFloats[2] = RangeMap( ( float )b, 0.f, 255.f, 0.f, 1.f );
+	colorAsFloats[3] = RangeMap( ( float )a, 0.f, 255.f, 0.f, 1.f );
+}
+
+//-----------------------------------------------------------------------------------------------
 Rgba8 Interpolate( Rgba8 start, Rgba8 end, float fractionOfEnd )
 {
 	float r = Interpolate( NormalizeByte( start.r ), NormalizeByte( end.r ), fractionOfEnd );
