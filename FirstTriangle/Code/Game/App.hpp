@@ -5,11 +5,9 @@
 //------------------------------------------------------------------------------
 class PlayerShip;
 class App;
-class Window;
 
 //------------------------------------------------------------------------------
 extern App* g_theApp;
-extern Window* g_theWindow;
 
 //------------------------------------------------------------------------------
 class App
@@ -17,7 +15,7 @@ class App
 public:
 	App();
 	~App();
-
+	//void Shutdown();
 	void RunFrame();
 	void Update(float deltaSeconds);
 	void Render() const;
