@@ -45,7 +45,7 @@ void Renderer::BeginFrame()
 void Renderer::EndFrame()
 {
 	// "Present" the backbuffer by swapping the front (visible) and back (working) screen buffers
-	HDC displayDeviceContent = reinterpret_cast<HDC>( g_engine->m_window->m_displayDeviceContext );
+	//HDC displayDeviceContent = reinterpret_cast<HDC>( g_engine->m_window->m_displayDeviceContext );
 	//SwapBuffers( displayDeviceContent ); // Note: call this only once at the very end of each frame
 }
 

@@ -172,6 +172,8 @@ void Window::CreateOSWindow()
 	clientRect.top = ( int )clientMarginY;
 	clientRect.bottom = clientRect.top + ( int )clientHeight;
 
+	m_clientDimensions = IntVec2( clientRect.right, clientRect.bottom );
+
 	// Calculate the outer dimensions of the physical window, including frame et. al.
 	RECT windowRect = clientRect;
 	AdjustWindowRectEx( &windowRect, windowStyleFlags, FALSE, windowStyleExFlags );
@@ -242,10 +244,7 @@ void* Window::GetHwnd() const
 //-----------------------------------------------------------------------------------------------
 IntVec2 Window::GetClientDimensions() const
 {
-	HWND windowHandle = static_cast< HWND >( m_windowHandle ); // Need to add this new void* member!
-	RECT clientRect;
-	::GetClientRect( windowHandle, &clientRect );
-	return IntVec2( clientRect.right, clientRect.bottom );
+	return m_clientDimensions;
 }
 
 //-------------------------------------------------------------------------------------------

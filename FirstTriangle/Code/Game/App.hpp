@@ -15,7 +15,6 @@ class App
 public:
 	App();
 	~App();
-	//void Shutdown();
 	void RunFrame();
 	void Update(float deltaSeconds);
 	void Render() const;
