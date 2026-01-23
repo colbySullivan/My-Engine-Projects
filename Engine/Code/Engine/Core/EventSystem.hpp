@@ -11,7 +11,7 @@ typedef std::vector<EventSystemCallbackFunctionPtr> SubscriberList;
 
 struct EventSystemConfig
 {
-
+	bool	m_isEnabled = true;
 };
 
 class EventSystem

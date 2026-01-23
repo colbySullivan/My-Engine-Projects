@@ -70,7 +70,7 @@ const char* shaderSource = R"(
 	{
 		return float4(input.color);
 	};
-	)";
+)";
 
 
 App* g_app = nullptr;
@@ -80,8 +80,12 @@ App::App()
 	EngineConfig config;
 	config.m_windowConfig.m_clientAspect = 2.0f;
 	config.m_windowConfig.m_windowTitle = "FirstTriangle";
+	config.m_renderConfig.m_isEnabled = false;
+	config.m_audioConfig.m_isEnabled = false;
 	g_engine = new Engine( config );
 	g_app = this;
+
+	SubscribeEventCallbackFunction("Quit", App::Event_Quit);
 
 	//CREATE THE DEVICE AND SWAP CHAIN
 	unsigned int deviceFlags = 0;
@@ -364,6 +368,7 @@ void App::RunFrame()
 	g_engine->BeginFrame();
 	Update(deltaSeconds);
 	Render();
+	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -412,3 +417,9 @@ bool App::IsQuitting() const
 	return m_isQuitting;
 }
 
+//------------------------------------------------------------------------------
+bool App::Event_Quit( [[maybe_unused]] EventArgs& args )
+{
+	g_theApp->SetIsQuitting();
+	return false;
+}

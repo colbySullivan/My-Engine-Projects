@@ -14,6 +14,7 @@ enum DevConsoleMode
 
 struct DevConsoleConfig
 {
+	bool			m_isEnabled = true;
 	DevConsoleMode	m_consoleMode = HIDDEN;
 };
 
