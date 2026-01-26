@@ -3,28 +3,11 @@
 #include <math.h>
 #include <cassert>
 #include <crtdbg.h>
-//#include "PlayerShip.hpp"
-//
-//
-//PlayerShip* g_ship1 = nullptr;
-//PlayerShip* g_ship2 = nullptr;
-//PlayerShip* g_ship3 = nullptr;
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Eventually, we'll remove most OpenGL references out of Main_Win32.cpp
-// Both of the following lines will eventually move to the top of Engine/Renderer/Renderer.cpp
-//
 #include <gl/gl.h>					// Include basic OpenGL constants and function declarations
 #pragma comment( lib, "opengl32" )	// Link in the OpenGL32.lib static library
-#include <Engine/Math/Vec2.hpp>
-#include <Engine/Core/Vertex.hpp>
 #include "App.hpp"
 #include <Engine/Core/Engine.hpp>
-#include "Engine/Input/InputSystem.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
 
-//-----------------------------------------------------------------------------------------------
-// #SD1ToDo: Later we will move this useful macro to a more central place, e.g. Engine/Core/EngineCommon.hpp
-//
 #define UNUSED(x) (void)(x);
 
 App* g_theApp = nullptr;
