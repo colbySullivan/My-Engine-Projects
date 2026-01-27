@@ -381,18 +381,60 @@ void Mat44::Append( Mat44 const& appendThis )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Mat44::AppendZRotation( float degreesRotationAboutZ )
+void Mat44::AppendZRotation(float degreesRotationAboutZ)
 {
-	Mat44 rotationMatrix = MakeZRotationDegrees( degreesRotationAboutZ );
-	Append( rotationMatrix );
+	float cosDeg = CosDegrees(degreesRotationAboutZ);
+	float sinDeg = SinDegrees(degreesRotationAboutZ);
+
+	float oldIx = m_values[Ix];
+	float oldIy = m_values[Iy];
+	float oldIz = m_values[Iz];
+	float oldIw = m_values[Iw];
+
+	float oldJx = m_values[Jx];
+	float oldJy = m_values[Jy];
+	float oldJz = m_values[Jz];
+	float oldJw = m_values[Jw];
+
+	m_values[Ix] = (oldIx * cosDeg) + (oldJx * sinDeg);
+	m_values[Iy] = (oldIy * cosDeg) + (oldJy * sinDeg);
+	m_values[Iz] = (oldIz * cosDeg) + (oldJz * sinDeg);
+	m_values[Iw] = (oldIw * cosDeg) + (oldJw * sinDeg);
+
+	m_values[Jx] = (oldIx * -sinDeg) + (oldJx * cosDeg);
+	m_values[Jy] = (oldIy * -sinDeg) + (oldJy * cosDeg);
+	m_values[Jz] = (oldIz * -sinDeg) + (oldJz * cosDeg);
+	m_values[Jw] = (oldIw * -sinDeg) + (oldJw * cosDeg);
 }
+
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::AppendYRotation( float degreesRotationAboutY )
 {
-	Mat44 rotationMatrix = MakeYRotationDegrees( degreesRotationAboutY );
-	Append( rotationMatrix );
+	float cosDeg = CosDegrees( degreesRotationAboutY );
+	float sinDeg = SinDegrees( degreesRotationAboutY );
+
+	float oldIx = m_values[Ix];
+	float oldIy = m_values[Iy];
+	float oldIz = m_values[Iz];
+	float oldIw = m_values[Iw];
+
+	float oldKx = m_values[Kx];
+	float oldKy = m_values[Ky];
+	float oldKz = m_values[Kz];
+	float oldKw = m_values[Kw];
+
+	m_values[Ix] = ( oldIx * cosDeg ) - ( oldKx * sinDeg );
+	m_values[Iy] = ( oldIy * cosDeg ) - ( oldKy * sinDeg );
+	m_values[Iz] = ( oldIz * cosDeg ) - ( oldKz * sinDeg );
+	m_values[Iw] = ( oldIw * cosDeg ) - ( oldKw * sinDeg );
+
+	m_values[Kx] = ( oldIx * sinDeg ) + ( oldKx * cosDeg );
+	m_values[Ky] = ( oldIy * sinDeg ) + ( oldKy * cosDeg );
+	m_values[Kz] = ( oldIz * sinDeg ) + ( oldKz * cosDeg );
+	m_values[Kw] = ( oldIw * sinDeg ) + ( oldKw * cosDeg );
 }
+
 
 //-----------------------------------------------------------------------------------------------
 void Mat44::AppendXRotation( float degreesRotationAboutX )
