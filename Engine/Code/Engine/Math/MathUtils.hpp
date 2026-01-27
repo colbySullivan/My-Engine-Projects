@@ -46,6 +46,9 @@ float	GetAngleDegreesBetweenVectors2D( Vec2 const& a, Vec2 const& b );
 //-----------------------------------------------------------------------------------
 // Dots and Cross
 float	DotProduct2D( Vec2 const& a, Vec2 const& b );
+float	DotProduct3D( Vec3 const& a, Vec3 const& b );
+float	CrossProduct2D( Vec2 const& a, Vec2 const& b );	
+Vec3	CrossProduct3D( Vec3 const& a, Vec3 const& b );	
 
 //-----------------------------------------------------------------------------------
 // Basic 2D & 3D utilities

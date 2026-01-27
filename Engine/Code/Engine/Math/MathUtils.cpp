@@ -70,7 +70,14 @@ float NormalizeByte( unsigned char byte )
 //-----------------------------------------------------------------------------------------------
 unsigned char DenormalizeByte( float value )
 {
-	return static_cast<unsigned char>(value * 255.f);
+	value = GetClampedZeroToOne(value);
+	int byteValue = static_cast<int>(value * 256.f);
+	if (byteValue > 255)
+	{
+		byteValue = 255;
+	}
+
+	return static_cast<unsigned char>(byteValue);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -155,6 +162,24 @@ float GetAngleDegreesBetweenVectors2D( Vec2 const& a, Vec2 const& b )
 float DotProduct2D(Vec2 const& a, Vec2 const& b)
 {
     return (a.x * b.x) + (a.y * b.y);
+}
+
+//------------------------------------------------------------------------------
+float DotProduct3D(Vec3 const& a, Vec3 const& b)
+{
+	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+//------------------------------------------------------------------------------
+float CrossProduct2D(Vec2 const& a, Vec2 const& b)
+{
+	return 0.f; // TODO
+}
+
+//------------------------------------------------------------------------------
+Vec3 CrossProduct3D(Vec3 const& a, Vec3 const& b)
+{
+	return Vec3(0.f,0.f,0.f); // TODO
 }
 
 //-----------------------------------------------------------------------------------------------
