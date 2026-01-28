@@ -148,7 +148,9 @@ void Renderer::EndFrame()
 
 void Renderer::ClearScreen(Rgba8 const& clearColor)
 {
-
+	float colorAsFloats[4];
+	clearColor.GetAsFloats(colorAsFloats);
+	m_deviceContext->ClearRenderTargetView(m_renderTargetView, colorAsFloats);
 }
 
 void Renderer::BeginCamera(Camera const& camera)
