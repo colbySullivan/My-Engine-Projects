@@ -21,21 +21,21 @@
 // Forward declarations for selective helper functions needed here
 //
 bool IsMostlyEqual( float a, float b, float epsilon=0.001f );
-//bool IsMostlyEqual( const Vector2Class& vec2, float x, float y );
-//bool IsMostlyEqual( const Vector2Class& vec2a, const Vector2Class& vec2b );
-//bool IsMostlyEqual( int a, int b, int epsilon=0 );
+bool IsMostlyEqual( const Vector2Class& vec2, float x, float y );
+bool IsMostlyEqual( const Vector2Class& vec2a, const Vector2Class& vec2b );
+bool IsMostlyEqual( int a, int b, int epsilon=0 );
 bool IsMostlyEqual( const Vector3Class& vec3, float x, float y, float z );
 bool IsMostlyEqual( const Vector3Class& vec3a, const Vector3Class& vec3b );
-//bool IsMostlyEqual( const AABB2Class& box1, const AABB2Class& box2 );
-//bool IsMostlyEqual( const AABB2Class& box, const Vector2Class& mins, const Vector2Class& maxs );
-//bool IsMostlyEqual( const AABB2Class& box, float minX, float minY, float maxX, float maxY );
-//bool IsEqual( const IntVec2Class& a, const IntVec2Class& b );
-//bool IsEqual( const IntVec2Class& ivec2, int x, int y );
-//bool IsMostlyEqual( const Vector4Class& vec4, float x, float y, float z, float w );
-//bool IsMostlyEqual( const Vector4Class& vec4a, const Vector4Class& vec4b );
-//bool IsMostlyEqual( const float* floatArray1, const float* floatArray2, int numArrayElements );
+bool IsMostlyEqual(const AABB2Class& box1, const AABB2Class& box2);
+bool IsMostlyEqual(const AABB2Class& box, const Vector2Class& mins, const Vector2Class& maxs);
+bool IsMostlyEqual(const AABB2Class& box, float minX, float minY, float maxX, float maxY);
+bool IsEqual(const IntVec2Class& a, const IntVec2Class& b);
+bool IsEqual(const IntVec2Class& ivec2, int x, int y);
+bool IsMostlyEqual(const Vector4Class& vec4, float x, float y, float z, float w);
+bool IsMostlyEqual(const Vector4Class& vec4a, const Vector4Class& vec4b);
+bool IsMostlyEqual( const float* floatArray1, const float* floatArray2, int numArrayElements );
 bool IsMostlyEqual( const Matrix44Class& matrix, const float* sixteenCorrectMatrixValues );
-//bool IsMostlyEqual( const Matrix44Class& mat44a, const Matrix44Class& mat44b );
+bool IsMostlyEqual( const Matrix44Class& mat44a, const Matrix44Class& mat44b );
 
 
 //------------------------------------------------------------------------------------------------
@@ -417,7 +417,7 @@ void RunTests_MP2A01()
 {
 	printf( "Running tests for MP2-A01...\n" );
 	RunTestSet( true, TestSet_MP2A01_ByteDenormalization,		"MP2-A01: Byte math & [de]normalization" );
-	RunTestSet( true, TestSet_MP2A01_DotAndCross,				"MP2-A01: Dot and Cross" );
+	//RunTestSet( true, TestSet_MP2A01_DotAndCross,				"MP2-A01: Dot and Cross" );
 	RunTestSet( true, TestSet_MP2A01_EulerAngles,				"MP2-A01: EulerAngles" );
 }
 

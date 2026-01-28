@@ -51,8 +51,8 @@ void EulerAngles::operator+=(EulerAngles const& anglesToAdd)
 EulerAngles const Interpolate( EulerAngles const& from, EulerAngles const& to, float lerpFraction )
 {
 	EulerAngles result;
-	result.m_yawDegrees = Interpolate(from.m_yawDegrees, to.m_yawDegrees, lerpFraction);
-	result.m_pitchDegrees = Interpolate(from.m_pitchDegrees, to.m_pitchDegrees, lerpFraction);
-	result.m_pitchDegrees = Interpolate(from.m_rollDegrees, to.m_rollDegrees, lerpFraction);
+	result.m_yawDegrees = InterpolateShortestDis(from.m_yawDegrees, to.m_yawDegrees, lerpFraction);
+	result.m_pitchDegrees = InterpolateShortestDis(from.m_pitchDegrees, to.m_pitchDegrees, lerpFraction);
+	result.m_rollDegrees = InterpolateShortestDis(from.m_rollDegrees, to.m_rollDegrees, lerpFraction);
 	return result;
 }

@@ -30,7 +30,15 @@ float GetClampedZeroToOne(float value)
 //-----------------------------------------------------------------------------------------------
 float Interpolate(float start, float end, float fractionTowardEnd)
 {
-    return ((1-fractionTowardEnd) * start) + (fractionTowardEnd * end);
+    //return ((1-fractionTowardEnd) * start) + (fractionTowardEnd * end);
+	return start + (fractionTowardEnd * (end - start)); // Easier to read
+}
+
+//-----------------------------------------------------------------------------------------------
+float InterpolateShortestDis(float start, float end, float fractionTowardEnd)
+{
+	float delta = GetShortestAngularDispDegrees(start, end);
+	return start + (fractionTowardEnd * delta);
 }
 
 //-----------------------------------------------------------------------------------------------
