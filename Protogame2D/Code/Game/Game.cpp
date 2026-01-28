@@ -288,13 +288,9 @@ void Game::RenderAttractMode() const
 
 	}
 
-	Texture* testTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
 	std::vector<Vertex> testTextureVerts;
 	AABB2 texturedAABB2( 0.f, 0.f, 512.f, 512.f );
 	AddVertsForAABB2D( testTextureVerts, texturedAABB2, Rgba8( 255, 255, 255, 255 ) ); // This should now set UVs on each Vertex!!
-	g_engine->m_render->BindTexture( testTexture );
-	g_engine->m_render->DrawVertexArray( testTextureVerts );
-	g_engine->m_render->BindTexture( nullptr );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }

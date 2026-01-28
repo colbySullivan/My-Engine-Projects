@@ -105,7 +105,6 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 {
 	std::vector<Vertex> boxVerts;
 	AddVertsForAABB2D(boxVerts, bounds, Rgba8(0, 0, 0, 200));
-	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->DrawVertexArray(boxVerts);
 
 	std::vector<Vertex> textVerts;
@@ -126,6 +125,5 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 			break;
 		}
 	}
-	g_engine->m_render->BindTexture(&font.GetTexture());
 	g_engine->m_render->DrawVertexArray(textVerts);
 }

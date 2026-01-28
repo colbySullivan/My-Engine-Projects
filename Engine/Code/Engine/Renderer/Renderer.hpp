@@ -33,25 +33,15 @@ public:
 	void BeginFrame();
 	void EndFrame();
 
-	void CreateRenderingContext();
 	void ClearScreen(Rgba8 const& clearColor);
 	void BeginCamera(Camera const& camera);
 	void EndCamera(Camera const& camera);
 	void DrawVertexArray(int numVertexes, Vertex const* vertexes);
 
 	void DrawVertexArray( std::vector<Vertex> const& verts );
-	Texture* CreateTextureFromData( char const* name, IntVec2 dimensions, int bytesPerTexel, uint8_t* texelData );
-	void BindTexture( Texture* texture );
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
 	std::vector< BitmapFont* > m_loadedFonts;
-	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
-	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension ); // or std::string const&
-
+	
 private:
-	Texture* GetTextureForFileName( char const* imageFilePath );
-	Texture* CreateTextureFromFile( char const* imageFilePath );
-	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
-	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
-	void SetBlendMode( BlendMode blendMode );
 };
