@@ -50,6 +50,33 @@ void* m_dxgiDebugModule = nullptr;
 
 HGLRC g_openGLRenderingContext = nullptr; 
 
+const char* shaderSource = R"(
+	struct vs_input_t
+	{
+		float3 localPosition : POSITION;
+		float4 color : COLOR;
+		float2 uv : TEXCOORD;
+	};
+	struct v2p_t
+	{
+		float4 position : SV_Position;
+		float4 color : COLOR;
+		float2 uv : TEXCOORD;
+	};
+	v2p_t VertexMain(vs_input_t input)
+	{
+		v2p_t v2p;
+		v2p.position = float4(input.localPosition, 1);
+		v2p.color = input.color;
+		v2p.uv = input.uv;
+		return v2p;
+	};
+	float4 PixelMain(v2p_t input) : SV_Target0
+	{
+		return float4(input.color);
+	};
+)";
+
 Renderer::Renderer( RenderConfig const& config )
 	: m_config( config )
 {
@@ -106,15 +133,18 @@ void Renderer::Startup()
 		ERROR_AND_DIE("Could create render target view for swap chain buffer.");
 	}
 	backBuffer->Release();
+	m_currentShader = CreateShader("Default", shaderSource);
+	m_loadedShaders.push_back(m_currentShader);
+	BindShader(m_currentShader);
 }
 
 void Renderer::Shutdown()
 {
-	m_rasterizerState->Release();
-	m_renderTargetView->Release();
-	m_swapChain->Release();
-	m_deviceContext->Release();
-	m_device->Release();
+	DX_SAFE_RELEASE(m_rasterizerState);
+	DX_SAFE_RELEASE(m_renderTargetView);
+	DX_SAFE_RELEASE(m_swapChain);
+	DX_SAFE_RELEASE(m_deviceContext);
+	DX_SAFE_RELEASE(m_device);
 
 	// Report error leaks and release debug module
 #if defined(ENGINE_DEBUG_RENDER)
@@ -173,3 +203,116 @@ void Renderer::DrawVertexArray(int numVertexes, Vertex const* vertexes)
 {
 	
 }
+
+//------------------------------------------------------------------------------
+Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource)
+{
+	ShaderConfig config;
+	config.m_name = shaderName;
+	Shader* shader = new Shader(config);
+
+	std::vector<uint8_t> vertexBytes;
+	CompileShaderToByteCode(vertexBytes, config.m_name.c_str(), shaderSource, config.m_vertexEntryPoint.c_str(), "vs_5_0");
+	
+	// Create vertex shader
+	HRESULT hr;
+	hr = m_device->CreateVertexShader(
+		vertexBytes.data(),
+		vertexBytes.size(),
+		NULL, &shader->m_vertexShader
+	);
+	if (!SUCCEEDED(hr))
+	{
+		ERROR_AND_DIE(Stringf("Could not create vertex shader."));
+	}
+	std::vector<uint8_t> pixelBytes;
+	CompileShaderToByteCode(pixelBytes, config.m_name.c_str(), shaderSource, config.m_pixelEntryPoint.c_str(), "ps_5_0");
+	// Create pixel shader
+	hr = m_device->CreatePixelShader(
+		pixelBytes.data(),
+		pixelBytes.size(),
+		NULL, &shader->m_pixelShader);
+	if (!SUCCEEDED(hr))
+	{
+		ERROR_AND_DIE(Stringf("Could not create pixel shader."));
+	}
+
+	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] = {
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,
+		0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM,
+		0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,
+		0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	UINT numElements = ARRAYSIZE(inputElementDesc);
+	hr = m_device->CreateInputLayout(
+		inputElementDesc, numElements,
+		vertexBytes.data(),
+		vertexBytes.size(),
+		&shader->m_inputLayout
+	);
+	if (!SUCCEEDED(hr))
+	{
+		ERROR_AND_DIE("Could not create vertex layout.");
+	}
+	return shader;
+}
+
+//------------------------------------------------------------------------------
+bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target)
+{
+	// Compile vertex shader
+	DWORD shaderFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
+#if defined(ENGINE_DEBUG_RENDER)
+	shaderFlags = D3DCOMPILE_DEBUG;
+	shaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+	shaderFlags |= D3DCOMPILE_WARNINGS_ARE_ERRORS;
+#endif
+	ID3DBlob* shaderBlob = NULL;
+	ID3DBlob* errorBlob = NULL;
+
+	// Compile pixel shader
+	HRESULT hr;
+	hr = D3DCompile(
+		shaderSource, strlen(shaderSource),
+		name, nullptr, nullptr,
+		entryPoint, target, shaderFlags, 0,
+		&shaderBlob, &errorBlob
+	);
+	if (SUCCEEDED(hr))
+	{
+		outByteCode.resize(shaderBlob->GetBufferSize());
+		memcpy(
+			outByteCode.data(),
+			shaderBlob->GetBufferPointer(),
+			shaderBlob->GetBufferSize()
+		);
+	}
+	else
+	{
+		if (errorBlob != NULL)
+		{
+			DebuggerPrintf((char*)errorBlob->GetBufferPointer());
+		}
+		ERROR_AND_DIE(Stringf("Could not compile pixel shader."));
+	}
+
+	shaderBlob->Release();
+	if (errorBlob != NULL)
+	{
+		errorBlob->Release();
+
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::BindShader(Shader* shader)
+{
+	m_deviceContext->VSSetShader(shader->m_vertexShader, nullptr, 0);
+	m_deviceContext->PSSetShader(shader->m_pixelShader, nullptr, 0);
+	m_deviceContext->IASetInputLayout(shader->m_inputLayout);
+}
+
+//------------------------------------------------------------------------------
