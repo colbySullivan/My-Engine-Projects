@@ -25,8 +25,10 @@ App::App()
 
 App::~App()
 {
-	m_game = nullptr;
 	delete m_game;
+	m_game = nullptr;
+	delete g_engine;
+	g_engine = nullptr;
 }
 //-----------------------------------------------------------------------------------------------
 

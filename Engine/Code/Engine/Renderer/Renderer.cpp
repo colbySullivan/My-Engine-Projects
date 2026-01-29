@@ -45,7 +45,6 @@ void* m_dxgiDebug = nullptr;
 void* m_dxgiDebugModule = nullptr;
 #endif
 
-
 #pragma comment(lib, "opengl32")
 
 HGLRC g_openGLRenderingContext = nullptr; 
@@ -136,6 +135,28 @@ void Renderer::Startup()
 	m_currentShader = CreateShader("Default", shaderSource);
 	m_loadedShaders.push_back(m_currentShader);
 	BindShader(m_currentShader);
+
+	CreateVertexBuffer(1000, sizeof(Vertex));
+
+	// Set rasterizer state
+	D3D11_RASTERIZER_DESC rasterizerDesc = { };
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.FrontCounterClockwise = false;
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 0.0f;
+	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.ScissorEnable = false;
+	rasterizerDesc.MultisampleEnable = false;
+	rasterizerDesc.AntialiasedLineEnable = true;
+
+	hr = m_device->CreateRasterizerState(&rasterizerDesc, &m_rasterizerState);
+	if (!SUCCEEDED(hr))
+	{
+		ERROR_AND_DIE("Could not create rasterizer state.");
+	}
+	m_deviceContext->RSSetState(m_rasterizerState);
 }
 
 void Renderer::Shutdown()
@@ -145,7 +166,39 @@ void Renderer::Shutdown()
 	DX_SAFE_RELEASE(m_swapChain);
 	DX_SAFE_RELEASE(m_deviceContext);
 	DX_SAFE_RELEASE(m_device);
+	
+	// Delete all shaders in cache
+	for (int i = 0; i < m_loadedShaders.size(); i++)
+	{
+		if (m_loadedShaders[i] != nullptr)
+		{
+			delete m_loadedShaders[i];
+			m_loadedShaders[i] = nullptr;
+		}
+	}
+	m_loadedShaders.clear();
+	m_currentShader = nullptr;
 
+	delete m_immediateVBO;
+	m_immediateVBO = nullptr;
+
+	// Create debug module
+#if defined(ENGINE_DEBUG_RENDER)
+	m_dxgiDebugModule = (void*) ::LoadLibraryA("dxgidebug.dll");
+	if (m_dxgiDebugModule == nullptr)
+	{
+		ERROR_AND_DIE("Could not load dxgidebug.dll.");
+	}
+
+	typedef HRESULT(WINAPI* GetDebugModuleCB)(REFIID, void**);
+	((GetDebugModuleCB) ::GetProcAddress((HMODULE)m_dxgiDebugModule, "DXGIGetDebugInterface"))
+		(_uuidof(IDXGIDebug), &m_dxgiDebug);
+
+	if (m_dxgiDebug == nullptr)
+	{
+		ERROR_AND_DIE("Could not load debug module.");
+	}
+#endif
 	// Report error leaks and release debug module
 #if defined(ENGINE_DEBUG_RENDER)
 	((IDXGIDebug*)m_dxgiDebug)->ReportLiveObjects(
@@ -162,7 +215,8 @@ void Renderer::Shutdown()
 
 void Renderer::BeginFrame()
 {
-	
+	// Set the render target
+	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
 }
 
 void Renderer::EndFrame()
@@ -183,10 +237,17 @@ void Renderer::ClearScreen(Rgba8 const& clearColor)
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, colorAsFloats);
 }
 
-void Renderer::BeginCamera(Camera const& camera)
+void Renderer::BeginCamera( [[maybe_unused]] Camera const& camera)
 {
-	Vec2 bottomLeft = camera.GetOrthoBottomLeft();
-	Vec2 topRight = camera.GetOrthoTopRight();
+	// Set viewport
+	D3D11_VIEWPORT viewport = { };
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.Width = (float)g_engine->m_window->GetClientDimensions().x;
+	viewport.Height = (float)g_engine->m_window->GetClientDimensions().y;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	m_deviceContext->RSSetViewports(1, &viewport);
 }
 
 void Renderer::EndCamera( [[maybe_unused]] Camera const& camera)
@@ -197,11 +258,6 @@ void Renderer::EndCamera( [[maybe_unused]] Camera const& camera)
 void Renderer::DrawVertexArray( std::vector<Vertex> const& verts )
 {
 	DrawVertexArray( static_cast< int >( verts.size() ), verts.data() );
-}
-
-void Renderer::DrawVertexArray(int numVertexes, Vertex const* vertexes)
-{
-	
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +332,7 @@ bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, 
 	// Compile pixel shader
 	HRESULT hr;
 	hr = D3DCompile(
-		shaderSource, strlen(shaderSource),
+		source, strlen(source),
 		name, nullptr, nullptr,
 		entryPoint, target, shaderFlags, 0,
 		&shaderBlob, &errorBlob
@@ -303,8 +359,8 @@ bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, 
 	if (errorBlob != NULL)
 	{
 		errorBlob->Release();
-
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -316,3 +372,39 @@ void Renderer::BindShader(Shader* shader)
 }
 
 //------------------------------------------------------------------------------
+VertexBuffer* Renderer::CreateVertexBuffer(const unsigned int size, unsigned int stride)
+{
+	m_immediateVBO = new VertexBuffer(m_device, size, stride);
+	return m_immediateVBO;
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CopyCPUToGPU(const void* data, unsigned int size, VertexBuffer* vbo)
+{
+	// TODO : First check if the passed in vertex buffer is large enough to hold the data passed in, and if not, resize it.
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_deviceContext->Map(vbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	memcpy(resource.pData, data, size);
+	m_deviceContext->Unmap(vbo->m_buffer, 0);
+}
+
+//------------------------------------------------------------------------------
+void Renderer::BindVertexBuffer(VertexBuffer* vbo)
+{
+	UINT startOffset = 0;
+	m_deviceContext->IASetVertexBuffers(0, 1, &vbo->m_buffer, &vbo->m_stride, &startOffset);
+	m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+//------------------------------------------------------------------------------
+void Renderer::DrawVertexBuffer(VertexBuffer* vbo, unsigned int vertexCount)
+{
+	BindVertexBuffer(vbo);
+	m_deviceContext->Draw(vertexCount, 0);
+}
+
+void Renderer::DrawVertexArray(int numVertexes, Vertex const* vertexes)
+{
+	CopyCPUToGPU(vertexes, numVertexes * sizeof(Vertex), m_immediateVBO);
+	DrawVertexBuffer(m_immediateVBO, numVertexes);
+}

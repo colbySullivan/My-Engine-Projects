@@ -24,24 +24,24 @@ Engine::Engine( EngineConfig const& config )
 //-----------------------------------------------------------------------------------------------
 Engine::~Engine()
 {
-	if( m_window )			m_window->Shutdown();
-	if( m_input )			m_input->Shutdown();
-	if( m_render )			m_render->Shutdown();
-	if( m_audio )			m_audio->Shutdown();
-	if( m_console )			m_console->Shutdown();
-	if( m_eventSystem )		m_eventSystem->Shutdown();
-	delete m_window;
-	delete m_input;
-	delete m_render;
-	delete m_audio;
+	if (m_console)          m_console->Shutdown();
+	if (m_eventSystem)      m_eventSystem->Shutdown();
+	if (m_audio)            m_audio->Shutdown();
+	if (m_input)            m_input->Shutdown();
+	if (m_render)           m_render->Shutdown();
+	if (m_window)           m_window->Shutdown();
 	delete m_console;
-	delete m_eventSystem;
-	m_window = nullptr;
-	m_input = nullptr;
-	m_render = nullptr;
-	m_audio = nullptr;
 	m_console = nullptr;
+	delete m_eventSystem;
 	m_eventSystem = nullptr;
+	delete m_audio;
+	m_audio = nullptr;
+	delete m_input;
+	m_input = nullptr;
+	delete m_render;
+	m_render = nullptr;
+	delete m_window;
+	m_window = nullptr;
 }
 
 void Engine::BeginFrame()

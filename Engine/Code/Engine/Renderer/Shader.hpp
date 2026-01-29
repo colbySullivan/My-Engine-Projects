@@ -2,9 +2,9 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include <string>
 
-class ID3D11VertexShader;
-class ID3D11PixelShader;
-class ID3D11InputLayout;
+struct ID3D11VertexShader;
+struct ID3D11PixelShader;
+struct ID3D11InputLayout;
 
 //------------------------------------------------------------------------------
 struct ShaderConfig

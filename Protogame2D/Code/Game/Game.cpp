@@ -18,6 +18,8 @@ Game::Game()
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
 
+	m_worldCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y));
+
 	m_roundNumber = 1;
 	LoadSounds();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
@@ -86,9 +88,17 @@ void Game::Render() const
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
 
+	Vertex vertices[] = {
+		Vertex(Vec3(-0.50f, -0.50f, 0.0f), Rgba8(255, 255, 255, 255), Vec2(0.0f, 0.0f)),
+		Vertex(Vec3(0.00f, 0.50f, 0.0f), Rgba8(255, 255, 255, 255), Vec2(0.0f, 0.0f)),
+		Vertex(Vec3(0.50f, -0.50f, 0.0f), Rgba8(255, 255, 255,255), Vec2(0.0f, 0.0f)),
+	};
+	g_engine->m_render->BeginCamera(*m_worldCamera);
+	g_engine->m_render->DrawVertexArray(3, vertices);
+
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
-		RenderAttractMode();
+		//RenderAttractMode();
 	}
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )

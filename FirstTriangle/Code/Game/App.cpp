@@ -20,6 +20,7 @@
 #if defined(_DEBUG)
 #define ENGINE_DEBUG_RENDER
 #endif
+#define ENGINE_DEBUG_RENDER
 
 #if defined(ENGINE_DEBUG_RENDER)
 #include <dxgidebug.h>
@@ -286,9 +287,9 @@ App::App()
 
 	// Copy vertices
 	D3D11_MAPPED_SUBRESOURCE resource;
-	m_deviceContext->Map( m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
-	memcpy( resource.pData, vertices, vertexBufferSize );
-	m_deviceContext->Unmap( m_vertexBuffer, 0 );
+	m_deviceContext->Map(m_vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	memcpy(resource.pData, vertices, vertexBufferSize);
+	m_deviceContext->Unmap(m_vertexBuffer, 0);
 
 	// Set viewport
 	D3D11_VIEWPORT viewport = { };

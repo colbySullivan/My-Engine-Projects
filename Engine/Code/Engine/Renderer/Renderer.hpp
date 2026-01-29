@@ -2,6 +2,7 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Shader.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <vector>
 
@@ -14,8 +15,9 @@ struct ID3D11RasterizerState;
 struct ID3D11RenderTargetView;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
-class IDXGISwapChain; 
+struct IDXGISwapChain; 
 class Shader;
+class VertexBuffer;
 
 //-----------------------------------------------------------------------------------------------
 struct RenderConfig
@@ -61,13 +63,17 @@ public:
 	std::vector< Texture* > m_loadedTextures;
 	std::vector< BitmapFont* > m_loadedFonts;
 
-	std::vector<Shader*> m_loadedShaders;
-	Shader* m_currentShader = nullptr;
-
 	Shader* CreateShader(char const* shaderName, char const* shaderSource);
 	bool CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name,
 		char const* source, char const* entryPoint, char const* target);
 	void BindShader(Shader* shader);
+
+
+	VertexBuffer* CreateVertexBuffer(const unsigned int size, unsigned int stride);
+	void CopyCPUToGPU(const void* data, unsigned int size, VertexBuffer* vbo);
+	void BindVertexBuffer(VertexBuffer* vbo);
+
+	void DrawVertexBuffer(VertexBuffer* vbo, unsigned int vertexCount);
 	
 private:
 protected:
@@ -76,4 +82,8 @@ protected:
 	ID3D11Device* m_device = nullptr;
 	ID3D11DeviceContext* m_deviceContext = nullptr;
 	IDXGISwapChain* m_swapChain = nullptr;
+
+	VertexBuffer* m_immediateVBO = nullptr;
+	std::vector<Shader*> m_loadedShaders;
+	Shader* m_currentShader = nullptr;
 };
