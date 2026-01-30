@@ -44,7 +44,9 @@ Mat44 EulerAngles::GetAsMatrix_IFwd_JLeft_KUp() const
 //------------------------------------------------------------------------------
 void EulerAngles::operator+=(EulerAngles const& anglesToAdd)
 {
-
+	m_yawDegrees += anglesToAdd.m_yawDegrees;
+	m_pitchDegrees += anglesToAdd.m_pitchDegrees;
+	m_rollDegrees += anglesToAdd.m_rollDegrees;
 }
 
 //------------------------------------------------------------------------------
