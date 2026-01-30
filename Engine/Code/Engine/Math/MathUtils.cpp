@@ -78,12 +78,12 @@ float NormalizeByte( unsigned char byte )
 //-----------------------------------------------------------------------------------------------
 unsigned char DenormalizeByte( float value )
 {
+	if ( value >= 1.f )
+	{
+		return 255;
+	}
 	value = GetClampedZeroToOne(value);
 	int byteValue = static_cast<int>(value * 256.f);
-	if (byteValue > 255)
-	{
-		byteValue = 255;
-	}
 
 	return static_cast<unsigned char>(byteValue);
 }
