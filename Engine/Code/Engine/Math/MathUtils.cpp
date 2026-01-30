@@ -181,7 +181,7 @@ float DotProduct3D(Vec3 const& a, Vec3 const& b)
 //------------------------------------------------------------------------------
 float CrossProduct2D(Vec2 const& a, Vec2 const& b)
 {
-	return 0.f; // TODO
+	return (a.x * b.y) - (a.y * b.x);
 }
 
 //------------------------------------------------------------------------------
