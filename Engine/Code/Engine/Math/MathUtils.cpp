@@ -187,7 +187,10 @@ float CrossProduct2D(Vec2 const& a, Vec2 const& b)
 //------------------------------------------------------------------------------
 Vec3 CrossProduct3D(Vec3 const& a, Vec3 const& b)
 {
-	return Vec3(0.f,0.f,0.f); // TODO
+	float x = (a.y * b.z) - (a.z * b.y);
+	float y = (a.z * b.x) - (a.x * b.z);
+	float z = (a.x * b.y) - (a.y * b.x);
+	return Vec3(x, y, z);
 }
 
 //-----------------------------------------------------------------------------------------------
