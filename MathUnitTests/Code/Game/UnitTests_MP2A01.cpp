@@ -417,7 +417,7 @@ void RunTests_MP2A01()
 {
 	printf( "Running tests for MP2-A01...\n" );
 	RunTestSet( true, TestSet_MP2A01_ByteDenormalization,		"MP2-A01: Byte math & [de]normalization" );
-	//RunTestSet( true, TestSet_MP2A01_DotAndCross,				"MP2-A01: Dot and Cross" );
+	RunTestSet( true, TestSet_MP2A01_DotAndCross,				"MP2-A01: Dot and Cross" );
 	RunTestSet( true, TestSet_MP2A01_EulerAngles,				"MP2-A01: EulerAngles" );
 }
 
