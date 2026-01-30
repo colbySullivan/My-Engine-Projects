@@ -1,15 +1,3 @@
-//#include "Engine/Renderer/Renderer.hpp"
-//#include "Engine/Core/Vertex.hpp"
-//#include "Engine/Renderer/Camera.hpp"
-//#include "Engine/Core/Engine.hpp"
-//#include "Engine/Window/Window.hpp"
-//#include "Engine/Core/ErrorWarningAssert.hpp"
-//#include "Engine/Core/StringUtils.hpp"
-//#define WIN32_LEAN_AND_MEAN
-//#include <Windows.h>
-//#include <gl/GL.h>
-//#include "ThirdParty/stb/stb_image.h"
-//#define UNUSED(x) (void)(x);
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <d3d11.h>
@@ -102,12 +90,12 @@ void Renderer::Startup()
 		ERROR_AND_DIE("Could create render target view for swap chain buffer.");
 	}
 	backBuffer->Release();
-	m_currentShader = CreateShader("Default", shaderSource);
+	m_currentShader = CreateShader("Default", defaultShaderSource);
 	m_loadedShaders.push_back(m_currentShader);
 	BindShader(m_currentShader);
 
 	CreateVertexBuffer(1000, sizeof(Vertex));
-
+	
 	// Set rasterizer state
 	D3D11_RASTERIZER_DESC rasterizerDesc = { };
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;

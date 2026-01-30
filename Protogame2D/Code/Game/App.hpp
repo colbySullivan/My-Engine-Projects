@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include "Game.hpp"
 
 
@@ -21,10 +22,10 @@ public:
 	void RunFrame();
 	void Update(float deltaSeconds);
 	void Render() const;
+	static bool Event_Quit( EventArgs& args );
 
 	void SetIsQuitting();
 	bool IsQuitting() const;
-
 
 public:
 	Game*		m_game = nullptr;

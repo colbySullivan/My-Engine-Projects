@@ -20,6 +20,8 @@ App::App()
 	g_app = this;
 	m_game = new Game();
 	m_game->Startup();
+
+	SubscribeEventCallbackFunction( "Quit", App::Event_Quit );
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -74,3 +76,9 @@ bool App::IsQuitting() const
 	return m_game->m_isQuitting;
 }
 
+//------------------------------------------------------------------------------
+bool App::Event_Quit( [[maybe_unused]] EventArgs& args )
+{
+	g_theApp->SetIsQuitting();
+	return false;
+}
