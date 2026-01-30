@@ -94,7 +94,7 @@ void Renderer::Startup()
 	m_loadedShaders.push_back(m_currentShader);
 	BindShader(m_currentShader);
 
-	CreateVertexBuffer(1000, sizeof(Vertex));
+	CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex));
 	
 	// Set rasterizer state
 	D3D11_RASTERIZER_DESC rasterizerDesc = { };
@@ -340,6 +340,10 @@ VertexBuffer* Renderer::CreateVertexBuffer(const unsigned int size, unsigned int
 void Renderer::CopyCPUToGPU(const void* data, unsigned int size, VertexBuffer* vbo)
 {
 	// TODO : First check if the passed in vertex buffer is large enough to hold the data passed in, and if not, resize it.
+	if ( vbo->GetSize() < size )
+	{
+		vbo->Resize(size);
+	}
 	D3D11_MAPPED_SUBRESOURCE resource;
 	m_deviceContext->Map(vbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	memcpy(resource.pData, data, size);

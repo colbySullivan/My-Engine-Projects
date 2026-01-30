@@ -34,7 +34,9 @@ void VertexBuffer::Create()
 
 void VertexBuffer::Resize(unsigned int size)
 {
-	m_size = size;
+	m_buffer->Release();
+	m_size += size;
+	Create();
 }
 
 unsigned int VertexBuffer::GetSize()

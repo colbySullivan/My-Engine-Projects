@@ -85,6 +85,8 @@ void Game::Update(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
+	g_engine->m_render->BeginCamera( *m_worldCamera );
+
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
 
@@ -93,7 +95,6 @@ void Game::Render() const
 		Vertex(Vec3(0.00f, 0.50f, 0.0f), Rgba8(255, 255, 255, 255), Vec2(0.0f, 0.0f)),
 		Vertex(Vec3(0.50f, -0.50f, 0.0f), Rgba8(255, 255, 255,255), Vec2(0.0f, 0.0f)),
 	};
-	g_engine->m_render->BeginCamera(*m_worldCamera);
 	g_engine->m_render->DrawVertexArray(3, vertices);
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
