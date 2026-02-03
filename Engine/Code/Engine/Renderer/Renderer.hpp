@@ -57,25 +57,23 @@ public:
 	void BeginCamera(Camera const& camera);
 	void EndCamera(Camera const& camera);
 	void DrawVertexArray(int numVertexes, Vertex const* vertexes);
-
 	void DrawVertexArray( std::vector<Vertex> const& verts );
-	RenderConfig m_config;
-	std::vector< Texture* > m_loadedTextures;
-	std::vector< BitmapFont* > m_loadedFonts;
 
 	Shader* CreateShader(char const* shaderName, char const* shaderSource);
 	bool CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name,
 		char const* source, char const* entryPoint, char const* target);
 	void BindShader(Shader* shader);
-
-
-	VertexBuffer* CreateVertexBuffer(const unsigned int size, unsigned int stride);
-	void CopyCPUToGPU(const void* data, unsigned int size, VertexBuffer* vbo);
 	void BindVertexBuffer(VertexBuffer* vbo);
-
 	void DrawVertexBuffer(VertexBuffer* vbo, unsigned int vertexCount);
+	Shader* CreateShader(char const* shaderName);
+
+	RenderConfig m_config;
+	std::vector< Texture* > m_loadedTextures;
+	std::vector< BitmapFont* > m_loadedFonts;
 	
 private:
+	VertexBuffer* CreateVertexBuffer( const unsigned int size, unsigned int stride );
+	void CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo );
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11RenderTargetView* m_renderTargetView = nullptr;

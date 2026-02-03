@@ -37,5 +37,5 @@ int FileReadToString( std::string& outString, const std::string& filename )
 	FileReadToBuffer(outBuffer, filename);
 	outBuffer.push_back('\0');
 	outString = std::string( outBuffer.begin(), outBuffer.end() );
-	return outString.size();
+	return static_cast<int>(outString.size());
 }
