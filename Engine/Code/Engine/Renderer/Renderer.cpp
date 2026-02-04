@@ -15,6 +15,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Renderer/DefaultShader.hpp"
 #include <Engine/Core/ErrorWarningAssert.hpp>
 
 #if defined(_DEBUG)
@@ -91,7 +92,8 @@ void Renderer::Startup()
 		ERROR_AND_DIE("Could create render target view for swap chain buffer.");
 	}
 	backBuffer->Release();
-	m_currentShader = CreateShader("Data/Shaders/Default");
+	m_currentShader = CreateShader("Default", defaultShaderSource);
+	m_defaultShader = CreateShader("Default", defaultShaderSource);
 	m_loadedShaders.push_back(m_currentShader);
 	BindShader(m_currentShader);
 
@@ -275,17 +277,6 @@ Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource)
 	return shader;
 }
 
-//-----------------------------------------------------------------------------------------------
-Shader* Renderer::CreateShader( char const* shaderName )
-{
-	std::string fileName;
-	std::string outString;
-	fileName.append(shaderName);
-	fileName += ".hlsl";
-	FileReadToString(outString, fileName);
-	return CreateShader(shaderName, outString.c_str());
-}
-
 //------------------------------------------------------------------------------
 bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target)
 {
@@ -336,6 +327,10 @@ bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, 
 //------------------------------------------------------------------------------
 void Renderer::BindShader(Shader* shader)
 {
+	if ( shader == NULL )
+	{
+		shader = m_defaultShader;
+	}
 	m_deviceContext->VSSetShader(shader->m_vertexShader, nullptr, 0);
 	m_deviceContext->PSSetShader(shader->m_pixelShader, nullptr, 0);
 	m_deviceContext->IASetInputLayout(shader->m_inputLayout);
