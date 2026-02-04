@@ -92,12 +92,15 @@ void Renderer::Startup()
 		ERROR_AND_DIE("Could create render target view for swap chain buffer.");
 	}
 	backBuffer->Release();
-	m_currentShader = CreateShader("Default", defaultShaderSource);
+	m_currentShader = CreateShader("Current", defaultShaderSource);
 	m_defaultShader = CreateShader("Default", defaultShaderSource);
 	m_loadedShaders.push_back(m_currentShader);
+	m_loadedShaders.push_back(m_defaultShader);
 	BindShader(m_currentShader);
 
 	CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex));
+	//CreateConstantBuffer(sizeof(Vertex));
+	CreateConstantBuffer(16);
 	
 	// Set rasterizer state
 	D3D11_RASTERIZER_DESC rasterizerDesc = { };
@@ -138,10 +141,12 @@ void Renderer::Shutdown()
 		}
 	}
 	m_loadedShaders.clear();
-	m_currentShader = nullptr;
 
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
+
+	delete m_immediateCB;
+	m_immediateCB = nullptr;
 
 	// Create debug module
 #if defined(ENGINE_DEBUG_RENDER)
@@ -277,6 +282,45 @@ Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource)
 	return shader;
 }
 
+//-----------------------------------------------------------------------------------------------
+Shader* Renderer::CreateShader( char const* shaderName )
+{
+	std::string fileName;
+	std::string outString;
+	fileName.append(shaderName);
+	fileName += ".hlsl";
+	FileReadToString(outString, fileName);
+	return CreateShader(shaderName, outString.c_str());
+}
+
+// #TODO Add the bottom of the link when using D3D11_BIND_CONSTANT_BUFFER the size must be in multiples of 16
+// https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_buffer_desc?redirectedfrom=MSDN
+//-----------------------------------------------------------------------------------------------
+ConstantBuffer* Renderer::CreateConstantBuffer( const unsigned int size )
+{
+	D3D11_BUFFER_DESC bufferDesc = { };
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = ( UINT )size;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_immediateCB = new ConstantBuffer( size );
+	HRESULT hr;
+	//hr = m_device->CreateBuffer( &bufferDesc, nullptr, &m_immediateCB->m_buffer );
+	hr = m_device->CreateBuffer( &bufferDesc, 0, &m_immediateCB->m_buffer );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create Constant buffer." );
+	}
+	return m_immediateCB;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Renderer::BindConstantBuffer( int slot, ConstantBuffer* cbo )
+{
+	m_deviceContext->VSSetConstantBuffers(slot, 1, &cbo->m_buffer);
+	m_deviceContext->PSSetConstantBuffers(slot, 1, &cbo->m_buffer);
+}
+
 //------------------------------------------------------------------------------
 bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target)
 {
@@ -294,7 +338,7 @@ bool Renderer::CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, 
 	HRESULT hr;
 	hr = D3DCompile(
 		source, strlen(source),
-		name, nullptr, nullptr,
+		name, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, // Added via Macrae
 		entryPoint, target, shaderFlags, 0,
 		&shaderBlob, &errorBlob
 	);
@@ -346,7 +390,6 @@ VertexBuffer* Renderer::CreateVertexBuffer(const unsigned int size, unsigned int
 //------------------------------------------------------------------------------
 void Renderer::CopyCPUToGPU(const void* data, unsigned int size, VertexBuffer* vbo)
 {
-	// TODO : First check if the passed in vertex buffer is large enough to hold the data passed in, and if not, resize it.
 	if ( vbo->GetSize() < size )
 	{
 		vbo->Resize(size);
@@ -355,6 +398,15 @@ void Renderer::CopyCPUToGPU(const void* data, unsigned int size, VertexBuffer* v
 	m_deviceContext->Map(vbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
 	memcpy(resource.pData, data, size);
 	m_deviceContext->Unmap(vbo->m_buffer, 0);
+}
+
+//-----------------------------------------------------------------------------------------------
+void Renderer::CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo )
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_deviceContext->Map( cbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
+	memcpy( resource.pData, data, size );
+	m_deviceContext->Unmap( cbo->m_buffer, 0 );
 }
 
 //------------------------------------------------------------------------------

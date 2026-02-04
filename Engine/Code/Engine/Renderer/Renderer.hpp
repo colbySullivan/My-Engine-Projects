@@ -3,6 +3,7 @@
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <vector>
 
@@ -18,6 +19,7 @@ struct ID3D11DeviceContext;
 struct IDXGISwapChain; 
 class Shader;
 class VertexBuffer;
+class ConstantBuffer;
 
 //-----------------------------------------------------------------------------------------------
 struct RenderConfig
@@ -59,20 +61,28 @@ public:
 	void DrawVertexArray(int numVertexes, Vertex const* vertexes);
 	void DrawVertexArray( std::vector<Vertex> const& verts );
 
-	Shader* CreateShader(char const* shaderName, char const* shaderSource);
-	bool CompileShaderToByteCode(std::vector<unsigned char>& outByteCode, char const* name,
-		char const* source, char const* entryPoint, char const* target);
-	void BindShader(Shader* shader);
-	void BindVertexBuffer(VertexBuffer* vbo);
-	void DrawVertexBuffer(VertexBuffer* vbo, unsigned int vertexCount);
-
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
 	std::vector< BitmapFont* > m_loadedFonts;
 	
 private:
+
+	Shader* CreateShader( char const* shaderName, char const* shaderSource );
+	Shader* CreateShader( char const* shaderName ); // File name way
+	void BindShader( Shader* shader );
+	bool CompileShaderToByteCode( std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target );
+
+	// Constant Buffer
+	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
+	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
+	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo );
+
+	// Vertex Buffer
 	VertexBuffer* CreateVertexBuffer( const unsigned int size, unsigned int stride );
+	void BindVertexBuffer( VertexBuffer* vbo );
+	void DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount );
 	void CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo );
+
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11RenderTargetView* m_renderTargetView = nullptr;
@@ -87,4 +97,6 @@ protected:
 
 	std::vector<uint8_t> m_vertexShaderByteCode;
 	std::vector<uint8_t> m_pixelShaderByteCode;
+
+	ConstantBuffer* m_immediateCB = nullptr;
 };
