@@ -98,5 +98,5 @@ protected:
 	std::vector<uint8_t> m_vertexShaderByteCode;
 	std::vector<uint8_t> m_pixelShaderByteCode;
 
-	ConstantBuffer* m_immediateCB = nullptr;
+	ConstantBuffer* m_cameraCBO = nullptr;
 };

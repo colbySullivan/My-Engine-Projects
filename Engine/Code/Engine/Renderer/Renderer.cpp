@@ -36,6 +36,22 @@ void* m_dxgiDebugModule = nullptr;
 
 HGLRC g_openGLRenderingContext = nullptr; 
 
+
+struct CameraConstants
+{
+	float OrthoMinX;
+	float OrthoMinY;
+	float OrthoMinZ;
+	float OrthoMaxX;
+	float OrthoMaxY;
+	float OrthoMaxZ;
+	float pad0;
+	float pad1;
+};
+
+static const int k_cameraConstantsSlot = 2;
+
+
 Renderer::Renderer( RenderConfig const& config )
 	: m_config( config )
 {
@@ -98,9 +114,8 @@ void Renderer::Startup()
 	m_loadedShaders.push_back(m_defaultShader);
 	BindShader(m_currentShader);
 
-	CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex));
-	//CreateConstantBuffer(sizeof(Vertex));
-	CreateConstantBuffer(16);
+	m_immediateVBO = CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex));
+	m_cameraCBO = CreateConstantBuffer(sizeof(CameraConstants));
 	
 	// Set rasterizer state
 	D3D11_RASTERIZER_DESC rasterizerDesc = { };
@@ -145,8 +160,8 @@ void Renderer::Shutdown()
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
 
-	delete m_immediateCB;
-	m_immediateCB = nullptr;
+	delete m_cameraCBO;
+	m_cameraCBO = nullptr;
 
 	// Create debug module
 #if defined(ENGINE_DEBUG_RENDER)
@@ -214,6 +229,23 @@ void Renderer::BeginCamera( [[maybe_unused]] Camera const& camera)
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	m_deviceContext->RSSetViewports(1, &viewport);
+
+	CameraConstants camConstants = { };
+
+	camConstants.OrthoMinX = viewport.TopLeftX;
+	camConstants.OrthoMinY = viewport.TopLeftY;
+	camConstants.OrthoMinZ = viewport.MinDepth;
+
+	camConstants.OrthoMaxX = viewport.Width;
+	camConstants.OrthoMaxY = viewport.Height;
+	camConstants.OrthoMaxZ = viewport.MaxDepth;
+
+	camConstants.OrthoMaxX = viewport.Width - 100;
+	camConstants.OrthoMaxY = viewport.Height - 1000;
+	camConstants.OrthoMaxZ = viewport.MaxDepth - 1;
+
+	CopyCPUToGPU( &camConstants, static_cast<unsigned int>(sizeof(camConstants)), m_cameraCBO );
+	BindConstantBuffer(k_cameraConstantsSlot, m_cameraCBO);
 }
 
 void Renderer::EndCamera( [[maybe_unused]] Camera const& camera)
@@ -303,15 +335,15 @@ ConstantBuffer* Renderer::CreateConstantBuffer( const unsigned int size )
 	bufferDesc.ByteWidth = ( UINT )size;
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	m_immediateCB = new ConstantBuffer( size );
+	ConstantBuffer* immediateConstantBuffer = new ConstantBuffer( size );
 	HRESULT hr;
 	//hr = m_device->CreateBuffer( &bufferDesc, nullptr, &m_immediateCB->m_buffer );
-	hr = m_device->CreateBuffer( &bufferDesc, 0, &m_immediateCB->m_buffer );
+	hr = m_device->CreateBuffer( &bufferDesc, 0, &immediateConstantBuffer->m_buffer );
 	if ( !SUCCEEDED( hr ) )
 	{
 		ERROR_AND_DIE( "Could not create Constant buffer." );
 	}
-	return m_immediateCB;
+	return immediateConstantBuffer;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -383,8 +415,8 @@ void Renderer::BindShader(Shader* shader)
 //------------------------------------------------------------------------------
 VertexBuffer* Renderer::CreateVertexBuffer(const unsigned int size, unsigned int stride)
 {
-	m_immediateVBO = new VertexBuffer(m_device, size, stride);
-	return m_immediateVBO;
+	VertexBuffer* immediateVertexBuffer = new VertexBuffer(m_device, size, stride);
+	return immediateVertexBuffer;
 }
 
 //------------------------------------------------------------------------------
