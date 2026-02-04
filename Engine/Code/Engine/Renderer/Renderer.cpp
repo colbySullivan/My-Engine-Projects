@@ -236,13 +236,9 @@ void Renderer::BeginCamera( [[maybe_unused]] Camera const& camera)
 	camConstants.OrthoMinY = viewport.TopLeftY;
 	camConstants.OrthoMinZ = viewport.MinDepth;
 
-	camConstants.OrthoMaxX = viewport.Width;
-	camConstants.OrthoMaxY = viewport.Height;
+	camConstants.OrthoMaxX = camera.GetOrthoTopRight().x;
+	camConstants.OrthoMaxY = camera.GetOrthoTopRight().y;
 	camConstants.OrthoMaxZ = viewport.MaxDepth;
-
-	camConstants.OrthoMaxX = viewport.Width - 100;
-	camConstants.OrthoMaxY = viewport.Height - 1000;
-	camConstants.OrthoMaxZ = viewport.MaxDepth - 1;
 
 	CopyCPUToGPU( &camConstants, static_cast<unsigned int>(sizeof(camConstants)), m_cameraCBO );
 	BindConstantBuffer(k_cameraConstantsSlot, m_cameraCBO);

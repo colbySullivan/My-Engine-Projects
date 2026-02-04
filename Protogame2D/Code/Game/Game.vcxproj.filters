@@ -8,6 +8,12 @@
     <Filter Include="Gameplay">
       <UniqueIdentifier>{6d31e6c2-10a2-44db-ba79-a53d24cd072e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{5959a16a-ae2c-43aa-bfab-295bcf47749b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Shaders">
+      <UniqueIdentifier>{ec2da69f-e342-405a-adc2-667cdaa6ddb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -42,5 +48,10 @@
     <ClInclude Include="Game.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\Run\Data\Shaders\Default.hlsl">
+      <Filter>Data\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

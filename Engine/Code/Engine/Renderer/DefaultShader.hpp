@@ -1,6 +1,35 @@
 #pragma once
 
 const char* defaultShaderSource = R"(
+	cbuffer CameraConstants : register( b2 )
+	{
+		float OrthoMinX;
+		float OrthoMinY;
+		float OrthoMinZ;
+		float OrthoMaxX;
+		float OrthoMaxY;
+		float OrthoMaxZ;
+		float pad0;
+		float pad1;
+	};
+	float Interpolate(float start, float end, float fractionTowardEnd)
+	{
+		return start + (fractionTowardEnd * (end - start));
+	}
+	float GetFractionWithinRange(float value, float rangeStart, float rangeEnd)
+	{
+		float result = 0.5f;
+		if(rangeStart != rangeEnd)
+		{
+			result = (value - rangeStart) / (rangeEnd - rangeStart);
+		}
+		return result;
+	}
+	float RangeMap(float inValue, float inStart, float inEnd, float outStart, float outEnd)
+	{
+		float fractionRange = GetFractionWithinRange(inValue, inStart, inEnd);
+		return Interpolate(outStart, outEnd, fractionRange);
+	}
 	struct vs_input_t
 	{
 		float3 localPosition : POSITION;
@@ -15,12 +44,20 @@ const char* defaultShaderSource = R"(
 	};
 	v2p_t VertexMain(vs_input_t input)
 	{
+		float4 localPosition= float4(input.localPosition, 1);
+
+		float4 clipPosition;
+		clipPosition.x = RangeMap(localPosition.x, OrthoMinX, OrthoMaxX, -1.0f, 1.0f);
+		clipPosition.y = RangeMap(localPosition.y, OrthoMinY, OrthoMaxY, -1.0f, 1.0f);
+		clipPosition.z = RangeMap(localPosition.z, OrthoMinZ, OrthoMaxZ, 0.0f, 1.0f);
+		clipPosition.w = localPosition.w;
+
 		v2p_t v2p;
-		v2p.position = float4(input.localPosition, 1);
+		v2p.position = clipPosition;
 		v2p.color = input.color;
 		v2p.uv = input.uv;
 		return v2p;
-	};
+	}
 	float4 PixelMain(v2p_t input) : SV_Target0
 	{
 		return float4(input.color);

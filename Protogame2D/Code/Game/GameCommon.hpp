@@ -9,8 +9,8 @@ constexpr int	MAX_BEETLES = 200;
 constexpr int	MAX_WASP = 200;
 constexpr int	MAX_DEBRIS = 5000;
 
-constexpr float WORLD_SIZE_X = 200.f;
-constexpr float WORLD_SIZE_Y = 100.f;
+constexpr float WORLD_SIZE_X = 1600.f;
+constexpr float WORLD_SIZE_Y = 800.f;
 
 constexpr float WORLD_CENTER_X = WORLD_SIZE_X / 2.f;
 constexpr float WORLD_CENTER_Y = WORLD_SIZE_Y / 2.f;
