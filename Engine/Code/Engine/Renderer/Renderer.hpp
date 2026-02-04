@@ -88,7 +88,7 @@ protected:
 	std::vector<uint8_t> m_vertexShaderByteCode;
 	std::vector<uint8_t> m_pixelShaderByteCode;
 
-	const char* defaultShaderSource = R"(
+	char* defaultShaderSource/* = R"(
 	struct vs_input_t
 	{
 		float3 localPosition : POSITION;
@@ -113,5 +113,5 @@ protected:
 	{
 		return float4(input.color);
 	};
-)";
+)"*/;
 };

@@ -14,6 +14,7 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Core/FileUtils.hpp"
 #include <Engine/Core/ErrorWarningAssert.hpp>
 
 #if defined(_DEBUG)
@@ -90,7 +91,7 @@ void Renderer::Startup()
 		ERROR_AND_DIE("Could create render target view for swap chain buffer.");
 	}
 	backBuffer->Release();
-	m_currentShader = CreateShader("Default", defaultShaderSource);
+	m_currentShader = CreateShader("Data/Shaders/Default");
 	m_loadedShaders.push_back(m_currentShader);
 	BindShader(m_currentShader);
 
@@ -272,6 +273,17 @@ Shader* Renderer::CreateShader(char const* shaderName, char const* shaderSource)
 		ERROR_AND_DIE("Could not create vertex layout.");
 	}
 	return shader;
+}
+
+//-----------------------------------------------------------------------------------------------
+Shader* Renderer::CreateShader( char const* shaderName )
+{
+	std::string fileName;
+	std::string outString;
+	fileName.append(shaderName);
+	fileName += ".hlsl";
+	FileReadToString(outString, fileName);
+	return CreateShader(shaderName, outString.c_str());
 }
 
 //------------------------------------------------------------------------------
