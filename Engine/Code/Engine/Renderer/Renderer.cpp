@@ -136,6 +136,10 @@ void Renderer::Startup()
 	CreateBlendStates(D3D11_BLEND_ONE, D3D11_BLEND_ZERO, BlendMode::OPAQUE);
 	CreateBlendStates(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, BlendMode::ALPHA);
 	CreateBlendStates(D3D11_BLEND_ONE, D3D11_BLEND_ONE, BlendMode::ADDITIVE);
+
+	Image* whiteImage = new Image( IntVec2(2,2), Rgba8(255,255,255,255) );
+	m_defaultTexture = CreateTextureFromImage( *whiteImage );
+	BindTexture( m_currentTexture );
 }
 
 //------------------------------------------------------------------------------
@@ -550,15 +554,14 @@ Texture* Renderer::CreateTextureFromData( char const* name, IntVec2 dimensions, 
 //-----------------------------------------------------------------------------------------------
 void Renderer::BindTexture( Texture* texture )
 {
-	if ( texture );
-	//{
-	//	glEnable( GL_TEXTURE_2D );
-	//	glBindTexture( GL_TEXTURE_2D, texture->m_textureID );
-	//}
-	//else
-	//{
-	//	glDisable( GL_TEXTURE_2D );
-	//}
+	if ( texture == nullptr )
+	{
+		m_deviceContext->PSSetShaderResources( 0, 1, &m_defaultTexture->m_shaderResourceView );
+	}
+	else
+	{
+		m_deviceContext->PSSetShaderResources( 0, 1, &m_currentTexture->m_shaderResourceView );
+	}
 }
 
 //------------------------------------------------------------------------------------------------

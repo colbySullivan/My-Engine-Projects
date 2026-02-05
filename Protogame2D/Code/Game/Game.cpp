@@ -44,7 +44,7 @@ void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_isPaused = false;
-	g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
+	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 }
 
 //-----------------------------------------------------------------------------------------------

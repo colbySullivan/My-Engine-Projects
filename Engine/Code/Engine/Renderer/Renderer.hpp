@@ -110,6 +110,8 @@ private:
 	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
+	const Texture* m_defaultTexture = nullptr;
+	Texture* m_currentTexture = nullptr;
 
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
