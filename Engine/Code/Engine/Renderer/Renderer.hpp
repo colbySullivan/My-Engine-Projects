@@ -7,6 +7,10 @@
 #include "Game/EngineBuildPreferences.hpp"
 #include <vector>
 
+#if defined(OPAQUE)
+#undef OPAQUE
+#endif
+
 //------------------------------------------------------------------------------
 struct Rgba8;
 struct Vertex;
@@ -30,11 +34,10 @@ struct RenderConfig
 //-----------------------------------------------------------------------------------------------
 enum class BlendMode
 {
+	OPAQUE,
 	ALPHA,
 	ADDITIVE,
-#if defined(OPAQUE)
-#undef OPAQUE
-#endif
+	COUNT,
 };
 
 //------------------------------------------------------------------------------
@@ -64,6 +67,8 @@ public:
 	void DrawVertexArray(int numVertexes, Vertex const* vertexes);
 	void DrawVertexArray( std::vector<Vertex> const& verts );
 
+	void SetBlendMode( BlendMode mode );
+
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
 	std::vector< BitmapFont* > m_loadedFonts;
@@ -85,6 +90,13 @@ private:
 	void BindVertexBuffer( VertexBuffer* vbo );
 	void DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount );
 	void CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo );
+
+	// Blend mode
+	void SetStatesIfChanged();
+	void CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode );
+	ID3D11BlendState* m_blendState = nullptr;
+	BlendMode m_desiredBlendMode = BlendMode::ALPHA;
+	ID3D11BlendState* m_blendStates[( int )( BlendMode::COUNT )] = {};
 
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;

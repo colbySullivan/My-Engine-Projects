@@ -61,10 +61,12 @@ Renderer::Renderer( RenderConfig const& config )
 {
 }
 
+//------------------------------------------------------------------------------
 Renderer::~Renderer()
 {
 }
 
+//------------------------------------------------------------------------------
 void Renderer::Startup()
 {
 	unsigned int deviceFlags = 0;
@@ -128,8 +130,13 @@ void Renderer::Startup()
 		ERROR_AND_DIE( "Could not create rasterizer state." );
 	}
 	m_deviceContext->RSSetState( m_rasterizerState );
+
+	CreateBlendStates(D3D11_BLEND_ONE, D3D11_BLEND_ZERO, BlendMode::OPAQUE);
+	CreateBlendStates(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, BlendMode::ALPHA);
+	CreateBlendStates(D3D11_BLEND_ONE, D3D11_BLEND_ONE, BlendMode::ADDITIVE);
 }
 
+//------------------------------------------------------------------------------
 void Renderer::Shutdown()
 {
 	DX_SAFE_RELEASE( m_rasterizerState );
@@ -151,6 +158,12 @@ void Renderer::Shutdown()
 	delete m_cameraCBO;
 	m_cameraCBO = nullptr;
 
+	for ( int i = 0; i < ( int )BlendMode::COUNT; ++i )
+	{
+		DX_SAFE_RELEASE( m_blendStates[i] );
+	}
+	DX_SAFE_RELEASE( m_blendState );
+
 #if defined(ENGINE_DEBUG_RENDER)
 	m_dxgiDebugModule = ( void* )::LoadLibraryA( "dxgidebug.dll" );
 	typedef HRESULT( WINAPI* GetDebugModuleCB )( REFIID, void** );
@@ -166,13 +179,16 @@ void Renderer::Shutdown()
 #endif
 }
 
+//------------------------------------------------------------------------------
 void Renderer::BeginFrame()
 {
 	m_deviceContext->OMSetRenderTargets( 1, &m_renderTargetView, nullptr );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::EndFrame()
 {
+	SetStatesIfChanged();
 	HRESULT hr = m_swapChain->Present( 0, 0 );
 	if ( hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET )
 	{
@@ -180,6 +196,7 @@ void Renderer::EndFrame()
 	}
 }
 
+//------------------------------------------------------------------------------
 void Renderer::ClearScreen( Rgba8 const& clearColor )
 {
 	float colorAsFloats[4];
@@ -187,6 +204,7 @@ void Renderer::ClearScreen( Rgba8 const& clearColor )
 	m_deviceContext->ClearRenderTargetView( m_renderTargetView, colorAsFloats );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::BeginCamera( Camera const& camera )
 {
 	D3D11_VIEWPORT viewport = { };
@@ -204,16 +222,19 @@ void Renderer::BeginCamera( Camera const& camera )
 	BindConstantBuffer( k_cameraConstantsSlot, m_cameraCBO );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::EndCamera( Camera const& )
 {
 }
 
+//------------------------------------------------------------------------------
 void Renderer::DrawVertexArray( int numVertexes, Vertex const* vertexes )
 {
 	CopyCPUToGPU( vertexes, numVertexes * sizeof( Vertex ), m_immediateVBO );
 	DrawVertexBuffer( m_immediateVBO, numVertexes );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::DrawVertexArray( std::vector<Vertex> const& verts )
 {
 	DrawVertexArray( ( int )verts.size(), verts.data() );
@@ -255,6 +276,7 @@ Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource
 	return shader;
 }
 
+//------------------------------------------------------------------------------
 Shader* Renderer::CreateShader( char const* shaderName )
 {
 	std::string fileName = std::string( shaderName ) + ".hlsl";
@@ -263,6 +285,7 @@ Shader* Renderer::CreateShader( char const* shaderName )
 	return CreateShader( shaderName, outString.c_str() );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::BindShader( Shader* shader )
 {
 	if ( shader == nullptr )
@@ -274,6 +297,7 @@ void Renderer::BindShader( Shader* shader )
 	m_deviceContext->IASetInputLayout( shader->m_inputLayout );
 }
 
+//------------------------------------------------------------------------------
 bool Renderer::CompileShaderToByteCode(
 	std::vector<unsigned char>& outByteCode,
 	char const* name,
@@ -308,6 +332,7 @@ bool Renderer::CompileShaderToByteCode(
 	return true;
 }
 
+//------------------------------------------------------------------------------
 ConstantBuffer* Renderer::CreateConstantBuffer( const unsigned int size )
 {
 	D3D11_BUFFER_DESC bufferDesc = { };
@@ -321,17 +346,20 @@ ConstantBuffer* Renderer::CreateConstantBuffer( const unsigned int size )
 	return buffer;
 }
 
+//------------------------------------------------------------------------------
 void Renderer::BindConstantBuffer( int slot, ConstantBuffer* cbo )
 {
 	m_deviceContext->VSSetConstantBuffers( slot, 1, &cbo->m_buffer );
 	m_deviceContext->PSSetConstantBuffers( slot, 1, &cbo->m_buffer );
 }
 
+//------------------------------------------------------------------------------
 VertexBuffer* Renderer::CreateVertexBuffer( const unsigned int size, unsigned int stride )
 {
 	return new VertexBuffer( m_device, size, stride );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::BindVertexBuffer( VertexBuffer* vbo )
 {
 	UINT offset = 0;
@@ -339,12 +367,14 @@ void Renderer::BindVertexBuffer( VertexBuffer* vbo )
 	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount )
 {
 	BindVertexBuffer( vbo );
 	m_deviceContext->Draw( vertexCount, 0 );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo )
 {
 	if ( vbo->GetSize() < size )
@@ -358,10 +388,55 @@ void Renderer::CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* 
 	m_deviceContext->Unmap( vbo->m_buffer, 0 );
 }
 
+//------------------------------------------------------------------------------
 void Renderer::CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo )
 {
 	D3D11_MAPPED_SUBRESOURCE resource;
 	m_deviceContext->Map( cbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
 	memcpy( resource.pData, data, size );
 	m_deviceContext->Unmap( cbo->m_buffer, 0 );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::SetBlendMode( BlendMode mode )
+{
+	m_desiredBlendMode = mode;
+}
+
+//------------------------------------------------------------------------------
+void Renderer::SetStatesIfChanged()
+{
+	ID3D11BlendState* desiredState = m_blendStates[(int)m_desiredBlendMode];
+	if ( m_blendStates[(int)m_desiredBlendMode] != m_blendState )
+	{
+		m_blendState = desiredState;
+		float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		UINT sampleMask = 0xffffffff;
+		m_deviceContext->OMSetBlendState( m_blendState, blendFactor, sampleMask );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode )
+{
+	D3D11_BLEND_DESC blendDesc = { };
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = sourceBlend;
+	blendDesc.RenderTarget[0].DestBlend = destBlend;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = blendDesc.RenderTarget[0].SrcBlend;
+	blendDesc.RenderTarget[0].DestBlendAlpha = blendDesc.RenderTarget[0].DestBlend;
+	blendDesc.RenderTarget[0].BlendOpAlpha = blendDesc.RenderTarget[0].BlendOp;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	HRESULT hr;
+	hr = m_device->CreateBlendState(
+		&blendDesc,
+		&m_blendStates[( int )( mode )]
+	);
+
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "CreateBlendState for BlendMode::OPAQUE failed." );
+	}
 }
