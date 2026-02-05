@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
+#include "Engine/Core/Image.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <vector>
 
@@ -68,6 +69,7 @@ public:
 	void DrawVertexArray( std::vector<Vertex> const& verts );
 
 	void SetBlendMode( BlendMode mode );
+	Texture* CreateTextureFromImage( const Image& image );
 
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
@@ -97,6 +99,17 @@ private:
 	ID3D11BlendState* m_blendState = nullptr;
 	BlendMode m_desiredBlendMode = BlendMode::ALPHA;
 	ID3D11BlendState* m_blendStates[( int )( BlendMode::COUNT )] = {};
+
+	// Texture
+	void CreateImageFromFile( const char* imageFilePath );
+	Texture* CreateTextureFromData( char const* name, IntVec2 dimensions, int bytesPerTexel, uint8_t* texelData );
+	void BindTexture( Texture* texture );
+	Texture* CreateTextureFromFile( char const* imageFilePath );
+	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
+	Texture* GetTextureForFileName( char const* imageFilePath );
+	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension );
+	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
+	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
 
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;

@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Math/IntVec2.hpp"
 #include <string>
+#include <d3d11.h>
 
 //------------------------------------------------------------------------------------------------
 class Texture
@@ -20,6 +21,6 @@ protected:
 	std::string			m_name;			// Can't be char const* -- store a copy, in case it was temporary
 	IntVec2				m_dimensions;
 
-	// #ToDo in SD2: Use #if defined( ENGINE_RENDER_D3D11 ) to do something different for DX11; #else do:
-	unsigned int		m_textureID = 0xFFFFFFFF;
+	ID3D11Texture2D* m_texture = nullptr;
+	ID3D11ShaderResourceView* m_shaderResourceView = nullptr;
 };
