@@ -32,6 +32,9 @@ enum class BlendMode
 {
 	ALPHA,
 	ADDITIVE,
+#if defined(OPAQUE)
+#undef OPAQUE
+#endif
 };
 
 //------------------------------------------------------------------------------
