@@ -167,6 +167,13 @@ void Renderer::Shutdown()
 	}
 	m_loadedShaders.clear();
 
+	for ( int i = 0; i < m_loadedTextures.size(); i++ )
+	{
+		delete m_loadedTextures[i];
+		m_loadedTextures[i] = nullptr;
+	}
+	m_loadedTextures.clear();
+
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
 
@@ -232,8 +239,11 @@ void Renderer::BeginCamera( Camera const& camera )
 	m_deviceContext->RSSetViewports( 1, &viewport );
 
 	CameraConstants camConstants = { };
+	camConstants.OrthoMinX = camera.GetOrthoBottomLeft().x;
+	camConstants.OrthoMinY = camera.GetOrthoBottomLeft().y;
 	camConstants.OrthoMaxX = camera.GetOrthoTopRight().x;
 	camConstants.OrthoMaxY = camera.GetOrthoTopRight().y;
+	camConstants.OrthoMinZ = viewport.MaxDepth;
 	camConstants.OrthoMaxZ = viewport.MaxDepth;
 
 	CopyCPUToGPU( &camConstants, sizeof( camConstants ), m_cameraCBO );
