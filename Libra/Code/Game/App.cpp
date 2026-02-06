@@ -36,6 +36,9 @@ App::~App()
 
 	delete g_UICamera;
 	g_UICamera = nullptr;
+
+	delete g_engine;
+	g_engine = nullptr;
 }
 //-----------------------------------------------------------------------------------------------
 

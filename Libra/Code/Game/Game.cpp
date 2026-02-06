@@ -448,8 +448,8 @@ void Game::RenderAttractMode() const
 	g_testFont->AddVertsForTextInBox2D(textVerts, "This\nis\nshrink to fit", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
 	g_testFont->AddVertsForTextInBox2D(textVerts2, "This\nis\noverrun", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 50.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
 	
-	//g_engine->m_render->DrawVertexArray( boxOutlineVerts );
-	//g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
+	g_engine->m_render->DrawVertexArray( boxOutlineVerts );
+	g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
 
 	std::vector<Vertex> tileVerts;
 
@@ -465,13 +465,13 @@ void Game::RenderAttractMode() const
 
 	AddVertsForAABB2D( explosionVerts, box, Rgba8(255,255,255), explosionMins, explosionMaxs);
 	
-	//g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
-	//g_engine->m_render->DrawVertexArray( explosionVerts );
+	g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( explosionVerts );
 
-	//g_engine->m_render->BindTexture( nullptr );
-	//g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
-	//g_engine->m_render->DrawVertexArray( textVerts );
-	//g_engine->m_render->DrawVertexArray( textVerts2 );
+	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
+	g_engine->m_render->DrawVertexArray( textVerts );
+	g_engine->m_render->DrawVertexArray( textVerts2 );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
