@@ -54,5 +54,5 @@ const std::string& Image::GetImageFilePath() const
 //-----------------------------------------------------------------------------------------------
 const void* Image::GetRawData() const
 {
-	return &m_texelRgba8Data;
+	return m_texelRgba8Data.data();
 }

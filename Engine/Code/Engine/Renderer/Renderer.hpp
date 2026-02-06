@@ -41,6 +41,14 @@ enum class BlendMode
 	COUNT,
 };
 
+//-----------------------------------------------------------------------------------------------
+enum class SamplerMode
+{
+	POINT_CLAMP,
+	BILINEAR_WRAP,
+	COUNT
+};
+
 //------------------------------------------------------------------------------
 #define DX_SAFE_RELEASE(dxObject)\
 {\
@@ -69,6 +77,7 @@ public:
 	void DrawVertexArray( std::vector<Vertex> const& verts );
 
 	void SetBlendMode( BlendMode mode );
+	void SetSamplerMode( SamplerMode mode );
 	Texture* CreateTextureFromImage( const Image& image );
 
 	RenderConfig m_config;
@@ -100,19 +109,26 @@ private:
 	BlendMode m_desiredBlendMode = BlendMode::ALPHA;
 	ID3D11BlendState* m_blendStates[( int )( BlendMode::COUNT )] = {};
 
+public:
 	// Texture
-	void CreateImageFromFile( const char* imageFilePath );
-	Texture* CreateTextureFromData( char const* name, IntVec2 dimensions, int bytesPerTexel, uint8_t* texelData );
-	void BindTexture( Texture* texture );
-	Texture* CreateTextureFromFile( char const* imageFilePath );
+	Texture* CreateTextureFromFile( const char* imageFilePath );
 	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
 	Texture* GetTextureForFileName( char const* imageFilePath );
 	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
+	void BindTexture( Texture* texture );
+
+private:
 	const Texture* m_defaultTexture = nullptr;
 	Texture* m_currentTexture = nullptr;
 
+	// Sampler
+	ID3D11SamplerState* m_samplerState = nullptr;
+	SamplerMode m_desiredSamplerMode = SamplerMode::POINT_CLAMP;
+	ID3D11SamplerState* m_samplerStates[( int )( SamplerMode::COUNT )] = {};
+
+	void CreateSamplerMode(  SamplerMode mode, D3D11_FILTER param1, D3D11_TEXTURE_ADDRESS_MODE param2, D3D11_TEXTURE_ADDRESS_MODE param3, D3D11_TEXTURE_ADDRESS_MODE param4 );
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
 	ID3D11RenderTargetView* m_renderTargetView = nullptr;
