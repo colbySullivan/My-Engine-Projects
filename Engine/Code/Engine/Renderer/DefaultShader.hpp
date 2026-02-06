@@ -1,6 +1,9 @@
 #pragma once
 
 const char* defaultShaderSource = R"(
+	Texture2D diffuseTexture : register(t0);
+	SamplerState diffuseSampler : register(s0);
+
 	cbuffer CameraConstants : register( b2 )
 	{
 		float OrthoMinX;
@@ -60,6 +63,10 @@ const char* defaultShaderSource = R"(
 	}
 	float4 PixelMain(v2p_t input) : SV_Target0
 	{
-		return float4(input.color);
-	};
+		float4 textureColor = diffuseTexture. Sample(diffuseSampler, input.uv);
+		float4 vertexColor = input.color;
+		float4 color = textureColor * vertexColor;
+		clip(color.a - 0.01f);
+		return float4(color);
+	}
 )";
