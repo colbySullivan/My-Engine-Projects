@@ -77,132 +77,18 @@ void Renderer::Startup()
 	//RasterizerMode m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	//DepthMode m_desiredDepthMode = DepthMode::READ_WRITE_LESS_EQUAL;
 
-	unsigned int deviceFlags = 0;
-#if defined(ENGINE_DEBUG_RENDER)
-	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-	DXGI_SWAP_CHAIN_DESC swapChainDesc = { };
-	swapChainDesc.BufferDesc.Width = g_engine->m_window->GetClientDimensions().x;
-	swapChainDesc.BufferDesc.Height = g_engine->m_window->GetClientDimensions().y;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = 2;
-	swapChainDesc.OutputWindow = ( HWND )g_engine->m_window->GetHwnd();
-	swapChainDesc.Windowed = true;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(
-		nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, deviceFlags,
-		nullptr, 0, D3D11_SDK_VERSION, &swapChainDesc,
-		&m_swapChain, &m_device, nullptr, &m_deviceContext );
-
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not create D3D 11 device and swap chain." );
-	}
-
-	ID3D11Texture2D* backBuffer;
-	hr = m_swapChain->GetBuffer( 0, _uuidof( ID3D11Texture2D ), ( void** )&backBuffer );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not get swap chain buffer." );
-	}
-
-	hr = m_device->CreateRenderTargetView( backBuffer, NULL, &m_renderTargetView );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could create render target view for swap chain buffer." );
-	}
-	backBuffer->Release();
-
-	m_currentShader = CreateShader( "Current", defaultShaderSource );
-	m_defaultShader = CreateShader( "Default", defaultShaderSource );
-	m_loadedShaders.push_back( m_currentShader );
-	m_loadedShaders.push_back( m_defaultShader );
-	BindShader( m_currentShader );
-
-	m_immediateVBO = CreateVertexBuffer( sizeof( Vertex ), sizeof( Vertex ) );
-	m_cameraCBO = CreateConstantBuffer( sizeof( CameraConstants ) );
-
-	D3D11_RASTERIZER_DESC rasterizerDesc = { };
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_NONE;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.AntialiasedLineEnable = true;
-
-	hr = m_device->CreateRasterizerState( &rasterizerDesc, &m_rasterizerState );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not create rasterizer state." );
-	}
-	m_deviceContext->RSSetState( m_rasterizerState );
-
-	CreateBlendStates(D3D11_BLEND_ONE, D3D11_BLEND_ZERO, BlendMode::OPAQUE);
-	CreateBlendStates(D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, BlendMode::ALPHA);
-	CreateBlendStates(D3D11_BLEND_ONE, D3D11_BLEND_ONE, BlendMode::ADDITIVE);
-
-	Image whiteImage = Image( IntVec2(2,2), Rgba8(255,255,255,255) );
-	m_defaultTexture = CreateTextureFromImage( whiteImage );
-	BindTexture( const_cast< Texture* >(m_defaultTexture) );
-
-	CreateSamplerMode( SamplerMode::POINT_CLAMP, D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP ); // Point clamp
-	CreateSamplerMode( SamplerMode::BILINEAR_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP ); // Bilinear wrap
+	CreateDeviceAndSwapChain();
+	CreateAndBindShaders();
+	CreateBuffers();
+	CreateNewRasterizerState();
+	CreateBlendAndSamplerStates();
 }
 
 //------------------------------------------------------------------------------
 void Renderer::Shutdown()
 {
-	DX_SAFE_RELEASE( m_rasterizerState );
-	DX_SAFE_RELEASE( m_renderTargetView );
-	DX_SAFE_RELEASE( m_swapChain );
-	DX_SAFE_RELEASE( m_deviceContext );
-	DX_SAFE_RELEASE( m_device );
-
-	for ( int i = 0; i < m_loadedShaders.size(); i++ )
-	{
-		delete m_loadedShaders[i];
-		m_loadedShaders[i] = nullptr;
-	}
-	m_loadedShaders.clear();
-
-	for ( int i = 0; i < m_loadedTextures.size(); i++ )
-	{
-		delete m_loadedTextures[i];
-		m_loadedTextures[i] = nullptr;
-	}
-	m_loadedTextures.clear();
-
-	delete m_immediateVBO;
-	m_immediateVBO = nullptr;
-
-	delete m_cameraCBO;
-	m_cameraCBO = nullptr;
-
-	for ( int i = 0; i < ( int )BlendMode::COUNT; ++i )
-	{
-		DX_SAFE_RELEASE( m_blendStates[i] );
-	}
-
-	for ( int i = 0; i < ( int )SamplerMode::COUNT; ++i )
-	{
-		DX_SAFE_RELEASE( m_samplerStates[i] );
-	}
-
-#if defined(ENGINE_DEBUG_RENDER)
-	m_dxgiDebugModule = ( void* )::LoadLibraryA( "dxgidebug.dll" );
-	typedef HRESULT( WINAPI* GetDebugModuleCB )( REFIID, void** );
-	( ( GetDebugModuleCB )::GetProcAddress( ( HMODULE )m_dxgiDebugModule, "DXGIGetDebugInterface" ) )
-		( _uuidof( IDXGIDebug ), &m_dxgiDebug );
-
-	( ( IDXGIDebug* )m_dxgiDebug )->ReportLiveObjects(
-		DXGI_DEBUG_ALL,
-		( DXGI_DEBUG_RLO_FLAGS )( DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL )
-	);
-	( ( IDXGIDebug* )m_dxgiDebug )->Release();
-	::FreeLibrary( ( HMODULE )m_dxgiDebugModule );
-#endif
+	DeleteReleaseAll();
+	EngineDubugRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -471,6 +357,132 @@ void Renderer::CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend
 	}
 }
 
+//------------------------------------------------------------------------------
+void Renderer::DeleteReleaseAll()
+{
+	DX_SAFE_RELEASE( m_rasterizerState );
+	DX_SAFE_RELEASE( m_renderTargetView );
+	DX_SAFE_RELEASE( m_swapChain );
+	DX_SAFE_RELEASE( m_deviceContext );
+	DX_SAFE_RELEASE( m_device );
+
+	for ( int i = 0; i < m_loadedShaders.size(); i++ )
+	{
+		delete m_loadedShaders[i];
+		m_loadedShaders[i] = nullptr;
+	}
+	m_loadedShaders.clear();
+
+	for ( int i = 0; i < m_loadedTextures.size(); i++ )
+	{
+		delete m_loadedTextures[i];
+		m_loadedTextures[i] = nullptr;
+	}
+	m_loadedTextures.clear();
+
+	delete m_immediateVBO;
+	m_immediateVBO = nullptr;
+
+	delete m_cameraCBO;
+	m_cameraCBO = nullptr;
+
+	for ( int i = 0; i < ( int )BlendMode::COUNT; ++i )
+	{
+		DX_SAFE_RELEASE( m_blendStates[i] );
+	}
+
+	for ( int i = 0; i < ( int )SamplerMode::COUNT; ++i )
+	{
+		DX_SAFE_RELEASE( m_samplerStates[i] );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::EngineDubugRenderer()
+{
+#if defined(ENGINE_DEBUG_RENDER)
+	m_dxgiDebugModule = ( void* )::LoadLibraryA( "dxgidebug.dll" );
+	typedef HRESULT( WINAPI* GetDebugModuleCB )( REFIID, void** );
+	( ( GetDebugModuleCB )::GetProcAddress( ( HMODULE )m_dxgiDebugModule, "DXGIGetDebugInterface" ) )
+		( _uuidof( IDXGIDebug ), &m_dxgiDebug );
+
+	( ( IDXGIDebug* )m_dxgiDebug )->ReportLiveObjects(
+		DXGI_DEBUG_ALL,
+		( DXGI_DEBUG_RLO_FLAGS )( DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL )
+	);
+	( ( IDXGIDebug* )m_dxgiDebug )->Release();
+	::FreeLibrary( ( HMODULE )m_dxgiDebugModule );
+#endif
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateBuffers()
+{
+	m_immediateVBO = CreateVertexBuffer( sizeof( Vertex ), sizeof( Vertex ) );
+	m_cameraCBO = CreateConstantBuffer( sizeof( CameraConstants ) );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateDeviceAndSwapChain()
+{
+	unsigned int deviceFlags = 0;
+#if defined(ENGINE_DEBUG_RENDER)
+	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+	DXGI_SWAP_CHAIN_DESC swapChainDesc = { };
+	swapChainDesc.BufferDesc.Width = g_engine->m_window->GetClientDimensions().x;
+	swapChainDesc.BufferDesc.Height = g_engine->m_window->GetClientDimensions().y;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = 2;
+	swapChainDesc.OutputWindow = ( HWND )g_engine->m_window->GetHwnd();
+	swapChainDesc.Windowed = true;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(
+		nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, deviceFlags,
+		nullptr, 0, D3D11_SDK_VERSION, &swapChainDesc,
+		&m_swapChain, &m_device, nullptr, &m_deviceContext );
+
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create D3D 11 device and swap chain." );
+	}
+	ID3D11Texture2D* backBuffer;
+	hr = m_swapChain->GetBuffer( 0, _uuidof( ID3D11Texture2D ), ( void** )&backBuffer );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not get swap chain buffer." );
+	}
+
+	hr = m_device->CreateRenderTargetView( backBuffer, NULL, &m_renderTargetView );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could create render target view for swap chain buffer." );
+	}
+	backBuffer->Release();
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateNewRasterizerState()
+{
+	D3D11_RASTERIZER_DESC rasterizerDesc = { };
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.AntialiasedLineEnable = true;
+
+	HRESULT hr;
+	hr = m_device->CreateRasterizerState( &rasterizerDesc, &m_rasterizerState );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create rasterizer state." );
+	}
+	m_deviceContext->RSSetState( m_rasterizerState );
+}
+
 //-----------------------------------------------------------------------------------------------
 Texture* Renderer::CreateTextureFromFile( const char* imageFilePath )
 {
@@ -620,6 +632,31 @@ void Renderer::CreateSamplerMode( SamplerMode mode, D3D11_FILTER filter, D3D11_T
 		ERROR_AND_DIE( "CreateSamplerState for SamplerMode :: POINT_CLAMP failed." );
 
 	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateBlendAndSamplerStates()
+{
+	CreateBlendStates( D3D11_BLEND_ONE, D3D11_BLEND_ZERO, BlendMode::OPAQUE );
+	CreateBlendStates( D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, BlendMode::ALPHA );
+	CreateBlendStates( D3D11_BLEND_ONE, D3D11_BLEND_ONE, BlendMode::ADDITIVE );
+
+	Image whiteImage = Image( IntVec2( 2, 2 ), Rgba8( 255, 255, 255, 255 ) );
+	m_defaultTexture = CreateTextureFromImage( whiteImage );
+	BindTexture( const_cast< Texture* >( m_defaultTexture ) );
+
+	CreateSamplerMode( SamplerMode::POINT_CLAMP, D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP ); // Point clamp
+	CreateSamplerMode( SamplerMode::BILINEAR_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP ); // Bilinear wrap
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateAndBindShaders()
+{
+	m_currentShader = CreateShader( "Current", defaultShaderSource );
+	m_defaultShader = CreateShader( "Default", defaultShaderSource );
+	m_loadedShaders.push_back( m_currentShader );
+	m_loadedShaders.push_back( m_defaultShader );
+	BindShader( m_currentShader );
 }
 
 //-----------------------------------------------------------------------------------------------

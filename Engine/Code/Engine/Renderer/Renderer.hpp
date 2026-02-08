@@ -145,4 +145,12 @@ protected:
 	std::vector<uint8_t> m_pixelShaderByteCode;
 
 	ConstantBuffer* m_cameraCBO = nullptr;
+private:
+	void CreateNewRasterizerState();
+	void CreateBlendAndSamplerStates();
+	void CreateBuffers();
+	void CreateAndBindShaders();
+	void CreateDeviceAndSwapChain();
+	void DeleteReleaseAll();
+	void EngineDubugRenderer();
 };
