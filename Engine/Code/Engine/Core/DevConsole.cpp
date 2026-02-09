@@ -23,11 +23,13 @@ DevConsole::~DevConsole()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Startup()
 {
+	BitmapFont* testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
+	m_newFontTexture = &testFont->GetTexture();
 	m_lines.clear();
 	m_mode = m_config.m_consoleMode;
 	for (int i = 0; i < 5 ; i++)
 	{
-		AddLine(ERROR_COLOR, "Dev Console Initialized.", 40.f, 0.f);
+		//AddLine(ERROR_COLOR, "Dev Console Initialized.", 40.f, 0.f);
 	}
 }
 
@@ -103,10 +105,12 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fontAspect) const
 {
+	g_engine->m_render->BindTexture( nullptr );
 	std::vector<Vertex> boxVerts;
 	AddVertsForAABB2D(boxVerts, bounds, Rgba8(0, 0, 0, 200));
 	g_engine->m_render->DrawVertexArray(boxVerts);
 
+	g_engine->m_render->BindTexture( m_newFontTexture );
 	std::vector<Vertex> textVerts;
 	font.AddVertsForTextInBox2D(textVerts, "[", bounds, m_lines[0].m_cellHeight, INFO_MAJOR_COLOR, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
 	float currentY = bounds.m_mins.y + m_lines[0].m_cellHeight;
