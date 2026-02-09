@@ -490,6 +490,7 @@ Texture* Renderer::CreateTextureFromFile( const char* imageFilePath )
 	return CreateTextureFromImage( imageFromFile );
 }
 
+//-----------------------------------------------------------------------------------------------
 Texture* Renderer::CreateTextureFromImage( const Image& image )
 {
 	Texture* newTexture = new Texture();
@@ -614,6 +615,7 @@ BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoEx
 	return newFont;
 }
 
+//-----------------------------------------------------------------------------------------------
 void Renderer::CreateSamplerMode( SamplerMode mode, D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressU, D3D11_TEXTURE_ADDRESS_MODE addressV, D3D11_TEXTURE_ADDRESS_MODE addressW )
 {
 	D3D11_SAMPLER_DESC samplerDesc = { };
