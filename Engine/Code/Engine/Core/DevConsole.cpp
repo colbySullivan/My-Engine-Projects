@@ -73,6 +73,7 @@ void DevConsole::Render(AABB2 const& bounds, BitmapFont& font, float fontAspect 
 	switch (m_mode)
 	{
 	case HIDDEN:
+		g_engine->m_render->BindTexture( nullptr );
 		return;
 
 	case OPEN_FULL:

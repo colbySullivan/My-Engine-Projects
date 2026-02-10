@@ -4,6 +4,7 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 
 class App;
 class Entity;
@@ -11,6 +12,7 @@ class InputSystem;
 class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
+class BitmapFont;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -77,6 +79,9 @@ public:
 	float				m_soundDurationTimer = 0.f;
 	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
 	float				m_shotSoundDurationTimer = 0.f;
+
+	// Textures
+	BitmapFont* g_testFont = nullptr;
 
 
 private:

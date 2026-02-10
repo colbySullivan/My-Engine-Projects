@@ -23,6 +23,7 @@ Game::Game()
 
 	m_roundNumber = 1;
 	LoadSounds();
+	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 }
 
@@ -88,16 +89,8 @@ void Game::Update(float deltaSeconds)
 void Game::Render() const
 {
 	g_engine->m_render->BeginCamera( *m_worldCamera );
-
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
-
-	Vertex vertices[] = {
-		Vertex(Vec3(-0.50f, -0.50f, 0.0f), Rgba8(255, 255, 255, 255), Vec2(0.0f, 0.0f)),
-		Vertex(Vec3(100.00f, 100.50f, 0.0f), Rgba8(255, 255, 255, 255), Vec2(0.0f, 0.0f)),
-		Vertex(Vec3(0.50f, -0.50f, 0.0f), Rgba8(255, 255, 255,255), Vec2(0.0f, 0.0f)),
-	};
-	g_engine->m_render->DrawVertexArray(3, vertices);
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
@@ -111,11 +104,8 @@ void Game::Render() const
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
-		g_engine->m_render->ClearScreen(backgroundColor);
-
 		RenderUI();
 	}
-	
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -129,6 +119,18 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateKeyboardInput( XboxController const& controller )
 {
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_TILDA ) )
+	{
+		g_engine->m_console->ToggleMode( DevConsoleMode::HIDDEN );
+		if ( g_engine->m_console->GetMode() == DevConsoleMode::HIDDEN )
+		{
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Closed dev console", 20.f, 0.0f );
+		}
+		else if ( g_engine->m_console->GetMode() == DevConsoleMode::OPEN_FULL )
+		{
+			g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "Opened dev console", 20.f, 0.0f );
+		}
+	}
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 	{
 		if ( m_currentGameState == GAMESTATE_ATTRACT )
