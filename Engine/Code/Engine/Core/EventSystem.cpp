@@ -77,6 +77,17 @@ int EventSystem::FireEvent( std::string const& eventName )
 	return FireEvent( eventName, args );
 }
 
+//-----------------------------------------------------------------------------------------------
+std::vector<std::string> EventSystem::GetAllRegisteredCommands()
+{
+	std::vector<std::string> registeredEventNames = { };
+	for ( const auto& eventMap : m_listOfSubscribersByEventName )
+	{
+		registeredEventNames.push_back(eventMap.first);
+	}
+	return registeredEventNames;
+}
+
 //------------------------------------------------------------------------------
 void SubscribeEventCallbackFunction(std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr)
 {

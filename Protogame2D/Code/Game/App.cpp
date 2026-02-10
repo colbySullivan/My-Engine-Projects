@@ -25,6 +25,11 @@ App::App()
 	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y) );
 
 	SubscribeEventCallbackFunction( "Quit", App::Event_Quit );
+	std::vector<std::string> registeredEvents = g_engine->m_eventSystem->GetAllRegisteredCommands();
+	for (int eventIndex = 0; eventIndex < registeredEvents.size() ; ++eventIndex)
+	{
+		g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, registeredEvents.at(eventIndex), 20.f, 0.0f );
+	}
 }
 //-----------------------------------------------------------------------------------------------
 

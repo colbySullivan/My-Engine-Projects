@@ -30,6 +30,7 @@ public:
 	void UnsubscribeEventCallbackFunction( std::string const& eventName, EventSystemCallbackFunctionPtr functionPtr );
 	int FireEvent( std::string const& eventName, EventArgs& args );
 	int FireEvent( std::string const& eventName );
+	std::vector<std::string> GetAllRegisteredCommands();
 
 private:
 	//std::map< std::string, std::vector< void (*)()> > m_listOfSubscribersByEventName;
