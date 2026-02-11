@@ -1,4 +1,5 @@
 #include "Engine/Input/InputSystem.hpp"
+#include "Engine/Core/Engine.hpp"
 #include <Windows.h> 
 #include <stdio.h>
 
@@ -23,6 +24,19 @@ unsigned char const KEYCODE_RIGHTARROW = 0x27;
 unsigned char const KEYCODE_LEFT_MOUSE = VK_LBUTTON;
 unsigned char const KEYCODE_RIGHT_MOUSE = VK_RBUTTON;
 
+// Dev console
+unsigned char const KEYCODE_TILDE = 0xC0;
+//unsigned char const KEYCODE_UPARROW = VK_UP;
+//unsigned char const KEYCODE_DOWNARROW = VK_DOWN;
+//unsigned char const KEYCODE_LEFTARROW = VK_LEFT;
+//unsigned char const KEYCODE_RIGHTARROW = VK_RIGHT;
+unsigned char const KEYCODE_ENTER = VK_RETURN;
+unsigned char const KEYCODE_BACKSPACE = VK_BACK;
+unsigned char const KEYCODE_INSERT = VK_INSERT;
+unsigned char const KEYCODE_DELETE = VK_DELETE;
+unsigned char const KEYCODE_HOME = VK_HOME;
+unsigned char const KEYCODE_END = VK_END;
+
 InputSystem::InputSystem( InputConfig const& config ) 
 	: m_config( config )
 {
@@ -37,6 +51,8 @@ InputSystem::~InputSystem()
 //-----------------------------------------------------------------------------------------------
 void InputSystem::Startup()
 {
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction("KeyPressed", InputSystem::Event_KeyPressed);
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction("KeyReleased", InputSystem::Event_KeyReleased);
 	for (int i = 0; i < NUM_KEYCODES; ++i)
 	{
 		m_keyStates[i].m_isPressed = false;
@@ -102,4 +118,28 @@ void InputSystem::HandleKeyReleased(unsigned char keyCode)
 XboxController const& InputSystem::GetController(int controllerID) const
 {
 	return m_controllers[controllerID];
+}
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::Event_KeyPressed( EventArgs& args )
+{
+	if ( !g_engine->m_input )
+	{
+		return false;
+	}
+	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
+	g_engine->m_input->HandleKeyPressed( keyCode );
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool InputSystem::Event_KeyReleased( EventArgs& args )
+{
+	if ( !g_engine->m_input )
+	{
+		return false;
+	}
+	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
+	g_engine->m_input->HandleKeyReleased( keyCode );
+	return true;
 }

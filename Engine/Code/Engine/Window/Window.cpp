@@ -64,17 +64,19 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 	// Raw physical keyboard "key-was-just-depressed" event (case-insensitive, not translated)
 	case WM_KEYDOWN:
 	{
-		unsigned char asKey = ( unsigned char )wParam;
-		g_engine->m_input->HandleKeyPressed( asKey );
-		break;
+		EventArgs args;
+		args.SetValue( "KeyCode", Stringf( "%d", ( unsigned char )wParam ) );
+		FireEvent( "KeyPressed", args );
+		return 0;
 	}
 
 	// Raw physical keyboard "key-was-just-released" event (case-insensitive, not translated)
 	case WM_KEYUP:
 	{
-		unsigned char asKey = ( unsigned char )wParam;
-		g_engine->m_input->HandleKeyReleased( asKey );
-		break;
+		EventArgs args;
+		args.SetValue( "KeyCode", Stringf( "%d", ( unsigned char )wParam ) );
+		FireEvent( "KeyReleased", args );
+		return 0;
 	}
 
 	case WM_LBUTTONDOWN: // Like WM_KEYDOWN but for left mouse button

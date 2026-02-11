@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Input/KeyButtonState.hpp"
 #include "Engine/Input/XboxController.hpp"
+#include "Engine/Core/EventSystem.hpp"
 
 extern unsigned char const KEYCODE_F1;
 extern unsigned char const KEYCODE_F2;
@@ -48,7 +49,9 @@ public:
 	bool IsKeyDown(unsigned char keyCode);
 	void HandleKeyPressed(unsigned char keyCode);
 	void HandleKeyReleased(unsigned char keyCode);
-	XboxController const& GetController(int controllerID) const;
+	static bool Event_KeyPressed( EventArgs& args );
+	static bool Event_KeyReleased( EventArgs& args );
+	XboxController const& GetController( int controllerID ) const;
 
 	InputConfig	m_config;
 
