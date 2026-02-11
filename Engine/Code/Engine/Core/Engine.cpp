@@ -10,15 +10,15 @@ Engine::Engine( EngineConfig const& config )
 	if( config.m_renderConfig.m_isEnabled )			m_render = new Renderer( config.m_renderConfig);
 	if( config.m_inputConfig.m_isEnabled )			m_input = new InputSystem( config.m_inputConfig );
 	if( config.m_audioConfig.m_isEnabled )			m_audio = new AudioSystem( config.m_audioConfig );
+	if ( config.m_eventSystemConfig.m_isEnabled )	m_eventSystem = new EventSystem( config.m_eventSystemConfig );
 	if( config.m_devConsoleConfig.m_isEnabled )		m_console = new DevConsole( config.m_devConsoleConfig );
-	if( config.m_eventSystemConfig.m_isEnabled )	m_eventSystem = new EventSystem( config.m_eventSystemConfig );
 
 	if( m_window )			m_window->Startup();
 	if( m_render )			m_render->Startup();
-	if( m_input )			m_input->Startup();
 	if( m_audio )			m_audio->Startup();
 	if( m_console )			m_console->Startup();
-	if( m_eventSystem )		m_eventSystem->Startup();
+	if ( m_input )			m_input->Startup();
+	if ( m_eventSystem )		m_eventSystem->Startup();
 
 	//m_systemClock = new Clock();
 	m_systemClock = &Clock::GetSystemClock();
