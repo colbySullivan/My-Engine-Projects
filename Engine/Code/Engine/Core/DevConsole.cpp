@@ -29,11 +29,12 @@ void DevConsole::Startup()
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "KeyPressed", DevConsole::Event_KeyPressed );
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "CharPressed", DevConsole::Event_CharInput );
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "clear", DevConsole::Command_Clear );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "help", DevConsole::Command_Help );
 	m_lines.clear();
 	m_mode = m_config.m_consoleMode;
-	for (int i = 0; i < 5 ; i++)
+	for ( int i = 0; i < 5; i++ )
 	{
-		//AddLine(ERROR_COLOR, "Dev Console Initialized.", 40.f, 0.f);
+		AddLine(ERROR_COLOR, "Dev Console Initialized.", 40.f, 0.f);
 	}
 }
 
@@ -58,7 +59,8 @@ void DevConsole::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText )
 {
-
+	FireEvent( consoleCommandText );
+	AddLine( INFO_MINOR_COLOR, consoleCommandText, 40.f, 0.f );
 }
 
 //------------------------------------------------------------------------------
@@ -143,7 +145,7 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 //-----------------------------------------------------------------------------------------------
 bool DevConsole::Event_KeyPressed( EventArgs& args )
 {
-	if ( !g_engine->m_input )
+	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN)
 	{
 		return false;
 	}
@@ -155,20 +157,27 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 //-----------------------------------------------------------------------------------------------
 bool DevConsole::Event_CharInput( EventArgs& args )
 {
-	if ( !g_engine->m_input )
+	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN )
 	{
 		return false;
 	}
 	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
-	if ( keyCode == 'g' )
+	if ( keyCode == KEYCODE_ENTER )
 	{
-		FireEvent("clear");
+		int size = g_DevConsole->m_lines.size();
+		//g_DevConsole->m_lines[size].m_text() = "1";
+
+		DevConsoleLine& line = g_DevConsole->m_lines[size];
 	}
 }
 
 //-----------------------------------------------------------------------------------------------
 bool DevConsole::Command_Clear( EventArgs& args )
 {
+	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN )
+	{
+		return false;
+	}
 	ClearLines();
 	return true;
 }
@@ -182,7 +191,7 @@ void DevConsole::ClearLines()
 //-----------------------------------------------------------------------------------------------
 bool DevConsole::Command_Help( EventArgs& args )
 {
-	if ( !g_engine->m_input )
+	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN )
 	{
 		return false;
 	}

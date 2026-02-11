@@ -23,6 +23,13 @@ extern unsigned char const KEYCODE_LEFTARROW;
 extern unsigned char const KEYCODE_RIGHTARROW;
 extern unsigned char const KEYCODE_LEFT_MOUSE;
 extern unsigned char const KEYCODE_RIGHT_MOUSE;
+extern unsigned char const KEYCODE_TILDE;
+extern unsigned char const KEYCODE_ENTER;
+extern unsigned char const KEYCODE_BACKSPACE;
+extern unsigned char const KEYCODE_INSERT;
+extern unsigned char const KEYCODE_DELETE;
+extern unsigned char const KEYCODE_HOME;
+extern unsigned char const KEYCODE_END;
 
 //------------------------------------------------------------------------------
 constexpr int NUM_KEYCODES = 256;
