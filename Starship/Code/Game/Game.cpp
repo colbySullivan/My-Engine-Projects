@@ -28,6 +28,7 @@ Game::Game()
 	LoadSounds();
 	GenerateStars();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
+	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -164,6 +165,19 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 		}
 	}
 
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_TILDA ) )
+	{
+		g_engine->m_console->ToggleMode( DevConsoleMode::HIDDEN );
+		if ( g_engine->m_console->GetMode() == DevConsoleMode::HIDDEN )
+		{
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Closed dev console", 20.f, 0.0f );
+		}
+		else if ( g_engine->m_console->GetMode() == DevConsoleMode::OPEN_FULL )
+		{
+			g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "Opened dev console", 20.f, 0.0f );
+		}
+	}
+
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
@@ -174,7 +188,7 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{
-		m_isPaused = !m_isPaused; // Switch pause
+		m_isPaused = !m_isPaused; // Switch pause #TODO need to swap this to the new clock
 		g_engine->m_systemClock->TogglePause();
 		m_powerUpScreen = false;
 	}

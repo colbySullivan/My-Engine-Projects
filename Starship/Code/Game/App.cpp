@@ -22,6 +22,9 @@ App::App()
 	m_game = new Game();
 	m_game->Startup();
 	m_appClock = new Clock( *g_engine->m_systemClock );
+
+	g_UICamera = new Camera();
+	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -42,8 +45,8 @@ void App::RunFrame()
 	//Clock::TickSystemClock();
 	g_engine->BeginFrame();
 	//Update(deltaSeconds);
-	float deltaSeconds = m_appClock->GetDeltaSeconds();
-	Update( deltaSeconds );
+	double deltaSeconds = m_appClock->GetDeltaSeconds();
+	Update( (float) deltaSeconds );
 	Render();
 	g_engine->EndFrame();
 }
@@ -64,6 +67,9 @@ void App::Update(float deltaSeconds)
 void App::Render() const
 {
 	m_game->Render();
+	g_engine->m_render->BeginCamera( *g_UICamera );
+	g_engine->m_console->Render( AABB2( g_UICamera->GetOrthoBottomLeft(), g_UICamera->GetOrthoTopRight() ), *m_game->g_testFont, 1.f );
+	g_engine->m_render->EndCamera( *g_UICamera );
 }
 //-----------------------------------------------------------------------------------------------
 

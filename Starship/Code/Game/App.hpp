@@ -33,4 +33,5 @@ public:
 
 private:
 	float           m_lastFrameTime = 0.f;
+	Camera*			g_UICamera = nullptr;
 };

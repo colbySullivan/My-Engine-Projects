@@ -4,6 +4,7 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 
 class App;
 class PlayerShip;
@@ -18,6 +19,7 @@ class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
 class Interactable;
+class BitmapFont;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -101,6 +103,8 @@ public:
 	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
 	float				m_shotSoundDurationTimer = 0.f;
 
+	// Textures
+	BitmapFont* g_testFont = nullptr;
 
 private:
 	void UpdateKeyboardInput( float deltaSeconds, XboxController const& controller );
