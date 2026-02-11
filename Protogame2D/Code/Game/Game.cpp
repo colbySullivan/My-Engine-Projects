@@ -82,6 +82,7 @@ void Game::Update(float deltaSeconds)
 		{
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
+		m_roundTime += deltaSeconds;
 	}
 }
 
@@ -226,6 +227,7 @@ void Game::UpdateCameras( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateAttractMode(float deltaSeconds)
 {
+	m_roundTime = 0.f;
 	if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
 	{
 		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );

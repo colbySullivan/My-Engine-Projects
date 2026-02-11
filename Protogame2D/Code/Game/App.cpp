@@ -44,12 +44,12 @@ App::~App()
 
 void App::RunFrame()
 {
-	float timeNow = (float)GetCurrentTimeSeconds();
-	float deltaSeconds = timeNow - m_lastFrameTime;
-	m_lastFrameTime = timeNow;
+	//float timeNow = (float)GetCurrentTimeSeconds();
+	//float deltaSeconds = timeNow - m_lastFrameTime;
+	//m_lastFrameTime = timeNow;
 
 	g_engine->BeginFrame();
-	Update(deltaSeconds);
+	Update(g_engine->m_systemClock->GetDeltaSeconds());
 	Render();
 	g_engine->EndFrame();
 }
