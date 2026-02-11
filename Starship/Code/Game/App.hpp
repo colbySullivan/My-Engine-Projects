@@ -7,6 +7,7 @@
 class PlayerShip;
 class App;
 class Game;
+class Clock;
 
 //------------------------------------------------------------------------------
 extern App* g_theApp;
@@ -28,6 +29,7 @@ public:
 
 public:
 	Game*		m_game = nullptr;
+	Clock*		m_appClock = nullptr;
 
 private:
 	float           m_lastFrameTime = 0.f;

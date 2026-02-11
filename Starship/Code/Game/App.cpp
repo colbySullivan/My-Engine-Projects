@@ -21,6 +21,7 @@ App::App()
 	g_app = this;
 	m_game = new Game();
 	m_game->Startup();
+	m_appClock = new Clock( *g_engine->m_systemClock );
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -35,12 +36,14 @@ App::~App()
 
 void App::RunFrame()
 {
-	float timeNow = (float)GetCurrentTimeSeconds();
-	float deltaSeconds = timeNow - m_lastFrameTime;
-	m_lastFrameTime = timeNow;
-
+	//float timeNow = (float)GetCurrentTimeSeconds();
+	//float deltaSeconds = timeNow - m_lastFrameTime;
+	//m_lastFrameTime = timeNow;
+	//Clock::TickSystemClock();
 	g_engine->BeginFrame();
-	Update(deltaSeconds);
+	//Update(deltaSeconds);
+	float deltaSeconds = m_appClock->GetDeltaSeconds();
+	Update( deltaSeconds );
 	Render();
 	g_engine->EndFrame();
 }

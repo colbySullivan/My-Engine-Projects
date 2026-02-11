@@ -175,6 +175,7 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{
 		m_isPaused = !m_isPaused; // Switch pause
+		g_engine->m_systemClock->TogglePause();
 		m_powerUpScreen = false;
 	}
 	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
