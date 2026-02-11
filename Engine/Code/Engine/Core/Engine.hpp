@@ -5,6 +5,7 @@
 #include "Engine/Window/Window.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/Clock.hpp"
 
 //------------------------------------------------------------------------------
 class Engine;   // Forward declaration; simply states that "an Engine class exists"
@@ -14,6 +15,7 @@ class InputSystem; // Forward declaration; simply states that "an InputSystem cl
 class AudioSystem;
 class DevConsole;
 class EventSystem;
+class Clock;
 
 //------------------------------------------------------------------------------
 extern Engine* g_engine; // Advertisement that this global exists, so external people can use it
@@ -45,4 +47,5 @@ public:
     AudioSystem*    m_audio         = nullptr;
     DevConsole*     m_console       = nullptr;
     EventSystem*    m_eventSystem   = nullptr;
+    Clock*          m_systemClock   = nullptr;
 };

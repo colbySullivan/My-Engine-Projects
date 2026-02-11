@@ -19,6 +19,9 @@ Engine::Engine( EngineConfig const& config )
 	if( m_audio )			m_audio->Startup();
 	if( m_console )			m_console->Startup();
 	if( m_eventSystem )		m_eventSystem->Startup();
+
+	//m_systemClock = new Clock();
+	m_systemClock = &Clock::GetSystemClock();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -42,6 +45,8 @@ Engine::~Engine()
 	m_render = nullptr;
 	delete m_window;
 	m_window = nullptr;
+	delete m_systemClock;
+	m_systemClock = nullptr;
 }
 
 void Engine::BeginFrame()
@@ -52,6 +57,7 @@ void Engine::BeginFrame()
 	if( m_audio )			m_audio->BeginFrame();
 	if( m_console )			m_console->BeginFrame();
 	if( m_eventSystem )		m_eventSystem->BeginFrame();
+	m_systemClock->TickSystemClock();
 }
 
 void Engine::EndFrame()
