@@ -24,7 +24,7 @@ App::App()
 	m_appClock = new Clock( *g_engine->m_systemClock );
 
 	g_UICamera = new Camera();
-	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
+	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 }
 //-----------------------------------------------------------------------------------------------
 
