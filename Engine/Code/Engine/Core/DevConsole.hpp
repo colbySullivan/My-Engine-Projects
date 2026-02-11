@@ -2,6 +2,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Core/EventSystem.hpp"
 #include <vector>
 #include <string>
 
@@ -51,6 +52,11 @@ public:
 	static const Rgba8 INFO_MAJOR_COLOR;
 	static const Rgba8 INFO_MINOR_COLOR;
 
+	static bool Event_KeyPressed( EventArgs& args );
+	static bool Event_CharInput( EventArgs& args );
+	static bool Command_Clear( EventArgs& args );
+	static bool Command_Help( EventArgs& args );
+
 protected:
 	void Render_OpenFull( AABB2 const& bounds, BitmapFont& font, float fontAspect = 1.f ) const;
 	// or have the DevConsoleConfig keep a font name
@@ -61,4 +67,5 @@ protected:
 	int                             m_frameNumber = 0;
 private:
 	Texture* m_newFontTexture;
+	static void ClearLines();
 };

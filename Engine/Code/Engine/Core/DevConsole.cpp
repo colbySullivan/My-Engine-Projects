@@ -7,11 +7,14 @@ const Rgba8 DevConsole::WARNING_COLOR = Rgba8(255, 200, 0);
 const Rgba8 DevConsole::INFO_MAJOR_COLOR = Rgba8(100, 200, 255);
 const Rgba8 DevConsole::INFO_MINOR_COLOR = Rgba8(180, 180, 180);
 
+DevConsole* g_DevConsole = nullptr;
+
+
 //-----------------------------------------------------------------------------------------------
 DevConsole::DevConsole( DevConsoleConfig const& config )
 	: m_config( config )
 {
-
+	g_DevConsole = this;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -23,6 +26,9 @@ DevConsole::~DevConsole()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Startup()
 {
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "KeyPressed", DevConsole::Event_KeyPressed );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "CharPressed", DevConsole::Event_CharInput );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "clear", DevConsole::Command_Clear );
 	m_lines.clear();
 	m_mode = m_config.m_consoleMode;
 	for (int i = 0; i < 5 ; i++)
@@ -111,22 +117,76 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 
 	g_engine->m_render->BindTexture( &font.GetTexture() );
 	std::vector<Vertex> textVerts;
-	font.AddVertsForTextInBox2D(textVerts, "[", bounds, m_lines[0].m_cellHeight, INFO_MAJOR_COLOR, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
-	float currentY = bounds.m_mins.y + m_lines[0].m_cellHeight;
-	for (int lineIndex = (int)m_lines.size() - 1; lineIndex >= 0; lineIndex--)
+	if ( m_lines.size() > 0 )
 	{
-		DevConsoleLine const& line = m_lines[lineIndex];
-		AABB2 lineBounds;
-		lineBounds.m_mins = Vec2(bounds.m_mins.x, currentY);
-		lineBounds.m_maxs = Vec2(bounds.m_maxs.x, currentY + line.m_cellHeight);
-		std::string textWithFrameNumber = "[Frame:" + std::to_string(line.m_frameNumber) + " FrameTime: " + std::to_string(line.m_timestamp) + "] " + line.m_text;
-		font.AddVertsForTextInBox2D(textVerts, textWithFrameNumber, lineBounds, line.m_cellHeight, line.m_color, fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
-		currentY += line.m_cellHeight;
-
-		if (currentY > bounds.m_maxs.y)
+		font.AddVertsForTextInBox2D( textVerts, "[", bounds, m_lines[0].m_cellHeight, INFO_MAJOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+		float currentY = bounds.m_mins.y + m_lines[0].m_cellHeight;
+		for ( int lineIndex = ( int )m_lines.size() - 1; lineIndex >= 0; lineIndex-- )
 		{
-			break;
+			DevConsoleLine const& line = m_lines[lineIndex];
+			AABB2 lineBounds;
+			lineBounds.m_mins = Vec2( bounds.m_mins.x, currentY );
+			lineBounds.m_maxs = Vec2( bounds.m_maxs.x, currentY + line.m_cellHeight );
+			std::string textWithFrameNumber = "[Frame:" + std::to_string( line.m_frameNumber ) + " FrameTime: " + std::to_string( line.m_timestamp ) + "] " + line.m_text;
+			font.AddVertsForTextInBox2D( textVerts, textWithFrameNumber, lineBounds, line.m_cellHeight, line.m_color, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+			currentY += line.m_cellHeight;
+
+			if ( currentY > bounds.m_maxs.y )
+			{
+				break;
+			}
 		}
 	}
 	g_engine->m_render->DrawVertexArray(textVerts);
+}
+
+//-----------------------------------------------------------------------------------------------
+bool DevConsole::Event_KeyPressed( EventArgs& args )
+{
+	if ( !g_engine->m_input )
+	{
+		return false;
+	}
+	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
+	g_engine->m_input->HandleKeyPressed( keyCode );
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool DevConsole::Event_CharInput( EventArgs& args )
+{
+	if ( !g_engine->m_input )
+	{
+		return false;
+	}
+	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
+	if ( keyCode == 'g' )
+	{
+		FireEvent("clear");
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+bool DevConsole::Command_Clear( EventArgs& args )
+{
+	ClearLines();
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+void DevConsole::ClearLines()
+{
+	g_DevConsole->m_lines.clear();
+}
+
+//-----------------------------------------------------------------------------------------------
+bool DevConsole::Command_Help( EventArgs& args )
+{
+	if ( !g_engine->m_input )
+	{
+		return false;
+	}
+	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
+	g_engine->m_input->HandleKeyReleased( keyCode );
+	return true;
 }

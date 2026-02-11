@@ -114,6 +114,13 @@ LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMess
 		}
 		return 0;
 	}
+	case WM_CHAR:
+	{
+		EventArgs args;
+		args.SetValue( "KeyCode", Stringf( "%d", ( unsigned char )wParam ) );
+		FireEvent( "CharPressed", args );
+		return 0;
+	}
 	}
 
 	// Send back to Windows any unhandled/unconsumed messages we want other apps to see (e.g. play/pause in music apps, etc.)
