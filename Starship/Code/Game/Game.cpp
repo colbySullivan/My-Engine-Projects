@@ -168,14 +168,6 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_TILDA ) )
 	{
 		g_engine->m_console->ToggleMode( DevConsoleMode::HIDDEN );
-		if ( g_engine->m_console->GetMode() == DevConsoleMode::HIDDEN )
-		{
-			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Closed dev console", 20.f, 0.0f );
-		}
-		else if ( g_engine->m_console->GetMode() == DevConsoleMode::OPEN_FULL )
-		{
-			g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "Opened dev console", 20.f, 0.0f );
-		}
 	}
 
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )

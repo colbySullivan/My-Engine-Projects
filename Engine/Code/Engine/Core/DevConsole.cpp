@@ -4,7 +4,9 @@
 
 const Rgba8 DevConsole::ERROR_COLOR = Rgba8(255, 50, 50);		
 const Rgba8 DevConsole::WARNING_COLOR = Rgba8(255, 200, 0);		
+const Rgba8 DevConsole::COMMAND_COLOR = Rgba8(0, 255, 0);		
 const Rgba8 DevConsole::INFO_MAJOR_COLOR = Rgba8(100, 200, 255);
+const Rgba8 DevConsole::INFO_MAJOR_COLOR_TINT = Rgba8(100, 200, 255, 150);
 const Rgba8 DevConsole::INFO_MINOR_COLOR = Rgba8(180, 180, 180);
 
 DevConsole* g_DevConsole = nullptr;
@@ -32,10 +34,6 @@ void DevConsole::Startup()
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "help", DevConsole::Command_Help );
 	m_lines.clear();
 	m_mode = m_config.m_consoleMode;
-	for ( int i = 0; i < 5; i++ )
-	{
-		AddLine(ERROR_COLOR, "Dev Console Initialized.", 40.f, 0.f);
-	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -59,8 +57,19 @@ void DevConsole::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText )
 {
-	FireEvent( consoleCommandText );
-	AddLine( INFO_MINOR_COLOR, consoleCommandText, 40.f, 0.f );
+	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
+	auto it = std::find( registeredCommands.begin(), registeredCommands.end(), consoleCommandText );
+
+	if ( it != registeredCommands.end() )
+	{
+		AddLine( COMMAND_COLOR, consoleCommandText, 20.f, 0.f );
+		FireEvent( consoleCommandText );
+	}
+	else
+	{
+		AddLine( COMMAND_COLOR, consoleCommandText, 20.f, 0.f );
+		AddLine( ERROR_COLOR, "Unknown command: " + consoleCommandText, 20.f, 0.f);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -107,6 +116,9 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 {
 	int modeNumber = static_cast<int>(m_mode);
 	m_mode = static_cast<DevConsoleMode>((modeNumber + 1) % NUM_CONSOLE_MODES);
+	m_lines.clear();
+	m_inputText.clear();
+	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -119,24 +131,31 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 
 	g_engine->m_render->BindTexture( &font.GetTexture() );
 	std::vector<Vertex> textVerts;
+
+	float cellHeight = 20.f;
 	if ( m_lines.size() > 0 )
 	{
-		font.AddVertsForTextInBox2D( textVerts, "[", bounds, m_lines[0].m_cellHeight, INFO_MAJOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
-		float currentY = bounds.m_mins.y + m_lines[0].m_cellHeight;
-		for ( int lineIndex = ( int )m_lines.size() - 1; lineIndex >= 0; lineIndex-- )
-		{
-			DevConsoleLine const& line = m_lines[lineIndex];
-			AABB2 lineBounds;
-			lineBounds.m_mins = Vec2( bounds.m_mins.x, currentY );
-			lineBounds.m_maxs = Vec2( bounds.m_maxs.x, currentY + line.m_cellHeight );
-			std::string textWithFrameNumber = "[Frame:" + std::to_string( line.m_frameNumber ) + " FrameTime: " + std::to_string( line.m_timestamp ) + "] " + line.m_text;
-			font.AddVertsForTextInBox2D( textVerts, textWithFrameNumber, lineBounds, line.m_cellHeight, line.m_color, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
-			currentY += line.m_cellHeight;
+		cellHeight = m_lines[0].m_cellHeight;
+	}
 
-			if ( currentY > bounds.m_maxs.y )
-			{
-				break;
-			}
+	AABB2 inputBounds;
+	inputBounds.m_mins = bounds.m_mins;
+	inputBounds.m_maxs = Vec2( bounds.m_maxs.x, bounds.m_mins.y + cellHeight );
+	font.AddVertsForTextInBox2D( textVerts, m_inputText, inputBounds, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+
+	float currentY = bounds.m_mins.y + cellHeight;
+	for ( int lineIndex = ( int )m_lines.size() - 1; lineIndex >= 0; lineIndex-- )
+	{
+		DevConsoleLine const& line = m_lines[lineIndex];
+		AABB2 lineBounds;
+		lineBounds.m_mins = Vec2( bounds.m_mins.x, currentY );
+		lineBounds.m_maxs = Vec2( bounds.m_maxs.x, currentY + line.m_cellHeight );
+		font.AddVertsForTextInBox2D( textVerts, line.m_text, lineBounds, line.m_cellHeight, line.m_color, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+		currentY += line.m_cellHeight;
+
+		if ( currentY > bounds.m_maxs.y )
+		{
+			break;
 		}
 	}
 	g_engine->m_render->DrawVertexArray(textVerts);
@@ -161,14 +180,38 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 	{
 		return false;
 	}
-	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
-	if ( keyCode == KEYCODE_ENTER )
+	unsigned char charCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
+	if ( charCode == KEYCODE_ENTER )
 	{
-		int size = g_DevConsole->m_lines.size();
-		//g_DevConsole->m_lines[size].m_text() = "1";
-
-		DevConsoleLine& line = g_DevConsole->m_lines[size];
+		if ( !g_DevConsole->m_inputText.empty() )
+		{
+			g_DevConsole->Execute( g_DevConsole->m_inputText );
+			g_DevConsole->m_inputText.clear();
+		}
+		return true;
 	}
+
+	if ( charCode == KEYCODE_BACKSPACE )
+	{
+		if ( !g_DevConsole->m_inputText.empty() )
+		{
+			g_DevConsole->m_inputText.pop_back();
+		}
+		return true;
+	}
+
+	if ( charCode == KEYCODE_ESC )
+	{
+		g_DevConsole->m_inputText.clear();
+		return true;
+	}
+
+	if ( charCode >= 32 && charCode <= 126 )
+	{
+		g_DevConsole->m_inputText += static_cast< char >( charCode );
+		return true;
+	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -178,14 +221,8 @@ bool DevConsole::Command_Clear( EventArgs& args )
 	{
 		return false;
 	}
-	ClearLines();
-	return true;
-}
-
-//-----------------------------------------------------------------------------------------------
-void DevConsole::ClearLines()
-{
 	g_DevConsole->m_lines.clear();
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -195,7 +232,13 @@ bool DevConsole::Command_Help( EventArgs& args )
 	{
 		return false;
 	}
-	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
-	g_engine->m_input->HandleKeyReleased( keyCode );
+	
+
+	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
+	g_DevConsole->AddLine( INFO_MAJOR_COLOR, "Registered Commands", 20.f, 0.f);
+	for ( const std::string& command : registeredCommands )
+	{
+		g_DevConsole->AddLine( INFO_MAJOR_COLOR_TINT, command, 20.f, 0.f );
+	}
 	return true;
 }

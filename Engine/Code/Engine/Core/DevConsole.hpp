@@ -49,7 +49,9 @@ public:
 
 	static const Rgba8 ERROR_COLOR;        // Color constants like Rgba8::RED; assign these explicit RGB colors!
 	static const Rgba8 WARNING_COLOR;
+	static const Rgba8 COMMAND_COLOR;
 	static const Rgba8 INFO_MAJOR_COLOR;
+	static const Rgba8 INFO_MAJOR_COLOR_TINT;
 	static const Rgba8 INFO_MINOR_COLOR;
 
 	static bool Event_KeyPressed( EventArgs& args );
@@ -65,7 +67,8 @@ protected:
 	DevConsoleMode                  m_mode = DevConsoleMode::HIDDEN; // also OPEN_FULL, and eventually others
 	std::vector<DevConsoleLine>     m_lines;    // #TODO: support a max limited # of lines (e.g. fixed circular buffer)
 	int                             m_frameNumber = 0;
-private:
+	std::string m_inputText;
+	std::vector<std::string> m_commandHistory;
+	int m_historyIndex = -1;
 	Texture* m_newFontTexture;
-	static void ClearLines();
 };
