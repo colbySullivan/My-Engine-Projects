@@ -65,41 +65,28 @@ void DevConsole::EndFrame()
 void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText )
 {
 	std::vector<std::string> spaceSplit = SplitStringOnDelimiter( consoleCommandText, ' ' );
+	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
 	std::vector<std::string> parsedCommands;
 	for ( int i = 0; i < spaceSplit.size(); ++i )
 	{
 		std::vector<std::string> equalSplit = SplitStringOnDelimiter( spaceSplit[i], '=' );
-		for ( int j = 0; j < equalSplit.size(); ++j )
-		{
-			if ( !equalSplit[j].empty() )
-			{
-				parsedCommands.push_back( equalSplit[j] );
-			}
-		}
-	}
-
-	if ( parsedCommands.empty() )
-	{
-		return;
-	}
-
-	std::string commandName = parsedCommands[0];
-	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
-
-	for (int commandIndex = 0; commandIndex < parsedCommands.size() ; commandIndex++)
-	{
-		std::string command = parsedCommands[commandIndex];
+		std::string command = equalSplit[0];
 		auto it = std::find( registeredCommands.begin(), registeredCommands.end(), command );
-
+		EventArgs args = {};
 		if ( it != registeredCommands.end() )
 		{
+			for ( int equalSplitIndex = 1; equalSplitIndex < equalSplit.size(); ++equalSplitIndex )
+			{
+				args.SetValue( Stringf( "%d", ( unsigned char )equalSplitIndex ), equalSplit[equalSplitIndex]);
+			}
+
 			AddLine( COMMAND_COLOR, command, 20.f, 0.f );
-			FireEvent( command );
+			FireEvent( command, args );
 		}
 		else
 		{
 			AddLine( COMMAND_COLOR, command, 20.f, 0.f );
-			AddLine( ERROR_COLOR, "Unknown command: " + command, 20.f, 0.f );
+			AddLine( ERROR_COLOR, "Unknown command: " + command, 20.f, 0.f);
 		}
 
 		if ( m_commandHistory.empty() || m_commandHistory.back() != consoleCommandText )

@@ -30,6 +30,7 @@ Game::Game()
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "clockscale", Game::Event_SetClockScale );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -1270,4 +1271,18 @@ void Game::RenderDeadScreen() const
 	}
 	
 	g_engine->m_render->EndCamera(*m_screenCamera);
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Game::Event_SetClockScale( EventArgs& args )
+{
+	float newScale = args.GetValue("1", -1.f);
+	if ( newScale != -1.f )
+	{
+		g_theApp->m_game->m_gameClock->SetTimeScale( ( double )newScale );
+		return true;
+	}
+	g_theApp->m_game->m_gameClock->SetTimeScale( 1.f );
+	g_engine->m_console->AddLine( Rgba8(255,0,0), "Missing params. Example: clockscale=10", 20.f, 0.f);
+	return true;
 }

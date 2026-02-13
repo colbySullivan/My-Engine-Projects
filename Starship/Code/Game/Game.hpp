@@ -145,6 +145,8 @@ private:
 	void RenderPauseScreenPowerUp(PowerUp currentPowerUp) const;
 	void RenderDeadScreen() const;
 
+	static bool Event_SetClockScale( EventArgs& args );
+
 	App*			m_app = nullptr;
 	Camera*			m_worldCamera = nullptr;
 	Camera*			m_screenCamera = nullptr;
