@@ -318,6 +318,7 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 			g_DevConsole->m_insertionPointPosition--;
 		}
 	}
+	
 	if ( keyCode == KEYCODE_ENTER )
 	{
 		if ( !g_DevConsole->m_inputText.empty() )
@@ -352,6 +353,16 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 		g_DevConsole->m_inputText.clear();
 		g_DevConsole->m_insertionPointPosition = 0;
 		return true;
+	}
+
+	if ( keyCode == KEYCODE_HOME )
+	{
+		g_DevConsole->m_insertionPointPosition = 0;
+	}
+
+	if ( keyCode == KEYCODE_END )
+	{
+		g_DevConsole->m_insertionPointPosition = g_DevConsole->m_inputText.size();
 	}
 
 	return true;
