@@ -106,6 +106,7 @@ void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText
 		}
 	}
 	g_DevConsole->m_historyIndex = -1;
+	m_insertionPointPosition = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -155,6 +156,7 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 	g_DevConsole->m_historyIndex = -1;
 	m_lines.clear();
 	m_inputText.clear();
+	m_insertionPointPosition = 0;
 	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
 }
 
@@ -174,11 +176,13 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 	{
 		cellHeight = m_lines[0].m_cellHeight;
 	}
+	std::string inputWithCursor = m_inputText;
+	inputWithCursor.insert( m_insertionPointPosition, "|" );
 
 	AABB2 inputBounds;
 	inputBounds.m_mins = bounds.m_mins;
 	inputBounds.m_maxs = Vec2( bounds.m_maxs.x, bounds.m_mins.y + cellHeight );
-	font.AddVertsForTextInBox2D( textVerts, m_inputText, inputBounds, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+	font.AddVertsForTextInBox2D( textVerts, inputWithCursor, inputBounds, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
 
 	float currentY = bounds.m_mins.y + cellHeight;
 	for ( int lineIndex = ( int )m_lines.size() - 1; lineIndex >= 0; lineIndex-- )
@@ -221,6 +225,13 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 		return true;
 	}
 
+	if ( keyCode == KEYCODE_TILDA )
+	{
+		g_DevConsole->m_historyIndex = -1;
+		g_DevConsole->ToggleMode( HIDDEN );
+		return true;
+	}
+
 	if ( keyCode == KEYCODE_UPARROW )
 	{
 		if ( !g_DevConsole->m_commandHistory.empty() )
@@ -260,6 +271,23 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 		}
 		return true;
 	}
+
+	if ( keyCode == KEYCODE_RIGHTARROW )
+	{
+		if ( g_DevConsole->m_insertionPointPosition < g_DevConsole->m_inputText.size() )
+		{
+			g_DevConsole->m_insertionPointPosition++;
+		}
+	}
+
+	if ( keyCode == KEYCODE_LEFTARROW )
+	{
+		if ( g_DevConsole->m_insertionPointPosition > 0 )
+		{
+			g_DevConsole->m_insertionPointPosition--;
+		}
+	}
+
 	return true;
 }
 
@@ -283,8 +311,9 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 
 	if ( charCode == KEYCODE_BACKSPACE )
 	{
-		if ( !g_DevConsole->m_inputText.empty() )
+		if ( !g_DevConsole->m_inputText.empty() && g_DevConsole->m_insertionPointPosition > 0)
 		{
+			g_DevConsole->m_insertionPointPosition--;
 			g_DevConsole->m_inputText.pop_back();
 		}
 		return true;
@@ -293,12 +322,14 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 	if ( charCode == KEYCODE_ESC )
 	{
 		g_DevConsole->m_inputText.clear();
+		g_DevConsole->m_insertionPointPosition = 0;
 		return true;
 	}
 
 	if ( charCode >= 32 && charCode <= 126 )
 	{
 		g_DevConsole->m_inputText += static_cast< char >( charCode );
+		g_DevConsole->m_insertionPointPosition++;
 		return true;
 	}
 	return false;
