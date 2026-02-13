@@ -233,6 +233,10 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 		}
 		return false;
 	}
+
+	g_DevConsole->m_insertionPointBlinkTimer->Start();
+	g_DevConsole->m_insertionPointVisible = true;
+
 	if ( keyCode == KEYCODE_ESC )
 	{
 		if (!g_DevConsole->m_inputText.empty() )
@@ -364,6 +368,8 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 
 	if ( charCode >= 32 && charCode <= 126 && charCode != 96 )
 	{
+		g_DevConsole->m_insertionPointBlinkTimer->Start();
+		g_DevConsole->m_insertionPointVisible = true;
 		std::string first_substring = g_DevConsole->m_inputText.substr(0, g_DevConsole->m_insertionPointPosition);
 		int secondHalfSize = g_DevConsole->m_inputText.size() - g_DevConsole->m_insertionPointPosition;
 		std::string second_substring = g_DevConsole->m_inputText.substr(g_DevConsole->m_insertionPointPosition, secondHalfSize);
