@@ -165,11 +165,6 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 		}
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_TILDA ) )
-	{
-		g_engine->m_console->ToggleMode( DevConsoleMode::HIDDEN );
-	}
-
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;

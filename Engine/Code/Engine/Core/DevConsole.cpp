@@ -205,12 +205,17 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 //-----------------------------------------------------------------------------------------------
 bool DevConsole::Event_KeyPressed( EventArgs& args )
 {
-	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN)
-	{
-		return false;
-	}
 	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
 
+	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN)
+	{
+		if ( keyCode == KEYCODE_TILDA )
+		{
+			g_DevConsole->ToggleMode( HIDDEN );
+			return true;
+		}
+		return false;
+	}
 	if ( keyCode == KEYCODE_ESC )
 	{
 		if (!g_DevConsole->m_inputText.empty() )
@@ -326,7 +331,7 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 		return true;
 	}
 
-	if ( charCode >= 32 && charCode <= 126 )
+	if ( charCode >= 32 && charCode <= 126 && charCode != 96 )
 	{
 		g_DevConsole->m_inputText += static_cast< char >( charCode );
 		g_DevConsole->m_insertionPointPosition++;
