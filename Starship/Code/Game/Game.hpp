@@ -5,6 +5,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Core/Clock.hpp"
 
 class App;
 class PlayerShip;
@@ -20,6 +21,7 @@ class XboxController;
 class AudioSystem;
 class Interactable;
 class BitmapFont;
+class Clock;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -49,7 +51,7 @@ public:
 	~Game();
 
 	void Startup();
-	void Update( float deltaSeconds );
+	void Update( );
 	void Render() const;
 	void Shutdown();
 
@@ -105,6 +107,9 @@ public:
 
 	// Textures
 	BitmapFont* g_testFont = nullptr;
+
+	// Clock
+	Clock* m_gameClock = nullptr;
 
 private:
 	void UpdateKeyboardInput( float deltaSeconds, XboxController const& controller );

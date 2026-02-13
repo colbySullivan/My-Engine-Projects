@@ -29,6 +29,7 @@ Game::Game()
 	GenerateStars();
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
+	m_gameClock = new Clock( *g_engine->m_systemClock );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -40,6 +41,8 @@ Game::~Game()
 	g_engine = nullptr;
 	m_worldCamera = nullptr;
 	m_screenCamera = nullptr;
+	delete m_gameClock;
+	m_gameClock = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -60,9 +63,11 @@ void Game::Startup()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::Update(float deltaSeconds)
+void Game::Update()
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
+
+	float deltaSeconds = (float)m_gameClock->GetDeltaSeconds();
 
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( deltaSeconds, controller );
@@ -92,7 +97,11 @@ void Game::Update(float deltaSeconds)
 
 		if ( m_isSlowMo ) // T pressed
 		{
-			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
+			m_gameClock->SetTimeScale( 0.1 );
+		}
+		else
+		{
+			m_gameClock->SetTimeScale( 1.0 );
 		}
 
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
@@ -176,14 +185,12 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{
-		m_isPaused = !m_isPaused; // Switch pause #TODO need to swap this to the new clock
-		g_engine->m_systemClock->TogglePause();
+		m_gameClock->TogglePause();
 		m_powerUpScreen = false;
 	}
 	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
 	{
-		m_isPaused = true;
-		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
+		m_gameClock->StepSingleFrame();
 	}
 	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
 	{

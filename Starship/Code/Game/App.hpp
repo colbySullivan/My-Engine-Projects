@@ -21,7 +21,7 @@ public:
 	~App();
 
 	void RunFrame();
-	void Update(float deltaSeconds);
+	void Update();
 	void Render() const;
 	static bool Event_Quit( EventArgs& args );
 
@@ -31,7 +31,6 @@ public:
 
 public:
 	Game*		m_game = nullptr;
-	Clock*		m_appClock = nullptr;
 
 private:
 	float           m_lastFrameTime = 0.f;

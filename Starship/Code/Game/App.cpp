@@ -21,7 +21,6 @@ App::App()
 	g_app = this;
 	m_game = new Game();
 	m_game->Startup();
-	m_appClock = new Clock( *g_engine->m_systemClock );
 
 	g_UICamera = new Camera();
 	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
@@ -40,22 +39,17 @@ App::~App()
 
 void App::RunFrame()
 {
-	//float timeNow = (float)GetCurrentTimeSeconds();
-	//float deltaSeconds = timeNow - m_lastFrameTime;
-	//m_lastFrameTime = timeNow;
-	//Clock::TickSystemClock();
 	g_engine->BeginFrame();
-	//Update(deltaSeconds);
-	double deltaSeconds = m_appClock->GetDeltaSeconds();
-	Update( (float) deltaSeconds );
+	Update();
 	Render();
 	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------
 
-void App::Update(float deltaSeconds)
+void App::Update()
 {
-	m_game->Update(deltaSeconds);
+
+	m_game->Update();
 	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
 	{
 		delete m_game;

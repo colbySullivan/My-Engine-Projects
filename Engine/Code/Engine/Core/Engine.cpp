@@ -20,7 +20,6 @@ Engine::Engine( EngineConfig const& config )
 	if ( m_input )			m_input->Startup();
 	if ( m_eventSystem )		m_eventSystem->Startup();
 
-	//m_systemClock = new Clock();
 	m_systemClock = &Clock::GetSystemClock();
 }
 
