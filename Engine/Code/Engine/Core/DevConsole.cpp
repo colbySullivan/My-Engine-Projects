@@ -168,6 +168,10 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 	AddVertsForAABB2D(boxVerts, bounds, Rgba8(0, 0, 0, 200));
 	g_engine->m_render->DrawVertexArray(boxVerts);
 
+	//std::vector<Vertex> cursorVerts;
+	//AddVertsForAABB2D( cursorVerts, bounds, Rgba8( 255, 0, 0, 255 ) );
+	//g_engine->m_render->DrawVertexArray( cursorVerts );
+
 	g_engine->m_render->BindTexture( &font.GetTexture() );
 	std::vector<Vertex> textVerts;
 
@@ -176,13 +180,19 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 	{
 		cellHeight = m_lines[0].m_cellHeight;
 	}
-	std::string inputWithCursor = m_inputText;
-	inputWithCursor.insert( m_insertionPointPosition, "|" );
 
 	AABB2 inputBounds;
 	inputBounds.m_mins = bounds.m_mins;
 	inputBounds.m_maxs = Vec2( bounds.m_maxs.x, bounds.m_mins.y + cellHeight );
-	font.AddVertsForTextInBox2D( textVerts, inputWithCursor, inputBounds, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+	font.AddVertsForTextInBox2D( textVerts, m_inputText, inputBounds, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+
+	AABB2 inputBoundsWithCursor;
+	inputBoundsWithCursor.m_mins = Vec2(bounds.m_mins.x - cellHeight * 0.4, bounds.m_mins.y);
+	inputBoundsWithCursor.m_maxs = Vec2( bounds.m_maxs.x, bounds.m_mins.y + cellHeight );
+
+	std::string inputWithCursor( m_inputText.size(), ' ' );
+	inputWithCursor.insert( m_insertionPointPosition, "|" );
+	font.AddVertsForTextInBox2D( textVerts, inputWithCursor, inputBoundsWithCursor, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
 
 	float currentY = bounds.m_mins.y + cellHeight;
 	for ( int lineIndex = ( int )m_lines.size() - 1; lineIndex >= 0; lineIndex-- )
@@ -211,6 +221,7 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 	{
 		if ( keyCode == KEYCODE_TILDA )
 		{
+			g_DevConsole->m_insertionPointPosition = 0;
 			g_DevConsole->ToggleMode( HIDDEN );
 			return true;
 		}
@@ -220,10 +231,12 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 	{
 		if (!g_DevConsole->m_inputText.empty() )
 		{
+			g_DevConsole->m_insertionPointPosition = 0;
 			g_DevConsole->m_inputText.clear();
 		}
 		else
 		{
+			g_DevConsole->m_insertionPointPosition = 0;
 			g_DevConsole->m_historyIndex = -1;
 			g_DevConsole->ToggleMode( HIDDEN );
 		}
