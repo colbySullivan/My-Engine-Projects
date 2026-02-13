@@ -57,19 +57,55 @@ void DevConsole::EndFrame()
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText )
 {
-	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
-	auto it = std::find( registeredCommands.begin(), registeredCommands.end(), consoleCommandText );
+	std::vector<std::string> spaceSplit = SplitStringOnDelimiter( consoleCommandText, ' ' );
+	std::vector<std::string> parsedCommands;
+	for ( int i = 0; i < spaceSplit.size(); ++i )
+	{
+		std::vector<std::string> equalSplit = SplitStringOnDelimiter( spaceSplit[i], '=' );
+		for ( int j = 0; j < equalSplit.size(); ++j )
+		{
+			if ( !equalSplit[j].empty() )
+			{
+				parsedCommands.push_back( equalSplit[j] );
+			}
+		}
+	}
 
-	if ( it != registeredCommands.end() )
+	if ( parsedCommands.empty() )
 	{
-		AddLine( COMMAND_COLOR, consoleCommandText, 20.f, 0.f );
-		FireEvent( consoleCommandText );
+		return;
 	}
-	else
+
+	std::string commandName = parsedCommands[0];
+	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
+
+	for (int commandIndex = 0; commandIndex < parsedCommands.size() ; commandIndex++)
 	{
-		AddLine( COMMAND_COLOR, consoleCommandText, 20.f, 0.f );
-		AddLine( ERROR_COLOR, "Unknown command: " + consoleCommandText, 20.f, 0.f);
+		std::string command = parsedCommands[commandIndex];
+		auto it = std::find( registeredCommands.begin(), registeredCommands.end(), command );
+
+		if ( it != registeredCommands.end() )
+		{
+			AddLine( COMMAND_COLOR, command, 20.f, 0.f );
+			FireEvent( command );
+		}
+		else
+		{
+			AddLine( COMMAND_COLOR, command, 20.f, 0.f );
+			AddLine( ERROR_COLOR, "Unknown command: " + command, 20.f, 0.f );
+		}
+
+		if ( m_commandHistory.empty() || m_commandHistory.back() != consoleCommandText )
+		{
+			m_commandHistory.push_back( consoleCommandText );
+
+			if ( m_commandHistory.size() > m_maxCommandHistory )
+			{
+				m_commandHistory.erase( m_commandHistory.begin() );
+			}
+		}
 	}
+	g_DevConsole->m_historyIndex = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -116,6 +152,7 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 {
 	int modeNumber = static_cast<int>(m_mode);
 	m_mode = static_cast<DevConsoleMode>((modeNumber + 1) % NUM_CONSOLE_MODES);
+	g_DevConsole->m_historyIndex = -1;
 	m_lines.clear();
 	m_inputText.clear();
 	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
@@ -169,7 +206,60 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 		return false;
 	}
 	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
-	g_engine->m_input->HandleKeyPressed( keyCode );
+
+	if ( keyCode == KEYCODE_ESC )
+	{
+		if (!g_DevConsole->m_inputText.empty() )
+		{
+			g_DevConsole->m_inputText.clear();
+		}
+		else
+		{
+			g_DevConsole->m_historyIndex = -1;
+			g_DevConsole->ToggleMode( HIDDEN );
+		}
+		return true;
+	}
+
+	if ( keyCode == KEYCODE_UPARROW )
+	{
+		if ( !g_DevConsole->m_commandHistory.empty() )
+		{
+			if ( g_DevConsole->m_historyIndex == -1 )
+			{
+				g_DevConsole->m_historyIndex = (int)g_DevConsole->m_commandHistory.size() - 1;
+			}
+			else if ( g_DevConsole->m_historyIndex > 0 )
+			{
+				g_DevConsole->m_historyIndex--;
+			}
+
+			if ( g_DevConsole->m_historyIndex >= 0 )
+			{
+				g_DevConsole->m_inputText = g_DevConsole->m_commandHistory[g_DevConsole->m_historyIndex];
+			}
+		}
+		return true;
+	}
+
+	if ( keyCode == KEYCODE_DOWNARROW )
+	{
+		if ( !g_DevConsole->m_commandHistory.empty() && g_DevConsole->m_historyIndex != -1 )
+		{
+			g_DevConsole->m_historyIndex++;
+
+			if ( g_DevConsole->m_historyIndex >= g_DevConsole->m_commandHistory.size() )
+			{
+				g_DevConsole->m_historyIndex = -1;
+				g_DevConsole->m_inputText.clear();
+			}
+			else
+			{
+				g_DevConsole->m_inputText = g_DevConsole->m_commandHistory[g_DevConsole->m_historyIndex];
+			}
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -215,7 +305,7 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool DevConsole::Command_Clear( EventArgs& args )
+bool DevConsole::Command_Clear( [[maybe_unused]] EventArgs& args )
 {
 	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN )
 	{
@@ -226,19 +316,18 @@ bool DevConsole::Command_Clear( EventArgs& args )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool DevConsole::Command_Help( EventArgs& args )
+bool DevConsole::Command_Help( [[maybe_unused]]  EventArgs& args )
 {
 	if ( !g_engine->m_input || g_DevConsole->m_mode == HIDDEN )
 	{
 		return false;
 	}
 	
-
 	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
 	g_DevConsole->AddLine( INFO_MAJOR_COLOR, "Registered Commands", 20.f, 0.f);
-	for ( const std::string& command : registeredCommands )
+	for (int commandIndex = 0; commandIndex < registeredCommands.size() ; commandIndex++)
 	{
-		g_DevConsole->AddLine( INFO_MAJOR_COLOR_TINT, command, 20.f, 0.f );
+		g_DevConsole->AddLine( INFO_MAJOR_COLOR_TINT, registeredCommands[commandIndex], 20.f, 0.f);
 	}
 	return true;
 }
