@@ -175,10 +175,6 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 	AddVertsForAABB2D(boxVerts, bounds, Rgba8(0, 0, 0, 200));
 	g_engine->m_render->DrawVertexArray(boxVerts);
 
-	//std::vector<Vertex> cursorVerts;
-	//AddVertsForAABB2D( cursorVerts, bounds, Rgba8( 255, 0, 0, 255 ) );
-	//g_engine->m_render->DrawVertexArray( cursorVerts );
-
 	g_engine->m_render->BindTexture( &font.GetTexture() );
 	std::vector<Vertex> textVerts;
 
@@ -333,7 +329,16 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 		if ( !g_DevConsole->m_inputText.empty() && g_DevConsole->m_insertionPointPosition > 0 )
 		{
 			g_DevConsole->m_insertionPointPosition--;
-			g_DevConsole->m_inputText.pop_back();
+			g_DevConsole->m_inputText.erase(g_DevConsole->m_insertionPointPosition, 1);
+		}
+		return true;
+	}
+
+	if ( keyCode == KEYCODE_DELETE )
+	{
+		if ( !g_DevConsole->m_inputText.empty() && g_DevConsole->m_insertionPointPosition < g_DevConsole->m_inputText.size() )
+		{
+			g_DevConsole->m_inputText.erase( g_DevConsole->m_insertionPointPosition, 1 );
 		}
 		return true;
 	}
@@ -359,7 +364,10 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 
 	if ( charCode >= 32 && charCode <= 126 && charCode != 96 )
 	{
-		g_DevConsole->m_inputText += static_cast< char >( charCode );
+		std::string first_substring = g_DevConsole->m_inputText.substr(0, g_DevConsole->m_insertionPointPosition);
+		int secondHalfSize = g_DevConsole->m_inputText.size() - g_DevConsole->m_insertionPointPosition;
+		std::string second_substring = g_DevConsole->m_inputText.substr(g_DevConsole->m_insertionPointPosition, secondHalfSize);
+		g_DevConsole->m_inputText = first_substring + static_cast< char >( charCode ) + second_substring;
 		g_DevConsole->m_insertionPointPosition++;
 		return true;
 	}
