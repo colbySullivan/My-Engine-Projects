@@ -253,6 +253,7 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 			if ( g_DevConsole->m_historyIndex >= 0 )
 			{
 				g_DevConsole->m_inputText = g_DevConsole->m_commandHistory[g_DevConsole->m_historyIndex];
+				g_DevConsole->m_insertionPointPosition = g_DevConsole->m_inputText.size();
 			}
 		}
 		return true;
@@ -266,12 +267,14 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 
 			if ( g_DevConsole->m_historyIndex >= g_DevConsole->m_commandHistory.size() )
 			{
+				g_DevConsole->m_insertionPointPosition = 0;
 				g_DevConsole->m_historyIndex = -1;
 				g_DevConsole->m_inputText.clear();
 			}
 			else
 			{
 				g_DevConsole->m_inputText = g_DevConsole->m_commandHistory[g_DevConsole->m_historyIndex];
+				g_DevConsole->m_insertionPointPosition = g_DevConsole->m_inputText.size();
 			}
 		}
 		return true;
@@ -292,6 +295,32 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 			g_DevConsole->m_insertionPointPosition--;
 		}
 	}
+	if ( keyCode == KEYCODE_ENTER )
+	{
+		if ( !g_DevConsole->m_inputText.empty() )
+		{
+			g_DevConsole->Execute( g_DevConsole->m_inputText );
+			g_DevConsole->m_inputText.clear();
+		}
+		return true;
+	}
+
+	if ( keyCode == KEYCODE_BACKSPACE )
+	{
+		if ( !g_DevConsole->m_inputText.empty() && g_DevConsole->m_insertionPointPosition > 0 )
+		{
+			g_DevConsole->m_insertionPointPosition--;
+			g_DevConsole->m_inputText.pop_back();
+		}
+		return true;
+	}
+
+	if ( keyCode == KEYCODE_ESC )
+	{
+		g_DevConsole->m_inputText.clear();
+		g_DevConsole->m_insertionPointPosition = 0;
+		return true;
+	}
 
 	return true;
 }
@@ -304,32 +333,6 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 		return false;
 	}
 	unsigned char charCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
-	if ( charCode == KEYCODE_ENTER )
-	{
-		if ( !g_DevConsole->m_inputText.empty() )
-		{
-			g_DevConsole->Execute( g_DevConsole->m_inputText );
-			g_DevConsole->m_inputText.clear();
-		}
-		return true;
-	}
-
-	if ( charCode == KEYCODE_BACKSPACE )
-	{
-		if ( !g_DevConsole->m_inputText.empty() && g_DevConsole->m_insertionPointPosition > 0)
-		{
-			g_DevConsole->m_insertionPointPosition--;
-			g_DevConsole->m_inputText.pop_back();
-		}
-		return true;
-	}
-
-	if ( charCode == KEYCODE_ESC )
-	{
-		g_DevConsole->m_inputText.clear();
-		g_DevConsole->m_insertionPointPosition = 0;
-		return true;
-	}
 
 	if ( charCode >= 32 && charCode <= 126 && charCode != 96 )
 	{
