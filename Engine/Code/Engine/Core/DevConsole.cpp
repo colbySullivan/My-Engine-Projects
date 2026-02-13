@@ -34,6 +34,8 @@ void DevConsole::Startup()
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "help", DevConsole::Command_Help );
 	m_lines.clear();
 	m_mode = m_config.m_consoleMode;
+	m_insertionPointBlinkTimer = new Timer(0.5f);
+	m_insertionPointBlinkTimer->Start();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -46,6 +48,11 @@ void DevConsole::Shutdown()
 void DevConsole::BeginFrame()
 {
 	m_frameNumber += 1;
+	if ( m_insertionPointBlinkTimer->DecrementPeriodIfElapsed() )
+	{
+		m_insertionPointBlinkTimer->Start();
+		m_insertionPointVisible = !m_insertionPointVisible;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -187,12 +194,15 @@ void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fo
 	font.AddVertsForTextInBox2D( textVerts, m_inputText, inputBounds, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
 
 	AABB2 inputBoundsWithCursor;
-	inputBoundsWithCursor.m_mins = Vec2(bounds.m_mins.x - cellHeight * 0.4, bounds.m_mins.y);
+	inputBoundsWithCursor.m_mins = Vec2(bounds.m_mins.x - cellHeight * 0.4f, bounds.m_mins.y);
 	inputBoundsWithCursor.m_maxs = Vec2( bounds.m_maxs.x, bounds.m_mins.y + cellHeight );
 
 	std::string inputWithCursor( m_inputText.size(), ' ' );
 	inputWithCursor.insert( m_insertionPointPosition, "|" );
-	font.AddVertsForTextInBox2D( textVerts, inputWithCursor, inputBoundsWithCursor, cellHeight, INFO_MINOR_COLOR, fontAspect, Vec2( 0.f, 0.f ), TextBoxMode::SHRINK_TO_FIT );
+	if ( m_insertionPointVisible )
+	{
+		font.AddVertsForTextInBox2D( textVerts, inputWithCursor, inputBoundsWithCursor, cellHeight, Rgba8(255,255,255,255), fontAspect, Vec2(0.f, 0.f), TextBoxMode::SHRINK_TO_FIT);
+	}
 
 	float currentY = bounds.m_mins.y + cellHeight;
 	for ( int lineIndex = ( int )m_lines.size() - 1; lineIndex >= 0; lineIndex-- )

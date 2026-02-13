@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "Engine/Core/Timer.hpp"
 #include <vector>
 #include <string>
 
@@ -73,5 +74,6 @@ protected:
 	int								m_historyIndex = -1;
 	int								m_insertionPointPosition = 0;
 	int								m_insertionPointVisible = true;
+	Timer*							m_insertionPointBlinkTimer;
 	Texture* m_newFontTexture;
 };
