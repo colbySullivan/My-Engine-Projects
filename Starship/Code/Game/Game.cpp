@@ -31,6 +31,7 @@ Game::Game()
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "clockscale", Game::Event_SetClockScale );
+	PrintControlsToConsole();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -1277,7 +1278,7 @@ void Game::RenderDeadScreen() const
 bool Game::Event_SetClockScale( EventArgs& args )
 {
 	float newScale = args.GetValue("1", -1.f);
-	if ( newScale != -1.f )
+	if ( newScale >= 0.f )
 	{
 		g_theApp->m_game->m_gameClock->SetTimeScale( ( double )newScale );
 		return true;
@@ -1285,4 +1286,30 @@ bool Game::Event_SetClockScale( EventArgs& args )
 	g_theApp->m_game->m_gameClock->SetTimeScale( 1.f );
 	g_engine->m_console->AddLine( Rgba8(255,0,0), "Missing params. Example: clockscale=10", 20.f, 0.f);
 	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintControlsToConsole()
+{
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 0 ), "=== CONTROLS ===", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 200, 200, 200 ), "", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 100, 200, 255 ), "Movement:", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  S         - Turn left", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  F         - Turn right", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  E         - Thrust forward", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 200, 200, 200 ), "", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 100, 200, 255 ), "Actions:", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  Space     - Fire bullet", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  N         - Respawn ship", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  I         - Spawn asteroid", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 200, 200, 200 ), "", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 100, 200, 255 ), "Time Control:", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  P         - Pause", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  T (hold)  - Slow motion", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  O         - Single frame step", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 200, 200, 200 ), "", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 100, 200, 255 ), "System:", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  F1        - Toggle debug", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  F8        - Restart", 20.f, 0.f );
+	g_engine->m_console->AddLine( Rgba8( 255, 255, 255 ), "  Q         - Quit", 20.f, 0.f );
 }

@@ -146,6 +146,7 @@ private:
 	void RenderDeadScreen() const;
 
 	static bool Event_SetClockScale( EventArgs& args );
+	void PrintControlsToConsole();
 
 	App*			m_app = nullptr;
 	Camera*			m_worldCamera = nullptr;

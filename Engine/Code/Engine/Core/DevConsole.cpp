@@ -36,6 +36,7 @@ void DevConsole::Startup()
 	m_mode = m_config.m_consoleMode;
 	m_insertionPointBlinkTimer = new Timer(0.5f);
 	m_insertionPointBlinkTimer->Start();
+	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -148,10 +149,9 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 	int modeNumber = static_cast<int>(m_mode);
 	m_mode = static_cast<DevConsoleMode>((modeNumber + 1) % NUM_CONSOLE_MODES);
 	g_DevConsole->m_historyIndex = -1;
-	m_lines.clear();
-	m_inputText.clear();
-	m_insertionPointPosition = 0;
-	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
+	//m_lines.clear();
+	//m_inputText.clear();
+	//m_insertionPointPosition = 0;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 	{
 		if ( keyCode == KEYCODE_TILDA )
 		{
-			g_DevConsole->m_insertionPointPosition = 0;
+			//g_DevConsole->m_insertionPointPosition = 0;
 			g_DevConsole->ToggleMode( HIDDEN );
 			return true;
 		}
