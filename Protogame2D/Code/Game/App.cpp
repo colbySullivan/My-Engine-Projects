@@ -25,11 +25,6 @@ App::App()
 	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y) );
 
 	SubscribeEventCallbackFunction( "Quit", App::Event_Quit );
-	std::vector<std::string> registeredEvents = g_engine->m_eventSystem->GetAllRegisteredCommands();
-	for (int eventIndex = 0; eventIndex < registeredEvents.size() ; ++eventIndex)
-	{
-		g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, registeredEvents.at(eventIndex), 20.f, 0.0f );
-	}
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -44,20 +39,16 @@ App::~App()
 
 void App::RunFrame()
 {
-	//float timeNow = (float)GetCurrentTimeSeconds();
-	//float deltaSeconds = timeNow - m_lastFrameTime;
-	//m_lastFrameTime = timeNow;
-
 	g_engine->BeginFrame();
-	Update(g_engine->m_systemClock->GetDeltaSeconds());
+	Update();
 	Render();
 	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------
 
-void App::Update(float deltaSeconds)
+void App::Update()
 {
-	m_game->Update(deltaSeconds);
+	m_game->Update();
 	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
 	{
 		delete m_game;

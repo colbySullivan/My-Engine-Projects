@@ -20,7 +20,7 @@ public:
 	~App();
 
 	void RunFrame();
-	void Update(float deltaSeconds);
+	void Update();
 	void Render() const;
 	static bool Event_Quit( EventArgs& args );
 

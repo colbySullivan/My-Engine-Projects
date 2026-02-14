@@ -5,6 +5,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Core/Clock.hpp"
 
 class App;
 class Entity;
@@ -13,6 +14,7 @@ class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
 class BitmapFont;
+class Clock;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -42,7 +44,7 @@ public:
 	~Game();
 
 	void Startup();
-	void Update( float deltaSeconds );
+	void Update();
 	void Render() const;
 	void Shutdown();
 
@@ -82,6 +84,9 @@ public:
 
 	// Textures
 	BitmapFont* g_testFont = nullptr;
+
+	// Clock
+	Clock* m_gameClock = nullptr;
 
 
 private:

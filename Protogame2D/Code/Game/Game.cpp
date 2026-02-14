@@ -25,6 +25,7 @@ Game::Game()
 	LoadSounds();
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+	m_gameClock = new Clock( *g_engine->m_systemClock );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -49,9 +50,11 @@ void Game::Startup()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::Update(float deltaSeconds)
+void Game::Update()
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
+
+	float deltaSeconds = ( float )m_gameClock->GetDeltaSeconds();
 
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
@@ -89,6 +92,7 @@ void Game::Update(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
+	//g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen(backgroundColor);
