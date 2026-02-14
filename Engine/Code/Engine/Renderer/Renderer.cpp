@@ -95,6 +95,7 @@ void Renderer::Shutdown()
 void Renderer::BeginFrame()
 {
 	m_deviceContext->OMSetRenderTargets( 1, &m_renderTargetView, nullptr );
+	BindTexture( nullptr );
 }
 
 //------------------------------------------------------------------------------
