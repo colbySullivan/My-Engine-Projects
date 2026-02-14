@@ -263,7 +263,7 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 			if ( g_DevConsole->m_historyIndex >= 0 )
 			{
 				g_DevConsole->m_inputText = g_DevConsole->m_commandHistory[g_DevConsole->m_historyIndex];
-				g_DevConsole->m_insertionPointPosition = g_DevConsole->m_inputText.size();
+				g_DevConsole->m_insertionPointPosition = static_cast<int>(g_DevConsole->m_inputText.size());
 			}
 		}
 		return true;
@@ -284,7 +284,8 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 			else
 			{
 				g_DevConsole->m_inputText = g_DevConsole->m_commandHistory[g_DevConsole->m_historyIndex];
-				g_DevConsole->m_insertionPointPosition = g_DevConsole->m_inputText.size();
+				g_DevConsole->m_insertionPointPosition = static_cast< int >( g_DevConsole->m_inputText.size() );
+
 			}
 		}
 		return true;
@@ -349,7 +350,7 @@ bool DevConsole::Event_KeyPressed( EventArgs& args )
 
 	if ( keyCode == KEYCODE_END )
 	{
-		g_DevConsole->m_insertionPointPosition = g_DevConsole->m_inputText.size();
+		g_DevConsole->m_insertionPointPosition = static_cast< int >( g_DevConsole->m_inputText.size() );
 	}
 
 	return true;
@@ -369,7 +370,7 @@ bool DevConsole::Event_CharInput( EventArgs& args )
 		g_DevConsole->m_insertionPointBlinkTimer->Start();
 		g_DevConsole->m_insertionPointVisible = true;
 		std::string first_substring = g_DevConsole->m_inputText.substr(0, g_DevConsole->m_insertionPointPosition);
-		int secondHalfSize = g_DevConsole->m_inputText.size() - g_DevConsole->m_insertionPointPosition;
+		int secondHalfSize = static_cast< int >(g_DevConsole->m_inputText.size()) - g_DevConsole->m_insertionPointPosition;
 		std::string second_substring = g_DevConsole->m_inputText.substr(g_DevConsole->m_insertionPointPosition, secondHalfSize);
 		g_DevConsole->m_inputText = first_substring + static_cast< char >( charCode ) + second_substring;
 		g_DevConsole->m_insertionPointPosition++;
