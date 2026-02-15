@@ -92,6 +92,7 @@ public:
 	PowerUp				m_currentPowerUp = Num_PowerUps;
 	float				m_powerUpTimer = 0.f;
 	int					m_enemiesKilled = 0;
+	double				m_saveClockScale = 1.0;
 
 
 	// Audio

@@ -97,15 +97,6 @@ void Game::Update()
 			m_powerUpTimer -= deltaSeconds;
 		}
 
-		if ( m_isSlowMo ) // T pressed
-		{
-			m_gameClock->SetTimeScale( 0.1 );
-		}
-		else
-		{
-			m_gameClock->SetTimeScale( 1.0 );
-		}
-
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
 		{
 			UpdateWaves();
@@ -183,7 +174,16 @@ void Game::UpdateKeyboardInput( float deltaSeconds, XboxController const& contro
 		m_lobbyPlaybackID = g_engine->m_audio->StartSound( 6 );
 	}
 
-	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
+	if ( g_engine->m_input->WasKeyJustPressed( 'T' ) )
+	{
+		m_saveClockScale = g_engine->m_systemClock->GetTimeScale();
+		g_engine->m_systemClock->SetTimeScale(m_saveClockScale * 0.1);
+	}
+
+	if ( g_engine->m_input->WasKeyJustReleased( 'T' ) )
+	{
+		g_engine->m_systemClock->SetTimeScale( m_saveClockScale );
+	}
 
 	if (g_engine->m_input->WasKeyJustPressed('P') || controller.WasButtonJustPressed(XboxButtonID::START)) // Pauses game
 	{

@@ -149,9 +149,6 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 	int modeNumber = static_cast<int>(m_mode);
 	m_mode = static_cast<DevConsoleMode>((modeNumber + 1) % NUM_CONSOLE_MODES);
 	g_DevConsole->m_historyIndex = -1;
-	//m_lines.clear();
-	//m_inputText.clear();
-	//m_insertionPointPosition = 0;
 }
 
 //-----------------------------------------------------------------------------------------------
