@@ -10,6 +10,7 @@
  #include "Game/UnitTests_MP1A07.hpp"	// Uncomment this line after adding the MP1-A7 test code
 // #include "Game/UnitTests_Custom.hpp"	// Uncomment this line after adding the custom tests file
 #include "Game/UnitTests_MP2A01.hpp"
+#include "Game/UnitTests_MP2A02.hpp"
 #include "Game/GameCommon.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,7 @@ void RunTestSets()
 	RunTests_MP1A07();	// Uncomment this line after adding the MP1-A7 test code
 	//	RunTests_Custom();	// Uncomment this line after adding the custom tests file
 	RunTests_MP2A01();
+	RunTests_MP2A02();
 }
 
 

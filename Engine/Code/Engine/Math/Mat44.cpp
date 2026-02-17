@@ -164,6 +164,20 @@ Mat44 const Mat44::MakeXRotationDegrees( float rotationDegreesAboutX )
 }
 
 //-----------------------------------------------------------------------------------------------
+Mat44 const Mat44::MakeOrthoProjection( float left, float right, float bottom, float top, float zNear, float zFar ) // #TODO MakeOrthoProjection
+{
+	Mat44 copy;
+	return copy;
+}
+
+//-----------------------------------------------------------------------------------------------
+Mat44 const Mat44::MakePerspectiveProjection( float fovYDegrees, float aspect, float zNear, float zFar ) // #TODO MakePerspectiveProjection
+{
+	Mat44 copy;
+	return copy;
+}
+
+//-----------------------------------------------------------------------------------------------
 Vec2 const Mat44::TransformVectorQuantity2D( Vec2 const& vectorQuantityXY ) const
 {
 	float x = ( m_values[Ix] * vectorQuantityXY.x ) + ( m_values[Jx] * vectorQuantityXY.y );
@@ -287,6 +301,13 @@ Vec4 const Mat44::GetTranslation4D() const
 }
 
 //-----------------------------------------------------------------------------------------------
+Mat44 const Mat44::GetOrthonormalInverse() const // #TODO GetOrthonormalInverse
+{
+	Mat44 copy = *this;
+	return copy;
+}
+
+//-----------------------------------------------------------------------------------------------
 void Mat44::SetTranslation2D( Vec2 const& translationXY )
 {
 	m_values[Tx] = translationXY.x;
@@ -352,6 +373,18 @@ void Mat44::SetIJKT4D( Vec4 const& iBasis4D, Vec4 const& jBasis4D, Vec4 const& k
 	m_values[Iy] = iBasis4D.y;	m_values[Jy] = jBasis4D.y;	m_values[Ky] = kBasis4D.y;	m_values[Ty] = translation4D.y;
 	m_values[Iz] = iBasis4D.z;	m_values[Jz] = jBasis4D.z;	m_values[Kz] = kBasis4D.z;	m_values[Tz] = translation4D.z;
 	m_values[Iw] = iBasis4D.w;	m_values[Jw] = jBasis4D.w;	m_values[Kw] = kBasis4D.w;	m_values[Tw] = translation4D.w;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Mat44::Transpose() // #TODO Transpose
+{
+
+}
+
+//-----------------------------------------------------------------------------------------------
+void Mat44::Orthonormalize_XFwd_YLeft_ZUp() // #TODO Orthonormalize_XFwd_YLeft_ZUp
+{
+
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -175,6 +175,9 @@
     <ClCompile Include="Core\Timer.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Math\AABB3.cpp">
+      <Filter>Math\Boxes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Rgba8.hpp">
@@ -347,6 +350,9 @@
     </ClInclude>
     <ClInclude Include="Core\Timer.hpp">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\AABB3.hpp">
+      <Filter>Math\Boxes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
