@@ -176,8 +176,24 @@ Mat44 const Mat44::MakeOrthoProjection( float left, float right, float bottom, f
 //-----------------------------------------------------------------------------------------------
 Mat44 const Mat44::MakePerspectiveProjection( float fovYDegrees, float aspect, float zNear, float zFar ) // #TODO MakePerspectiveProjection
 {
-	Mat44 copy;
-	return copy;
+	Mat44 perspective;
+
+	float c = CosDegrees( fovYDegrees * 0.5f );
+	float s = SinDegrees( fovYDegrees * 0.5f );
+	float scaleY = c / s;
+	float scaleX = scaleY / aspect;
+
+	float scaleZ = zFar / ( zFar - zNear );
+	float translateZ = ( zNear * zFar ) / ( zNear - zFar );
+
+	perspective.m_values[Ix] = scaleX;
+	perspective.m_values[Jy] = scaleY;
+	perspective.m_values[Kz] = scaleZ;
+	perspective.m_values[Kw] = 1.f;
+	perspective.m_values[Tz] = translateZ;
+	perspective.m_values[Tw] = 0.f;
+
+	return perspective;
 }
 
 //-----------------------------------------------------------------------------------------------
