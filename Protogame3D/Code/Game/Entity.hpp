@@ -1,18 +1,19 @@
 #pragma once
-#include <Engine/Math/Vec2.hpp>
 #include "Game/Game.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
-
+#include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/EulerAngles.hpp"
 
 //-----------------------------------------------------------------------------------------------
 
 class RandomNumberGenerator;
+struct EulerAngles;
 
 //-----------------------------------------------------------------------------------------------
 class Entity
 {
 public:
-	Entity(Game* owner, Vec2 const& startPos);
+	Entity(Game* owner, Vec3 const& startPos);
 	virtual ~Entity();
 
 	virtual void Update(float deltaSeconds) = 0;
@@ -20,20 +21,18 @@ public:
 	virtual void DebugRender() const;
 	virtual void Die();
 
-	bool        IsOffscreen() const;
-	Vec2        GetForwardNormal() const;
-	void		WrapAroundScreen();
-	void		spawnRandomEdge();
-	void		HealthVisual();
-
 	RandomNumberGenerator g_rng;
 
 public:
 	Game*		m_game = nullptr;
-	Vec2        m_position;
-	Vec2        m_velocity;
-	float       m_orientationDegrees = 0.f;  // counter-clockwise from +x/east
-	float       m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise
+	//Vec2        m_position;
+	Vec3        m_position;
+	//Vec2        m_velocity;
+	Vec3        m_velocity;
+	EulerAngles	m_orientation;
+	EulerAngles m_angularVelocity;
+	//float       m_orientationDegrees = 0.f;  // counter-clockwise from +x/east
+	//float       m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise
 	float       m_physicsRadius = 5.f;
 	float       m_cosmeticRadius = 10.f;
 	float		m_debrisSize = 0.5f;
