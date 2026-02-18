@@ -25,15 +25,6 @@ Mat44::Mat44( Vec2 const& iBasis2D, Vec2 const& jBasis2D, Vec2 const& translatio
 }
 
 //-----------------------------------------------------------------------------------------------
-//Mat44::Mat44( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& translation3D )
-//{
-//	m_values[Ix] = iBasis3D.x;	m_values[Jx] = jBasis3D.x;	m_values[Kx] = 0.0f;	m_values[Tx] = translation3D.x;
-//	m_values[Iy] = iBasis3D.y;	m_values[Jy] = jBasis3D.y;	m_values[Ky] = 0.0f;	m_values[Ty] = translation3D.y;
-//	m_values[Iz] = iBasis3D.z;	m_values[Jz] = jBasis3D.z;	m_values[Kz] = 1.0f;	m_values[Tz] = translation3D.z;
-//	m_values[Iw] = 0.0f;		m_values[Jw] = 0.0f;		m_values[Kw] = 0.0f;	m_values[Tw] = 1.0f;
-//}
-
-//-----------------------------------------------------------------------------------------------
 Mat44::Mat44( Vec3 const& iBasis3D, Vec3 const& jBasis3D, Vec3 const& kBasis3D, Vec3 const& translation3D )
 {
 	m_values[Ix] = iBasis3D.x;	m_values[Jx] = jBasis3D.x;	m_values[Kx] = kBasis3D.x;	m_values[Tx] = translation3D.x;
@@ -164,10 +155,22 @@ Mat44 const Mat44::MakeXRotationDegrees( float rotationDegreesAboutX )
 }
 
 //-----------------------------------------------------------------------------------------------
-Mat44 const Mat44::MakeOrthoProjection( float left, float right, float bottom, float top, float zNear, float zFar ) // #TODO MakeOrthoProjection
+Mat44 const Mat44::MakeOrthoProjection( float left, float right, float bottom, float top, float zNear, float zFar )
 {
-	Mat44 copy;
-	return copy;
+	float sOfX = (2 / ( right - left ));
+	float tOfX = (left + right) / (left - right);
+	float sOfY = (2 / ( top - bottom ));
+	float tOfY = ( bottom + top ) / ( bottom - top );
+	float sOfZ = ( 1 / ( zFar - zNear ) );
+	float tOfZ = zNear / ( zNear - zFar );
+
+	Vec3 iBasis3D( sOfX, 0.f, 0.f );
+	Vec3 jBasis3D( 0.f, sOfY, 0.f );
+	Vec3 kBasis3D( 0.f, 0.f, sOfZ );
+	Vec3 translationXYZ( tOfX, tOfY, tOfZ );
+
+	Mat44 result( iBasis3D, jBasis3D, kBasis3D, translationXYZ );
+	return result;
 }
 
 //-----------------------------------------------------------------------------------------------
