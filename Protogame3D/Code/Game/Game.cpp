@@ -22,9 +22,7 @@ Game::Game()
 	m_worldCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y));
 
 	m_roundNumber = 1;
-	LoadSounds();
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
-	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 }
 
@@ -62,11 +60,6 @@ void Game::Update()
 	if ( m_currentGameState != m_nextGameState )
 	{
 		m_currentGameState = m_nextGameState;
-	}
-
-	if (m_soundDurationTimer > 0.f)
-	{
-		m_soundDurationTimer -= deltaSeconds;
 	}
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
@@ -136,7 +129,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
-		m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	}
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate
@@ -156,8 +148,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		{
 			m_nextGameState = GAMESTATE_PLAY;
 			Startup();
-			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
-			//m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 1, false, 0.8f );
 		}
 	}
 
@@ -220,10 +210,6 @@ void Game::UpdateCameras( float deltaSeconds )
 void Game::UpdateAttractMode(float deltaSeconds)
 {
 	m_roundTime = 0.f;
-	if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
-	{
-		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
-	}
 
 	m_shipAnimationTimer += deltaSeconds;
 
@@ -307,47 +293,6 @@ void Game::RenderAttractMode() const
 //-----------------------------------------------------------------------------------------------
 // Utility Functions
 //-----------------------------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------------------------
-void Game::LoadSounds()
-{
-	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/LobbyMusic.mp3" ); //	SoundID = 0
-	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/tragic.mp3");				//	SoundID = 1
-
-}
-
-//-----------------------------------------------------------------------------------------------
-void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float soundDuration)
-{
-	if (soundID == MISSING_SOUND_ID)
-		return;
-
-	if (priority == PRIORITY_LOW)
-	{
-		if (m_shootSound != MISSING_SOUND_ID)
- 			g_engine->m_audio->StopSound(m_shootSound);
-
- 		m_shootSound = soundID;
-		m_shotSoundDurationTimer = soundDuration;
-		return;
-	}
-
-	if (m_currentSound != MISSING_SOUND_ID && m_soundDurationTimer > 0.f)
-	{
-		if (priority < m_currentSoundPriority)
-		{
-			g_engine->m_audio->StopSound(soundID);
-			return;
-		}
-	}
-
-	if (m_currentSound != MISSING_SOUND_ID)
-		g_engine->m_audio->StopSound(m_currentSound);
-
-	m_currentSound = soundID;
-	m_currentSoundPriority = priority;
-	m_soundDurationTimer = soundDuration;
-}
 
 void Game::UpdateBlackHole()
 {

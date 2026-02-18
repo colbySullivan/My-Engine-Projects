@@ -25,16 +25,6 @@ enum Game_State
 	NUM_GAMESTATES
 };
 
-//------------------------------------------------------------------------------
-enum SoundPriority
-{
-	PRIORITY_LOW,			// Shoot
-	PRIORITY_MEDIUM,		// Hit/hurt / Alien death
-	PRIORITY_HIGH,			// Respawn / Final death
-	PRIORITY_MUSIC,			// Background music game and lobby
-	NUM_SOUND_PRIORITIES
-};
-
 //-----------------------------------------------------------------------------------------------
 class Game
 {
@@ -47,8 +37,6 @@ public:
 	void Update();
 	void Render() const;
 	void Shutdown();
-
-	void HandleSound( SoundPlaybackID soundID, SoundPriority priority = PRIORITY_LOW, float soundDuration = 0.2f);
 
 	// Game State
 	bool				m_isQuitting = false;
@@ -70,18 +58,6 @@ public:
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
 
-
-	// Audio
-	SoundPlaybackID		m_endPlaybackID = MISSING_SOUND_ID;
-	SoundPlaybackID		m_lobbyPlaybackID = MISSING_SOUND_ID;
-	SoundPlaybackID		m_gameMusicPlaybackID = MISSING_SOUND_ID;
-	SoundPlaybackID		m_currentSound = MISSING_SOUND_ID;
-	SoundPlaybackID		m_roundChangeSound = MISSING_SOUND_ID;
-	SoundPriority		m_currentSoundPriority = PRIORITY_LOW;
-	float				m_soundDurationTimer = 0.f;
-	SoundPlaybackID		m_shootSound = MISSING_SOUND_ID;
-	float				m_shotSoundDurationTimer = 0.f;
-
 	// Textures
 	BitmapFont* g_testFont = nullptr;
 
@@ -99,7 +75,6 @@ private:
 	void UpdateAttractMode( float deltaSeconds );
 	void RenderAttractMode( ) const;
 
-	void LoadSounds();
 	void UpdateBlackHole();
 
 	App*			m_app = nullptr;
