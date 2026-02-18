@@ -174,7 +174,7 @@ Mat44 const Mat44::MakeOrthoProjection( float left, float right, float bottom, f
 }
 
 //-----------------------------------------------------------------------------------------------
-Mat44 const Mat44::MakePerspectiveProjection( float fovYDegrees, float aspect, float zNear, float zFar ) // #TODO MakePerspectiveProjection
+Mat44 const Mat44::MakePerspectiveProjection( float fovYDegrees, float aspect, float zNear, float zFar )
 {
 	Mat44 perspective;
 
@@ -403,7 +403,23 @@ void Mat44::Transpose() // #TODO Transpose
 //-----------------------------------------------------------------------------------------------
 void Mat44::Orthonormalize_XFwd_YLeft_ZUp() // #TODO Orthonormalize_XFwd_YLeft_ZUp
 {
+	Vec3 originalIBasis = GetIBasis3D();
+	Vec3 normalizedI = originalIBasis.GetNormalized();
 
+	Vec3 originalKBasis = GetKBasis3D();
+	Vec3 kOfI = normalizedI * ( DotProduct3D(originalKBasis, normalizedI) );
+	Vec3 newNormalizedK = originalKBasis - kOfI;
+	newNormalizedK = newNormalizedK.GetNormalized();
+
+	Vec3 originalJBasis = GetJBasis3D();
+	Vec3 jOfI = normalizedI * ( DotProduct3D(originalJBasis, normalizedI) );
+	Vec3 newJ = originalJBasis - jOfI;
+
+	Vec3 jOfK = newNormalizedK * ( DotProduct3D( originalJBasis, newNormalizedK ) );
+	newJ = newJ - jOfK;
+	Vec3 newNormalizedJ = newJ.GetNormalized();
+
+	SetIJK3D(normalizedI, newNormalizedJ, newNormalizedK); 
 }
 
 //-----------------------------------------------------------------------------------------------
