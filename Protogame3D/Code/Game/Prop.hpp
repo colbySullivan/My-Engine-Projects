@@ -8,6 +8,8 @@
 class Prop : public Entity
 {
 public:
+	Prop( Game* owner );
+
 	void Update( float deltaSeconds ) override;
 	void Render() const override;
 

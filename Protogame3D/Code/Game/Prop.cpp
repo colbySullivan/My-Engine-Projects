@@ -1,6 +1,12 @@
 #include "Game/Prop.hpp"
 #include "Engine/Core/Engine.hpp"
 
+//------------------------------------------------------------------------------
+Prop::Prop( Game* owner )
+	: Entity( owner )
+{
+}
+
 //-----------------------------------------------------------------------------------------------
 void Prop::Update( [[maybe_unused]] float deltaSeconds )
 {
