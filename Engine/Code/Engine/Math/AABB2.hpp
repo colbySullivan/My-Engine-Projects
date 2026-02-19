@@ -3,12 +3,12 @@
 #include "Engine/Math/Vec2.hpp"
 
 //------------------------------------------------------------------------------
-
 struct AABB2
 {
 public:
 	Vec2 m_mins;
 	Vec2 m_maxs;
+	static const AABB2 ZERO_TO_ONE;
 
 public:
 	// Construction/Destruction

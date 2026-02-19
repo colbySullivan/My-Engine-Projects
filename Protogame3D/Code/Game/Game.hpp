@@ -52,13 +52,11 @@ public:
 	int					m_roundNumber = 1;
 	float				m_alphaTimer = 3;
 	float				m_roundEndTimer = 3;
-	float				m_camShakeAmount;
 	float				m_shipAnimationTimer = 0.0f;
 	Game_State			m_currentGameState = GAMESTATE_ATTRACT;
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
-	float 				m_roundTime;	
+	float 				m_roundTime = 0.f;
 	float				m_bestRoundTime = 0.f;
-	float				m_spawnBuffer;
 
 	// Textures
 	BitmapFont* g_testFont = nullptr;
@@ -68,15 +66,13 @@ public:
 
 	// Player and props
 	Player* m_player = nullptr;
-	Prop*	m_box = nullptr;
-
+	Prop*	m_props[MAX_PROPS] = {};
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
 
 	void RenderUI() const;
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
-	void UpdateCameras( float deltaSeconds );
 
 	void UpdateAttractMode( float deltaSeconds );
 	void RenderAttractMode( ) const;

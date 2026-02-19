@@ -1,6 +1,9 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
+const AABB2 AABB2::ZERO_TO_ONE = AABB2( Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ) );
+
+//------------------------------------------------------------------------------
 AABB2::AABB2(AABB2 const& copyFrom)
 	: m_mins(copyFrom.m_mins)
 	, m_maxs(copyFrom.m_maxs)

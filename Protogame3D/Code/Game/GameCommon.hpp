@@ -71,6 +71,8 @@ constexpr float POWERUP_DELAY = 1.0f;
 
 constexpr float	ROUND_BUFFER = 12.f;
 
+constexpr int MAX_PROPS = 100;
+
 //------------------------------------------------------------------------------
 enum PowerUp
 {

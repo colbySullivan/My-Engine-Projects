@@ -21,7 +21,7 @@ Game::Game()
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
 
-	m_worldCamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y));
+	m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
 
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
@@ -48,6 +48,50 @@ void Game::Startup()
 	m_isPaused = false;
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
+	m_props[0] = new Prop( this );
+
+	// #TODO : This is just temporary code to test rendering a cube move this
+	AddVertsForQuad3D( m_props[0]->m_vertexes,
+		Vec3( 0.5f, -0.5f, -0.5f ),
+		Vec3( 0.5f, 0.5f, -0.5f ),
+		Vec3( 0.5f, 0.5f, 0.5f ),
+		Vec3( 0.5f, -0.5f, 0.5f ),
+		Rgba8( 255, 0, 0 ) );
+
+	AddVertsForQuad3D( m_props[0]->m_vertexes,
+		Vec3( -0.5f, 0.5f, -0.5f ),
+		Vec3( -0.5f, -0.5f, -0.5f ),
+		Vec3( -0.5f, -0.5f, 0.5f ),
+		Vec3( -0.5f, 0.5f, 0.5f ),
+		Rgba8( 0, 255, 255 ) );
+
+	AddVertsForQuad3D( m_props[0]->m_vertexes,
+		Vec3( 0.5f, 0.5f, -0.5f ),
+		Vec3( -0.5f, 0.5f, -0.5f ),
+		Vec3( -0.5f, 0.5f, 0.5f ),
+		Vec3( 0.5f, 0.5f, 0.5f ),
+		Rgba8( 0, 255, 0 ) );
+
+	AddVertsForQuad3D( m_props[0]->m_vertexes,
+		Vec3( -0.5f, -0.5f, -0.5f ),
+		Vec3( 0.5f, -0.5f, -0.5f ),
+		Vec3( 0.5f, -0.5f, 0.5f ),
+		Vec3( -0.5f, -0.5f, 0.5f ),
+		Rgba8( 255, 0, 255 ) );
+
+	AddVertsForQuad3D( m_props[0]->m_vertexes,
+		Vec3( 0.5f, 0.5f, -0.5f ),
+		Vec3( -0.5f, 0.5f, -0.5f ),
+		Vec3( -0.5f, -0.5f, -0.5f ),
+		Vec3( 0.5f, -0.5f, -0.5f ),
+		Rgba8( 255, 255, 0 ) );
+
+	AddVertsForQuad3D( m_props[0]->m_vertexes,
+		Vec3( -0.5f, 0.5f, 0.5f ),
+		Vec3( 0.5f, 0.5f, 0.5f ),
+		Vec3( 0.5f, -0.5f, 0.5f ),
+		Vec3( -0.5f, -0.5f, 0.5f ),
+		Rgba8( 0, 0, 255 ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -57,7 +101,6 @@ void Game::Update()
 
 	float deltaSeconds = ( float )m_gameClock->GetDeltaSeconds();
 
-	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
 
 	if ( m_currentGameState != m_nextGameState )
@@ -90,11 +133,11 @@ void Game::Render() const
 {
 	//g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BeginCamera( *m_worldCamera );
-	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
-	g_engine->m_render->ClearScreen(backgroundColor);
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
+		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
+		g_engine->m_render->ClearScreen( backgroundColor );
 		RenderAttractMode();
 	}
 
@@ -105,6 +148,16 @@ void Game::Render() const
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
+		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
+		g_engine->m_render->ClearScreen( backgroundColor );
+		for ( int propIndex = 0; propIndex < MAX_PROPS; ++propIndex )
+		{
+			if ( m_props[propIndex] != nullptr )
+			{
+				m_props[propIndex]->Render();
+			}
+		}
+		g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderUI();
 	}
 }
@@ -187,24 +240,6 @@ void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) c
 	std::vector<Vertex> textVerts;
 	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
-}
-
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras( float deltaSeconds )
-{
-	// Random camera shake
-	float shakeHorizontal = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
-	float shakeVertical = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
-	
-	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X + shakeHorizontal, WORLD_SIZE_Y + shakeVertical ) );
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
-
-	if ( m_camShakeAmount > 0 )
-	{
-		m_camShakeAmount -= deltaSeconds;
-	}
-
 }
 
 //-----------------------------------------------------------------------------------------------
