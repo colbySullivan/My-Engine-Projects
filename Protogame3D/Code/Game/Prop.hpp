@@ -8,8 +8,8 @@
 class Prop : public Entity
 {
 public:
-	virtual void Update( float deltaSeconds ) override;
-	virtual void Render() const override;
+	void Update( float deltaSeconds ) override;
+	void Render() const override;
 
 	std::vector<Vertex> m_vertexes;
 	Rgba8				m_color = Rgba8( 255, 255, 255 );

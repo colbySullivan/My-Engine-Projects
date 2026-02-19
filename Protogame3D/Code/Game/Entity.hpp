@@ -1,47 +1,24 @@
 #pragma once
 #include "Game/Game.hpp"
-#include "Engine/Math/RandomNumberGenerator.hpp"
-#include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/EulerAngles.hpp"
 
 //-----------------------------------------------------------------------------------------------
 
-class RandomNumberGenerator;
 struct EulerAngles;
 
 //-----------------------------------------------------------------------------------------------
 class Entity
 {
 public:
-	Entity(Game* owner, Vec3 const& startPos);
+	Entity(Game* owner);
 	virtual ~Entity();
 
-	virtual void Update(float deltaSeconds) = 0;
+	virtual void Update( float deltaSeconds ) = 0;
 	virtual void Render() const = 0;
-	virtual void DebugRender() const;
-	virtual void Die();
-
-	RandomNumberGenerator g_rng;
-
 public:
 	Game*		m_game = nullptr;
-	//Vec2        m_position;
 	Vec3        m_position;
-	//Vec2        m_velocity;
 	Vec3        m_velocity;
 	EulerAngles	m_orientation;
 	EulerAngles m_angularVelocity;
-	//float       m_orientationDegrees = 0.f;  // counter-clockwise from +x/east
-	//float       m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise
-	float       m_physicsRadius = 5.f;
-	float       m_cosmeticRadius = 10.f;
-	float		m_debrisSize = 0.5f;
-	int         m_health = 1;
-	int			m_startingHealth = 1;
-	int			m_debrisAmount = 3;
-	bool        m_isDead = false;  // gameplay idea
-	bool        m_isGarbage = false;  // code idea
-	Rgba8		m_entityColor = Rgba8(200, 200, 200, 127);
-	Rgba8		m_startingEntityColor = Rgba8(200, 200, 200, 127);
-
 };

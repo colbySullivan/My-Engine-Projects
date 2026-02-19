@@ -15,6 +15,8 @@ class XboxController;
 class AudioSystem;
 class BitmapFont;
 class Clock;
+class Player;
+class Prop;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -63,6 +65,10 @@ public:
 
 	// Clock
 	Clock* m_gameClock = nullptr;
+
+	// Player and props
+	Player* m_player = nullptr;
+	Prop*	m_box = nullptr;
 
 
 private:

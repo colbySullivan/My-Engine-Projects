@@ -9,6 +9,8 @@
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
+#include "Game/Player.hpp"
+#include "Game/Prop.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
 RandomNumberGenerator g_rng;
@@ -45,6 +47,7 @@ void Game::Startup()
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_isPaused = false;
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
+	//m_player = new Player(this);
 }
 
 //-----------------------------------------------------------------------------------------------
