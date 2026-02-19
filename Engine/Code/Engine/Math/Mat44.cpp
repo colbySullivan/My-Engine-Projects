@@ -322,8 +322,10 @@ Vec4 const Mat44::GetTranslation4D() const
 //-----------------------------------------------------------------------------------------------
 Mat44 const Mat44::GetOrthonormalInverse() const // #TODO GetOrthonormalInverse
 {
-	Mat44 copy = *this;
-	return copy;
+	Mat44 orthonormalInverse = *this;
+	orthonormalInverse.Orthonormalize_XFwd_YLeft_ZUp();
+	orthonormalInverse.Transpose();
+	return orthonormalInverse;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -395,25 +397,30 @@ void Mat44::SetIJKT4D( Vec4 const& iBasis4D, Vec4 const& jBasis4D, Vec4 const& k
 }
 
 //-----------------------------------------------------------------------------------------------
-void Mat44::Transpose() // #TODO Transpose
+void Mat44::Transpose()
 {
+	Mat44 copy = *this;
 
+	m_values[Ix] = copy.m_values[Ix];	m_values[Jx] = copy.m_values[Iy];	m_values[Kx] = copy.m_values[Iz];	m_values[Tx] = copy.m_values[Iw];
+	m_values[Iy] = copy.m_values[Jx];	m_values[Jy] = copy.m_values[Jy];	m_values[Ky] = copy.m_values[Jz];	m_values[Ty] = copy.m_values[Jw];
+	m_values[Iz] = copy.m_values[Kx];	m_values[Jz] = copy.m_values[Ky];	m_values[Kz] = copy.m_values[Kz];	m_values[Tz] = copy.m_values[Kw];
+	m_values[Iw] = copy.m_values[Tx];	m_values[Jw] = copy.m_values[Ty];	m_values[Kw] = copy.m_values[Tz];	m_values[Tw] = copy.m_values[Tw];
 }
 
 //-----------------------------------------------------------------------------------------------
-void Mat44::Orthonormalize_XFwd_YLeft_ZUp() // #TODO Orthonormalize_XFwd_YLeft_ZUp
+void Mat44::Orthonormalize_XFwd_YLeft_ZUp()
 {
 	Vec3 originalIBasis = GetIBasis3D();
 	Vec3 normalizedI = originalIBasis.GetNormalized();
 
 	Vec3 originalKBasis = GetKBasis3D();
-	Vec3 kOfI = normalizedI * ( DotProduct3D(originalKBasis, normalizedI) );
-	Vec3 newNormalizedK = originalKBasis - kOfI;
+	Vec3 kProjectedOnI = normalizedI * ( DotProduct3D(originalKBasis, normalizedI) );
+	Vec3 newNormalizedK = originalKBasis - kProjectedOnI;
 	newNormalizedK = newNormalizedK.GetNormalized();
 
 	Vec3 originalJBasis = GetJBasis3D();
-	Vec3 jOfI = normalizedI * ( DotProduct3D(originalJBasis, normalizedI) );
-	Vec3 newJ = originalJBasis - jOfI;
+	Vec3 jProjectedOnI = normalizedI * ( DotProduct3D(originalJBasis, normalizedI) );
+	Vec3 newJ = originalJBasis - jProjectedOnI;
 
 	Vec3 jOfK = newNormalizedK * ( DotProduct3D( originalJBasis, newNormalizedK ) );
 	newJ = newJ - jOfK;
