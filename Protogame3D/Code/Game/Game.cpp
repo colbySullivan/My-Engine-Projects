@@ -24,6 +24,9 @@ Game::Game()
 	float aspect = ( ( float )g_engine->m_window->GetClientDimensions().x / ( float )g_engine->m_window->GetClientDimensions().y );
 
 	m_worldCamera->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
+	Mat44 cameraToRenderMatrix;
+	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, -1.f, 0.f ), Vec3( 0.f, 0.f, 1.f ), Vec3( 1.f, 0.f, 0.f ) );
+	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
 
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );

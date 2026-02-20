@@ -37,12 +37,16 @@ Mat44 Camera::GetWorldToCameraTransform() const
 	return GetCameraToWorldTransform().GetOrthonormalInverse();
 }
 
+//-----------------------------------------------------------------------------------------------
+void Camera::SetCameraToRenderTransform( const Mat44& m )
+{
+	m_cameraToRenderTransform = m;
+}
+
 //------------------------------------------------------------------------------
 Mat44 Camera::GetCameraToRenderTransform() const
 {
-	Mat44 cameraToRender;
-	cameraToRender.SetIJK3D( Vec3( 0.f, -1.f, 0.f ), Vec3( 0.f, 0.f, 1.f ), Vec3( 1.f, 0.f, 0.f ) );
-	return cameraToRender;
+	return m_cameraToRenderTransform; 
 }
 
 //------------------------------------------------------------------------------
