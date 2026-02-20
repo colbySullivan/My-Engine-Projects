@@ -323,7 +323,6 @@ Vec4 const Mat44::GetTranslation4D() const
 Mat44 const Mat44::GetOrthonormalInverse() const
 {
 	Mat44 orthonormalInverse = *this;
-	orthonormalInverse.Orthonormalize_XFwd_YLeft_ZUp();
 	Vec3 translation = orthonormalInverse.GetTranslation3D();
 	orthonormalInverse.SetTranslation3D(Vec3(0.f, 0.f, 0.f));
 	orthonormalInverse.Transpose();
