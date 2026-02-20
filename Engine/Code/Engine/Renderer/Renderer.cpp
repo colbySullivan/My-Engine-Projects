@@ -75,7 +75,7 @@ void Renderer::Startup()
 	CreateDeviceAndSwapChain();
 	CreateAndBindShaders();
 	CreateBuffers();
-	CreateNewRasterizerState();
+	CreateNewRasterizerStates();
 	CreateBlendAndSamplerStates();
 }
 
@@ -399,6 +399,11 @@ void Renderer::DeleteReleaseAll()
 	{
 		DX_SAFE_RELEASE( m_samplerStates[i] );
 	}
+	
+	for ( int i = 0; i < ( int )RasterizerMode::COUNT; ++i )
+	{
+		DX_SAFE_RELEASE( m_rasterizerStates[i] );
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -470,23 +475,30 @@ void Renderer::CreateDeviceAndSwapChain()
 }
 
 //------------------------------------------------------------------------------
-void Renderer::CreateNewRasterizerState()
+void Renderer::CreateNewRasterizerStates()
 {
-	D3D11_RASTERIZER_DESC rasterizerDesc = { };
-	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_NONE;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.AntialiasedLineEnable = true;
-
-	HRESULT hr;
-	hr = m_device->CreateRasterizerState( &rasterizerDesc, &m_rasterizerState );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not create rasterizer state." );
-	}
-	m_deviceContext->RSSetState( m_rasterizerState );
+	CreateRasterizerState( D3D11_FILL_SOLID, D3D11_CULL_NONE, RasterizerMode::SOLID_CULL_NONE );
+	CreateRasterizerState( D3D11_FILL_SOLID, D3D11_CULL_BACK, RasterizerMode::SOLID_CULL_BACK );
+	CreateRasterizerState( D3D11_FILL_WIREFRAME, D3D11_CULL_NONE, RasterizerMode::WIREFRAME_CULL_NONE );
+	CreateRasterizerState( D3D11_FILL_WIREFRAME, D3D11_CULL_BACK, RasterizerMode::WIREFRAME_CULL_BACK );
 }
 
+void Renderer::CreateRasterizerState(D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode, RasterizerMode mode )
+{
+	D3D11_RASTERIZER_DESC rasterizerDesc = { };
+	rasterizerDesc.FillMode = fillMode;
+	rasterizerDesc.CullMode = cullMode;
+	rasterizerDesc.FrontCounterClockwise = true;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.AntialiasedLineEnable = true;
+	HRESULT hr;
+	hr = m_device->CreateRasterizerState( &rasterizerDesc,
+		&m_rasterizerStates[( int )mode] );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "CreateRasterizerState for RasterizerMode" );
+	}
+}
 //-----------------------------------------------------------------------------------------------
 Texture* Renderer::CreateTextureFromFile( const char* imageFilePath )
 {
@@ -673,4 +685,10 @@ void Renderer::SetSamplerMode( SamplerMode mode )
 		m_samplerState = m_samplerStates[( int )mode];
 		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Renderer::SetRasterizerMode( RasterizerMode mode )
+{
+	m_deviceContext->RSSetState( m_rasterizerStates[( int )mode] );
 }

@@ -49,6 +49,16 @@ enum class SamplerMode
 	COUNT
 };
 
+//-----------------------------------------------------------------------------------------------
+enum class RasterizerMode
+{
+	SOLID_CULL_NONE,
+	SOLID_CULL_BACK,
+	WIREFRAME_CULL_NONE,
+	WIREFRAME_CULL_BACK,
+	COUNT
+};
+
 //------------------------------------------------------------------------------
 #define DX_SAFE_RELEASE(dxObject)\
 {\
@@ -78,6 +88,7 @@ public:
 
 	void SetBlendMode( BlendMode mode );
 	void SetSamplerMode( SamplerMode mode );
+	void SetRasterizerMode( RasterizerMode mode );
 	Texture* CreateTextureFromImage( const Image& image );
 
 	RenderConfig m_config;
@@ -128,6 +139,10 @@ private:
 	SamplerMode m_desiredSamplerMode = SamplerMode::POINT_CLAMP;
 	ID3D11SamplerState* m_samplerStates[( int )( SamplerMode::COUNT )] = {};
 
+	// Rasterizer States
+	ID3D11RasterizerState* m_rasterizerStates[( int )( RasterizerMode::COUNT )] = {};
+	void CreateRasterizerState( D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode, RasterizerMode mode );
+
 	void CreateSamplerMode(  SamplerMode mode, D3D11_FILTER param1, D3D11_TEXTURE_ADDRESS_MODE param2, D3D11_TEXTURE_ADDRESS_MODE param3, D3D11_TEXTURE_ADDRESS_MODE param4 );
 protected:
 	ID3D11RasterizerState* m_rasterizerState = nullptr;
@@ -146,7 +161,7 @@ protected:
 
 	ConstantBuffer* m_cameraCBO = nullptr;
 private:
-	void CreateNewRasterizerState();
+	void CreateNewRasterizerStates();
 	void CreateBlendAndSamplerStates();
 	void CreateBuffers();
 	void CreateAndBindShaders();

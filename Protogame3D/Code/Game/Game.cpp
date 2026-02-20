@@ -27,7 +27,7 @@ Game::Game()
 	Mat44 cameraToRenderMatrix;
 	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
 	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
-
+	g_engine->m_render->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
@@ -54,6 +54,7 @@ void Game::Startup()
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
 	m_props[0] = new Prop( this );
+	m_worldCamera->SetPosition( Vec3( -2.f, 0.f, 0.f ) );
 
 	// #TODO : This is just temporary code to test rendering a cube move this
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
