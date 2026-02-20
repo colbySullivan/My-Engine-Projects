@@ -18,8 +18,8 @@ public:
 	void SetOrthographicView( Vec2 const& bottomLeft, Vec2 const& topRight, float near = 0.0f, float far = 1.0f );
 	void SetPerspectiveView( float aspect, float fov, float near, float far );
 
-	//void SetPositionAndOrientation( const Vec3& position, const EulerAngles& orientation );
-	//void SetPosition( const Vec3& position );
+	void SetPositionAndOrientation( const Vec3& position, const EulerAngles& orientation );
+	void SetPosition( const Vec3& position );
 	Vec3 GetPosition() const;
 	//void SetOrientation( const EulerAngles& orientation );
 	//EulerAngles GetOrientation() const;

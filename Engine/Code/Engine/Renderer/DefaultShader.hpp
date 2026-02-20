@@ -22,8 +22,10 @@ const char* defaultShaderSource = R"(
 	};
 	v2p_t VertexMain(vs_input_t input)
 	{
-		float4 modelSpacePosition = float4(input.modelSpacePosition, 1);
-		float4 clipSpacePosition = mul(RenderToClipTransform, modelSpacePosition);
+		float4 modelSpacePosition  = float4(input.modelSpacePosition, 1);
+		float4 cameraSpacePosition = mul( WorldToCameraTransform,  modelSpacePosition  );
+		float4 renderSpacePosition = mul( CameraToRenderTransform, cameraSpacePosition );
+		float4 clipSpacePosition   = mul( RenderToClipTransform,   renderSpacePosition );
 
 		v2p_t v2p;
 		v2p.clipSpacePosition = clipSpacePosition;

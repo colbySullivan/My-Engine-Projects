@@ -25,7 +25,7 @@ Game::Game()
 
 	m_worldCamera->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
 	Mat44 cameraToRenderMatrix;
-	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, -1.f, 0.f ), Vec3( 0.f, 0.f, 1.f ), Vec3( 1.f, 0.f, 0.f ) );
+	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
 	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
 
 	m_roundNumber = 1;

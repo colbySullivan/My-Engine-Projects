@@ -21,6 +21,19 @@ void Camera::SetPerspectiveView( float aspect, float fov, float near, float far 
 }
 
 //-----------------------------------------------------------------------------------------------
+void Camera::SetPositionAndOrientation( const Vec3& position, const EulerAngles& orientation )
+{
+	m_position = position;
+	m_orientation = orientation;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Camera::SetPosition( const Vec3& position )
+{
+	m_position = position;
+}
+
+//-----------------------------------------------------------------------------------------------
 Mat44 Camera::GetCameraToWorldTransform() const
 {
 	Mat44 cameraToWorld;
