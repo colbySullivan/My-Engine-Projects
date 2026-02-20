@@ -3,6 +3,7 @@
 //-----------------------------------------------------------------------------------------------
 void Camera::SetOrthographicView( Vec2 const& bottomLeft, Vec2 const& topRight, float near /*= 0.0f*/, float far /*= 1.0f */ )
 {
+	m_mode = eMode_Orthographic;
 	m_orthographicBottomLeft = bottomLeft;
 	m_orthographicTopRight = topRight;
 	m_orthographicNear = near;
@@ -12,6 +13,7 @@ void Camera::SetOrthographicView( Vec2 const& bottomLeft, Vec2 const& topRight, 
 //-----------------------------------------------------------------------------------------------
 void Camera::SetPerspectiveView( float aspect, float fov, float near, float far )
 {
+	m_mode = eMode_Perspective;
 	m_perspectiveAspect = aspect;
 	m_perspectiveFOV = fov;
 	m_perspectiveNear = near;
@@ -35,6 +37,32 @@ Mat44 Camera::GetWorldToCameraTransform() const
 	return GetCameraToWorldTransform().GetOrthonormalInverse();
 }
 
+//------------------------------------------------------------------------------
+Mat44 Camera::GetCameraToRenderTransform() const
+{
+	Mat44 cameraToRender;
+	cameraToRender.SetIJK3D( Vec3( 0.f, -1.f, 0.f ), Vec3( 0.f, 0.f, 1.f ), Vec3( 1.f, 0.f, 0.f ) );
+	return cameraToRender;
+}
+
+//------------------------------------------------------------------------------
+Mat44 Camera::GetRenderToClipTransform() const
+{
+	return GetProjectionMatrix();
+}
+
+//------------------------------------------------------------------------------
+Vec2 Camera::GetOrthographicBottomLeft() const
+{
+	return m_orthographicBottomLeft;
+}
+
+//------------------------------------------------------------------------------
+Vec2 Camera::GetOrthographicTopRight() const
+{
+	return m_orthographicTopRight;
+}
+
 //-----------------------------------------------------------------------------------------------
 Mat44 Camera::GetOrthographicMatrix() const
 {
@@ -53,10 +81,6 @@ Mat44 Camera::GetProjectionMatrix() const
 	if ( m_mode == eMode_Orthographic )
 	{
 		return GetOrthographicMatrix();
-	}
-	if ( m_mode == eMode_Perspective )
-	{
-		return GetPerspectiveMatrix();
 	}
 	return GetPerspectiveMatrix();
 }

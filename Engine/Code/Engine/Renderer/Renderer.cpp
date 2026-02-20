@@ -43,14 +43,9 @@ HGLRC g_openGLRenderingContext = nullptr;
 //------------------------------------------------------------------------------
 struct CameraConstants
 {
-	float OrthoMinX;
-	float OrthoMinY;
-	float OrthoMinZ;
-	float OrthoMaxX;
-	float OrthoMaxY;
-	float OrthoMaxZ;
-	float pad0;
-	float pad1;
+	Mat44 WorldToCameraTransform;
+	Mat44 CameraToRenderTransform;
+	Mat44 RenderToClipTransform;
 };
 
 static const int k_cameraConstantsSlot = 2;
@@ -126,12 +121,9 @@ void Renderer::BeginCamera( Camera const& camera )
 	m_deviceContext->RSSetViewports( 1, &viewport );
 
 	CameraConstants camConstants = { };
-	camConstants.OrthoMinX = camera.GetOrthoBottomLeft().x;
-	camConstants.OrthoMinY = camera.GetOrthoBottomLeft().y;
-	camConstants.OrthoMaxX = camera.GetOrthoTopRight().x;
-	camConstants.OrthoMaxY = camera.GetOrthoTopRight().y;
-	camConstants.OrthoMinZ = viewport.MaxDepth;
-	camConstants.OrthoMaxZ = viewport.MaxDepth;
+	camConstants.WorldToCameraTransform = camera.GetWorldToCameraTransform();
+	camConstants.CameraToRenderTransform = camera.GetCameraToRenderTransform();
+	camConstants.RenderToClipTransform = camera.GetRenderToClipTransform();
 
 	CopyCPUToGPU( &camConstants, sizeof( camConstants ), m_cameraCBO );
 	BindConstantBuffer( k_cameraConstantsSlot, m_cameraCBO );

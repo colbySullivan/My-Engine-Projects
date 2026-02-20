@@ -21,7 +21,9 @@ Game::Game()
 	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
 
-	m_worldCamera->SetOrthoView( Vec2( -1.f, -1.f ), Vec2( 1.f, 1.f ) );
+	float aspect = ( ( float )g_engine->m_window->GetClientDimensions().x / ( float )g_engine->m_window->GetClientDimensions().y );
+
+	m_worldCamera->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
 
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
