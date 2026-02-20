@@ -227,6 +227,17 @@ bool Renderer::CompileShaderToByteCode(
 		&shaderBlob, &errorBlob
 	);
 
+	if ( FAILED( hr ) )
+	{
+		if ( errorBlob )
+		{
+			errorBlob->Release();
+			errorBlob = nullptr;
+
+		}
+		ERROR_AND_DIE( "Shader compilation failed" );
+	}
+
 	if ( SUCCEEDED( hr ) )
 	{
 		outByteCode.resize( shaderBlob->GetBufferSize() );
