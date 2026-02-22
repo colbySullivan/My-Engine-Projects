@@ -54,7 +54,7 @@ void Game::Startup()
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
 	m_props[0] = new Prop( this );
-	m_worldCamera->SetPosition( Vec3( -2.f, 0.f, 0.f ) );
+	//m_worldCamera->SetPosition( Vec3( -2.f, 0.f, 0.f ) );
 
 	// #TODO : This is just temporary code to test rendering a cube move this
 	AddVertsForQuad3D( m_props[0]->m_vertexes,

@@ -49,6 +49,7 @@ void App::RunFrame()
 void App::Update()
 {
 	m_game->Update();
+	UpdateCursorMode();
 	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
 	{
 		delete m_game;
@@ -65,6 +66,26 @@ void App::Render() const
 	g_engine->m_console->Render( AABB2( g_UICamera->GetOrthoBottomLeft(), g_UICamera->GetOrthoTopRight() ), *m_game->g_testFont, 1.f );
 	g_engine->m_render->EndCamera( *g_UICamera );
 }
+
+//-----------------------------------------------------------------------------------------------
+void App::UpdateCursorMode()
+{
+	HWND hwnd = ( HWND )g_engine->m_window->GetHwnd();
+
+	bool windowHasFocus = ( GetForegroundWindow() == hwnd );
+	bool devConsoleOpen = g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL );
+	bool inAttractMode = m_game && ( m_game->m_currentGameState == GAMESTATE_ATTRACT );
+
+	if ( !windowHasFocus || devConsoleOpen || inAttractMode )
+	{
+		g_engine->m_input->SetCursorMode( CursorMode::POINTER );
+	}
+	else
+	{
+		g_engine->m_input->SetCursorMode( CursorMode::FPS );
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 
 void App::SetIsQuitting()

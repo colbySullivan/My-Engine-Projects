@@ -73,6 +73,45 @@ void InputSystem::BeginFrame()
 	{
 		m_controllers[controllerID].RefreshStatus();
 	}
+
+	CheckCursorVisibility();
+
+	HWND hwnd = ( HWND )g_engine->m_window->GetHwnd();
+
+	m_prevCursorClientPos = m_cursorState.m_cursorClientPosition;
+
+	POINT cursorScreen;
+	GetCursorPos( &cursorScreen );
+	POINT cursorClient = cursorScreen;
+	ScreenToClient( hwnd, &cursorClient );
+	Vec2 curClientPos = Vec2( ( float )cursorClient.x, ( float )cursorClient.y );
+
+
+	if ( m_cursorState.m_cursorMode == CursorMode::FPS )
+	{
+		m_cursorState.m_cursorClientDelta.x = curClientPos.x - m_prevCursorClientPos.x;
+		m_cursorState.m_cursorClientDelta.y = curClientPos.y - m_prevCursorClientPos.y;
+
+		RECT clientRect;
+		GetClientRect( hwnd, &clientRect );
+		POINT center = { ( clientRect.right - clientRect.left ) / 2, ( clientRect.bottom - clientRect.top ) / 2 };
+		ClientToScreen( hwnd, &center );
+
+		SetCursorPos( center.x, center.y );
+
+		POINT anchorScreen;
+		if ( GetCursorPos( &anchorScreen ) )
+		{
+			POINT anchorClient = anchorScreen;
+			ScreenToClient( hwnd, &anchorClient );
+			m_cursorState.m_cursorClientPosition = Vec2( ( float )anchorClient.x, ( float )anchorClient.y );
+		}
+	}
+	else
+	{
+		m_cursorState.m_cursorClientDelta = Vec2( 0.f, 0.f );
+		m_cursorState.m_cursorClientPosition = curClientPos;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -121,6 +160,30 @@ XboxController const& InputSystem::GetController(int controllerID) const
 }
 
 //-----------------------------------------------------------------------------------------------
+void InputSystem::SetCursorMode( CursorMode cursorMode )
+{
+	m_cursorState.m_cursorMode = cursorMode;
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec2 InputSystem::GetCursorClientDelta() const
+{
+	return m_cursorState.m_cursorClientDelta;
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec2 InputSystem::GetCursorClientPosition() const
+{
+	return m_cursorState.m_cursorClientPosition;
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec2 InputSystem::GetCursorNormalizedPosition() const // #TODO Optional for this project
+{
+	return Vec2(0.f, 0.f);
+}
+
+//-----------------------------------------------------------------------------------------------
 bool InputSystem::Event_KeyPressed( EventArgs& args )
 {
 	if ( !g_engine->m_input )
@@ -142,4 +205,35 @@ bool InputSystem::Event_KeyReleased( EventArgs& args )
 	unsigned char keyCode = ( unsigned char )args.GetValue( "KeyCode", -1 );
 	g_engine->m_input->HandleKeyReleased( keyCode );
 	return true;
+}
+
+void InputSystem::CheckCursorVisibility()
+{
+	// https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-cursorinfo
+	CURSORINFO ci = { sizeof( CURSORINFO ) };
+	GetCursorInfo( &ci );
+	bool windowsCursorVisible = ( ci.flags & CURSOR_SHOWING ) != 0;
+
+	bool wantVisible = (m_cursorState.m_cursorMode == CursorMode::POINTER);
+
+	if ( windowsCursorVisible == wantVisible )
+		return;
+
+	if ( wantVisible )
+	{
+		int count = ::ShowCursor( TRUE );
+		while ( count < 0 )
+		{
+			count = ::ShowCursor( TRUE );
+		}
+	}
+	else
+	{
+
+		int count = ::ShowCursor( FALSE );
+		while ( count >= 0 )
+		{
+			count = ::ShowCursor( FALSE );
+		} 
+	}
 }

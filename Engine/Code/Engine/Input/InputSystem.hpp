@@ -41,6 +41,23 @@ struct InputConfig
 	bool	m_isEnabled = true;
 };
 
+//-----------------------------------------------------------------------------------------------
+enum class CursorMode
+{
+	POINTER,
+	FPS,
+};
+
+//-----------------------------------------------------------------------------------------------
+struct CursorState
+{
+	Vec2 m_cursorClientDelta;
+	Vec2 m_cursorClientPosition;
+
+	CursorMode m_cursorMode = CursorMode::FPS;
+
+};
+
 //------------------------------------------------------------------------------
 class InputSystem
 {
@@ -61,6 +78,28 @@ public:
 	XboxController const& GetController( int controllerID ) const;
 
 	InputConfig	m_config;
+	CursorState m_cursorState;
+
+	// In pointer mode, the cursor should be visible, freely able to move, and not
+	// locked to the window. In FPS mode, the cursor should be hidden, reset to the
+	// the center of the window each frame, and record the delta each frame.
+	void SetCursorMode( CursorMode cursorMode );
+
+	// Returns the current frame cursor delta in pixels, relative to the client
+	// region. This is how much the cursor moved last frame before it was reset
+	// to the center of the screen. Only valid in FPS mode, will be zero otherwise.
+	Vec2 GetCursorClientDelta() const;
+
+	// Returns the cursor position, in pixels relative to the client region.
+	Vec2 GetCursorClientPosition() const;
+
+	// Returns the cursor position, normalized to the range [0, 1], relative
+	// to the client region, with the y-axis inverted to map from Windows
+	// conventions to game screen camera conventions
+	Vec2 GetCursorNormalizedPosition() const;
+
+	void CheckCursorVisibility();
+
 
 protected:
 	KeyButtonState m_keyStates[NUM_KEYCODES];
@@ -70,4 +109,5 @@ protected:
 		XboxController(2), 
 		XboxController(3) 
 	};
+	Vec2 m_prevCursorClientPos;
 };

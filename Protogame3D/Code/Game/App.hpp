@@ -22,6 +22,7 @@ public:
 	void RunFrame();
 	void Update();
 	void Render() const;
+	void UpdateCursorMode();
 	static bool Event_Quit( EventArgs& args );
 
 	void SetIsQuitting();
