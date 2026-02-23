@@ -46,58 +46,13 @@ void Game::Startup()
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
 	m_props[0] = new Prop( this );
-
-	// #TODO : This is just temporary code to test rendering a cube move this
-	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( 0.5f, -0.5f, -0.5f ),
-		Vec3( 0.5f, 0.5f, -0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
-		Rgba8( 255, 0, 0 ) );
-
-	// -X Cyan
-	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, 0.5f ),
-		Vec3( -0.5f, 0.5f, 0.5f ),
-		Rgba8( 0, 255, 255 ) );
-
-	// +Y Green
-	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( 0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, 0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
-		Rgba8( 0, 255, 0 ) );
-
-	// -Y Magenta
-	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( -0.5f, -0.5f, -0.5f ),
-		Vec3( 0.5f, -0.5f, -0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
-		Vec3( -0.5f, -0.5f, 0.5f ),
-		Rgba8( 255, 0, 255 ) );
-
-	// -Z Yellow (bottom)
-	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( 0.5f, -0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( 0.5f, 0.5f, -0.5f ),
-		Rgba8( 255, 255, 0 ) );
-
-	// +Z Blue (top)
-	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( -0.5f, -0.5f, 0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
-		Vec3( -0.5f, 0.5f, 0.5f ),
-		Rgba8( 0, 0, 255 ) );
+	m_props[0]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ) , Rgba8( 0, 0, 255 ) );
 
 	m_props[1] = new Prop( this );
-	m_props[1]->m_vertexes = m_props[0]->m_vertexes;
-	m_props[1]->m_color = Rgba8( 155, 155, 155 );
+	//m_props[1]->m_vertexes = m_props[0]->m_vertexes;
+	m_props[1]->MakeCube();
+	// 
+	m_props[1]->m_color = Rgba8( 0, 255, 0 );
 
 	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
 	m_props[1]->m_position = Vec3( -2.f, -2.f, 0.f );
@@ -158,7 +113,7 @@ void Game::Render() const
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
-		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
+		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
 		for ( int propIndex = 0; propIndex < MAX_PROPS; ++propIndex )
 		{
