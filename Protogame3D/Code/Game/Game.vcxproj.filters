@@ -64,9 +64,4 @@
       <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\Run\Data\Shaders\Default.hlsl">
-      <Filter>Data\Shaders</Filter>
-    </FxCompile>
-  </ItemGroup>
 </Project>
