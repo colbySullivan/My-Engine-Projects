@@ -129,13 +129,13 @@ void Player::PrintControlsToDevConsole()
 //------------------------------------------------------------------------------
 void Player::ApplyMovement( Vec3 const& localMoveDir, float speed, float deltaSeconds )
 {
+	m_orientation.m_pitchDegrees = GetClamped( m_orientation.m_pitchDegrees, -85.f, 85.f );
+	m_orientation.m_rollDegrees = GetClamped( m_orientation.m_rollDegrees, -45.f, 45.f );
+
 	if ( localMoveDir == Vec3( 0.f, 0.f, 0.f ) )
 	{
 		return;
 	}
-
-	m_orientation.m_pitchDegrees = GetClamped( m_orientation.m_pitchDegrees, -85.f, 85.f );
-	m_orientation.m_rollDegrees = GetClamped( m_orientation.m_rollDegrees, -45.f, 45.f );
 
 	Mat44 rotationMatrix = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
 
