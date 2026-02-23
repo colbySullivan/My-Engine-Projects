@@ -265,7 +265,7 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
 
 	// Title
-	char title[32] = "Protogame2D";
+	char title[32] = "Protogame3D";
 	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };

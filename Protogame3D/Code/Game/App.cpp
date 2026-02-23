@@ -14,7 +14,7 @@ App::App()
 {
 	EngineConfig config;
 	config.m_windowConfig.m_clientAspect = 2.0f;
-	config.m_windowConfig.m_windowTitle = "Protogame2D";
+	config.m_windowConfig.m_windowTitle = "Protogame3D";
 	g_engine = new Engine( config );
 
 	g_app = this;
