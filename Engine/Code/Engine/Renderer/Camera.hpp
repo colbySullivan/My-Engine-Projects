@@ -21,8 +21,8 @@ public:
 	void SetPositionAndOrientation( const Vec3& position, const EulerAngles& orientation );
 	void SetPosition( const Vec3& position );
 	Vec3 GetPosition() const;
-	//void SetOrientation( const EulerAngles& orientation );
-	//EulerAngles GetOrientation() const;
+	void SetOrientation( const EulerAngles& orientation );
+	EulerAngles GetOrientation() const;
 
 	Mat44 GetCameraToWorldTransform() const;
 	Mat44 GetWorldToCameraTransform() const;

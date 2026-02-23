@@ -34,6 +34,18 @@ void Camera::SetPosition( const Vec3& position )
 }
 
 //-----------------------------------------------------------------------------------------------
+void Camera::SetOrientation( const EulerAngles& orientation )
+{
+	m_orientation = orientation;
+}
+
+//-----------------------------------------------------------------------------------------------
+EulerAngles Camera::GetOrientation() const
+{
+ return m_orientation;
+}
+
+//-----------------------------------------------------------------------------------------------
 Mat44 Camera::GetCameraToWorldTransform() const
 {
 	Mat44 cameraToWorld;
