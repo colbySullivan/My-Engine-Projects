@@ -51,6 +51,16 @@ struct CameraConstants
 static const int k_cameraConstantsSlot = 2;
 
 //------------------------------------------------------------------------------
+// Model constants
+//------------------------------------------------------------------------------
+struct ModelConstants
+{
+	Mat44  ModelToWorldTransform;
+	float  ModelColor[4];
+};
+static const int k_modelConstantsSlot = 3;
+
+//------------------------------------------------------------------------------
 // Public
 //------------------------------------------------------------------------------
 Renderer::Renderer( RenderConfig const& config )
@@ -127,6 +137,8 @@ void Renderer::BeginCamera( Camera const& camera )
 
 	CopyCPUToGPU( &camConstants, sizeof( camConstants ), m_cameraCBO );
 	BindConstantBuffer( k_cameraConstantsSlot, m_cameraCBO );
+
+	SetModelConstants( Mat44(), Rgba8( 255, 255, 255 ) );
 }
 
 //------------------------------------------------------------------------------
@@ -362,6 +374,16 @@ void Renderer::CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend
 }
 
 //------------------------------------------------------------------------------
+void Renderer::SetModelConstants( Mat44 const& modelToWorldTransform, Rgba8 const& modelColor /*= Rgba8::WHITE */ )
+{
+	ModelConstants constants;
+	constants.ModelToWorldTransform = modelToWorldTransform;
+	modelColor.GetAsFloats( constants.ModelColor );
+	CopyCPUToGPU( &constants, sizeof( ModelConstants ), m_modelCBO );
+	BindConstantBuffer( k_modelConstantsSlot, m_modelCBO );
+}
+
+//------------------------------------------------------------------------------
 void Renderer::DeleteReleaseAll()
 {
 	DX_SAFE_RELEASE( m_rasterizerState );
@@ -389,6 +411,9 @@ void Renderer::DeleteReleaseAll()
 
 	delete m_cameraCBO;
 	m_cameraCBO = nullptr;
+
+	delete m_modelCBO;
+	m_modelCBO = nullptr;
 
 	for ( int i = 0; i < ( int )BlendMode::COUNT; ++i )
 	{
@@ -429,6 +454,7 @@ void Renderer::CreateBuffers()
 {
 	m_immediateVBO = CreateVertexBuffer( sizeof( Vertex ), sizeof( Vertex ) );
 	m_cameraCBO = CreateConstantBuffer( sizeof( CameraConstants ) );
+	m_modelCBO = CreateConstantBuffer( sizeof( ModelConstants ) );
 }
 
 //------------------------------------------------------------------------------

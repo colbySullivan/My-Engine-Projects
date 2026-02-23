@@ -5,6 +5,7 @@
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
 #include "Engine/Core/Image.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <vector>
 
@@ -25,6 +26,7 @@ struct IDXGISwapChain;
 class Shader;
 class VertexBuffer;
 class ConstantBuffer;
+struct Mat44;
 
 //-----------------------------------------------------------------------------------------------
 struct RenderConfig
@@ -90,6 +92,8 @@ public:
 	void SetSamplerMode( SamplerMode mode );
 	void SetRasterizerMode( RasterizerMode mode );
 	Texture* CreateTextureFromImage( const Image& image );
+
+	void SetModelConstants( Mat44 const& modelToWorldTransform = Mat44(), Rgba8 const& modelColor = Rgba8( 255, 255, 255 ) );
 
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
@@ -160,6 +164,7 @@ protected:
 	std::vector<uint8_t> m_pixelShaderByteCode;
 
 	ConstantBuffer* m_cameraCBO = nullptr;
+	ConstantBuffer* m_modelCBO = nullptr;
 private:
 	void CreateNewRasterizerStates();
 	void CreateBlendAndSamplerStates();

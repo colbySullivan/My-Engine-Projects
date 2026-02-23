@@ -80,7 +80,6 @@ private:
 	void UpdateBlackHole();
 
 	App*			m_app = nullptr;
-	Camera*			m_worldCamera = nullptr;
 	Camera*			m_screenCamera = nullptr;
 	// Black hole
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];

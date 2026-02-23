@@ -36,6 +36,7 @@ unsigned char const KEYCODE_INSERT = VK_INSERT;
 unsigned char const KEYCODE_DELETE = VK_DELETE;
 unsigned char const KEYCODE_HOME = VK_HOME;
 unsigned char const KEYCODE_END = VK_END;
+unsigned char const KEYCODE_SHIFT = VK_SHIFT;
 
 InputSystem::InputSystem( InputConfig const& config ) 
 	: m_config( config )

@@ -73,6 +73,11 @@ constexpr float	ROUND_BUFFER = 12.f;
 
 constexpr int MAX_PROPS = 100;
 
+constexpr float MOUSE_SENSITIVITY = 0.125;
+constexpr int ROLL_RATE = 90;
+constexpr int MOVE_SPEED = 2;
+
+
 //------------------------------------------------------------------------------
 enum PowerUp
 {

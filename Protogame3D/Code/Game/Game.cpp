@@ -18,15 +18,9 @@ RandomNumberGenerator g_rng;
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
-	m_worldCamera = new Camera;
 	m_screenCamera = new Camera;
 
-	float aspect = ( ( float )g_engine->m_window->GetClientDimensions().x / ( float )g_engine->m_window->GetClientDimensions().y );
 
-	m_worldCamera->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
-	Mat44 cameraToRenderMatrix;
-	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
-	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
 	g_engine->m_render->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
@@ -37,10 +31,8 @@ Game::Game()
 Game::~Game()
 {
 	delete g_engine;
-	delete m_worldCamera;
 	delete m_screenCamera;
 	g_engine = nullptr;
-	m_worldCamera = nullptr;
 	m_screenCamera = nullptr;
 }
 
@@ -54,7 +46,6 @@ void Game::Startup()
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
 	m_props[0] = new Prop( this );
-	//m_worldCamera->SetPosition( Vec3( -2.f, 0.f, 0.f ) );
 
 	// #TODO : This is just temporary code to test rendering a cube move this
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
@@ -64,6 +55,7 @@ void Game::Startup()
 		Vec3( 0.5f, -0.5f, 0.5f ),
 		Rgba8( 255, 0, 0 ) );
 
+	// -X Cyan
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
 		Vec3( -0.5f, 0.5f, -0.5f ),
 		Vec3( -0.5f, -0.5f, -0.5f ),
@@ -71,6 +63,7 @@ void Game::Startup()
 		Vec3( -0.5f, 0.5f, 0.5f ),
 		Rgba8( 0, 255, 255 ) );
 
+	// +Y Green
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
 		Vec3( 0.5f, 0.5f, -0.5f ),
 		Vec3( -0.5f, 0.5f, -0.5f ),
@@ -78,6 +71,7 @@ void Game::Startup()
 		Vec3( 0.5f, 0.5f, 0.5f ),
 		Rgba8( 0, 255, 0 ) );
 
+	// -Y Magenta
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
 		Vec3( -0.5f, -0.5f, -0.5f ),
 		Vec3( 0.5f, -0.5f, -0.5f ),
@@ -85,19 +79,28 @@ void Game::Startup()
 		Vec3( -0.5f, -0.5f, 0.5f ),
 		Rgba8( 255, 0, 255 ) );
 
+	// -Z Yellow (bottom)
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( 0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, -0.5f ),
 		Vec3( 0.5f, -0.5f, -0.5f ),
+		Vec3( -0.5f, -0.5f, -0.5f ),
+		Vec3( -0.5f, 0.5f, -0.5f ),
+		Vec3( 0.5f, 0.5f, -0.5f ),
 		Rgba8( 255, 255, 0 ) );
 
+	// +Z Blue (top)
 	AddVertsForQuad3D( m_props[0]->m_vertexes,
-		Vec3( -0.5f, 0.5f, 0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
 		Vec3( -0.5f, -0.5f, 0.5f ),
+		Vec3( 0.5f, -0.5f, 0.5f ),
+		Vec3( 0.5f, 0.5f, 0.5f ),
+		Vec3( -0.5f, 0.5f, 0.5f ),
 		Rgba8( 0, 0, 255 ) );
+
+	m_props[1] = new Prop( this );
+	m_props[1]->m_vertexes = m_props[0]->m_vertexes;
+	m_props[1]->m_color = Rgba8( 155, 155, 155 );
+
+	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
+	m_props[1]->m_position = Vec3( -2.f, -2.f, 0.f );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -131,6 +134,7 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
+		m_player->Update( g_engine->m_systemClock->GetDeltaSeconds() );
 	}
 }
 
@@ -138,7 +142,7 @@ void Game::Update()
 void Game::Render() const
 {
 	//g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->BeginCamera( *m_worldCamera );
+	g_engine->m_render->BeginCamera( *m_player->m_worldCamera );
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
@@ -163,7 +167,7 @@ void Game::Render() const
 				m_props[propIndex]->Render();
 			}
 		}
-		g_engine->m_render->EndCamera( *m_worldCamera );
+		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 	}
 }
