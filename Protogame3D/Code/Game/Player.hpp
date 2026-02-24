@@ -17,8 +17,7 @@ public:
 	virtual void Update( float deltaSeconds ) override;
 	virtual void Render() const override;
 
-	void UpdateKeyboardInput( float deltaSeconds );
-	void UpdateControllerInput( XboxController const& controller );
+	void UpdateKeyboardAndControllerInput( float deltaSeconds, XboxController const& controller );
 	void PrintControlsToDevConsole();
 	void ApplyMovement( Vec3 const& localMoveDir, float speed, float deltaSeconds );
 

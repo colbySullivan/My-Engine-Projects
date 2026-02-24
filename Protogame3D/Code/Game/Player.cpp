@@ -25,7 +25,7 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
-	UpdateKeyboardInput( deltaSeconds );
+	UpdateKeyboardAndControllerInput( deltaSeconds, controller );
 
 	m_worldCamera->SetPositionAndOrientation( m_position, m_orientation );
 	
@@ -37,71 +37,78 @@ void Player::Render() const
 }
 
 //------------------------------------------------------------------------------
-void Player::UpdateKeyboardInput( float deltaSeconds )
+void Player::UpdateKeyboardAndControllerInput( float deltaSeconds, XboxController const& controller )
 {
 	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
 	{
 		return;
 	}
-
+	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
+	Vec2 rightStickPos = controller.GetRightStick().GetPosition();
+	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
+	float rightThreshold = controller.GetRightStick().GetInnerDeadZoneFraction();
 	Vec2 cursorDelta = g_engine->m_input->GetCursorClientDelta();
 
 	m_orientation.m_yawDegrees -= cursorDelta.x * MOUSE_SENSITIVITY;
 	m_orientation.m_pitchDegrees += cursorDelta.y * MOUSE_SENSITIVITY;
 
-	if ( g_engine->m_input->IsKeyDown( 'Q' ) )
+	if ( rightStickPos.y > rightThreshold || rightStickPos.y < -rightThreshold )
+	{
+		m_orientation.m_pitchDegrees -= rightStickPos.y * deltaSeconds * PITCH_RATE;
+	}
+
+	if ( rightStickPos.x > rightThreshold || rightStickPos.x < -rightThreshold )
+	{
+		m_orientation.m_yawDegrees -= rightStickPos.x * deltaSeconds * YAW_RATE;
+	}
+
+	if ( g_engine->m_input->IsKeyDown( 'Q' ) || ( controller.GetLeftTrigger() != 0 ) )
 	{
 		m_orientation.m_rollDegrees -= ROLL_RATE * deltaSeconds;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'E' ) )
+	if ( g_engine->m_input->IsKeyDown( 'E' ) || ( controller.GetRightTrigger() != 0 ) )
 	{
 		m_orientation.m_rollDegrees += ROLL_RATE * deltaSeconds;
 	}
 	float speed = MOVE_SPEED;
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) )
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) || controller.IsButtonDown(XboxButtonID::A) )
 	{
 		speed *= 10.f;
 	}
 
 	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
-	if ( g_engine->m_input->IsKeyDown( 'W' ) )
+	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
 	{
 		localMoveDir.x += 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'S' ) )
+	if ( g_engine->m_input->IsKeyDown( 'S' ) || leftStickPos.y < -leftThreshold )
 	{
 		localMoveDir.x -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'A' ) )
+	if ( g_engine->m_input->IsKeyDown( 'A' ) || leftStickPos.x < -leftThreshold )
 	{
 		localMoveDir.y += 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'D' ) )
+	if ( g_engine->m_input->IsKeyDown( 'D' ) || leftStickPos.x > leftThreshold )
 	{
 		localMoveDir.y -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'Z' ) )
+	if ( g_engine->m_input->IsKeyDown( 'Z' ) || controller.IsButtonDown(XboxButtonID::LEFT_BUMPER) )
 	{
 		localMoveDir.z -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'C' ) )
+	if ( g_engine->m_input->IsKeyDown( 'C' ) || controller.IsButtonDown(XboxButtonID::RIGHT_BUMPER) )
 	{
 		localMoveDir.z += 1.f;
 	}
 
 	ApplyMovement( localMoveDir, speed, deltaSeconds );
 
-	if ( g_engine->m_input->IsKeyDown( 'H' ) )
+	if ( g_engine->m_input->IsKeyDown( 'H' ) || controller.WasButtonJustPressed(XboxButtonID::START) )
 	{
 		m_position = Vec3( 0.f, 0.f, 0.f );
 		m_orientation = EulerAngles( 0.f, 0.f, 0.f );
 	}
-}
-
-//------------------------------------------------------------------------------
-void Player::UpdateControllerInput( XboxController const& controller )
-{
-
 }
 
 //------------------------------------------------------------------------------

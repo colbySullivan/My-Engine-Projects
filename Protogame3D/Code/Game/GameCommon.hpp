@@ -75,6 +75,8 @@ constexpr int MAX_PROPS = 100;
 
 constexpr float MOUSE_SENSITIVITY = 0.125;
 constexpr int ROLL_RATE = 90;
+constexpr int PITCH_RATE = 120;
+constexpr int YAW_RATE = 120;
 constexpr int MOVE_SPEED = 2;
 
 
