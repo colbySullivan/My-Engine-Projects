@@ -11,7 +11,9 @@ Prop::Prop( Game* owner )
 //-----------------------------------------------------------------------------------------------
 void Prop::Update( [[maybe_unused]] float deltaSeconds )
 {
-	m_orientation += m_angularVelocity;
+	m_orientation.m_pitchDegrees += m_angularVelocity.m_pitchDegrees * deltaSeconds;
+	m_orientation.m_rollDegrees += m_angularVelocity.m_rollDegrees * deltaSeconds;
+	m_orientation.m_yawDegrees += m_angularVelocity.m_yawDegrees * deltaSeconds;
 }
 
 //-----------------------------------------------------------------------------------------------

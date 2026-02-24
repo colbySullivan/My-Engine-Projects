@@ -17,6 +17,7 @@ class BitmapFont;
 class Clock;
 class Player;
 class Prop;
+class Timer;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -57,6 +58,7 @@ public:
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
 	float 				m_roundTime = 0.f;
 	float				m_bestRoundTime = 0.f;
+	Timer*				m_cubeBlinkTimer;
 
 	// Textures
 	BitmapFont* g_testFont = nullptr;

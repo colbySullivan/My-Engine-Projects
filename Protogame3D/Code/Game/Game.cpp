@@ -6,6 +6,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/Timer.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -45,17 +46,18 @@ void Game::Startup()
 	m_isPaused = false;
 	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
+
 	m_props[0] = new Prop( this );
 	m_props[0]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ) , Rgba8( 0, 0, 255 ) );
+	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
+	m_props[0]->m_angularVelocity.m_pitchDegrees = 30.f;
+	m_props[0]->m_angularVelocity.m_rollDegrees = 30.f;
 
 	m_props[1] = new Prop( this );
-	//m_props[1]->m_vertexes = m_props[0]->m_vertexes;
-	m_props[1]->MakeCube();
-	// 
-	m_props[1]->m_color = Rgba8( 0, 255, 0 );
-
-	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
+	m_props[1]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ) , Rgba8( 0, 0, 255 ) );
 	m_props[1]->m_position = Vec3( -2.f, -2.f, 0.f );
+	m_cubeBlinkTimer = new Timer( 3.5f );
+	m_cubeBlinkTimer->Start();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -89,6 +91,20 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
+		for ( int propIndex = 0; propIndex < MAX_PROPS; ++propIndex )
+		{
+			if ( m_props[propIndex] != nullptr )
+			{
+				m_props[propIndex]->Update( deltaSeconds );
+			}
+		}
+
+		unsigned char elapsedFraction = static_cast<unsigned char>(50 + ( m_cubeBlinkTimer->GetElapsedFraction() * 200 ));
+		m_props[1]->m_color = Rgba8(elapsedFraction, elapsedFraction, elapsedFraction);
+		if ( m_cubeBlinkTimer->DecrementPeriodIfElapsed() )
+		{
+			m_cubeBlinkTimer->Start();
+		}
 		m_player->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
 }
