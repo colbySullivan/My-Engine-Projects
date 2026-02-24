@@ -27,53 +27,60 @@ void Prop::Render() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Prop::MakeCube( Rgba8 posX, Rgba8 negX, Rgba8 posY, Rgba8 negY, Rgba8 posZ, Rgba8 negZ )
+void Prop::MakeCube( Rgba8 posX /*= Rgba8( 255, 255, 255 )*/, Rgba8 negX /*= Rgba8( 255, 255, 255 )*/, Rgba8 posY /*= Rgba8( 255, 255, 255 )*/, 
+	Rgba8 negY /*= Rgba8( 255, 255, 255 )*/, Rgba8 posZ /*= Rgba8( 255, 255, 255 )*/, Rgba8 negZ /*= Rgba8( 255, 255, 255 )*/, Vec3 scale /*= 1 */ )
+
 {
 	// +X Red
 	AddVertsForQuad3D( m_vertexes,
-		Vec3( 0.5f, -0.5f, -0.5f ),
-		Vec3( 0.5f, 0.5f, -0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
-		posX );
+		Vec3( 0.5f * scale.x, -0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, 0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, 0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, -0.5f * scale.y, 0.5f * scale.z ),
+		posX );			  
 
 	// -X Cyan
 	AddVertsForQuad3D( m_vertexes,
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, 0.5f ),
-		Vec3( -0.5f, 0.5f, 0.5f ),
+		Vec3( -0.5f * scale.x, 0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, -0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, -0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, 0.5f * scale.y, 0.5f * scale.z ),
 		negX );
 
 	// +Y Green
 	AddVertsForQuad3D( m_vertexes,
-		Vec3( 0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, 0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
+		Vec3( 0.5f * scale.x, 0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, 0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, 0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, 0.5f * scale.y, 0.5f * scale.z ),
 		posY );
 
 	// -Y Magenta
 	AddVertsForQuad3D( m_vertexes,
-		Vec3( -0.5f, -0.5f, -0.5f ),
-		Vec3( 0.5f, -0.5f, -0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
-		Vec3( -0.5f, -0.5f, 0.5f ),
+		Vec3( -0.5f * scale.x, -0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, -0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, -0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, -0.5f * scale.y, 0.5f * scale.z ),
 		negY );
 
 	// -Z Yellow (bottom)
 	AddVertsForQuad3D( m_vertexes,
-		Vec3( 0.5f, -0.5f, -0.5f ),
-		Vec3( -0.5f, -0.5f, -0.5f ),
-		Vec3( -0.5f, 0.5f, -0.5f ),
-		Vec3( 0.5f, 0.5f, -0.5f ),
+		Vec3( 0.5f * scale.x, -0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, -0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, 0.5f * scale.y, -0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, 0.5f * scale.y, -0.5f * scale.z ),
 		negZ );
 
 	// +Z Blue (top)
 	AddVertsForQuad3D( m_vertexes,
-		Vec3( -0.5f, -0.5f, 0.5f ),
-		Vec3( 0.5f, -0.5f, 0.5f ),
-		Vec3( 0.5f, 0.5f, 0.5f ),
-		Vec3( -0.5f, 0.5f, 0.5f ),
+		Vec3( -0.5f * scale.x, -0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, -0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( 0.5f * scale.x, 0.5f * scale.y, 0.5f * scale.z ),
+		Vec3( -0.5f * scale.x, 0.5f * scale.y, 0.5f * scale.z ),
 		posZ );
+}
+
+void Prop::MakeCube( Rgba8 mainColor, Vec3 scale /*= Vec3(1,1,1) */ )
+{
+	MakeCube( mainColor, mainColor, mainColor, mainColor, mainColor, mainColor, scale );
 }
