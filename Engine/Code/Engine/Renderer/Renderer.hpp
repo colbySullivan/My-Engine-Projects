@@ -61,6 +61,16 @@ enum class RasterizerMode
 	COUNT
 };
 
+//-----------------------------------------------------------------------------------------------
+enum class DepthMode
+{
+	DISABLED,
+	READ_ONLY_ALWAYS,
+	READ_ONLY_LESS_EQUAL,
+	READ_WRITE_LESS_EQUAL,
+	COUNT
+};
+
 //------------------------------------------------------------------------------
 #define DX_SAFE_RELEASE(dxObject)\
 {\
@@ -134,6 +144,15 @@ public:
 	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
 	void BindTexture( Texture* texture );
 
+	// Depth stencil texture
+	void CreateDepthStencilTexture();
+	void CreateDepthStencilStates();
+	void CreateDepthStencilState( DepthMode mode, D3D11_DEPTH_WRITE_MASK writeMask = D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_FUNC func = D3D11_COMPARISON_ALWAYS);
+	ID3D11Texture2D* m_depthStencilTexture = nullptr;
+	ID3D11DepthStencilView* m_depthStencilDSV = nullptr;
+	ID3D11DepthStencilState* m_depthStencilStates[( int )( DepthMode::COUNT )] = {};
+	DepthMode m_desiredDepthMode;
+
 private:
 	const Texture* m_defaultTexture = nullptr;
 	Texture* m_currentTexture = nullptr;
@@ -144,6 +163,7 @@ private:
 	ID3D11SamplerState* m_samplerStates[( int )( SamplerMode::COUNT )] = {};
 
 	// Rasterizer States
+	RasterizerMode m_desiredRasterizerMode;
 	ID3D11RasterizerState* m_rasterizerStates[( int )( RasterizerMode::COUNT )] = {};
 	void CreateRasterizerState( D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode, RasterizerMode mode );
 

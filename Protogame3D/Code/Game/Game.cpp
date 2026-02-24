@@ -89,7 +89,7 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
-		m_player->Update( g_engine->m_systemClock->GetDeltaSeconds() );
+		m_player->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
 }
 
