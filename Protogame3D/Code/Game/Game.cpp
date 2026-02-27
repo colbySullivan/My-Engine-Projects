@@ -26,6 +26,9 @@ Game::Game()
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
+	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
+	m_player = new Player( this );
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -42,9 +45,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_isPaused = false;
-	m_player = new Player(this);
 
 	CreateProps();
 
@@ -83,7 +84,7 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
-		for ( int propIndex = 0; propIndex < MAX_PROPS; ++propIndex )
+		for ( int propIndex = 0; propIndex < (int)m_props.size(); ++propIndex )
 		{
 			if ( m_props[propIndex] != nullptr )
 			{
@@ -123,7 +124,7 @@ void Game::Render() const
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
-		for ( int propIndex = 0; propIndex < MAX_PROPS; ++propIndex )
+		for ( int propIndex = 0; propIndex < (int)m_props.size(); ++propIndex )
 		{
 			if ( m_props[propIndex] != nullptr )
 			{
@@ -359,25 +360,40 @@ void Game::UpdateBlackHole()
 //-----------------------------------------------------------------------------------------------
 void Game::CreateProps()
 {
-	m_props[0] = new Prop( this );
-	m_props[0]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
-	m_props[0]->m_angularVelocity.m_pitchDegrees = 30.f;
-	m_props[0]->m_angularVelocity.m_rollDegrees = 30.f;
+	Prop* box = new Prop( this );
+	box->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	box->m_position = Vec3( 2.f, 2.f, 0.f );
+	box->m_angularVelocity.m_pitchDegrees = 30.f;
+	box->m_angularVelocity.m_rollDegrees = 30.f;
+	m_props.push_back( box );
 
-	m_props[1] = new Prop( this );
-	m_props[1]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	m_props[1]->m_position = Vec3( -2.f, -2.f, 0.f );
+	Prop* newBox = new Prop( this );
+	newBox->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	newBox->m_position = Vec3( -2.f, -2.f, 0.f );
+	m_props.push_back( newBox );
 
-	m_props[2] = new Prop( this );
-	m_props[2]->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
-	m_props[2]->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+	Prop* sphere = new Prop( this );
+	sphere->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
+	sphere->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+	m_props.push_back( sphere );
 
-	for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
-	{
-		// #TODO need to create grid
+	//m_props[m_propCount++] = new Prop( this );
+	//m_props[m_propCount]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	//m_props[m_propCount]->m_position = Vec3( -2.f, -2.f, 0.f );
 
-	}
+	//m_props[m_propCount++] = new Prop( this );
+	//m_props[m_propCount]->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
+	//m_props[m_propCount]->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+
+	//for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
+	//{
+	//	Prop* gridLine = new Prop( this );
+	//	m_props.push_back( gridLine );
+	//	m_props[xGridIndex] = new Prop( this );
+	//	m_props[xGridIndex]->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
+	//	m_props[xGridIndex]->m_position = Vec3( 0.f + ( 5.0f * xGridIndex ), 0.f, 0.f);
+
+	//}
 	//m_props[2] = new Prop( this );
 	//m_props[2]->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
 	//m_props[2]->m_position = Vec3( 0.f, 0.f, 0.f );

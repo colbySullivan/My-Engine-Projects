@@ -68,7 +68,7 @@ public:
 
 	// Player and props
 	Player* m_player = nullptr;
-	Prop*	m_props[MAX_PROPS] = {};
+	std::vector<Prop*> m_props;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
