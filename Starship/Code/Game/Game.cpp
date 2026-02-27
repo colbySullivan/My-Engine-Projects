@@ -31,6 +31,7 @@ Game::Game()
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "clockscale", Game::Event_SetClockScale );
+	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_NONE );
 	PrintControlsToConsole();
 }
 
