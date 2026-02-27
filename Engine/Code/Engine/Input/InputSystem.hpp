@@ -55,7 +55,7 @@ struct CursorState
 	Vec2 m_cursorClientDelta;
 	Vec2 m_cursorClientPosition;
 
-	CursorMode m_cursorMode = CursorMode::FPS;
+	CursorMode m_cursorMode = CursorMode::POINTER;
 
 };
 
