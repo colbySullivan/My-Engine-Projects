@@ -19,7 +19,6 @@ App::App()
 
 	g_app = this;
 	m_game = new Game();
-	//m_game->Startup();
 
 	g_UICamera = new Camera();
 	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y) );

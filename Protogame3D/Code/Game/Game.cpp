@@ -28,7 +28,8 @@ Game::Game()
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	m_player = new Player( this );
-
+	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
+	CreateProps();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -46,8 +47,6 @@ Game::~Game()
 void Game::Startup()
 {
 	m_isPaused = false;
-
-	CreateProps();
 
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
@@ -377,23 +376,36 @@ void Game::CreateProps()
 	sphere->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
 	m_props.push_back( sphere );
 
-	//m_props[m_propCount++] = new Prop( this );
-	//m_props[m_propCount]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	//m_props[m_propCount]->m_position = Vec3( -2.f, -2.f, 0.f );
+	for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
+	{
+		Prop* xAxisLines = new Prop( this );
+		if ( xGridIndex % 5 == 0 )
+		{
+			xAxisLines->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
+		}
+		else
+		{
+			xAxisLines->MakeCube( Rgba8( 120, 120, 120 ), Vec3( 0.05f, 100.f, 0.05f ) );
+		}
+		xAxisLines->m_position = Vec3( -50.f + ( xGridIndex ), 0.f, 0.f);
+		m_props.push_back( xAxisLines );
+	}
 
-	//m_props[m_propCount++] = new Prop( this );
-	//m_props[m_propCount]->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
-	//m_props[m_propCount]->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+	for ( int yGridIndex = 0; yGridIndex < 100; ++yGridIndex )
+	{
+		Prop* yAxisLines = new Prop( this );
+		if ( yGridIndex % 5 == 0 )
+		{
+			yAxisLines->MakeCube( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ) );
+		}
+		else
+		{
+			yAxisLines->MakeCube( Rgba8( 120, 120, 120 ), Vec3( 100.f, 0.05f, 0.05f ) );
+		}
+		yAxisLines->m_position = Vec3( 0.f, -50.f + ( yGridIndex ), 0.f );
+		m_props.push_back( yAxisLines );
+	}
 
-	//for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
-	//{
-	//	Prop* gridLine = new Prop( this );
-	//	m_props.push_back( gridLine );
-	//	m_props[xGridIndex] = new Prop( this );
-	//	m_props[xGridIndex]->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
-	//	m_props[xGridIndex]->m_position = Vec3( 0.f + ( 5.0f * xGridIndex ), 0.f, 0.f);
-
-	//}
 	//m_props[2] = new Prop( this );
 	//m_props[2]->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
 	//m_props[2]->m_position = Vec3( 0.f, 0.f, 0.f );
