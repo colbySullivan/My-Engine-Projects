@@ -351,7 +351,21 @@ void Renderer::SetStatesIfChanged()
 		m_deviceContext->OMSetBlendState( m_blendState, blendFactor, sampleMask );
 	}
 
-	m_deviceContext->OMSetDepthStencilState(m_depthStencilStates[( int ) m_desiredDepthMode], 0); // #TODO need to fix this
+	if ( m_samplerStates[( int )m_desiredSamplerMode] != m_samplerState )
+	{
+		SetSamplerMode( m_desiredSamplerMode );
+	}
+
+	if ( m_rasterizerStates[( int )m_desiredRasterizerMode] != m_rasterizerState )
+	{
+		SetRasterizerMode( m_desiredRasterizerMode );
+	}
+
+	if ( m_depthStencilStates[( int )m_desiredDepthMode] != m_depthStencilState)
+	{
+		m_depthStencilState = m_depthStencilStates[( int )m_desiredDepthMode];
+		m_deviceContext->OMSetDepthStencilState( m_depthStencilStates[( int )m_desiredDepthMode], 0 );
+	}
 }
 
 //------------------------------------------------------------------------------

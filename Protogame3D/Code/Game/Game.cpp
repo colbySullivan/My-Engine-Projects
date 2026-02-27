@@ -22,7 +22,7 @@ Game::Game()
 	m_screenCamera = new Camera;
 
 
-	g_engine->m_render->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
@@ -236,6 +236,7 @@ void Game::RenderAttractMode() const
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
 
 	// Background
 	Vertex background[6];

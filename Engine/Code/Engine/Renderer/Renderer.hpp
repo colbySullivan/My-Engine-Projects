@@ -108,7 +108,14 @@ public:
 	RenderConfig m_config;
 	std::vector< Texture* > m_loadedTextures;
 	std::vector< BitmapFont* > m_loadedFonts;
-	
+
+	// Desired states
+	BlendMode m_desiredBlendMode;
+	SamplerMode m_desiredSamplerMode;
+	RasterizerMode m_desiredRasterizerMode;
+	DepthMode m_desiredDepthMode;
+
+
 private:
 
 	Shader* CreateShader( char const* shaderName, char const* shaderSource );
@@ -131,7 +138,6 @@ private:
 	void SetStatesIfChanged();
 	void CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode );
 	ID3D11BlendState* m_blendState = nullptr;
-	BlendMode m_desiredBlendMode = BlendMode::ALPHA;
 	ID3D11BlendState* m_blendStates[( int )( BlendMode::COUNT )] = {};
 
 public:
@@ -151,7 +157,7 @@ public:
 	ID3D11Texture2D* m_depthStencilTexture = nullptr;
 	ID3D11DepthStencilView* m_depthStencilDSV = nullptr;
 	ID3D11DepthStencilState* m_depthStencilStates[( int )( DepthMode::COUNT )] = {};
-	DepthMode m_desiredDepthMode;
+	ID3D11DepthStencilState* m_depthStencilState = nullptr;
 
 private:
 	const Texture* m_defaultTexture = nullptr;
@@ -159,11 +165,9 @@ private:
 
 	// Sampler
 	ID3D11SamplerState* m_samplerState = nullptr;
-	SamplerMode m_desiredSamplerMode = SamplerMode::POINT_CLAMP;
 	ID3D11SamplerState* m_samplerStates[( int )( SamplerMode::COUNT )] = {};
 
 	// Rasterizer States
-	RasterizerMode m_desiredRasterizerMode;
 	ID3D11RasterizerState* m_rasterizerStates[( int )( RasterizerMode::COUNT )] = {};
 	void CreateRasterizerState( D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode, RasterizerMode mode );
 
