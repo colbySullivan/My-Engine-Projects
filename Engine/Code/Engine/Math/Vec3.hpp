@@ -48,6 +48,9 @@ public:
 	Vec3 const	GetClampedToMaxLength(float maxLength) const;
 	Vec3 const	GetNormalized() const;
 
+	// Static methods (e.g. creation functions)
+	static Vec3 const MakeFromPolarDegrees( float pitchDegrees, float yawDegrees, float length = 1.f );
+
 };
 
 

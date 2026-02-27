@@ -44,26 +44,9 @@ void Game::Startup()
 {
 	Vec2 worldCenter(WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f);
 	m_isPaused = false;
-	//g_engine->m_render->CreateTextureFromImage("Data/Textures/Test_StbiFlippedAndOpenGL.png");
 	m_player = new Player(this);
 
-	m_props[0] = new Prop( this );
-	m_props[0]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ) , Rgba8( 0, 0, 255 ) );
-	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
-	m_props[0]->m_angularVelocity.m_pitchDegrees = 30.f;
-	m_props[0]->m_angularVelocity.m_rollDegrees = 30.f;
-
-	m_props[1] = new Prop( this );
-	m_props[1]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ) , Rgba8( 0, 0, 255 ) );
-	m_props[1]->m_position = Vec3( -2.f, -2.f, 0.f );
-
-	m_props[2] = new Prop( this );
-	m_props[2]->MakeCube( Rgba8( 255, 0, 0 ), Vec3(0.1f, 100.f, 0.1f) );
-	m_props[2]->m_position = Vec3( 0.f, 0.f, 0.f );
-
-	m_props[3] = new Prop( this );
-	m_props[3]->MakeCube( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ) );
-	m_props[3]->m_position = Vec3( 0.f, 0.f, 0.f );
+	CreateProps();
 
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
@@ -371,4 +354,35 @@ void Game::UpdateBlackHole()
 		m_blackHoleVerts[secondVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
 		m_blackHoleVerts[thirdVertIndex].m_color = Rgba8( 255, 255, 255, 255 );
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::CreateProps()
+{
+	m_props[0] = new Prop( this );
+	m_props[0]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	m_props[0]->m_position = Vec3( 2.f, 2.f, 0.f );
+	m_props[0]->m_angularVelocity.m_pitchDegrees = 30.f;
+	m_props[0]->m_angularVelocity.m_rollDegrees = 30.f;
+
+	m_props[1] = new Prop( this );
+	m_props[1]->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	m_props[1]->m_position = Vec3( -2.f, -2.f, 0.f );
+
+	m_props[2] = new Prop( this );
+	m_props[2]->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
+	m_props[2]->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+
+	for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
+	{
+		// #TODO need to create grid
+
+	}
+	//m_props[2] = new Prop( this );
+	//m_props[2]->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
+	//m_props[2]->m_position = Vec3( 0.f, 0.f, 0.f );
+
+	//m_props[3] = new Prop( this );
+	//m_props[3]->MakeCube( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ) );
+	//m_props[3]->m_position = Vec3( 0.f, 0.f, 0.f );
 }

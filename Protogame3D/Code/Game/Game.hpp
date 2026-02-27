@@ -81,6 +81,8 @@ private:
 
 	void UpdateBlackHole();
 
+	void CreateProps();
+
 	App*			m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
 	// Black hole

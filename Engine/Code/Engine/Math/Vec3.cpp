@@ -190,3 +190,13 @@ Vec3 const Vec3::GetNormalized() const
 
 	return Vec3(x / length, y / length, z / length);
 }
+
+//-----------------------------------------------------------------------------------------------
+Vec3 const Vec3::MakeFromPolarDegrees( float pitchDegrees, float yawDegrees, float length /*= 1.f */ )
+{
+	return Vec3(
+		length * CosDegrees( pitchDegrees ) * CosDegrees( yawDegrees ),
+		length * SinDegrees( pitchDegrees ) * CosDegrees( yawDegrees ),
+		length * -SinDegrees( yawDegrees )
+	);
+}
