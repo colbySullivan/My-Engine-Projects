@@ -19,9 +19,8 @@ App::App()
 	config.m_windowConfig.m_windowTitle = "MathVisualTests";
 	g_engine = new Engine( config );
 
-	g_gameMode = GAMEMODE_NEAREST_POINT;
-
-	m_game = new GameNearestPoint( this );
+	g_gameMode = GAMEMODE_RAYCAST_VS_DISCS;
+	m_game = new GameRaycastVsDiscs( this ); // #TODO Revert this to GAMEMODE_NEAREST_POINT
 
 	m_game->Startup();
 }
