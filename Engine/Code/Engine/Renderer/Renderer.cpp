@@ -175,11 +175,21 @@ Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource
 	std::vector<uint8_t> vertexBytes;
 	CompileShaderToByteCode( vertexBytes, config.m_name.c_str(), shaderSource, config.m_vertexEntryPoint.c_str(), "vs_5_0" );
 
-	m_device->CreateVertexShader( vertexBytes.data(), vertexBytes.size(), NULL, &shader->m_vertexShader );
+
+	HRESULT hr;
+	hr = m_device->CreateVertexShader( vertexBytes.data(), vertexBytes.size(), NULL, &shader->m_vertexShader );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create vertex shader." );
+	}
 
 	std::vector<uint8_t> pixelBytes;
 	CompileShaderToByteCode( pixelBytes, config.m_name.c_str(), shaderSource, config.m_pixelEntryPoint.c_str(), "ps_5_0" );
-	m_device->CreatePixelShader( pixelBytes.data(), pixelBytes.size(), NULL, &shader->m_pixelShader );
+	hr = m_device->CreatePixelShader( pixelBytes.data(), pixelBytes.size(), NULL, &shader->m_pixelShader );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create pixel shader." );
+	}
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
 	{
@@ -188,13 +198,17 @@ Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	m_device->CreateInputLayout(
+	hr = m_device->CreateInputLayout(
 		inputElementDesc,
 		ARRAYSIZE( inputElementDesc ),
 		vertexBytes.data(),
 		vertexBytes.size(),
 		&shader->m_inputLayout
 	);
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create input layout." );
+	}
 
 	return shader;
 }
@@ -247,11 +261,9 @@ bool Renderer::CompileShaderToByteCode(
 	{
 		if ( errorBlob )
 		{
-			errorBlob->Release();
-			errorBlob = nullptr;
-
+			ERROR_AND_DIE( static_cast<char*>(errorBlob->GetBufferPointer()) );
 		}
-		ERROR_AND_DIE( "Shader compilation failed" );
+		ERROR_AND_DIE( "Shader compilation failed with no error message." );
 	}
 
 	if ( SUCCEEDED( hr ) )
@@ -305,7 +317,6 @@ void Renderer::BindVertexBuffer( VertexBuffer* vbo )
 void Renderer::DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount )
 {
 	SetStatesIfChanged();
-	SetSamplerMode( m_desiredSamplerMode );
 	BindVertexBuffer( vbo );
 	m_deviceContext->Draw( vertexCount, 0 );
 }
@@ -406,7 +417,6 @@ void Renderer::SetModelConstants( Mat44 const& modelToWorldTransform, Rgba8 cons
 //------------------------------------------------------------------------------
 void Renderer::DeleteReleaseAll()
 {
-	DX_SAFE_RELEASE( m_rasterizerState );
 	DX_SAFE_RELEASE( m_renderTargetView );
 	DX_SAFE_RELEASE( m_swapChain );
 	DX_SAFE_RELEASE( m_deviceContext );
@@ -523,6 +533,7 @@ void Renderer::CreateDeviceAndSwapChain()
 	hr = m_device->CreateRenderTargetView( backBuffer, NULL, &m_renderTargetView );
 	if ( !SUCCEEDED( hr ) )
 	{
+		backBuffer->Release();
 		ERROR_AND_DIE( "Could create render target view for swap chain buffer." );
 	}
 	backBuffer->Release();
@@ -802,5 +813,6 @@ void Renderer::SetSamplerMode( SamplerMode mode )
 //-----------------------------------------------------------------------------------------------
 void Renderer::SetRasterizerMode( RasterizerMode mode )
 {
-	m_deviceContext->RSSetState( m_rasterizerStates[( int )mode] );
+	m_rasterizerState = m_rasterizerStates[( int )mode];
+	m_deviceContext->RSSetState( m_rasterizerState );
 }
