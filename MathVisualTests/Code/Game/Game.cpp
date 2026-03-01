@@ -37,7 +37,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_NONE );
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
 }
 
 //-----------------------------------------------------------------------------------------------
