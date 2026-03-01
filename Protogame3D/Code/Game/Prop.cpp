@@ -80,9 +80,20 @@ void Prop::MakeCube( Rgba8 posX /*= Rgba8( 255, 255, 255 )*/, Rgba8 negX /*= Rgb
 		posZ );
 }
 
+//------------------------------------------------------------------------------
 void Prop::MakeCube( Rgba8 mainColor, Vec3 scale /*= Vec3(1,1,1) */ )
 {
 	MakeCube( mainColor, mainColor, mainColor, mainColor, mainColor, mainColor, scale );
+}
+
+//------------------------------------------------------------------------------
+void Prop::MakeCubeAtPos( Rgba8 color, Vec3 size, Vec3 position )
+{
+	MakeCube( color, size );
+	for ( int i = ( int )m_vertexes.size() - 36; i < ( int )m_vertexes.size(); ++i )
+	{
+		m_vertexes[i].m_position += position;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

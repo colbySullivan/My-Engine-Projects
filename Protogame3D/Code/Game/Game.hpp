@@ -85,6 +85,7 @@ private:
 
 	App*			m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
+	Texture*		m_testTexture = nullptr;
 	// Black hole
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];

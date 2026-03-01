@@ -25,6 +25,7 @@ Game::Game()
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
+	m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	m_player = new Player( this );
@@ -374,44 +375,36 @@ void Game::CreateProps()
 
 	Prop* sphere = new Prop( this );
 	sphere->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
-	sphere->m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+	sphere->m_texture = m_testTexture;
 	m_props.push_back( sphere );
 
+	Prop* xAxisLines = new Prop( this );
 	for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
 	{
-		Prop* xAxisLines = new Prop( this );
+		Vec3 linePosition = Vec3( -50.f + ( xGridIndex ), 0.f, 0.f );
 		if ( xGridIndex % 5 == 0 )
 		{
-			xAxisLines->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
+			xAxisLines->MakeCubeAtPos( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ), linePosition );
 		}
 		else
 		{
-			xAxisLines->MakeCube( Rgba8( 120, 120, 120 ), Vec3( 0.05f, 100.f, 0.05f ) );
+			xAxisLines->MakeCubeAtPos( Rgba8( 120, 120, 120 ), Vec3( 0.05f, 100.f, 0.05f ), linePosition );
 		}
-		xAxisLines->m_position = Vec3( -50.f + ( xGridIndex ), 0.f, 0.f);
-		m_props.push_back( xAxisLines );
 	}
+	m_props.push_back( xAxisLines );
 
+	Prop* yAxisLines = new Prop( this );
 	for ( int yGridIndex = 0; yGridIndex < 100; ++yGridIndex )
 	{
-		Prop* yAxisLines = new Prop( this );
+		Vec3 linePosition = Vec3( 0.f, -50.f + ( yGridIndex ), 0.f );
 		if ( yGridIndex % 5 == 0 )
 		{
-			yAxisLines->MakeCube( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ) );
+			yAxisLines->MakeCubeAtPos( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ), linePosition );
 		}
 		else
 		{
-			yAxisLines->MakeCube( Rgba8( 120, 120, 120 ), Vec3( 100.f, 0.05f, 0.05f ) );
+			yAxisLines->MakeCubeAtPos( Rgba8( 120, 120, 120 ), Vec3( 100.f, 0.05f, 0.05f ), linePosition );
 		}
-		yAxisLines->m_position = Vec3( 0.f, -50.f + ( yGridIndex ), 0.f );
-		m_props.push_back( yAxisLines );
 	}
-
-	//m_props[2] = new Prop( this );
-	//m_props[2]->MakeCube( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ) );
-	//m_props[2]->m_position = Vec3( 0.f, 0.f, 0.f );
-
-	//m_props[3] = new Prop( this );
-	//m_props[3]->MakeCube( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ) );
-	//m_props[3]->m_position = Vec3( 0.f, 0.f, 0.f );
+	m_props.push_back( yAxisLines );
 }

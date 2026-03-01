@@ -16,7 +16,7 @@ public:
 
 	void MakeCube( Rgba8 posX = Rgba8( 255, 255, 255 ), Rgba8 negX = Rgba8( 255, 255, 255 ), Rgba8 posY = Rgba8( 255, 255, 255 ), Rgba8 negY = Rgba8( 255, 255, 255 ), Rgba8 posZ = Rgba8( 255, 255, 255 ), Rgba8 negZ = Rgba8( 255, 255, 255 ), Vec3 scale = Vec3(1,1,1) );
 	void MakeCube( Rgba8 mainColor, Vec3 scale = Vec3(1,1,1) );
-	
+	void MakeCubeAtPos( Rgba8 color, Vec3 size, Vec3 position );
 	void MakeSphere( Vec3 center, float radians, int numSlices, int numStacks );
 
 	std::vector<Vertex> m_vertexes;
