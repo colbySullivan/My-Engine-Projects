@@ -3,21 +3,21 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <dxgi.h>
-
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "opengl32")
 
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/DefaultShader.hpp"
 #include "Engine/Core/Time.hpp"
+#include "Engine/Core/FileUtils.hpp"
+#include "Engine/Core/Image.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
-#include "Engine/Core/FileUtils.hpp"
-#include "Engine/Renderer/DefaultShader.hpp"
-#include "Engine/Core/Image.hpp"
-#include <Engine/Core/ErrorWarningAssert.hpp>
 
 #if defined(_DEBUG)
 #define ENGINE_DEBUG_RENDER
@@ -27,6 +27,7 @@
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 #endif
+
 #include "ThirdParty/stb/stb_image.h"
 
 #if defined(ENGINE_DEBUG_RENDER)
@@ -34,25 +35,16 @@ void* m_dxgiDebug = nullptr;
 void* m_dxgiDebugModule = nullptr;
 #endif
 
-#pragma comment(lib, "opengl32")
-
 HGLRC g_openGLRenderingContext = nullptr;
 
-//------------------------------------------------------------------------------
-// Camera constants
-//------------------------------------------------------------------------------
 struct CameraConstants
 {
 	Mat44 WorldToCameraTransform;
 	Mat44 CameraToRenderTransform;
 	Mat44 RenderToClipTransform;
 };
-
 static const int k_cameraConstantsSlot = 2;
 
-//------------------------------------------------------------------------------
-// Model constants
-//------------------------------------------------------------------------------
 struct ModelConstants
 {
 	Mat44  ModelToWorldTransform;
@@ -60,8 +52,6 @@ struct ModelConstants
 };
 static const int k_modelConstantsSlot = 3;
 
-//------------------------------------------------------------------------------
-// Public
 //------------------------------------------------------------------------------
 Renderer::Renderer( RenderConfig const& config )
 	: m_config( config )
@@ -76,7 +66,6 @@ Renderer::~Renderer()
 //------------------------------------------------------------------------------
 void Renderer::Startup()
 {
-
 	m_desiredBlendMode = BlendMode::ALPHA;
 	m_desiredSamplerMode = SamplerMode::POINT_CLAMP;
 	m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
@@ -121,7 +110,6 @@ void Renderer::ClearScreen( Rgba8 const& clearColor )
 	float colorAsFloats[4];
 	clearColor.GetAsFloats( colorAsFloats );
 	m_deviceContext->ClearRenderTargetView( m_renderTargetView, colorAsFloats );
-
 	m_deviceContext->ClearDepthStencilView( m_depthStencilDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
 }
 
@@ -164,7 +152,222 @@ void Renderer::DrawVertexArray( std::vector<Vertex> const& verts )
 }
 
 //------------------------------------------------------------------------------
-// Private
+void Renderer::SetBlendMode( BlendMode mode )
+{
+	m_desiredBlendMode = mode;
+}
+
+//------------------------------------------------------------------------------
+void Renderer::SetModelConstants( Mat44 const& modelToWorldTransform, Rgba8 const& modelColor )
+{
+	ModelConstants constants;
+	constants.ModelToWorldTransform = modelToWorldTransform;
+	modelColor.GetAsFloats( constants.ModelColor );
+	CopyCPUToGPU( &constants, sizeof( ModelConstants ), m_modelCBO );
+	BindConstantBuffer( k_modelConstantsSlot, m_modelCBO );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateDeviceAndSwapChain()
+{
+	unsigned int deviceFlags = 0;
+#if defined(ENGINE_DEBUG_RENDER)
+	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+	DXGI_SWAP_CHAIN_DESC swapChainDesc = { };
+	swapChainDesc.BufferDesc.Width = g_engine->m_window->GetClientDimensions().x;
+	swapChainDesc.BufferDesc.Height = g_engine->m_window->GetClientDimensions().y;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = 2;
+	swapChainDesc.OutputWindow = ( HWND )g_engine->m_window->GetHwnd();
+	swapChainDesc.Windowed = true;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(
+		nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, deviceFlags,
+		nullptr, 0, D3D11_SDK_VERSION, &swapChainDesc,
+		&m_swapChain, &m_device, nullptr, &m_deviceContext );
+
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create D3D 11 device and swap chain." );
+	}
+
+	ID3D11Texture2D* backBuffer;
+	hr = m_swapChain->GetBuffer( 0, _uuidof( ID3D11Texture2D ), ( void** )&backBuffer );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not get swap chain buffer." );
+	}
+
+	hr = m_device->CreateRenderTargetView( backBuffer, NULL, &m_renderTargetView );
+	if ( !SUCCEEDED( hr ) )
+	{
+		backBuffer->Release();
+		ERROR_AND_DIE( "Could create render target view for swap chain buffer." );
+	}
+	backBuffer->Release();
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateAndBindShaders()
+{
+	m_currentShader = CreateShader( "Current", defaultShaderSource );
+	m_defaultShader = CreateShader( "Default", defaultShaderSource );
+	m_loadedShaders.push_back( m_currentShader );
+	m_loadedShaders.push_back( m_defaultShader );
+	BindShader( m_currentShader );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateBuffers()
+{
+	m_immediateVBO = CreateVertexBuffer( sizeof( Vertex ), sizeof( Vertex ) );
+	m_cameraCBO = CreateConstantBuffer( sizeof( CameraConstants ) );
+	m_modelCBO = CreateConstantBuffer( sizeof( ModelConstants ) );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateNewRasterizerStates()
+{
+	CreateRasterizerState( D3D11_FILL_SOLID, D3D11_CULL_NONE, RasterizerMode::SOLID_CULL_NONE );
+	CreateRasterizerState( D3D11_FILL_SOLID, D3D11_CULL_BACK, RasterizerMode::SOLID_CULL_BACK );
+	CreateRasterizerState( D3D11_FILL_WIREFRAME, D3D11_CULL_NONE, RasterizerMode::WIREFRAME_CULL_NONE );
+	CreateRasterizerState( D3D11_FILL_WIREFRAME, D3D11_CULL_BACK, RasterizerMode::WIREFRAME_CULL_BACK );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateRasterizerState( D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode, RasterizerMode mode )
+{
+	D3D11_RASTERIZER_DESC rasterizerDesc = { };
+	rasterizerDesc.FillMode = fillMode;
+	rasterizerDesc.CullMode = cullMode;
+	rasterizerDesc.FrontCounterClockwise = true;
+	rasterizerDesc.DepthClipEnable = true;
+	rasterizerDesc.AntialiasedLineEnable = true;
+
+	HRESULT hr;
+	hr = m_device->CreateRasterizerState( &rasterizerDesc, &m_rasterizerStates[( int )mode] );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "CreateRasterizerState for RasterizerMode" );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateBlendAndSamplerStates()
+{
+	CreateBlendStates( D3D11_BLEND_ONE, D3D11_BLEND_ZERO, BlendMode::OPAQUE );
+	CreateBlendStates( D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, BlendMode::ALPHA );
+	CreateBlendStates( D3D11_BLEND_ONE, D3D11_BLEND_ONE, BlendMode::ADDITIVE );
+
+	Image whiteImage = Image( IntVec2( 2, 2 ), Rgba8( 255, 255, 255, 255 ) );
+	m_defaultTexture = CreateTextureFromImage( whiteImage );
+	BindTexture( const_cast< Texture* >( m_defaultTexture ) );
+
+	CreateSamplerMode( SamplerMode::POINT_CLAMP, D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP );
+	CreateSamplerMode( SamplerMode::BILINEAR_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode )
+{
+	D3D11_BLEND_DESC blendDesc = { };
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = sourceBlend;
+	blendDesc.RenderTarget[0].DestBlend = destBlend;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = blendDesc.RenderTarget[0].SrcBlend;
+	blendDesc.RenderTarget[0].DestBlendAlpha = blendDesc.RenderTarget[0].DestBlend;
+	blendDesc.RenderTarget[0].BlendOpAlpha = blendDesc.RenderTarget[0].BlendOp;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	HRESULT hr;
+	hr = m_device->CreateBlendState( &blendDesc, &m_blendStates[( int )( mode )] );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "CreateBlendState for BlendMode::OPAQUE failed." );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateSamplerMode( SamplerMode mode, D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressU, D3D11_TEXTURE_ADDRESS_MODE addressV, D3D11_TEXTURE_ADDRESS_MODE addressW )
+{
+	D3D11_SAMPLER_DESC samplerDesc = { };
+	samplerDesc.Filter = filter;
+	samplerDesc.AddressU = addressU;
+	samplerDesc.AddressV = addressV;
+	samplerDesc.AddressW = addressW;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HRESULT hr;
+	hr = m_device->CreateSamplerState( &samplerDesc, &m_samplerStates[( int )mode] );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "CreateSamplerState for SamplerMode :: POINT_CLAMP failed." );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateDepthStencilTexture()
+{
+	D3D11_TEXTURE2D_DESC depthTextureDesc = { };
+	depthTextureDesc.Width = g_engine->m_window->GetClientDimensions().x;
+	depthTextureDesc.Height = g_engine->m_window->GetClientDimensions().y;
+	depthTextureDesc.MipLevels = 1;
+	depthTextureDesc.ArraySize = 1;
+	depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTextureDesc.SampleDesc.Count = 1;
+
+	HRESULT hr;
+	hr = m_device->CreateTexture2D( &depthTextureDesc, nullptr, &m_depthStencilTexture );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create texture for depth stencil." );
+	}
+
+	hr = m_device->CreateDepthStencilView( m_depthStencilTexture, nullptr, &m_depthStencilDSV );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "Could not create depth stencil view." );
+	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateDepthStencilStates()
+{
+	CreateDepthStencilState( DepthMode::DISABLED );
+	CreateDepthStencilState( DepthMode::READ_ONLY_ALWAYS, D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_ALWAYS );
+	CreateDepthStencilState( DepthMode::READ_ONLY_LESS_EQUAL, D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_LESS_EQUAL );
+	CreateDepthStencilState( DepthMode::READ_WRITE_LESS_EQUAL, D3D11_DEPTH_WRITE_MASK_ALL, D3D11_COMPARISON_LESS_EQUAL );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CreateDepthStencilState( DepthMode mode, D3D11_DEPTH_WRITE_MASK writeMask, D3D11_COMPARISON_FUNC func )
+{
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = { };
+
+	if ( mode != DepthMode::DISABLED )
+	{
+		depthStencilDesc.DepthEnable = TRUE;
+		depthStencilDesc.DepthWriteMask = writeMask;
+		depthStencilDesc.DepthFunc = func;
+	}
+
+	HRESULT hr;
+	hr = m_device->CreateDepthStencilState( &depthStencilDesc, &m_depthStencilStates[( int )mode] );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( "CreateDepthStencilState for DepthMode: :DISABLED failed." );
+	}
+}
+
 //------------------------------------------------------------------------------
 Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource )
 {
@@ -174,7 +377,6 @@ Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource
 
 	std::vector<uint8_t> vertexBytes;
 	CompileShaderToByteCode( vertexBytes, config.m_name.c_str(), shaderSource, config.m_vertexEntryPoint.c_str(), "vs_5_0" );
-
 
 	HRESULT hr;
 	hr = m_device->CreateVertexShader( vertexBytes.data(), vertexBytes.size(), NULL, &shader->m_vertexShader );
@@ -235,12 +437,7 @@ void Renderer::BindShader( Shader* shader )
 }
 
 //------------------------------------------------------------------------------
-bool Renderer::CompileShaderToByteCode(
-	std::vector<unsigned char>& outByteCode,
-	char const* name,
-	char const* source,
-	char const* entryPoint,
-	char const* target )
+bool Renderer::CompileShaderToByteCode( std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target )
 {
 	DWORD shaderFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #if defined(ENGINE_DEBUG_RENDER)
@@ -261,7 +458,7 @@ bool Renderer::CompileShaderToByteCode(
 	{
 		if ( errorBlob )
 		{
-			ERROR_AND_DIE( static_cast<char*>(errorBlob->GetBufferPointer()) );
+			ERROR_AND_DIE( static_cast< char* >( errorBlob->GetBufferPointer() ) );
 		}
 		ERROR_AND_DIE( "Shader compilation failed with no error message." );
 	}
@@ -297,6 +494,15 @@ void Renderer::BindConstantBuffer( int slot, ConstantBuffer* cbo )
 {
 	m_deviceContext->VSSetConstantBuffers( slot, 1, &cbo->m_buffer );
 	m_deviceContext->PSSetConstantBuffers( slot, 1, &cbo->m_buffer );
+}
+
+//------------------------------------------------------------------------------
+void Renderer::CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo )
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_deviceContext->Map( cbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
+	memcpy( resource.pData, data, size );
+	m_deviceContext->Unmap( cbo->m_buffer, 0 );
 }
 
 //------------------------------------------------------------------------------
@@ -336,24 +542,9 @@ void Renderer::CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* 
 }
 
 //------------------------------------------------------------------------------
-void Renderer::CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo )
-{
-	D3D11_MAPPED_SUBRESOURCE resource;
-	m_deviceContext->Map( cbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
-	memcpy( resource.pData, data, size );
-	m_deviceContext->Unmap( cbo->m_buffer, 0 );
-}
-
-//------------------------------------------------------------------------------
-void Renderer::SetBlendMode( BlendMode mode )
-{
-	m_desiredBlendMode = mode;
-}
-
-//------------------------------------------------------------------------------
 void Renderer::SetStatesIfChanged()
 {
-	ID3D11BlendState* desiredState = m_blendStates[(int)m_desiredBlendMode];
+	ID3D11BlendState* desiredState = m_blendStates[( int )m_desiredBlendMode];
 	if ( desiredState != m_blendState )
 	{
 		m_blendState = desiredState;
@@ -372,7 +563,7 @@ void Renderer::SetStatesIfChanged()
 		SetRasterizerMode( m_desiredRasterizerMode );
 	}
 
-	if ( m_depthStencilStates[( int )m_desiredDepthMode] != m_depthStencilState)
+	if ( m_depthStencilStates[( int )m_desiredDepthMode] != m_depthStencilState )
 	{
 		m_depthStencilState = m_depthStencilStates[( int )m_desiredDepthMode];
 		m_deviceContext->OMSetDepthStencilState( m_depthStencilStates[( int )m_desiredDepthMode], 0 );
@@ -380,38 +571,146 @@ void Renderer::SetStatesIfChanged()
 }
 
 //------------------------------------------------------------------------------
-void Renderer::CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode )
+void Renderer::SetSamplerMode( SamplerMode mode )
 {
-	D3D11_BLEND_DESC blendDesc = { };
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendDesc.RenderTarget[0].SrcBlend = sourceBlend;
-	blendDesc.RenderTarget[0].DestBlend = destBlend;
-	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendDesc.RenderTarget[0].SrcBlendAlpha = blendDesc.RenderTarget[0].SrcBlend;
-	blendDesc.RenderTarget[0].DestBlendAlpha = blendDesc.RenderTarget[0].DestBlend;
-	blendDesc.RenderTarget[0].BlendOpAlpha = blendDesc.RenderTarget[0].BlendOp;
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	HRESULT hr;
-	hr = m_device->CreateBlendState(
-		&blendDesc,
-		&m_blendStates[( int )( mode )]
-	);
-
-	if ( !SUCCEEDED( hr ) )
+	if ( m_samplerStates[( int )mode] != m_samplerState )
 	{
-		ERROR_AND_DIE( "CreateBlendState for BlendMode::OPAQUE failed." );
+		m_samplerState = m_samplerStates[( int )mode];
+		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
 	}
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetModelConstants( Mat44 const& modelToWorldTransform, Rgba8 const& modelColor /*= Rgba8::WHITE */ )
+void Renderer::SetRasterizerMode( RasterizerMode mode )
 {
-	ModelConstants constants;
-	constants.ModelToWorldTransform = modelToWorldTransform;
-	modelColor.GetAsFloats( constants.ModelColor );
-	CopyCPUToGPU( &constants, sizeof( ModelConstants ), m_modelCBO );
-	BindConstantBuffer( k_modelConstantsSlot, m_modelCBO );
+	m_rasterizerState = m_rasterizerStates[( int )mode];
+	m_deviceContext->RSSetState( m_rasterizerState );
+}
+
+//------------------------------------------------------------------------------
+Texture* Renderer::CreateTextureFromFile( const char* imageFilePath )
+{
+	Image imageFromFile = Image( imageFilePath );
+	return CreateTextureFromImage( imageFromFile );
+}
+
+//------------------------------------------------------------------------------
+Texture* Renderer::CreateTextureFromImage( const Image& image )
+{
+	Texture* newTexture = new Texture();
+	newTexture->m_name = image.GetImageFilePath();
+	newTexture->m_dimensions = image.GetDimensions();
+
+	D3D11_TEXTURE2D_DESC textureDesc = { };
+	textureDesc.Width = image.GetDimensions().x;
+	textureDesc.Height = image.GetDimensions().y;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	D3D11_SUBRESOURCE_DATA textureData;
+	textureData.pSysMem = image.GetRawData();
+	textureData.SysMemPitch = 4 * image.GetDimensions().x;
+
+	HRESULT hr;
+	hr = m_device->CreateTexture2D( &textureDesc, &textureData, &newTexture->m_texture );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( Stringf( "CreateTextureFromImage failed for image file \"%s\".",
+			image.GetImageFilePath().c_str() ) );
+	}
+
+	hr = m_device->CreateShaderResourceView( newTexture->m_texture, NULL, &newTexture->m_shaderResourceView );
+	if ( !SUCCEEDED( hr ) )
+	{
+		ERROR_AND_DIE( Stringf( "CreateShaderResourceView failed for image file \"%s\".",
+			image.GetImageFilePath().c_str() ) );
+	}
+
+	m_loadedTextures.push_back( newTexture );
+	return newTexture;
+}
+
+//------------------------------------------------------------------------------
+Texture* Renderer::CreateOrGetTextureFromFile( char const* imageFilePath )
+{
+	Texture* existingTexture = GetTextureForFileName( imageFilePath );
+	if ( existingTexture )
+	{
+		return existingTexture;
+	}
+
+	Texture* newTexture = CreateTextureFromFile( imageFilePath );
+	return newTexture;
+}
+
+//------------------------------------------------------------------------------
+Texture* Renderer::GetTextureForFileName( char const* imageFilePath )
+{
+	for ( int textureIndex = 0; textureIndex < static_cast< int >( m_loadedTextures.size() ); ++textureIndex )
+	{
+		Texture* texture = m_loadedTextures[textureIndex];
+		if ( texture->m_name == imageFilePath )
+		{
+			return texture;
+		}
+	}
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+void Renderer::BindTexture( Texture* texture )
+{
+	if ( texture == nullptr )
+	{
+		m_deviceContext->PSSetShaderResources( 0, 1, &m_defaultTexture->m_shaderResourceView );
+	}
+	else
+	{
+		m_currentTexture = texture;
+		m_deviceContext->PSSetShaderResources( 0, 1, &m_currentTexture->m_shaderResourceView );
+	}
+}
+
+//------------------------------------------------------------------------------
+BitmapFont* Renderer::CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension )
+{
+	BitmapFont* existingBitmapFont = GetFontForFileName( bitmapFontFilePathWithNoExtension );
+	if ( existingBitmapFont )
+	{
+		return existingBitmapFont;
+	}
+
+	BitmapFont* newFont = CreateFontFromFile( bitmapFontFilePathWithNoExtension );
+	return newFont;
+}
+
+//------------------------------------------------------------------------------
+BitmapFont* Renderer::GetFontForFileName( char const* bitmapFontFilePathWithNoExtension )
+{
+	for ( int fontIndex = 0; fontIndex < static_cast< int >( m_loadedFonts.size() ); ++fontIndex )
+	{
+		BitmapFont* font = m_loadedFonts[fontIndex];
+		if ( font->m_fontFilePathNameWithNoExtension == bitmapFontFilePathWithNoExtension )
+		{
+			return font;
+		}
+	}
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension )
+{
+	std::string fontTextureFilePath = bitmapFontFilePathWithNoExtension;
+	fontTextureFilePath += ".png";
+	Texture* fontTexture = CreateOrGetTextureFromFile( fontTextureFilePath.c_str() );
+	BitmapFont* newFont = new BitmapFont( bitmapFontFilePathWithNoExtension, *fontTexture );
+	m_loadedFonts.push_back( newFont );
+	return newFont;
 }
 
 //------------------------------------------------------------------------------
@@ -454,12 +753,12 @@ void Renderer::DeleteReleaseAll()
 	{
 		DX_SAFE_RELEASE( m_samplerStates[i] );
 	}
-	
+
 	for ( int i = 0; i < ( int )RasterizerMode::COUNT; ++i )
 	{
 		DX_SAFE_RELEASE( m_rasterizerStates[i] );
 	}
-		
+
 	for ( int i = 0; i < ( int )DepthMode::COUNT; ++i )
 	{
 		DX_SAFE_RELEASE( m_depthStencilStates[i] );
@@ -485,334 +784,4 @@ void Renderer::EngineDubugRenderer()
 	( ( IDXGIDebug* )m_dxgiDebug )->Release();
 	::FreeLibrary( ( HMODULE )m_dxgiDebugModule );
 #endif
-}
-
-//------------------------------------------------------------------------------
-void Renderer::CreateBuffers()
-{
-	m_immediateVBO = CreateVertexBuffer( sizeof( Vertex ), sizeof( Vertex ) );
-	m_cameraCBO = CreateConstantBuffer( sizeof( CameraConstants ) );
-	m_modelCBO = CreateConstantBuffer( sizeof( ModelConstants ) );
-}
-
-//------------------------------------------------------------------------------
-void Renderer::CreateDeviceAndSwapChain()
-{
-	unsigned int deviceFlags = 0;
-#if defined(ENGINE_DEBUG_RENDER)
-	deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
-
-	DXGI_SWAP_CHAIN_DESC swapChainDesc = { };
-	swapChainDesc.BufferDesc.Width = g_engine->m_window->GetClientDimensions().x;
-	swapChainDesc.BufferDesc.Height = g_engine->m_window->GetClientDimensions().y;
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapChainDesc.BufferCount = 2;
-	swapChainDesc.OutputWindow = ( HWND )g_engine->m_window->GetHwnd();
-	swapChainDesc.Windowed = true;
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(
-		nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, deviceFlags,
-		nullptr, 0, D3D11_SDK_VERSION, &swapChainDesc,
-		&m_swapChain, &m_device, nullptr, &m_deviceContext );
-
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not create D3D 11 device and swap chain." );
-	}
-	ID3D11Texture2D* backBuffer;
-	hr = m_swapChain->GetBuffer( 0, _uuidof( ID3D11Texture2D ), ( void** )&backBuffer );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not get swap chain buffer." );
-	}
-
-	hr = m_device->CreateRenderTargetView( backBuffer, NULL, &m_renderTargetView );
-	if ( !SUCCEEDED( hr ) )
-	{
-		backBuffer->Release();
-		ERROR_AND_DIE( "Could create render target view for swap chain buffer." );
-	}
-	backBuffer->Release();
-}
-
-//------------------------------------------------------------------------------
-void Renderer::CreateNewRasterizerStates()
-{
-	CreateRasterizerState( D3D11_FILL_SOLID, D3D11_CULL_NONE, RasterizerMode::SOLID_CULL_NONE );
-	CreateRasterizerState( D3D11_FILL_SOLID, D3D11_CULL_BACK, RasterizerMode::SOLID_CULL_BACK );
-	CreateRasterizerState( D3D11_FILL_WIREFRAME, D3D11_CULL_NONE, RasterizerMode::WIREFRAME_CULL_NONE );
-	CreateRasterizerState( D3D11_FILL_WIREFRAME, D3D11_CULL_BACK, RasterizerMode::WIREFRAME_CULL_BACK );
-}
-
-void Renderer::CreateRasterizerState(D3D11_FILL_MODE fillMode, D3D11_CULL_MODE cullMode, RasterizerMode mode )
-{
-	D3D11_RASTERIZER_DESC rasterizerDesc = { };
-	rasterizerDesc.FillMode = fillMode;
-	rasterizerDesc.CullMode = cullMode;
-	rasterizerDesc.FrontCounterClockwise = true;
-	rasterizerDesc.DepthClipEnable = true;
-	rasterizerDesc.AntialiasedLineEnable = true;
-	HRESULT hr;
-	hr = m_device->CreateRasterizerState( &rasterizerDesc,
-		&m_rasterizerStates[( int )mode] );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "CreateRasterizerState for RasterizerMode" );
-	}
-}
-//-----------------------------------------------------------------------------------------------
-Texture* Renderer::CreateTextureFromFile( const char* imageFilePath )
-{
-	Image imageFromFile = Image( imageFilePath );
-	return CreateTextureFromImage( imageFromFile );
-}
-
-//-----------------------------------------------------------------------------------------------
-Texture* Renderer::CreateTextureFromImage( const Image& image )
-{
-	Texture* newTexture = new Texture();
-	//newTexture->m_name = "Default";
-	newTexture->m_name = image.GetImageFilePath(); // NOTE: m_name must be a std::string, otherwise it may point to temporary data!
-	newTexture->m_dimensions = image.GetDimensions();
-	//Texture* newTexture = CreateTextureFromFile( image.GetImageFilePath().c_str() );
-
-	D3D11_TEXTURE2D_DESC textureDesc = { };
-	textureDesc.Width = image.GetDimensions().x;
-	textureDesc.Height = image.GetDimensions().y;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-
-	D3D11_SUBRESOURCE_DATA textureData;
-	textureData.pSysMem = image.GetRawData();
-	textureData.SysMemPitch = 4 * image.GetDimensions().x;
-
-	HRESULT hr;
-	hr = m_device->CreateTexture2D( &textureDesc, &textureData, &newTexture->m_texture );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( Stringf( "CreateTextureFromImage failed for image file \"%s\".",
-			image.GetImageFilePath().c_str() ) );
-	}
-
-	hr = m_device->CreateShaderResourceView( newTexture->m_texture, NULL,
-		&newTexture->m_shaderResourceView );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( Stringf( "CreateShaderResourceView failed for image file \"%s\".",
-			image.GetImageFilePath().c_str() ) );
-	}
-
-	m_loadedTextures.push_back( newTexture );
-	return newTexture;
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::BindTexture( Texture* texture )
-{
-	if ( texture == nullptr )
-	{
-		m_deviceContext->PSSetShaderResources( 0, 1, &m_defaultTexture->m_shaderResourceView );
-	}
-	else
-	{
-		m_currentTexture = texture;
-		m_deviceContext->PSSetShaderResources( 0, 1, &m_currentTexture->m_shaderResourceView );
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::CreateDepthStencilTexture()
-{
-	// Create depth stencil texture and view
-	D3D11_TEXTURE2D_DESC depthTextureDesc = { };
-	depthTextureDesc.Width = g_engine->m_window->GetClientDimensions().x;
-	depthTextureDesc.Height = g_engine->m_window->GetClientDimensions().y;
-	depthTextureDesc.MipLevels = 1;
-	depthTextureDesc.ArraySize = 1;
-	depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthTextureDesc.SampleDesc.Count = 1;
-
-	HRESULT hr;
-	hr = m_device->CreateTexture2D( &depthTextureDesc, nullptr, &m_depthStencilTexture );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not create texture for depth stencil." );
-	}
-
-	hr = m_device->CreateDepthStencilView( m_depthStencilTexture, nullptr, &m_depthStencilDSV );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "Could not create depth stencil view." );
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::CreateDepthStencilStates()
-{
-	CreateDepthStencilState( DepthMode::DISABLED );
-	CreateDepthStencilState( DepthMode::READ_ONLY_ALWAYS, D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_ALWAYS );
-	CreateDepthStencilState( DepthMode::READ_ONLY_LESS_EQUAL, D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_LESS_EQUAL );
-	CreateDepthStencilState( DepthMode::READ_WRITE_LESS_EQUAL, D3D11_DEPTH_WRITE_MASK_ALL, D3D11_COMPARISON_LESS_EQUAL );
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::CreateDepthStencilState( DepthMode mode, D3D11_DEPTH_WRITE_MASK writeMask, D3D11_COMPARISON_FUNC func )
-{
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = { };
-
-	if ( mode != DepthMode::DISABLED )
-	{
-		depthStencilDesc.DepthEnable = TRUE;
-		depthStencilDesc.DepthWriteMask = writeMask;
-		depthStencilDesc.DepthFunc = func;
-	}
-
-	HRESULT hr;
-	hr = m_device->CreateDepthStencilState( &depthStencilDesc,
-		&m_depthStencilStates[( int ) mode ] );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "CreateDepthStencilState for DepthMode: :DISABLED failed." );
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-Texture* Renderer::CreateOrGetTextureFromFile( char const* imageFilePath )
-{
-	Texture* existingTexture = GetTextureForFileName( imageFilePath );
-	if ( existingTexture )
-	{
-		return existingTexture;
-	}
-
-	// Never seen this texture before!  Let's load it.
-	Texture* newTexture = CreateTextureFromFile( imageFilePath );
-	return newTexture;
-}
-
-//-----------------------------------------------------------------------------------------------
-Texture* Renderer::GetTextureForFileName( char const* imageFilePath )
-{
-	for ( int textureIndex = 0; textureIndex < static_cast< int >( m_loadedTextures.size() ); ++textureIndex )
-	{
-		Texture* texture = m_loadedTextures[textureIndex];
-		if ( texture->m_name == imageFilePath )
-		{
-			return texture;
-		}
-	}
-	return nullptr;
-}
-
-//-----------------------------------------------------------------------------------------------
-BitmapFont* Renderer::CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension )
-{
-	// See if we already have this font previously loaded
-	BitmapFont* existingBitmapFont = GetFontForFileName( bitmapFontFilePathWithNoExtension );
-	if ( existingBitmapFont )
-	{
-		return existingBitmapFont;
-	}
-
-	// Never seen this texture before!  Let's load it.
-	BitmapFont* newFont = CreateFontFromFile( bitmapFontFilePathWithNoExtension );
-	return newFont;
-}
-
-//-----------------------------------------------------------------------------------------------
-BitmapFont* Renderer::GetFontForFileName( char const* bitmapFontFilePathWithNoExtension )
-{
-	for ( int fontIndex = 0; fontIndex < static_cast< int >( m_loadedFonts.size() ); ++fontIndex )
-	{
-		BitmapFont* font = m_loadedFonts[fontIndex];
-		if ( font->m_fontFilePathNameWithNoExtension == bitmapFontFilePathWithNoExtension )
-		{
-			return font;
-		}
-	}
-	return nullptr;
-}
-
-//-----------------------------------------------------------------------------------------------
-BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension )
-{
-	std::string fontTextureFilePath = bitmapFontFilePathWithNoExtension;
-	fontTextureFilePath += ".png";
-	Texture* fontTexture = CreateOrGetTextureFromFile( fontTextureFilePath.c_str() );
-	BitmapFont* newFont = new BitmapFont( bitmapFontFilePathWithNoExtension, *fontTexture );
-	m_loadedFonts.push_back( newFont );
-	return newFont;
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::CreateSamplerMode( SamplerMode mode, D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressU, D3D11_TEXTURE_ADDRESS_MODE addressV, D3D11_TEXTURE_ADDRESS_MODE addressW )
-{
-	D3D11_SAMPLER_DESC samplerDesc = { };
-	samplerDesc.Filter = filter;
-	samplerDesc.AddressU = addressU;
-	samplerDesc.AddressV = addressV;
-	samplerDesc.AddressW = addressW;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HRESULT hr;
-	hr = m_device->CreateSamplerState( &samplerDesc,
-		&m_samplerStates[( int ) mode ] );
-	if ( !SUCCEEDED( hr ) )
-	{
-		ERROR_AND_DIE( "CreateSamplerState for SamplerMode :: POINT_CLAMP failed." );
-
-	}
-}
-
-//------------------------------------------------------------------------------
-void Renderer::CreateBlendAndSamplerStates()
-{
-	CreateBlendStates( D3D11_BLEND_ONE, D3D11_BLEND_ZERO, BlendMode::OPAQUE );
-	CreateBlendStates( D3D11_BLEND_SRC_ALPHA, D3D11_BLEND_INV_SRC_ALPHA, BlendMode::ALPHA );
-	CreateBlendStates( D3D11_BLEND_ONE, D3D11_BLEND_ONE, BlendMode::ADDITIVE );
-
-	Image whiteImage = Image( IntVec2( 2, 2 ), Rgba8( 255, 255, 255, 255 ) );
-	m_defaultTexture = CreateTextureFromImage( whiteImage );
-	BindTexture( const_cast< Texture* >( m_defaultTexture ) );
-
-	CreateSamplerMode( SamplerMode::POINT_CLAMP, D3D11_FILTER_MIN_MAG_MIP_POINT, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_TEXTURE_ADDRESS_CLAMP ); // Point clamp
-	CreateSamplerMode( SamplerMode::BILINEAR_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_WRAP ); // Bilinear wrap
-}
-
-//------------------------------------------------------------------------------
-void Renderer::CreateAndBindShaders()
-{
-	m_currentShader = CreateShader( "Current", defaultShaderSource );
-	m_defaultShader = CreateShader( "Default", defaultShaderSource );
-	m_loadedShaders.push_back( m_currentShader );
-	m_loadedShaders.push_back( m_defaultShader );
-	BindShader( m_currentShader );
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::SetSamplerMode( SamplerMode mode )
-{
-	if ( m_samplerStates[( int )mode] != m_samplerState )
-	{
-		m_samplerState = m_samplerStates[( int )mode];
-		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void Renderer::SetRasterizerMode( RasterizerMode mode )
-{
-	m_rasterizerState = m_rasterizerStates[( int )mode];
-	m_deviceContext->RSSetState( m_rasterizerState );
 }
