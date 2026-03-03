@@ -34,6 +34,6 @@ private:
 	TestShapeLine*		m_lastClosestShape = nullptr;
 	Vec2				m_tailPos;
 	Vec2				m_tipPos;
-	int					m_numberOfDiscs = 10;
+	int					m_numberOfLines = 8;
 	std::vector<RaycastResult2D> m_raycastResults;
 };

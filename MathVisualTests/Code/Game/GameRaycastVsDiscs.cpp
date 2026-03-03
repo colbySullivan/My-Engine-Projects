@@ -118,7 +118,7 @@ void GameRaycastVsDiscs::UpdateLine()
 
 		lineStart = result.m_impactPos;
 	}
-	if ( m_raycastResults[0].m_didImpact )
+	if ( m_raycastResults.size() > 0 )
 	{
 		AddVertsForArrow2D( m_lineVerts, m_raycastResults[0].m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 120, 120, 120, 255 ) );
 	}

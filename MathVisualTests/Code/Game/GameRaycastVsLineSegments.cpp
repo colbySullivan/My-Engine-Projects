@@ -70,7 +70,7 @@ void GameRaycastVsLineSegments::Render() const
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsLineSegments::AddShapeVerts()
 {
-	for ( int discNumber = 0; discNumber < m_numberOfDiscs; ++discNumber )
+	for ( int discNumber = 0; discNumber < m_numberOfLines; ++discNumber )
 	{
 		TestShapeLine* disc = new TestShapeLine(
 			GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
@@ -119,7 +119,7 @@ void GameRaycastVsLineSegments::UpdateLine()
 
 		lineStart = result.m_impactPos;
 	}
-	if ( m_raycastResults[0].m_didImpact )
+	if ( m_raycastResults.size() > 0 )
 	{
 		AddVertsForArrow2D( m_lineVerts, m_raycastResults[0].m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 120, 120, 120, 255 ) );
 	}
@@ -225,8 +225,6 @@ void GameRaycastVsLineSegments::UpdateCheckDiscsRaycast()
 			TestShapeLine* shape = m_testShapes[shapeIndex];
 			if ( shape )
 			{
-				//RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 pointA, Vec2 pointB )
-
 				RaycastResult2D raycastTestCheck = RaycastVsLine2D( lineStart, fwdLine, remainingLength, shape->m_start, shape->m_end );
 
 				if ( raycastTestCheck.m_didImpact && raycastTestCheck.m_impactDist < smallestImpactDist )
@@ -234,11 +232,6 @@ void GameRaycastVsLineSegments::UpdateCheckDiscsRaycast()
 					smallestImpactDist = raycastTestCheck.m_impactDist;
 					bestHit = raycastTestCheck;
 					hitShape = shape;
-					if ( shape->IsPointInsideMe( m_tailPos ) )
-					{
-						remainingLength = -1.f;
-						break;
-					}
 				}
 			}
 		}

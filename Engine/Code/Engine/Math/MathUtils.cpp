@@ -557,6 +557,7 @@ RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 	result.m_impactPos = startPos + ( i * result.m_impactDist );
 	result.m_impactNormal = pointB - pointA;
 	result.m_impactNormal.Rotate90Degrees();
+	result.m_impactNormal.Normalize();
 	if ( DotProduct2D( result.m_impactNormal, i ) > 0 )
 	{
 		result.m_impactNormal *= -1;
@@ -565,6 +566,11 @@ RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 	result.m_didImpact = true;
 
 	return result;
+
+	bool	m_didImpact = false;
+	float	m_impactDist = 0.f;
+	Vec2	m_impactPos;
+	Vec2	m_impactNormal;
 }
 
 //-----------------------------------------------------------------------------------------------
