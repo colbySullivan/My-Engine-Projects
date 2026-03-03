@@ -8,6 +8,12 @@
     <Filter Include="Gameplay">
       <UniqueIdentifier>{6d31e6c2-10a2-44db-ba79-a53d24cd072e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shapes">
+      <UniqueIdentifier>{007229d7-72bd-4e7c-b6da-eb73cb9ee14d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameModes">
+      <UniqueIdentifier>{9b6e9889-3584-4df2-8839-21a25ee1ce1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -25,32 +31,32 @@
     <ClCompile Include="Game.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
-    <ClCompile Include="GameNearestPoint.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="GameRaycastVsDiscs.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
     <ClCompile Include="TestShape.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeLine.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeTriangle.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeOBB2.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeDisc.cpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Shapes</Filter>
     </ClCompile>
     <ClCompile Include="TestShapeAABB2.cpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Shapes</Filter>
     </ClCompile>
     <ClCompile Include="TestShapeCapsule.cpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeDisc.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeLine.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeOBB2.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeTriangle.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="GameNearestPoint.cpp">
+      <Filter>GameModes</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRaycastVsDiscs.cpp">
+      <Filter>GameModes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,32 +75,32 @@
     <ClInclude Include="Game.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="GameNearestPoint.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="GameRaycastVsDiscs.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="TestShape.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeLine.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeTriangle.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeOBB2.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeDisc.hpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Shapes</Filter>
     </ClInclude>
     <ClInclude Include="TestShapeAABB2.hpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Shapes</Filter>
     </ClInclude>
     <ClInclude Include="TestShapeCapsule.hpp">
-      <Filter>Gameplay</Filter>
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeDisc.hpp">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeLine.hpp">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeOBB2.hpp">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeTriangle.hpp">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameNearestPoint.hpp">
+      <Filter>GameModes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRaycastVsDiscs.hpp">
+      <Filter>GameModes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
