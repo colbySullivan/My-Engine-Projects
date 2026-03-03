@@ -48,7 +48,7 @@ void GameRaycastVsDiscs::Update( [[maybe_unused]] float deltaSeconds )
 	}
 	UpdateCheckDiscsRaycast();
 	UpdateLine();
-	UpdateKeyboardPoints();
+	UpdateKeyboardPoints( deltaSeconds );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -118,45 +118,51 @@ void GameRaycastVsDiscs::UpdateLine()
 
 		lineStart = result.m_impactPos;
 	}
+	if ( m_raycastResults[0].m_didImpact )
+	{
+		AddVertsForArrow2D( m_lineVerts, m_raycastResults[0].m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 120, 120, 120, 255 ) );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
-void GameRaycastVsDiscs::UpdateKeyboardPoints()
+void GameRaycastVsDiscs::UpdateKeyboardPoints( float deltaSeconds )
 {
+	float keyboardSpeed = deltaSeconds * 100.f;
+
 	// Tail point
 	if ( g_engine->m_input->IsKeyDown( 'W' ) )
 	{
-		m_tailPos = m_tailPos + Vec2( 0.f, 1.f );
+		m_tailPos = m_tailPos + Vec2( 0.f, 1.f ) * keyboardSpeed;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'A' ) )
 	{
-		m_tailPos = m_tailPos + Vec2( -1.f, 0.f );
+		m_tailPos = m_tailPos + Vec2( -1.f, 0.f ) * keyboardSpeed;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'S' ) )
 	{
-		m_tailPos = m_tailPos + Vec2( 0.f, -1.f );
+		m_tailPos = m_tailPos + Vec2( 0.f, -1.f ) * keyboardSpeed;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'D' ) )
 	{
-		m_tailPos = m_tailPos + Vec2( 1.f, 0.f );
+		m_tailPos = m_tailPos + Vec2( 1.f, 0.f ) * keyboardSpeed;
 	}
 
 	// Head point
 	if ( g_engine->m_input->IsKeyDown( 'I' ) )
 	{
-		m_tipPos = m_tipPos + Vec2( 0.f, 1.f );
+		m_tipPos = m_tipPos + Vec2( 0.f, 1.f ) * keyboardSpeed;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'J' ) )
 	{
-		m_tipPos = m_tipPos + Vec2( -1.f, 0.f );
+		m_tipPos = m_tipPos + Vec2( -1.f, 0.f ) * keyboardSpeed;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'K' ) )
 	{
-		m_tipPos = m_tipPos + Vec2( 0.f, -1.f );
+		m_tipPos = m_tipPos + Vec2( 0.f, -1.f ) * keyboardSpeed;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'L' ) )
 	{
-		m_tipPos = m_tipPos + Vec2( 1.f, 0.f );
+		m_tipPos = m_tipPos + Vec2( 1.f, 0.f ) * keyboardSpeed;
 	}
 
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
@@ -216,15 +222,20 @@ void GameRaycastVsDiscs::UpdateCheckDiscsRaycast() //#TODO Need to fix through v
 		for ( int shapeIndex = 0; shapeIndex < m_testShapes.size(); ++shapeIndex )
 		{
 			TestShapeDisc* shape = m_testShapes[shapeIndex];
-
 			if ( shape )
 			{
 				RaycastResult2D raycastTestCheck = RaycastVsDisc2D( lineStart, fwdLine, remainingLength, shape->m_center, 10.f );
+
 				if ( raycastTestCheck.m_didImpact && raycastTestCheck.m_impactDist < smallestImpactDist )
 				{
 					smallestImpactDist = raycastTestCheck.m_impactDist;
 					bestHit = raycastTestCheck;
 					hitShape = shape;
+					if ( shape->IsPointInsideMe( m_tailPos ) )
+					{
+						remainingLength = -1.f;
+						break;
+					}
 				}
 			}
 		}

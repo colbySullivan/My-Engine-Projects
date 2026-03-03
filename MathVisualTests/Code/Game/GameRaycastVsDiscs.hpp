@@ -25,7 +25,7 @@ private:
 	void AddShapeVerts();
 	void RenderShapes() const;
 	void UpdateLine();
-	void UpdateKeyboardPoints();
+	void UpdateKeyboardPoints( float deltaSeconds );
 	void UpdateCheckDiscsRaycast();
 
 	Vec2 GetRandomPosition( float minX, float maxX, float minY, float maxY );
