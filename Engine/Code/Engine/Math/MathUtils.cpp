@@ -518,6 +518,56 @@ RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 }
 
 //-----------------------------------------------------------------------------------------------
+RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 pointA, Vec2 pointB )
+{
+	RaycastResult2D result;
+	Vec2 const& i = fwdNormal;
+	Vec2 j = fwdNormal.GetRotatedBy90Degrees();
+
+	Vec2 RayToA = pointA - startPos;
+	Vec2 RayToB = pointB - startPos;
+
+	float RayToAOntoJ = DotProduct2D(RayToA, j);
+	float RayToBOntoJ = DotProduct2D(RayToB, j);
+	if ( (RayToAOntoJ * RayToBOntoJ) >= 0 )
+	{
+		return result;
+	}
+
+	float RayToAOntoI = DotProduct2D( RayToA, i );
+	float RayToBOntoI = DotProduct2D( RayToB, i );
+
+	if ( RayToAOntoI <= 0 && RayToBOntoI <= 0 )
+	{
+		return result;
+	}
+	if ( RayToAOntoI >= maxDist && RayToBOntoI >= maxDist )
+	{
+		return result;
+	}
+
+	float lineSegHitFraction = RayToAOntoJ / ( RayToAOntoJ - RayToBOntoJ );
+	result.m_impactDist = RayToAOntoI + ( lineSegHitFraction * ( RayToBOntoI - RayToAOntoI ) );
+
+	if ( result.m_impactDist <= 0 || result.m_impactDist >= maxDist )
+	{
+		return result;
+	}
+
+	result.m_impactPos = startPos + ( i * result.m_impactDist );
+	result.m_impactNormal = pointB - pointA;
+	result.m_impactNormal.Rotate90Degrees();
+	if ( DotProduct2D( result.m_impactNormal, i ) > 0 )
+	{
+		result.m_impactNormal *= -1;
+	}
+
+	result.m_didImpact = true;
+
+	return result;
+}
+
+//-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnAABB2D( Vec2 referencePos, AABB2 const& alignedBox )
 {
 	if ( IsPointInsideAABB2D( referencePos, alignedBox ) )

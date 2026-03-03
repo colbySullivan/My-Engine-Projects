@@ -91,6 +91,7 @@ bool    IsPointInsideOBB2D(Vec2 point, OBB2 const& orientedBox);
 bool    IsPointInsideCapsule2D(Vec2 point, Vec2 boneStart, Vec2 boneEnd, float radius);
 bool    IsPointInsideTriangle2D(Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2); // Counter-Clockwise (positive winding)
 RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 discCenter, float discRadius );
+RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 pointA, Vec2 pointB );
 
 //-----------------------------------------------------------------------------------------------
 Vec2    GetNearestPointOnAABB2D(Vec2 referencePos, AABB2 const& alignedBox);

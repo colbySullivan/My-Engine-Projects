@@ -8,6 +8,7 @@
 #include "Game/Game.hpp"
 #include "Game/GameNearestPoint.hpp"
 #include "Game/GameRaycastVsDiscs.hpp"
+#include "Game/GameRaycastVsLineSegments.hpp"
 
 
 App* g_app = nullptr;
@@ -94,6 +95,7 @@ Game* App::CreateNewGameOfType( GameType type )
 	{
 	case GAMEMODE_NEAREST_POINT:    newGame = new GameNearestPoint( this );    break;
 	case GAMEMODE_RAYCAST_VS_DISCS: newGame = new GameRaycastVsDiscs( this ); break;
+	case GAMEMODE_RAYCAST_VS_LINE_SEGMENTS: newGame = new GameRaycastVsLineSegments( this ); break;
 	}
 	return newGame;
 }

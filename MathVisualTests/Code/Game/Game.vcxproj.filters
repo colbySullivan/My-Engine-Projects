@@ -58,6 +58,9 @@
     <ClCompile Include="GameRaycastVsDiscs.cpp">
       <Filter>GameModes</Filter>
     </ClCompile>
+    <ClCompile Include="GameRaycastVsLineSegments.cpp">
+      <Filter>GameModes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -100,6 +103,9 @@
       <Filter>GameModes</Filter>
     </ClInclude>
     <ClInclude Include="GameRaycastVsDiscs.hpp">
+      <Filter>GameModes</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRaycastVsLineSegments.hpp">
       <Filter>GameModes</Filter>
     </ClInclude>
   </ItemGroup>

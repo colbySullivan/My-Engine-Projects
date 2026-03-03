@@ -102,6 +102,7 @@ void Game::RenderGameText( GameType type ) const
 	{
 		case GAMEMODE_NEAREST_POINT:		snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Nearest point (2D)");		break;
 		case GAMEMODE_RAYCAST_VS_DISCS:     snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Raycast vs Discs (2D)");	break;
+		case GAMEMODE_RAYCAST_VS_LINE_SEGMENTS:     snprintf(powerUpText, sizeof(powerUpText), "Mode (F6/F7 for prev/next): Raycast vs Line Segments (2D)");	break;
 	}
 	RenderText( powerUpText, Vec2( 1.f, 95.f ), 2.f, Rgba8( 255, 215, 0, 255 ) );
 	RenderText( "F8 to randomize; WASD/Arrows = move reference point, hold T = slow", Vec2( 1.f, 93.f ), 2.f, Rgba8( 100, 120, 180, 255 ) );
