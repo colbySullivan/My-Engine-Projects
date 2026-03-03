@@ -35,5 +35,5 @@ private:
 	Vec2				m_tailPos;
 	Vec2				m_tipPos;
 	int					m_numberOfDiscs = 10;
-	RaycastResult2D		m_raycastResult;
+	std::vector<RaycastResult2D> m_raycastResults;
 };

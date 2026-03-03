@@ -8,7 +8,6 @@
 GameRaycastVsDiscs::GameRaycastVsDiscs( App* app )
 	: Game( app )
 {
-	// TODO randomize this
 	m_tailPos = Vec2( 0.f, 0.f );
 	m_tipPos = Vec2( 150.f, 75.f );
 }
@@ -85,7 +84,7 @@ void GameRaycastVsDiscs::AddShapeVerts()
 //-----------------------------------------------------------------------------------------------
 void GameRaycastVsDiscs::RenderShapes() const
 {
-	for ( int Index = 0; Index <  static_cast<int>(m_testShapes.size()); Index++ )
+	for ( int Index = 0; Index < static_cast< int >( m_testShapes.size() ); Index++ )
 	{
 		TestShapeDisc* shape = m_testShapes[Index];
 		if ( shape != nullptr )
@@ -100,25 +99,24 @@ void GameRaycastVsDiscs::UpdateLine()
 {
 	m_lineVerts.clear();
 
-	if ( m_raycastResult.m_didImpact )
-	{
-		// Line before impact
-		Rgba8 color;
-		color.SetFromText("255, 0, 0, 255");
-		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_raycastResult.m_impactPos, 2.f, .5f, color );
+	Vec2 lineStart = m_tailPos;
 
-		float normalLength = 10.f;
-		Vec2 normalImpactExtended = m_raycastResult.m_impactPos + ( m_raycastResult.m_impactNormal * normalLength );
-		
-		// Normalized reflect
-		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, normalImpactExtended, 2.f, .5f, Rgba8( 255, 255, 0, 255 ) );
-
-		// Line after impact
-		AddVertsForArrow2D( m_lineVerts, m_raycastResult.m_impactPos, m_tipPos, 2.f, .5f, Rgba8( 200, 200, 200, 255 ) );
-	}
-	else
+	for ( int raycastIndex = 0; raycastIndex < m_raycastResults.size(); ++raycastIndex )
 	{
-		AddVertsForArrow2D( m_lineVerts, m_tailPos, m_tipPos, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
+		RaycastResult2D result = m_raycastResults[raycastIndex];
+
+		if ( !result.m_didImpact )
+		{
+			AddVertsForArrow2D( m_lineVerts, lineStart, result.m_impactPos, 2.f, .5f, Rgba8( 0, 255, 0, 255 ) );
+			break;
+		}
+
+		AddVertsForArrow2D( m_lineVerts, lineStart, result.m_impactPos, 2.f, .5f, Rgba8( 255, 0, 0, 255 ) );
+
+		Vec2 normalEnd = result.m_impactPos + result.m_impactNormal * 10.f;
+		AddVertsForArrow2D( m_lineVerts, result.m_impactPos, normalEnd, 2.f, .5f, Rgba8( 255, 255, 0, 255 ) );
+
+		lineStart = result.m_impactPos;
 	}
 }
 
@@ -128,7 +126,7 @@ void GameRaycastVsDiscs::UpdateKeyboardPoints()
 	// Tail point
 	if ( g_engine->m_input->IsKeyDown( 'W' ) )
 	{
-		m_tailPos = m_tailPos + Vec2(0.f,1.f);
+		m_tailPos = m_tailPos + Vec2( 0.f, 1.f );
 	}
 	if ( g_engine->m_input->IsKeyDown( 'A' ) )
 	{
@@ -165,7 +163,7 @@ void GameRaycastVsDiscs::UpdateKeyboardPoints()
 	{
 		AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
 		Vec2 screenMouseUV = g_engine->m_window->GetNormalizedMouseUV();
-		m_tailPos = screenSize.GetPointAtUV(screenMouseUV);
+		m_tailPos = screenSize.GetPointAtUV( screenMouseUV );
 	}
 
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_RIGHT_MOUSE ) )
@@ -183,36 +181,71 @@ Vec2 GameRaycastVsDiscs::GetRandomPosition( float minX, float maxX, float minY, 
 }
 
 //-----------------------------------------------------------------------------------------------
-void GameRaycastVsDiscs::UpdateCheckDiscsRaycast()
+void GameRaycastVsDiscs::UpdateCheckDiscsRaycast() //#TODO Need to fix through vector and case where the ray starts inside a disc
 {
-	float smallestImpactDist = 99999.f;
-	m_raycastResult.m_impactDist = 0.f;
-	m_raycastResult.m_didImpact = false;
+	m_raycastResults.clear();
+	if ( m_lastClosestShape )
+	{
+		m_lastClosestShape->ChangeColor( Rgba8( 0, 0, 255 ) );
+		m_lastClosestShape = nullptr;
+	}
+
+	for ( int shapeIndex = 0; shapeIndex < m_testShapes.size() - 1; ++shapeIndex )
+	{
+		TestShapeDisc* shape = m_testShapes[shapeIndex];
+		if ( shape )
+		{
+			shape->ChangeColor( Rgba8( 0, 0, 255 ) );
+		}
+	}
+
+	Vec2 lineStart = m_tailPos;
 	Vec2 fwdLine = m_tipPos - m_tailPos;
 	float length = fwdLine.GetLength();
 	fwdLine.Normalize();
-	
-	for ( int Index = 0; Index <  static_cast<int>(m_testShapes.size()); Index++ )
+	float remainingLength = length;
+
+	int lineBounces = 0;
+
+	while ( remainingLength > 0.f && lineBounces <= 100 )
 	{
-		TestShapeDisc* shape = m_testShapes[Index];
-		if ( shape != nullptr )
+		float smallestImpactDist = 999999.f;
+		TestShapeDisc* hitShape = nullptr;
+		RaycastResult2D bestHit;
+
+		for ( int shapeIndex = 0; shapeIndex < m_testShapes.size(); ++shapeIndex )
 		{
-			RaycastResult2D raycastTestCheck = RaycastVsDisc2D( m_tailPos, fwdLine, length, shape->m_center, 10.f );
-			if ( raycastTestCheck.m_didImpact == true && raycastTestCheck.m_impactDist < smallestImpactDist )
+			TestShapeDisc* shape = m_testShapes[shapeIndex];
+
+			if ( shape )
 			{
-				if ( m_lastClosestShape )
+				RaycastResult2D raycastTestCheck = RaycastVsDisc2D( lineStart, fwdLine, remainingLength, shape->m_center, 10.f );
+				if ( raycastTestCheck.m_didImpact && raycastTestCheck.m_impactDist < smallestImpactDist )
 				{
-					m_lastClosestShape->ChangeColor( Rgba8( 0, 0, 255 ) );
+					smallestImpactDist = raycastTestCheck.m_impactDist;
+					bestHit = raycastTestCheck;
+					hitShape = shape;
 				}
-				shape->ChangeColor( Rgba8( 0, 0, 150 ) );
-				m_lastClosestShape = shape;
-				smallestImpactDist = raycastTestCheck.m_impactDist;
-				m_raycastResult = raycastTestCheck;
-			}
-			else if ( shape )
-			{
-				shape->ChangeColor( Rgba8( 0, 0, 255 ) );
 			}
 		}
+		if ( !hitShape )
+		{
+			RaycastResult2D noHit;
+			noHit.m_didImpact = false;
+			noHit.m_impactPos = lineStart + fwdLine * remainingLength;
+			m_raycastResults.push_back( noHit );
+			break;
+		}
+
+		hitShape->ChangeColor( Rgba8( 0, 0, 150 ) );
+		m_lastClosestShape = hitShape;
+		m_raycastResults.push_back( bestHit );
+
+		remainingLength -= smallestImpactDist;
+
+		fwdLine = fwdLine.GetReflected( bestHit.m_impactNormal );
+
+		lineStart = bestHit.m_impactPos + fwdLine * 0.001f;
+		lineBounces++;
 	}
 }
