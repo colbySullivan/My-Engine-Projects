@@ -3,6 +3,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/Vec4.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include<math.h>
 
 float GetClamped(float value, float minValue, float maxValue)
@@ -273,6 +274,21 @@ bool DoSpheresOverlap(Vec3 const& centerA, float radiusA, Vec3 const& centerB, f
     float distance = GetDistanceSquared3D(centerA, centerB);
     float radiusSum = (radiusA + radiusB) * (radiusA + radiusB);
     return distance <= radiusSum;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool DoAABB2sOverlap( AABB2 const& alignedBoxA, AABB2 const& alignedBoxB )
+{
+	if ( alignedBoxA.m_maxs.x < alignedBoxB.m_mins.x || alignedBoxB.m_maxs.x < alignedBoxA.m_mins.x )
+	{
+		return false;
+	}
+	if ( alignedBoxA.m_maxs.y < alignedBoxB.m_mins.y || alignedBoxB.m_maxs.y < alignedBoxA.m_mins.y )
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius )
@@ -564,13 +580,97 @@ RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 	}
 
 	result.m_didImpact = true;
+	return result;
+}
+
+//-----------------------------------------------------------------------------------------------
+RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, AABB2& box )
+{
+	RaycastResult2D result;
+
+	if ( IsPointInsideAABB2D( startPos, box ) )
+	{
+		result.m_didImpact = true;
+		result.m_impactDist = 0.f;
+		result.m_impactPos = startPos;
+		result.m_impactNormal = -fwdNormal;
+		return result;
+	}
+
+	Vec2 rayEndPoint = startPos + (fwdNormal * maxDist);
+	float rayboxMinX = GetFloatMin( rayEndPoint.x, startPos.x);
+	float rayboxMinY = GetFloatMin( rayEndPoint.y, startPos.y);
+	float rayboxMaxX = GetFloatMax( rayEndPoint.x, startPos.x);
+	float rayboxMaxY = GetFloatMax( rayEndPoint.y, startPos.y);
+
+	AABB2 rayBox = AABB2(Vec2(rayboxMinX, rayboxMinY), Vec2(rayboxMaxX, rayboxMaxY));
+	if ( !DoAABB2sOverlap( rayBox, box ) )
+	{
+		return result;
+	}
+
+	float xLength = rayEndPoint.x - startPos.x;
+	float tMinX = ( box.m_mins.x - startPos.x ) / xLength;
+	float tMaxX = ( box.m_maxs.x - startPos.x ) / xLength;
+	if ( tMinX > tMaxX )
+	{
+		float temp = tMinX; 
+		tMinX = tMaxX; 
+		tMaxX = temp;
+	}
+
+	float yLength = rayEndPoint.y - startPos.y;
+	float tMinY = ( box.m_mins.y - startPos.y ) / yLength;
+	float tMaxY = ( box.m_maxs.y - startPos.y ) / yLength;
+	if ( tMinY > tMaxY )
+	{
+		float temp = tMinY;
+		tMinY = tMaxY;
+		tMaxY = temp;
+	}
+	FloatRange xRange = FloatRange(tMinX, tMaxX);
+	FloatRange yRange = FloatRange(tMinY, tMaxY);
+
+	if ( !xRange.IsOverlappingWith( yRange ) )
+	{
+		return result;
+	}
+
+	float tMin = tMinX;
+	if ( tMinX < tMinY )
+	{
+		tMin = tMinY;
+	}
+
+	result.m_didImpact = true;
+	result.m_impactDist = tMin * maxDist;
+	result.m_impactPos = startPos + ( fwdNormal * result.m_impactDist );
+
+	if ( tMinX > tMinY )
+	{
+		if ( fwdNormal.x < 0.f )
+		{
+			result.m_impactNormal = Vec2( 1.f, 0.f );
+		}
+		else
+		{
+			result.m_impactNormal = Vec2( -1.f, 0.f );
+		}
+	}
+	else
+	{
+		if ( fwdNormal.y < 0.f )
+		{
+			result.m_impactNormal = Vec2( 0.f, 1.f );
+		}
+		else
+		{
+			result.m_impactNormal = Vec2( 0.f, -1.f );
+		}
+	}
+	
 
 	return result;
-
-	bool	m_didImpact = false;
-	float	m_impactDist = 0.f;
-	Vec2	m_impactPos;
-	Vec2	m_impactNormal;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -719,5 +819,25 @@ Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 
 	}
 
 	return nearestCA;
+}
+
+//-----------------------------------------------------------------------------------------------
+float GetFloatMax( float a, float b )
+{
+	if ( a > b )
+	{
+		return a;
+	}
+	return b;
+}
+
+//-----------------------------------------------------------------------------------------------
+float GetFloatMin( float a, float b )
+{
+	if ( a < b )
+	{
+		return a;
+	}
+	return b;
 }
 
