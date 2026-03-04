@@ -35,6 +35,6 @@ private:
 	TestShapeAABB2*		m_lastClosestShape = nullptr;
 	Vec2				m_tailPos;
 	Vec2				m_tipPos;
-	int					m_numberOfLines = 2;
+	int					m_numberOfLines = 5;
 	std::vector<RaycastResult2D> m_raycastResults;
 };

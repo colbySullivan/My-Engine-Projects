@@ -612,22 +612,25 @@ RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, 
 	float xLength = rayEndPoint.x - startPos.x;
 	float tMinX = ( box.m_mins.x - startPos.x ) / xLength;
 	float tMaxX = ( box.m_maxs.x - startPos.x ) / xLength;
-	if ( tMinX > tMaxX )
-	{
-		float temp = tMinX; 
-		tMinX = tMaxX; 
-		tMaxX = temp;
-	}
 
 	float yLength = rayEndPoint.y - startPos.y;
 	float tMinY = ( box.m_mins.y - startPos.y ) / yLength;
 	float tMaxY = ( box.m_maxs.y - startPos.y ) / yLength;
+
+	if ( tMinX > tMaxX )
+	{
+		float temp = tMinX;
+		tMinX = tMaxX;
+		tMaxX = temp;
+	}
+
 	if ( tMinY > tMaxY )
 	{
 		float temp = tMinY;
 		tMinY = tMaxY;
 		tMaxY = temp;
 	}
+
 	FloatRange xRange = FloatRange(tMinX, tMaxX);
 	FloatRange yRange = FloatRange(tMinY, tMaxY);
 
@@ -636,14 +639,26 @@ RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, 
 		return result;
 	}
 
-	float tMin = tMinX;
+	float tEnter = tMinX;
 	if ( tMinX < tMinY )
 	{
-		tMin = tMinY;
+		tEnter = tMinY;
 	}
 
+	float tExit = tMaxX;
+	if ( tMaxX < tMaxY )
+	{
+		tExit = tMaxY;
+	}
+
+	if ( tEnter > tExit || tEnter >= maxDist || tExit < 0 )
+	{
+		return result;
+	}
+
+
 	result.m_didImpact = true;
-	result.m_impactDist = tMin * maxDist;
+	result.m_impactDist = tEnter * maxDist;
 	result.m_impactPos = startPos + ( fwdNormal * result.m_impactDist );
 
 	if ( tMinX > tMinY )
@@ -668,8 +683,6 @@ RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, 
 			result.m_impactNormal = Vec2( 0.f, -1.f );
 		}
 	}
-	
-
 	return result;
 }
 

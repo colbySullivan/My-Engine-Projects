@@ -232,6 +232,11 @@ void GameRaycastVsAABB2::UpdateCheckDiscsRaycast()
 					smallestImpactDist = raycastTestCheck.m_impactDist;
 					bestHit = raycastTestCheck;
 					hitShape = shape;
+					if ( shape->IsPointInsideMe( m_tailPos ) )
+					{
+						remainingLength = -1.f;
+						break;
+					}
 				}
 			}
 		}
