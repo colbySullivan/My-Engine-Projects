@@ -72,9 +72,15 @@ void GameRaycastVsAABB2::AddShapeVerts()
 {
 	for ( int discNumber = 0; discNumber < m_numberOfLines; ++discNumber )
 	{
+		Vec2 pointA = GetRandomPosition( 10.f, 190.f, 10.f, 90.f );
+		Vec2 pointB = GetRandomPosition( 10.f, 190.f, 10.f, 90.f );
+
+		Vec2 mins = Vec2( GetFloatMin( pointA.x, pointB.x ), GetFloatMin( pointA.y, pointB.y ) );
+		Vec2 maxs = Vec2( GetFloatMax( pointA.x, pointB.x ), GetFloatMax( pointA.y, pointB.y ) );
+
 		TestShapeAABB2* aabb2 = new TestShapeAABB2(
-			GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
-			GetRandomPosition( 10.f, 190.f, 10.f, 90.f ),
+			mins,
+			maxs,
 			Rgba8( 0, 0, 255, 255 )
 		);
 		m_testShapes.push_back( aabb2 );
@@ -196,7 +202,7 @@ void GameRaycastVsAABB2::UpdateCheckDiscsRaycast()
 		m_lastClosestShape = nullptr;
 	}
 
-	for ( int shapeIndex = 0; shapeIndex < m_testShapes.size() - 1; ++shapeIndex )
+	for ( int shapeIndex = 0; shapeIndex < m_testShapes.size(); ++shapeIndex )
 	{
 		TestShapeAABB2* shape = m_testShapes[shapeIndex];
 		if ( shape )
@@ -224,15 +230,15 @@ void GameRaycastVsAABB2::UpdateCheckDiscsRaycast()
 			TestShapeAABB2* shape = m_testShapes[shapeIndex];
 			if ( shape )
 			{
-				AABB2* box = new AABB2(shape->m_mins, shape->m_maxs);
-				RaycastResult2D raycastTestCheck = RaycastVsAABB22D( lineStart, fwdLine, remainingLength, *box );
+				AABB2 box = AABB2(shape->m_mins, shape->m_maxs);
+				RaycastResult2D raycastTestCheck = RaycastVsAABB22D( lineStart, fwdLine, remainingLength, box );
 
 				if ( raycastTestCheck.m_didImpact && raycastTestCheck.m_impactDist < smallestImpactDist )
 				{
 					smallestImpactDist = raycastTestCheck.m_impactDist;
 					bestHit = raycastTestCheck;
 					hitShape = shape;
-					if ( shape->IsPointInsideMe( m_tailPos ) )
+					if ( shape->IsPointInsideMe( lineStart ) )
 					{
 						remainingLength = -1.f;
 						break;

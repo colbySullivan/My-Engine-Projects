@@ -598,12 +598,8 @@ RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, 
 	}
 
 	Vec2 rayEndPoint = startPos + (fwdNormal * maxDist);
-	float rayboxMinX = GetFloatMin( rayEndPoint.x, startPos.x);
-	float rayboxMinY = GetFloatMin( rayEndPoint.y, startPos.y);
-	float rayboxMaxX = GetFloatMax( rayEndPoint.x, startPos.x);
-	float rayboxMaxY = GetFloatMax( rayEndPoint.y, startPos.y);
 
-	AABB2 rayBox = AABB2(Vec2(rayboxMinX, rayboxMinY), Vec2(rayboxMaxX, rayboxMaxY));
+	AABB2 rayBox = AABB2( Vec2( GetFloatMin( rayEndPoint.x, startPos.x), GetFloatMin( rayEndPoint.y, startPos.y) ), Vec2( GetFloatMax( rayEndPoint.x, startPos.x), GetFloatMax( rayEndPoint.y, startPos.y) ) );
 	if ( !DoAABB2sOverlap( rayBox, box ) )
 	{
 		return result;
@@ -640,22 +636,21 @@ RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, 
 	}
 
 	float tEnter = tMinX;
-	if ( tMinX < tMinY )
+	if ( tMinY > tMinX )
 	{
 		tEnter = tMinY;
 	}
 
 	float tExit = tMaxX;
-	if ( tMaxX < tMaxY )
+	if ( tMaxY < tMaxX )
 	{
 		tExit = tMaxY;
 	}
 
-	if ( tEnter > tExit || tEnter >= maxDist || tExit < 0 )
+	if ( tEnter > tExit || tEnter >= 1.f || tExit <= 0.f )
 	{
 		return result;
 	}
-
 
 	result.m_didImpact = true;
 	result.m_impactDist = tEnter * maxDist;
