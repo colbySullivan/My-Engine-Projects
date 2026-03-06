@@ -407,4 +407,8 @@ void Game::CreateProps()
 		}
 	}
 	m_props.push_back( yAxisLines );
+
+	Prop* newCylinder = new Prop( this );
+	newCylinder->MakeCylinder( Vec3( -10.f, 5.f, 0.f ), Vec3( -10.f, 5.f, 2.f ), 0.5f, 32 );
+	m_props.push_back( newCylinder );
 }

@@ -18,6 +18,7 @@ public:
 	void MakeCube( Rgba8 mainColor, Vec3 scale = Vec3(1,1,1) );
 	void MakeCubeAtPos( Rgba8 color, Vec3 size, Vec3 position );
 	void MakeSphere( Vec3 center, float radians, int numSlices, int numStacks );
+	void MakeCylinder( Vec3 start, Vec3 end, float radius, int numSlices );
 
 	std::vector<Vertex> m_vertexes;
 	Rgba8				m_color = Rgba8( 255, 255, 255 );

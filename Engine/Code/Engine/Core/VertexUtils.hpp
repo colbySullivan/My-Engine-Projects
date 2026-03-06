@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include <vector>
 
 //-----------------------------------------------------------------------------------------------
@@ -22,3 +23,8 @@ void AddVertsForTriangle2D(std::vector<Vertex>& verts, Vec2 ccw0, Vec2 ccw1, Vec
 void AddVertsForLineSegment2D(std::vector<Vertex>& verts, Vec2 start, Vec2 end, Vec2 thickness, Rgba8 color);
 void AddVertsForArrow2D( std::vector<Vertex>& verts, Vec2 tailPos, Vec2 tipPos, float arrowSize, float lineThickness, Rgba8 color );
 void AddVertsForQuad3D( std::vector<Vertex>& verts, const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topRight, const Vec3& topLeft, const Rgba8& color = Rgba8::WHITE, const AABB2& UVs = AABB2::ZERO_TO_ONE );
+//void TransformVertexArray3D( std::vector<Vertex>& verts, const Mat44& transform );
+//AABB2 GetVertexBounds2D( const std::vector<Vertex>& verts );
+void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color = Rgba8::WHITE, const AABB2& UVs = AABB2::ZERO_TO_ONE, int numSlices = 32 );
+//void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color = Rgba8::WHITE, const AABB2& UVs = AABB2::ZERO_TO_ONE, int numSlices = 32 );
+//void AddVertsForArrow3D( std::vector<Vertex>& verts, Vec3 const& start, Vec3 const& end, float radius, Rgba8 const& color = Rgba8::WHITE, int numSlices = 32 );
