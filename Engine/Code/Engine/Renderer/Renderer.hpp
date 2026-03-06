@@ -95,6 +95,7 @@ public:
 	void SetSamplerMode( SamplerMode mode );
 	void SetRasterizerMode( RasterizerMode mode );
 	void SetModelConstants( Mat44 const& modelToWorldTransform = Mat44(), Rgba8 const& modelColor = Rgba8( 255, 255, 255 ) );
+	void SetDepthMode( DepthMode mode );
 
 	Texture* CreateTextureFromImage( const Image& image );
 	Texture* CreateTextureFromFile( const char* imageFilePath );

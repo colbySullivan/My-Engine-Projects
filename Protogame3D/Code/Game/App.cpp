@@ -5,6 +5,7 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Game.hpp"
 
 
@@ -23,12 +24,18 @@ App::App()
 	g_UICamera = new Camera();
 	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y) );
 
+	DebugRenderConfig debugConfig;
+	debugConfig.m_renderer = g_engine->m_render;
+	DebugRenderSystemStartup( debugConfig );
+
 	SubscribeEventCallbackFunction( "Quit", App::Event_Quit );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "ToggleDebug", Command_DebugRenderToggle );
 }
 //-----------------------------------------------------------------------------------------------
 
 App::~App()
 {
+	DebugRenderSystemShutdown();
 	delete m_game;
 	m_game = nullptr;
 	delete g_engine;
@@ -39,8 +46,10 @@ App::~App()
 void App::RunFrame()
 {
 	g_engine->BeginFrame();
+	DebugRenderBeginFrame();
 	Update();
 	Render();
+	DebugRenderEndFrame();
 	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------

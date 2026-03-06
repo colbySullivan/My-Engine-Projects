@@ -167,6 +167,12 @@ void Renderer::SetModelConstants( Mat44 const& modelToWorldTransform, Rgba8 cons
 	BindConstantBuffer( k_modelConstantsSlot, m_modelCBO );
 }
 
+//-----------------------------------------------------------------------------------------------
+void Renderer::SetDepthMode( DepthMode mode )
+{
+	m_desiredDepthMode = mode;
+}
+
 //------------------------------------------------------------------------------
 void Renderer::CreateDeviceAndSwapChain()
 {

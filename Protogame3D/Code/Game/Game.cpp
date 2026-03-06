@@ -7,6 +7,7 @@
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Timer.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -51,6 +52,8 @@ void Game::Startup()
 
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
+
+	DebugAddWorldWireCylinder(Vec3( 0.f, 0.f, -2.f ), Vec3( 0.f, 0.f, 2.f ), 0.1f, 5.f, Rgba8(255,255,255), Rgba8(255,255,255), DebugRenderMode::X_RAY);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -131,6 +134,7 @@ void Game::Render() const
 				m_props[propIndex]->Render();
 			}
 		}
+		DebugRenderWorld( *m_player->m_worldCamera );
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 	}

@@ -178,6 +178,9 @@
     <ClCompile Include="Math\AABB3.cpp">
       <Filter>Math\Boxes</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\DebugRender.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Rgba8.hpp">
@@ -353,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="Math\AABB3.hpp">
       <Filter>Math\Boxes</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\DebugRender.hpp">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
