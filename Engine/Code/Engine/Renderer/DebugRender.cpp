@@ -135,6 +135,13 @@ void DebugAddWorldWireCylinder( const Vec3& start, const Vec3& end, float radius
 //-----------------------------------------------------------------------------------------------
 bool Command_DebugRenderToggle( EventArgs& args )
 {
-	DebugRenderSetHidden();
+	if ( m_debugRenderSystem->m_isVisible )
+	{
+		DebugRenderSetHidden();
+	}
+	else
+	{
+		DebugRenderSetVisible();
+	}
 	return false;
 }
