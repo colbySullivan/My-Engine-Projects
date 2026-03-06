@@ -37,6 +37,8 @@ struct Mat44
 	static Mat44 const  MakeXRotationDegrees( float rotationDegreesAboutX );
 	static Mat44 const	MakeOrthoProjection( float left, float right, float bottom, float top, float zNear, float zFar );
 	static Mat44 const	MakePerspectiveProjection( float fovYDegrees, float aspect, float zNear, float zFar );
+	static Mat44 const	MakeLookAt( Vec3 const& position, Vec3 const& target );
+
 
 	Vec2 const          TransformVectorQuantity2D( Vec2 const& vectorQuantityXY ) const;    // assumes z=0, w=0
 	Vec3 const          TransformVectorQuantity3D( Vec3 const& vectorQuantityXYZ ) const;   // assumes w=0

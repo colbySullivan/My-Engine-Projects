@@ -1,5 +1,6 @@
 #include "Engine/Math/Mat44.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include <cmath>
 //m_values[Ix]
 
 // This is for append
@@ -194,6 +195,28 @@ Mat44 const Mat44::MakePerspectiveProjection( float fovYDegrees, float aspect, f
 	perspective.m_values[Tw] = 0.f;
 
 	return perspective;
+}
+
+//------------------------------------------------------------------------------
+Mat44 const Mat44::MakeLookAt( Vec3 const& position, Vec3 const& target )
+{
+	Vec3 I = ( target - position ).GetNormalized();
+	Vec3 J;
+	Vec3 K;
+	Vec3 Y = Vec3( 0.f, 1.f, 0.f );
+	Vec3 Z = Vec3( 0.f, 0.f, 1.f );
+
+	if ( fabsf( DotProduct3D( I, Z ) ) < 0.99999f ) {
+		J = CrossProduct3D( Z, I ).GetNormalized();
+		K = CrossProduct3D( I, J );
+	}
+	else 
+	{
+		K = CrossProduct3D( I, Y ).GetNormalized();
+		J = CrossProduct3D( K, I );
+	}
+
+	return Mat44( I, J, K, position );
 }
 
 //-----------------------------------------------------------------------------------------------
