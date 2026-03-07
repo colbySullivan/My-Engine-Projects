@@ -167,12 +167,6 @@ void Renderer::SetModelConstants( Mat44 const& modelToWorldTransform, Rgba8 cons
 	BindConstantBuffer( k_modelConstantsSlot, m_modelCBO );
 }
 
-//-----------------------------------------------------------------------------------------------
-void Renderer::SetDepthMode( DepthMode mode )
-{
-	m_desiredDepthMode = mode;
-}
-
 //------------------------------------------------------------------------------
 void Renderer::CreateDeviceAndSwapChain()
 {
@@ -561,12 +555,14 @@ void Renderer::SetStatesIfChanged()
 
 	if ( m_samplerStates[( int )m_desiredSamplerMode] != m_samplerState )
 	{
-		SetSamplerMode( m_desiredSamplerMode );
+		m_samplerState = m_samplerStates[( int )m_desiredSamplerMode];
+		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
 	}
 
 	if ( m_rasterizerStates[( int )m_desiredRasterizerMode] != m_rasterizerState )
 	{
-		SetRasterizerMode( m_desiredRasterizerMode );
+		m_rasterizerState = m_rasterizerStates[( int )m_desiredRasterizerMode];
+		m_deviceContext->RSSetState( m_rasterizerState );
 	}
 
 	if ( m_depthStencilStates[( int )m_desiredDepthMode] != m_depthStencilState )
@@ -579,18 +575,19 @@ void Renderer::SetStatesIfChanged()
 //------------------------------------------------------------------------------
 void Renderer::SetSamplerMode( SamplerMode mode )
 {
-	if ( m_samplerStates[( int )mode] != m_samplerState )
-	{
-		m_samplerState = m_samplerStates[( int )mode];
-		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
-	}
+	m_desiredSamplerMode = mode;
 }
 
 //------------------------------------------------------------------------------
 void Renderer::SetRasterizerMode( RasterizerMode mode )
 {
-	m_rasterizerState = m_rasterizerStates[( int )mode];
-	m_deviceContext->RSSetState( m_rasterizerState );
+	m_desiredRasterizerMode = mode;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Renderer::SetDepthMode( DepthMode mode )
+{
+	m_desiredDepthMode = mode;
 }
 
 //------------------------------------------------------------------------------

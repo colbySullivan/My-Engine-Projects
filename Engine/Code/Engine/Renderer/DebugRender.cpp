@@ -1,5 +1,6 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Core/Engine.hpp"
 
 struct DebugRenderObject
 {
@@ -66,42 +67,64 @@ void DebugRenderBeginFrame()
 //-----------------------------------------------------------------------------------------------
 void DebugRenderWorld( const Camera& camera )
 {
-	Renderer* r = m_debugRenderSystem->m_config.m_renderer;
-	r->BeginCamera( camera );
-	r->BindTexture( nullptr );
+	g_engine->m_render->BeginCamera( camera );
+	g_engine->m_render->BindTexture( nullptr );
 
 	if ( !m_debugRenderSystem->m_isVisible )
 	{
 		return;
 	}
 
-	for (int objectIndex = 0; objectIndex < m_debugRenderSystem->m_worldObjects.size() ; ++objectIndex)
+	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_worldObjects.size(); ++objectIndex )
 	{
 		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
 
+		if ( obj.m_isWireframe )
+		{
+			g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+		}
+		else
+		{
+			g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+		}
+
 		if ( obj.m_mode == DebugRenderMode::ALWAYS )
 		{
-			r->SetDepthMode( DepthMode::DISABLED );
+			g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
+			break;
 		}
 
 		if ( obj.m_mode == DebugRenderMode::X_RAY )
 		{
-			r->SetDepthMode( DepthMode::READ_ONLY_LESS_EQUAL );
-			r->SetBlendMode( BlendMode::ALPHA );
-			r->DrawVertexArray( obj.m_vertices );
-			Rgba8 startColor = obj.m_startColor;
-			Rgba8 ghostColor = obj.m_startColor;
-			ghostColor.a = ( unsigned char )( ghostColor.a * 0.25f );
-			obj.m_startColor.a = ghostColor.a;
-			r->DrawVertexArray( obj.m_vertices );
+			Rgba8 ghostColor;
+			ghostColor.r = ( unsigned char )( obj.m_startColor.r + ( 255 - obj.m_startColor.r ) * 0.5f );
+			ghostColor.g = ( unsigned char )( obj.m_startColor.g + ( 255 - obj.m_startColor.g ) * 0.5f );
+			ghostColor.b = ( unsigned char )( obj.m_startColor.b + ( 255 - obj.m_startColor.b ) * 0.5f );
+			ghostColor.a = ( unsigned char )( obj.m_startColor.a * 0.25f );
 
-			r->SetBlendMode( BlendMode::OPAQUE );
-			r->SetDepthMode( DepthMode::READ_ONLY_ALWAYS );
-			obj.m_startColor = startColor;
+			std::vector<Vertex> ghostVerts = obj.m_vertices;
+			for (int i = 0; i < ghostVerts.size() ; i++)
+			{
+				ghostVerts[i].m_color = ghostColor;
+			}
+
+			g_engine->m_render->SetDepthMode( DepthMode::READ_ONLY_ALWAYS );
+			g_engine->m_render->SetBlendMode( BlendMode::ALPHA );
+			g_engine->m_render->DrawVertexArray( ghostVerts );
+
+			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
+		}
+		else
+		{
+			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
 		}
 
-		r->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
-		r->DrawVertexArray( obj.m_vertices );
+		
 	}
 }
 

@@ -154,6 +154,7 @@ void DevConsole::ToggleMode( [[maybe_unused]] DevConsoleMode mode )
 //-----------------------------------------------------------------------------------------------
 void DevConsole::Render_OpenFull(AABB2 const& bounds, BitmapFont& font, float fontAspect) const
 {
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
 	std::vector<Vertex> boxVerts;
 	AddVertsForAABB2D(boxVerts, bounds, Rgba8(0, 0, 0, 200));

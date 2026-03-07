@@ -53,7 +53,7 @@ void Game::Startup()
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
 
-	DebugAddWorldWireCylinder(Vec3( 0.f, 0.f, -2.f ), Vec3( 0.f, 0.f, 2.f ), 0.1f, 5.f, Rgba8(255,255,255), Rgba8(255,255,255), DebugRenderMode::X_RAY);
+	DebugAddWorldWireCylinder(Vec3( 2.f, 2.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -110,6 +110,7 @@ void Game::Render() const
 {
 	//g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BeginCamera( *m_player->m_worldCamera );
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
@@ -134,10 +135,15 @@ void Game::Render() const
 				m_props[propIndex]->Render();
 			}
 		}
-		DebugRenderWorld( *m_player->m_worldCamera );
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
+		DebugRenderWorld( *m_player->m_worldCamera );
+		
 	}
+
+	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
 }
 
 //-----------------------------------------------------------------------------------------------

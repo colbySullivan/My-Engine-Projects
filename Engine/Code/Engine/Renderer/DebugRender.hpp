@@ -13,7 +13,6 @@ enum class DebugRenderMode
 
 struct DebugRenderConfig
 {
-	Renderer* m_renderer = nullptr;
 	std::string m_fontPath = "Data/Fonts/";
 	std::string m_fontName = "SquirrelFixedFont";
 };
