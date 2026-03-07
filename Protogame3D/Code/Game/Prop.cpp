@@ -99,36 +99,7 @@ void Prop::MakeCubeAtPos( Rgba8 color, Vec3 size, Vec3 position )
 //-----------------------------------------------------------------------------------------------
 void Prop::MakeSphere( Vec3 center, float radius, int numSlices, int numStacks )
 {
-	float degreesPerStack = 180.f / numStacks;
-	float degreesPerSlice = 360.f / numSlices;
-	for (int i = 0; i < numStacks ; ++i)
-	{
-		for ( int j = 0; j < numSlices; j++ ) 
-		{
-			float leftDegrees = j * degreesPerSlice;
-			float rightDegrees = ( j + 1 ) * degreesPerSlice;
-			float bottomDegrees = ( i * degreesPerStack ) - 90;
-			float topDegrees = ( ( i + 1 ) * degreesPerStack ) - 90;
-
-			Vec3 bl = center + Vec3::MakeFromPolarDegrees( leftDegrees, bottomDegrees ) * radius;
-			Vec3 br = center + Vec3::MakeFromPolarDegrees( rightDegrees, bottomDegrees ) * radius;
-			Vec3 tr = center + Vec3::MakeFromPolarDegrees( rightDegrees, topDegrees ) * radius;
-			Vec3 tl = center + Vec3::MakeFromPolarDegrees( leftDegrees, topDegrees ) * radius;
-
-			float bv = 1.0f - (float)i / (float)numStacks;
-			float tv = 1.0f - (float)( i + 1 ) / (float)numStacks;
-			float lu = (float)j / (float)numSlices;
-			float ru = (float)( j + 1 ) / (float)numSlices;
-
-			m_vertexes.push_back( Vertex( ( bl ), m_color, Vec2( lu, bv ) ) );
-			m_vertexes.push_back( Vertex( ( tr ), m_color, Vec2( ru, tv ) ) );
-			m_vertexes.push_back( Vertex( ( br ), m_color, Vec2( ru, bv ) ) );
-
-			m_vertexes.push_back( Vertex( ( bl ), m_color, Vec2( lu, bv ) ) );
-			m_vertexes.push_back( Vertex( ( tl ), m_color, Vec2( lu, tv ) ) );
-			m_vertexes.push_back( Vertex( ( tr ), m_color, Vec2( ru, tv ) ) );
-		}
-	}
+	AddVertsForSphere3D( m_vertexes, center, radius, numSlices, numStacks, m_color );
 }
 
 void Prop::MakeCylinder( Vec3 start, Vec3 end, float radius, int numSlices )

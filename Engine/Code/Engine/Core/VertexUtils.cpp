@@ -231,6 +231,41 @@ void AddVertsForQuad3D( std::vector<Vertex>& verts, const Vec3& bottomLeft, cons
 }
 
 //------------------------------------------------------------------------------
+void AddVertsForSphere3D( std::vector<Vertex>& verts, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
+{
+	float degreesPerStack = 180.f / numStacks;
+	float degreesPerSlice = 360.f / numSlices;
+	for ( int i = 0; i < numStacks; ++i )
+	{
+		for ( int j = 0; j < numSlices; j++ )
+		{
+			float leftDegrees = j * degreesPerSlice;
+			float rightDegrees = ( j + 1 ) * degreesPerSlice;
+			float bottomDegrees = ( i * degreesPerStack ) - 90;
+			float topDegrees = ( ( i + 1 ) * degreesPerStack ) - 90;
+
+			Vec3 bl = center + Vec3::MakeFromPolarDegrees( leftDegrees, bottomDegrees ) * radius;
+			Vec3 br = center + Vec3::MakeFromPolarDegrees( rightDegrees, bottomDegrees ) * radius;
+			Vec3 tr = center + Vec3::MakeFromPolarDegrees( rightDegrees, topDegrees ) * radius;
+			Vec3 tl = center + Vec3::MakeFromPolarDegrees( leftDegrees, topDegrees ) * radius;
+
+			float bv = 1.0f - ( float )i / ( float )numStacks;
+			float tv = 1.0f - ( float )( i + 1 ) / ( float )numStacks;
+			float lu = ( float )j / ( float )numSlices;
+			float ru = ( float )( j + 1 ) / ( float )numSlices;
+
+			verts.push_back( Vertex( ( bl ), color, Vec2( lu, bv ) ) );
+			verts.push_back( Vertex( ( tr ), color, Vec2( ru, tv ) ) );
+			verts.push_back( Vertex( ( br ), color, Vec2( ru, bv ) ) );
+											 
+			verts.push_back( Vertex( ( bl ), color, Vec2( lu, bv ) ) );
+			verts.push_back( Vertex( ( tl ), color, Vec2( lu, tv ) ) );
+			verts.push_back( Vertex( ( tr ), color, Vec2( ru, tv ) ) );
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
 {
 	Mat44 lookAt = Mat44::MakeLookAt( start, end );

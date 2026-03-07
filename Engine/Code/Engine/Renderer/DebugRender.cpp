@@ -79,49 +79,52 @@ void DebugRenderWorld( const Camera& camera )
 	{
 		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
 
-		if ( obj.m_isWireframe )
+		if ( !obj.m_isScreen )
 		{
-			g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
-		}
-		else
-		{
-			g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
-		}
-
-		if ( obj.m_mode == DebugRenderMode::ALWAYS )
-		{
-			g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
-			g_engine->m_render->DrawVertexArray( obj.m_vertices );
-			break;
-		}
-
-		if ( obj.m_mode == DebugRenderMode::X_RAY )
-		{
-			Rgba8 ghostColor;
-			ghostColor.r = ( unsigned char )( obj.m_startColor.r + ( 255 - obj.m_startColor.r ) * 0.5f );
-			ghostColor.g = ( unsigned char )( obj.m_startColor.g + ( 255 - obj.m_startColor.g ) * 0.5f );
-			ghostColor.b = ( unsigned char )( obj.m_startColor.b + ( 255 - obj.m_startColor.b ) * 0.5f );
-			ghostColor.a = ( unsigned char )( obj.m_startColor.a * 0.25f );
-
-			std::vector<Vertex> ghostVerts = obj.m_vertices;
-			for (int i = 0; i < ghostVerts.size() ; i++)
+			if ( obj.m_isWireframe )
 			{
-				ghostVerts[i].m_color = ghostColor;
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+			}
+			else
+			{
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
 			}
 
-			g_engine->m_render->SetDepthMode( DepthMode::READ_ONLY_ALWAYS );
-			g_engine->m_render->SetBlendMode( BlendMode::ALPHA );
-			g_engine->m_render->DrawVertexArray( ghostVerts );
+			if ( obj.m_mode == DebugRenderMode::ALWAYS )
+			{
+				g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
+				g_engine->m_render->DrawVertexArray( obj.m_vertices );
+				break;
+			}
 
-			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
-			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-			g_engine->m_render->DrawVertexArray( obj.m_vertices );
-		}
-		else
-		{
-			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
-			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-			g_engine->m_render->DrawVertexArray( obj.m_vertices );
+			if ( obj.m_mode == DebugRenderMode::X_RAY )
+			{
+				Rgba8 ghostColor;
+				ghostColor.r = ( unsigned char )( obj.m_startColor.r + ( 255 - obj.m_startColor.r ) * 0.5f );
+				ghostColor.g = ( unsigned char )( obj.m_startColor.g + ( 255 - obj.m_startColor.g ) * 0.5f );
+				ghostColor.b = ( unsigned char )( obj.m_startColor.b + ( 255 - obj.m_startColor.b ) * 0.5f );
+				ghostColor.a = ( unsigned char )( obj.m_startColor.a * 0.25f );
+
+				std::vector<Vertex> ghostVerts = obj.m_vertices;
+				for ( int i = 0; i < ghostVerts.size(); i++ )
+				{
+					ghostVerts[i].m_color = ghostColor;
+				}
+
+				g_engine->m_render->SetDepthMode( DepthMode::READ_ONLY_ALWAYS );
+				g_engine->m_render->SetBlendMode( BlendMode::ALPHA );
+				g_engine->m_render->DrawVertexArray( ghostVerts );
+
+				g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+				g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+				g_engine->m_render->DrawVertexArray( obj.m_vertices );
+			}
+			else
+			{
+				g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+				g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+				g_engine->m_render->DrawVertexArray( obj.m_vertices );
+			}
 		}
 
 		
@@ -140,6 +143,56 @@ void DebugRenderEndFrame()
 
 }
 
+//------------------------------------------------------------------------------
+void DebugAddWorldSphere( const Vec3& center, float radius, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+
+	Rgba8 color = startColor;
+	AddVertsForSphere3D( obj.m_vertices, center, radius, 32, 32, color );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
+void DebugAddWorldWireSphere( const Vec3& center, float radius, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+	obj.m_isWireframe = true;
+
+
+	Rgba8 color = startColor;
+	AddVertsForSphere3D( obj.m_vertices, center, radius, 32, 32, color );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
+void DebugAddWorldCylinder( const Vec3& start, const Vec3& end, float radius, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+
+	AddVertsForCylinder3D( obj.m_vertices, start, end, radius, startColor );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
 void DebugAddWorldWireCylinder( const Vec3& start, const Vec3& end, float radius, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
 {
 	DebugRenderObject obj;
