@@ -266,6 +266,35 @@ void AddVertsForSphere3D( std::vector<Vertex>& verts, Vec3 center, float radius,
 }
 
 //------------------------------------------------------------------------------
+void TransformVertexArray3D( std::vector<Vertex>& verts, const Mat44& transform )
+{
+	for ( int vertIndex = 0; vertIndex < verts.size(); ++vertIndex )
+	{
+		verts[vertIndex].m_position = transform.TransformPosition3D( verts[vertIndex].m_position );
+	}
+}
+
+//------------------------------------------------------------------------------
+AABB2 GetVertexBounds2D( const std::vector<Vertex>& verts )
+{
+	AABB2 bounds;
+	bounds.m_mins = Vec2( verts[0].m_position.x, verts[0].m_position.y );
+	bounds.m_maxs = Vec2( verts[0].m_position.x, verts[0].m_position.y );
+
+	for ( int vertIndex = 1; vertIndex < verts.size(); ++vertIndex )
+	{
+		float x = verts[vertIndex].m_position.x;
+		float y = verts[vertIndex].m_position.y;
+		if ( x < bounds.m_mins.x ) bounds.m_mins.x = x;
+		if ( y < bounds.m_mins.y ) bounds.m_mins.y = y;
+		if ( x > bounds.m_maxs.x ) bounds.m_maxs.x = x;
+		if ( y > bounds.m_maxs.y ) bounds.m_maxs.y = y;
+	}
+
+	return bounds;
+}
+
+//------------------------------------------------------------------------------
 void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
 {
 	Mat44 lookAt = Mat44::MakeLookAt( start, end );
@@ -343,4 +372,12 @@ void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec
 		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
 
 	}
+}
+
+//------------------------------------------------------------------------------
+void AddVertsForArrow3D( std::vector<Vertex>& verts, Vec3 const& start, Vec3 const& end, float radius, Rgba8 const& color /*= Rgba8::WHITE*/, int numSlices /*= 32 */ )
+{
+	Vec3 shaftEnd = start + ( end - start ) * 0.8f;
+	AddVertsForCylinder3D( verts, start, shaftEnd, radius, color );
+	AddVertsForCone3D( verts, shaftEnd, end, radius * 2.f, color );
 }
