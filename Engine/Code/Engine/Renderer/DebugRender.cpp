@@ -15,6 +15,7 @@ struct DebugRenderObject
 	bool					m_isScreen = false;
 	bool					m_isWireframe = false;
 	Texture*				m_texture = nullptr;
+	Timer*					m_timer = nullptr;
 };
 
 struct DebugRenderSystem
@@ -154,7 +155,35 @@ void DebugRenderScreen( const Camera& camera )
 //-----------------------------------------------------------------------------------------------
 void DebugRenderEndFrame()
 {
+	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_worldObjects.size(); ++objectIndex )
+	{
+		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
+		if ( obj.m_timer != nullptr )
+		{
+			if ( obj.m_timer->DecrementPeriodIfElapsed() )
+			{
+				delete obj.m_timer;
+				obj.m_timer = nullptr;
+				m_debugRenderSystem->m_worldObjects.erase( m_debugRenderSystem->m_worldObjects.begin() + objectIndex );
+				objectIndex--;
+			}
+		}
+	}
 
+	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_screenObjects.size(); ++objectIndex )
+	{
+		DebugRenderObject& obj = m_debugRenderSystem->m_screenObjects[objectIndex];
+		if ( obj.m_timer != nullptr )
+		{
+			if ( obj.m_timer->DecrementPeriodIfElapsed() )
+			{
+				delete obj.m_timer;
+				obj.m_timer = nullptr;
+				m_debugRenderSystem->m_screenObjects.erase( m_debugRenderSystem->m_screenObjects.begin() + objectIndex );
+				objectIndex--;
+			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -166,6 +195,17 @@ void DebugAddWorldSphere( const Vec3& center, float radius, float duration, cons
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
 	obj.m_isScreen = false;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer->Start();
+	}
 
 	Rgba8 color = startColor;
 	AddVertsForSphere3D( obj.m_vertices, center, radius, 32, 32, color );
@@ -184,6 +224,16 @@ void DebugAddWorldWireSphere( const Vec3& center, float radius, float duration, 
 	obj.m_isScreen = false;
 	obj.m_isWireframe = true;
 
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer->Start();
+	}
 
 	Rgba8 color = startColor;
 	AddVertsForSphere3D( obj.m_vertices, center, radius, 32, 32, color );
@@ -201,6 +251,17 @@ void DebugAddWorldCylinder( const Vec3& start, const Vec3& end, float radius, fl
 	obj.m_mode = mode;
 	obj.m_isScreen = false;
 
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer->Start();
+	}
+
 	AddVertsForCylinder3D( obj.m_vertices, start, end, radius, startColor );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
@@ -216,6 +277,17 @@ void DebugAddWorldWireCylinder( const Vec3& start, const Vec3& end, float radius
 	obj.m_mode = mode;
 	obj.m_isScreen = false;
 	obj.m_isWireframe = true;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer->Start();
+	}
 
 	AddVertsForCylinder3D( obj.m_vertices, start, end, radius, startColor );
 
@@ -244,6 +316,17 @@ void DebugAddScreenText( const std::string& text, const AABB2& box, float cellHe
     obj.m_isScreen = true;
     obj.m_isWireframe = false;
 	obj.m_texture = &font->GetTexture();
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer->Start();
+	}
 
     m_debugRenderSystem->m_screenObjects.push_back( obj );
 }
