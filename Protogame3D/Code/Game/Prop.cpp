@@ -102,7 +102,14 @@ void Prop::MakeSphere( Vec3 center, float radius, int numSlices, int numStacks )
 	AddVertsForSphere3D( m_vertexes, center, radius, numSlices, numStacks, m_color );
 }
 
+//------------------------------------------------------------------------------
 void Prop::MakeCylinder( Vec3 start, Vec3 end, float radius, int numSlices )
 {
 	AddVertsForCylinder3D( m_vertexes, start, end, radius, m_color, AABB2::ZERO_TO_ONE, numSlices );
+}
+
+//------------------------------------------------------------------------------
+void Prop::MakeCone( Vec3 start, Vec3 end, float radius, int numSlices )
+{
+	AddVertsForCone3D( m_vertexes, start, end, radius, m_color, AABB2::ZERO_TO_ONE, numSlices );
 }

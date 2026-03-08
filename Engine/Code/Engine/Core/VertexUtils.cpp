@@ -304,3 +304,43 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 
 	}
 }
+
+//------------------------------------------------------------------------------
+void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
+{
+	Mat44 lookAt = Mat44::MakeLookAt( start, end );
+	Vec3 iBasis = lookAt.GetIBasis3D();
+	Vec3 jBasis = lookAt.GetJBasis3D();
+	Vec3 kBasis = lookAt.GetKBasis3D();
+
+	for ( int i = 0; i < numSlices; ++i )
+	{
+		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
+		float thetaINext = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i + 1 );
+
+		Vec3 BC = start;
+		Vec3 BL = BC + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 BR = BC + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+
+		Vec3 TC = end;
+		Vec3 TL = end;
+		Vec3 TR = end;
+
+		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
+
+		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
+
+		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
+
+		verts.push_back( Vertex( TC, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
+
+	}
+}
