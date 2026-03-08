@@ -72,6 +72,7 @@ public:
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
+	void DebugInput();
 
 	void RenderUI() const;
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;

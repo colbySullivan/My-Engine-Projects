@@ -204,7 +204,26 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		g_drawDebug = !g_drawDebug;
 	}
 
+	DebugInput();
+
 	g_engine->m_input->EndFrame();
+}
+
+//------------------------------------------------------------------------------
+void Game::DebugInput()
+{
+	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
+	{
+		Mat44 toWorld = m_player->GetModelToWorldTransform();
+		DebugAddWorldCylinder(m_player->m_position, toWorld.GetIBasis3D() * 20.f, 0.0625f, 10.f, Rgba8(255, 255, 0), Rgba8(255, 255, 0), DebugRenderMode::X_RAY);
+	}
+
+	if ( g_engine->m_input->IsKeyDown( '2' ) )
+	{
+		Mat44 toWorld = m_player->GetModelToWorldTransform();
+		Vec3 playerPos = m_player->m_position;
+		DebugAddWorldSphere( Vec3( playerPos.x, playerPos.y, 0.f ), 0.1f, 60.f, Rgba8( 150, 75, 0 ), Rgba8( 150, 75, 0 ), DebugRenderMode::USE_DEPTH );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
