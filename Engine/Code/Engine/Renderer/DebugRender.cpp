@@ -167,6 +167,19 @@ void DebugRenderEndFrame()
 				m_debugRenderSystem->m_worldObjects.erase( m_debugRenderSystem->m_worldObjects.begin() + objectIndex );
 				objectIndex--;
 			}
+			else
+			{
+				obj.m_age += ( float )g_engine->m_systemClock->GetDeltaSeconds();
+				float ageFraction = obj.m_age / obj.m_duration;
+				unsigned char r = ( unsigned char )( obj.m_startColor.r + ( obj.m_endColor.r - obj.m_startColor.r ) * ageFraction );
+				unsigned char g = ( unsigned char )( obj.m_startColor.g + ( obj.m_endColor.g - obj.m_startColor.g ) * ageFraction );
+				unsigned char b = ( unsigned char )( obj.m_startColor.b + ( obj.m_endColor.b - obj.m_startColor.b ) * ageFraction );
+				unsigned char a = ( unsigned char )( obj.m_startColor.a + ( obj.m_endColor.a - obj.m_startColor.a ) * ageFraction );
+				for ( int vertIndex = 0; vertIndex < obj.m_vertices.size(); vertIndex++ )
+				{
+					obj.m_vertices[vertIndex].m_color = Rgba8( r, g, b, a );
+				}
+			}
 		}
 	}
 
@@ -181,6 +194,19 @@ void DebugRenderEndFrame()
 				obj.m_timer = nullptr;
 				m_debugRenderSystem->m_screenObjects.erase( m_debugRenderSystem->m_screenObjects.begin() + objectIndex );
 				objectIndex--;
+			}
+			else
+			{
+				obj.m_age += ( float )g_engine->m_systemClock->GetDeltaSeconds();
+				float ageFraction = obj.m_age / obj.m_duration;
+				unsigned char r = ( unsigned char )( obj.m_startColor.r + ( obj.m_endColor.r - obj.m_startColor.r ) * ageFraction );
+				unsigned char g = ( unsigned char )( obj.m_startColor.g + ( obj.m_endColor.g - obj.m_startColor.g ) * ageFraction );
+				unsigned char b = ( unsigned char )( obj.m_startColor.b + ( obj.m_endColor.b - obj.m_startColor.b ) * ageFraction );
+				unsigned char a = ( unsigned char )( obj.m_startColor.a + ( obj.m_endColor.a - obj.m_startColor.a ) * ageFraction );
+				for ( int vertIndex = 0; vertIndex < obj.m_vertices.size(); vertIndex++ )
+				{
+					obj.m_vertices[vertIndex].m_color = Rgba8( r, g, b, a );
+				}
 			}
 		}
 	}
@@ -203,12 +229,12 @@ void DebugAddWorldSphere( const Vec3& center, float radius, float duration, cons
 	}
 	if ( duration == 0.f )
 	{
-		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() ); 
 		obj.m_timer->Start();
 	}
 
 	Rgba8 color = startColor;
-	AddVertsForSphere3D( obj.m_vertices, center, radius, 32, 32, color );
+	AddVertsForSphere3D( obj.m_vertices, center, radius, 16, 16, color );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
@@ -231,7 +257,7 @@ void DebugAddWorldWireSphere( const Vec3& center, float radius, float duration, 
 	}
 	if ( duration == 0.f )
 	{
-		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer = new Timer( 0.0001f );
 		obj.m_timer->Start();
 	}
 
@@ -258,7 +284,7 @@ void DebugAddWorldCylinder( const Vec3& start, const Vec3& end, float radius, fl
 	}
 	if ( duration == 0.f )
 	{
-		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
 		obj.m_timer->Start();
 	}
 
@@ -285,11 +311,63 @@ void DebugAddWorldWireCylinder( const Vec3& start, const Vec3& end, float radius
 	}
 	if ( duration == 0.f )
 	{
-		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
 		obj.m_timer->Start();
 	}
 
 	AddVertsForCylinder3D( obj.m_vertices, start, end, radius, startColor );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
+void DebugAddWorldArrow( const Vec3& start, const Vec3& end, float radius, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
+
+	AddVertsForArrow3D( obj.m_vertices, start, end, radius, startColor );
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
+void DebugAddWorldWireArrow( const Vec3& start, const Vec3& end, float radius, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+	obj.m_isWireframe = true;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
+
+	AddVertsForArrow3D( obj.m_vertices, start, end, radius, startColor );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
@@ -324,7 +402,7 @@ void DebugAddScreenText( const std::string& text, const AABB2& box, float cellHe
 	}
 	if ( duration == 0.f )
 	{
-		obj.m_timer = new Timer( 0.0001f ); // #TODO one frame timer, maybe delta seconds based?
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
 		obj.m_timer->Start();
 	}
 
