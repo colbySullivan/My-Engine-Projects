@@ -1,6 +1,8 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
+#include "BitmapFont.hpp"
 
 struct DebugRenderObject
 {
@@ -12,6 +14,7 @@ struct DebugRenderObject
 	DebugRenderMode			m_mode = DebugRenderMode::USE_DEPTH;
 	bool					m_isScreen = false;
 	bool					m_isWireframe = false;
+	Texture*				m_texture = nullptr;
 };
 
 struct DebugRenderSystem
@@ -68,7 +71,6 @@ void DebugRenderBeginFrame()
 void DebugRenderWorld( const Camera& camera )
 {
 	g_engine->m_render->BeginCamera( camera );
-	g_engine->m_render->BindTexture( nullptr );
 
 	if ( !m_debugRenderSystem->m_isVisible )
 	{
@@ -78,6 +80,7 @@ void DebugRenderWorld( const Camera& camera )
 	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_worldObjects.size(); ++objectIndex )
 	{
 		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
+		g_engine->m_render->BindTexture( obj.m_texture );
 
 		if ( !obj.m_isScreen )
 		{
@@ -127,14 +130,25 @@ void DebugRenderWorld( const Camera& camera )
 			}
 		}
 
-		
+		g_engine->m_render->EndCamera( camera );
+
 	}
 }
 
 //-----------------------------------------------------------------------------------------------
 void DebugRenderScreen( const Camera& camera )
 {
+	g_engine->m_render->BeginCamera( camera );
 
+
+	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_screenObjects.size(); ++objectIndex )
+	{
+		DebugRenderObject& obj = m_debugRenderSystem->m_screenObjects[objectIndex];
+		g_engine->m_render->BindTexture( obj.m_texture );
+		g_engine->m_render->DrawVertexArray( obj.m_vertices );
+	}
+
+	g_engine->m_render->EndCamera( camera );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -206,6 +220,32 @@ void DebugAddWorldWireCylinder( const Vec3& start, const Vec3& end, float radius
 	AddVertsForCylinder3D( obj.m_vertices, start, end, radius, startColor );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
+void DebugAddScreenText( const std::string& text, const AABB2& box, float cellHeight, const Vec2& alignment, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE */ )
+{
+	std::string fontPath = m_debugRenderSystem->m_config.m_fontPath + m_debugRenderSystem->m_config.m_fontName;
+
+    BitmapFont* font = g_engine->m_render->CreateOrGetBitmapFont( fontPath.c_str() );
+    if ( !font )
+    {
+        ERROR_AND_DIE( Stringf( "Failed to load font for DebugRender: %s", fontPath.c_str() ) );
+    }
+
+    std::vector<Vertex> verts;
+    font->AddVertsForTextInBox2D( verts, text, box, cellHeight, startColor, 1.0f, alignment, TextBoxMode::SHRINK_TO_FIT );
+
+    DebugRenderObject obj;
+    obj.m_vertices = verts;
+    obj.m_duration = duration;
+    obj.m_startColor = startColor;
+    obj.m_endColor = endColor;
+    obj.m_isScreen = true;
+    obj.m_isWireframe = false;
+	obj.m_texture = &font->GetTexture();
+
+    m_debugRenderSystem->m_screenObjects.push_back( obj );
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -31,6 +31,7 @@ Game::Game()
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	m_player = new Player( this );
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	CreateProps();
 }
 
@@ -57,6 +58,7 @@ void Game::Startup()
 	//DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
 	////DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
 	//DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
+	DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -139,7 +141,7 @@ void Game::Render() const
 			}
 		}
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
-		RenderUI();
+		DebugRenderScreen( *m_screenCamera );
 		DebugRenderWorld( *m_player->m_worldCamera );
 		
 	}
@@ -230,14 +232,11 @@ void Game::DebugInput()
 void Game::RenderUI() const
 {
 	//Camera attractCamera;
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 
-	g_engine->m_render->BeginCamera( *m_screenCamera );
+	//char textBuffer[64];
+	//snprintf(textBuffer, sizeof(textBuffer), "Time: %.2f", m_roundTime);
+	//RenderText(textBuffer, Vec2(700.f, 750.f), 20.f, Rgba8(50, 150, 255, 255));
 
-	char textBuffer[64];
-	snprintf(textBuffer, sizeof(textBuffer), "Time: %.2f", m_roundTime);
-	RenderText(textBuffer, Vec2(700.f, 750.f), 20.f, Rgba8(50, 150, 255, 255));
-	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
