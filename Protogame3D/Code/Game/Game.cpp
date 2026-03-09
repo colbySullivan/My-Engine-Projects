@@ -55,10 +55,11 @@ void Game::Startup()
 	m_cubeBlinkTimer->Start();
 
 	//DebugAddWorldWireCylinder(Vec3( 2.f, 2.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	//DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	////DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
+	DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
+	DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 0, 100, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::X_RAY );
 	//DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
 	DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	DebugAddWorldWireArrow( Vec3( 0.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.1f, 5.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -217,12 +218,12 @@ void Game::DebugInput()
 	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
 	{
 		Mat44 toWorld = m_player->GetModelToWorldTransform();
-		DebugAddWorldCylinder(m_player->m_position, toWorld.GetIBasis3D() * 20.f, 0.0625f, 10.f, Rgba8(255, 255, 0), Rgba8(255, 255, 0), DebugRenderMode::X_RAY);
+		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 20.f;
+		DebugAddWorldCylinder( m_player->m_position, endPos, 0.0625f, 10.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
 	}
 
 	if ( g_engine->m_input->IsKeyDown( '2' ) )
 	{
-		Mat44 toWorld = m_player->GetModelToWorldTransform();
 		Vec3 playerPos = m_player->m_position;
 		DebugAddWorldSphere( Vec3( playerPos.x, playerPos.y, 0.f ), 0.1f, 60.f, Rgba8( 150, 75, 0 ), Rgba8( 150, 75, 0 ), DebugRenderMode::USE_DEPTH );
 	}
