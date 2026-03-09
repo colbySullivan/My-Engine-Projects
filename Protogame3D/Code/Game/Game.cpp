@@ -58,7 +58,7 @@ void Game::Startup()
 	DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
 	DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 0, 100, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::X_RAY );
 	//DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
-	DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	//DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 	DebugAddWorldWireArrow( Vec3( 0.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.1f, 5.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
 }
 
@@ -142,7 +142,7 @@ void Game::Render() const
 			}
 		}
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
-		DebugRenderScreen( *m_screenCamera );
+		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
 		
 	}
@@ -232,12 +232,19 @@ void Game::DebugInput()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderUI() const
 {
-	//Camera attractCamera;
+	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
+	float scale = g_engine->m_systemClock->GetTimeScale();
+	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	//char textBuffer[64];
-	//snprintf(textBuffer, sizeof(textBuffer), "Time: %.2f", m_roundTime);
-	//RenderText(textBuffer, Vec2(700.f, 750.f), 20.f, Rgba8(50, 150, 255, 255));
+	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
+	hudText = Stringf( "Camera orientation: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 30.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y - 15.f ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+
+	DebugRenderScreen( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
