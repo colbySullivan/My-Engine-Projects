@@ -19,6 +19,7 @@ struct RaycastResult2D
 struct Vec2;
 struct Vec3;
 struct Vec4;
+struct Mat44;
 
 //-----------------------------------------------------------------------------------
 // Clamp and Lerp
@@ -107,3 +108,17 @@ Vec2    GetNearestPointOnTriangle2D(Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec
 // Basic util functions
 float	GetFloatMax( float a, float b );
 float	GetFloatMin( float a, float b );
+
+//-----------------------------------------------------------------------------------------------
+// Billboard functions
+enum class BillboardType
+{
+	NONE = -1,
+	WORLD_UP_FACING,
+	WORLD_UP_OPPOSING,
+	FULL_FACING,
+	FULL_OPPOSING,
+	COUNT
+};
+
+Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTransform, const Vec3& billboardPosition, const Vec2& billboardScale = Vec2( 1.0f, 1.0f ) );

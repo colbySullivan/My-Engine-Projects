@@ -119,6 +119,12 @@ float BitmapFont::GetTextWidth( float cellHeight, std::string const& text, float
 	return totalWidth;
 }
 
+//------------------------------------------------------------------------------
+void BitmapFont::AddVertsForText3DAtOriginXForward( std::vector<Vertex>& verts, float cellHeight, std::string const& text, Rgba8 const& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.0f*/, Vec2 const& alignment /*= Vec2( 0.5f, 0.5f )*/, int maxGlyphsToDraw /*= 999 */ )
+{
+
+}
+
 //-----------------------------------------------------------------------------------------------
 float BitmapFont::GetGlyphAspect( [[maybe_unused]] int glyphUnicode ) const
 {

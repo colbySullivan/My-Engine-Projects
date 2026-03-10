@@ -4,6 +4,7 @@
 #include "Engine/Math/Vec4.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/FloatRange.hpp"
+#include "Engine/Math/Mat44.hpp"
 #include<math.h>
 
 float GetClamped(float value, float minValue, float maxValue)
@@ -847,5 +848,11 @@ float GetFloatMin( float a, float b )
 		return a;
 	}
 	return b;
+}
+
+//------------------------------------------------------------------------------
+Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTransform, const Vec3& billboardPosition, const Vec2& billboardScale /*= Vec2( 1.0f, 1.0f ) */ )
+{
+
 }
 

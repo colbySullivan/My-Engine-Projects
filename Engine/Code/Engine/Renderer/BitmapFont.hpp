@@ -30,6 +30,11 @@ public:
 
 	float GetTextWidth( float cellHeight, std::string const& text, float cellAspectScale = 1.f );
 
+	void AddVertsForText3DAtOriginXForward( std::vector<Vertex>& verts,
+		float cellHeight, std::string const& text, Rgba8 const& tint = Rgba8::WHITE,
+		float cellAspect = 1.0f, Vec2 const& alignment = Vec2( 0.5f, 0.5f ),
+		int maxGlyphsToDraw = 999 );
+
 protected:
 	float GetGlyphAspect( int glyphUnicode ) const; // For now this will always return m_fontDefaultAspect
 
