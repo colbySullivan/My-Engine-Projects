@@ -2,7 +2,9 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
-#include "BitmapFont.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
+#include "Engine/Renderer/Camera.hpp"
 
 struct DebugRenderObject
 {
@@ -16,6 +18,8 @@ struct DebugRenderObject
 	bool					m_isWireframe = false;
 	Texture*				m_texture = nullptr;
 	Timer*					m_timer = nullptr;
+	BillboardType			m_billboardType = BillboardType::NONE;
+	Vec3 					m_position = Vec3( 0.f ,0.f, 0.f );
 };
 
 struct DebugRenderSystem
@@ -75,6 +79,7 @@ void DebugRenderWorld( const Camera& camera )
 
 	if ( !m_debugRenderSystem->m_isVisible )
 	{
+		g_engine->m_render->EndCamera( camera );
 		return;
 	}
 
@@ -83,57 +88,56 @@ void DebugRenderWorld( const Camera& camera )
 		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
 		g_engine->m_render->BindTexture( obj.m_texture );
 
-		if ( !obj.m_isScreen )
+		std::vector<Vertex> vertsToRender = obj.m_vertices;
+		if ( obj.m_billboardType != BillboardType::NONE )
 		{
-			if ( obj.m_isWireframe )
-			{
-				g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
-			}
-			else
-			{
-				g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
-			}
-
-			if ( obj.m_mode == DebugRenderMode::ALWAYS )
-			{
-				g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
-				g_engine->m_render->DrawVertexArray( obj.m_vertices );
-				break;
-			}
-
-			if ( obj.m_mode == DebugRenderMode::X_RAY )
-			{
-				Rgba8 ghostColor;
-				ghostColor.r = ( unsigned char )( obj.m_startColor.r + ( 255 - obj.m_startColor.r ) * 0.5f );
-				ghostColor.g = ( unsigned char )( obj.m_startColor.g + ( 255 - obj.m_startColor.g ) * 0.5f );
-				ghostColor.b = ( unsigned char )( obj.m_startColor.b + ( 255 - obj.m_startColor.b ) * 0.5f );
-				ghostColor.a = ( unsigned char )( obj.m_startColor.a * 0.25f );
-
-				std::vector<Vertex> ghostVerts = obj.m_vertices;
-				for ( int i = 0; i < ghostVerts.size(); i++ )
-				{
-					ghostVerts[i].m_color = ghostColor;
-				}
-
-				g_engine->m_render->SetDepthMode( DepthMode::READ_ONLY_ALWAYS );
-				g_engine->m_render->SetBlendMode( BlendMode::ALPHA );
-				g_engine->m_render->DrawVertexArray( ghostVerts );
-
-				g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
-				g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-				g_engine->m_render->DrawVertexArray( obj.m_vertices );
-			}
-			else
-			{
-				g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
-				g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-				g_engine->m_render->DrawVertexArray( obj.m_vertices );
-			}
+			Mat44 billboardMat = GetBillboardTransform( obj.m_billboardType, camera.GetCameraToWorldTransform(), obj.m_position );
+			TransformVertexArray3D( vertsToRender, billboardMat );
 		}
 
-		g_engine->m_render->EndCamera( camera );
+		if ( obj.m_isWireframe )
+		{
+			g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+		}
+		else
+		{
+			g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+		}
 
+		if ( obj.m_mode == DebugRenderMode::ALWAYS )
+		{
+			g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
+			g_engine->m_render->DrawVertexArray( vertsToRender );
+		}
+		else if ( obj.m_mode == DebugRenderMode::X_RAY )
+		{
+			Rgba8 ghostColor;
+			ghostColor.r = ( unsigned char )( obj.m_startColor.r + ( 255 - obj.m_startColor.r ) * 0.5f );
+			ghostColor.g = ( unsigned char )( obj.m_startColor.g + ( 255 - obj.m_startColor.g ) * 0.5f );
+			ghostColor.b = ( unsigned char )( obj.m_startColor.b + ( 255 - obj.m_startColor.b ) * 0.5f );
+			ghostColor.a = ( unsigned char )( obj.m_startColor.a * 0.25f );
+			std::vector<Vertex> ghostVerts = vertsToRender;
+			for ( int i = 0; i < ( int )ghostVerts.size(); i++ )
+			{
+				ghostVerts[i].m_color = ghostColor;
+			}
+			g_engine->m_render->SetDepthMode( DepthMode::READ_ONLY_ALWAYS );
+			g_engine->m_render->SetBlendMode( BlendMode::ALPHA );
+			g_engine->m_render->DrawVertexArray( ghostVerts );
+
+			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+			g_engine->m_render->DrawVertexArray( vertsToRender );
+		}
+		else
+		{
+			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+			g_engine->m_render->DrawVertexArray( vertsToRender );
+		}
 	}
+
+	g_engine->m_render->EndCamera( camera );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -368,6 +372,42 @@ void DebugAddWorldWireArrow( const Vec3& start, const Vec3& end, float radius, f
 	}
 
 	AddVertsForArrow3D( obj.m_vertices, start, end, radius, startColor );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+void DebugAddWorldBillboardText( const std::string& text, const Vec3& origin, float textHeight, const Vec2& alignment, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	std::string fontPath = m_debugRenderSystem->m_config.m_fontPath + m_debugRenderSystem->m_config.m_fontName;
+	BitmapFont* font = g_engine->m_render->CreateOrGetBitmapFont( fontPath.c_str() );
+	if ( !font )
+	{
+		ERROR_AND_DIE( Stringf( "Failed to load font for DebugRender: %s", fontPath.c_str() ) );
+	}
+	std::vector<Vertex> verts;
+	font->AddVertsForText3DAtOriginXForward( verts, textHeight, text, startColor, 1.f, alignment );
+
+	DebugRenderObject obj;
+	obj.m_vertices = verts;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_isScreen = false;
+	obj.m_isWireframe = false;
+	obj.m_texture = &font->GetTexture();
+	obj.m_billboardType = BillboardType::WORLD_UP_FACING;
+	obj.m_position = origin;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }

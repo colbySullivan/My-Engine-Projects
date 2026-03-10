@@ -1,5 +1,8 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/StringUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/Mat44.hpp"
+#include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 BitmapFont::BitmapFont( char const* fontFilePathNameWithNoExtension, Texture& fontTexture )
@@ -122,7 +125,27 @@ float BitmapFont::GetTextWidth( float cellHeight, std::string const& text, float
 //------------------------------------------------------------------------------
 void BitmapFont::AddVertsForText3DAtOriginXForward( std::vector<Vertex>& verts, float cellHeight, std::string const& text, Rgba8 const& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.0f*/, Vec2 const& alignment /*= Vec2( 0.5f, 0.5f )*/, int maxGlyphsToDraw /*= 999 */ )
 {
+	std::vector<Vertex> text2D;
+	AddVertsForText2D( text2D, Vec2( 0.f, 0.f ), cellHeight, text, tint, cellAspect );
 
+	AABB2 textBounds = GetVertexBounds2D( text2D );
+
+	float textWidth = textBounds.GetDimensions().x;
+	float textHeight = textBounds.GetDimensions().y;
+
+	Mat44 transform;
+	transform.SetIJKT3D(
+		Vec3( 0.f, 1.f, 0.f ),
+		Vec3( 0.f, 0.f, 1.f ),
+		Vec3( 1.f, 0.f, 0.f ),
+		Vec3( 0.f, -textWidth * alignment.x, -textHeight * alignment.y )
+	);
+
+	TransformVertexArray3D( text2D, transform );
+	for (int vertIndex = 0; vertIndex < text2D.size() ; vertIndex++)
+	{
+		verts.push_back( text2D[vertIndex] );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
