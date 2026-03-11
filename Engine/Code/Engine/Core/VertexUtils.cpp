@@ -302,6 +302,9 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 	Vec3 jBasis = lookAt.GetJBasis3D();
 	Vec3 kBasis = lookAt.GetKBasis3D();
 
+	float uvWidth = UVs.m_maxs.x - UVs.m_mins.x;
+	float uvHeight = UVs.m_maxs.y - UVs.m_mins.y;
+
 	for ( int i = 0; i < numSlices; ++i )
 	{
 		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
@@ -315,17 +318,23 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 		Vec3 TL = end + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
 		Vec3 TR = end + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
 
-		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) );
+
+		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
+		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
+		float bv = UVs.m_mins.y;
+		float tv = UVs.m_maxs.y;
+
+		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) ); // #TODO Top and Bottom caps need to be calculated with UVs as well
 		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
 		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
 
-		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BL, color, Vec2( lu, bv ) ) );
+		verts.push_back( Vertex( BR, color, Vec2( ru, bv ) ) );
+		verts.push_back( Vertex( TR, color, Vec2( ru, tv ) ) );
 
-		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BL, color, Vec2( lu, bv ) ) );
+		verts.push_back( Vertex( TR, color, Vec2( ru, tv ) ) );
+		verts.push_back( Vertex( TL, color, Vec2( lu, tv ) ) );
 
 		verts.push_back( Vertex( TC, color, Vec2( 0.f, 0.f ) ) );
 		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
@@ -342,6 +351,8 @@ void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec
 	Vec3 jBasis = lookAt.GetJBasis3D();
 	Vec3 kBasis = lookAt.GetKBasis3D();
 
+	float uvWidth = UVs.m_maxs.x - UVs.m_mins.x;
+
 	for ( int i = 0; i < numSlices; ++i )
 	{
 		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
@@ -355,22 +366,19 @@ void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec
 		Vec3 TL = end;
 		Vec3 TR = end;
 
-		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) );
+		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
+		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
+		float mu = ( lu + ru ) * 0.5f;
+		float bv = UVs.m_mins.y;
+		float tv = UVs.m_maxs.y;
+
+		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) ); //#TODO Bottom needs to be calculated with UVs as well
 		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
 		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
 
-		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
-
-		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
-
-		verts.push_back( Vertex( TC, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
-
+		verts.push_back( Vertex( BL, color, Vec2( lu, bv ) ) );
+		verts.push_back( Vertex( BR, color, Vec2( ru, bv ) ) );
+		verts.push_back( Vertex( TC, color, Vec2( mu, tv ) ) );
 	}
 }
 
