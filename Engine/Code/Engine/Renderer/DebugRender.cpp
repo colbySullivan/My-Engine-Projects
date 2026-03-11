@@ -93,15 +93,26 @@ void DebugRenderWorld( const Camera& camera )
 		{
 			Mat44 billboardMat = GetBillboardTransform( obj.m_billboardType, camera.GetCameraToWorldTransform(), obj.m_position );
 			TransformVertexArray3D( vertsToRender, billboardMat );
+
 		}
 
 		if ( obj.m_isWireframe )
 		{
 			g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+
+			if ( obj.m_billboardType == BillboardType::WORLD_UP_OPPOSING || obj.m_billboardType == BillboardType::FULL_OPPOSING )
+			{
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+			}
 		}
 		else
 		{
 			g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+
+			if ( obj.m_billboardType == BillboardType::WORLD_UP_OPPOSING || obj.m_billboardType == BillboardType::FULL_OPPOSING )
+			{
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_NONE );
+			}
 		}
 
 		if ( obj.m_mode == DebugRenderMode::ALWAYS )

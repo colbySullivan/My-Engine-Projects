@@ -854,23 +854,48 @@ float GetFloatMin( float a, float b )
 Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTransform, const Vec3& billboardPosition, const Vec2& billboardScale /*= Vec2( 1.0f, 1.0f ) */ )
 {
 	Mat44 result;
+	Vec3 cameraPos = targetTransform.GetTranslation3D();
+	Vec3 dirToCamera = cameraPos - billboardPosition;
+	dirToCamera = dirToCamera.GetNormalized();
 
 	if ( billboardType == BillboardType::WORLD_UP_FACING )
 	{
-		Vec3 cameraPos = targetTransform.GetTranslation3D();
-
-		Vec3 dirToCamera = cameraPos - billboardPosition;
-		dirToCamera.z = 0.f;
-		dirToCamera = dirToCamera.GetNormalized();
-
 		Vec3 iBasis = dirToCamera;
-		Vec3 kBasis = Vec3( 0.f, 0.f, 1.f );
+		Vec3 kBasis = Vec3::Z_AXIS;
 		Vec3 jBasis = CrossProduct3D( kBasis, iBasis ).GetNormalized();
-
 		result.SetIJKT3D( iBasis, jBasis, kBasis, billboardPosition );
-
 		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
 	}
+
+	if ( billboardType == BillboardType::WORLD_UP_OPPOSING )
+	{
+		Vec3 iBasis = -dirToCamera;
+		Vec3 kBasis = Vec3::Z_AXIS;
+		Vec3 jBasis = CrossProduct3D( kBasis, iBasis ).GetNormalized();
+		result.SetIJKT3D( iBasis, jBasis, kBasis, billboardPosition );
+		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
+	}
+
+	if ( billboardType == BillboardType::FULL_FACING )
+	{
+		Vec3 iBasis = dirToCamera;
+		Vec3 jBasis = CrossProduct3D( Vec3::Z_AXIS, iBasis ).GetNormalized();
+		Vec3 kBasis = CrossProduct3D( iBasis, jBasis ).GetNormalized();
+		result.SetIJKT3D( iBasis, jBasis, kBasis, billboardPosition );
+		result.Orthonormalize_XFwd_YLeft_ZUp();
+		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
+	}
+
+	if ( billboardType == BillboardType::FULL_OPPOSING )
+	{
+		Vec3 iBasis = -dirToCamera;
+		Vec3 jBasis = CrossProduct3D( Vec3::Z_AXIS, iBasis ).GetNormalized();
+		Vec3 kBasis = CrossProduct3D( iBasis, jBasis ).GetNormalized();
+		result.SetIJKT3D( iBasis, jBasis, kBasis, billboardPosition );
+		result.Orthonormalize_XFwd_YLeft_ZUp();
+		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
+	}
+
 	return result;
 }
 
