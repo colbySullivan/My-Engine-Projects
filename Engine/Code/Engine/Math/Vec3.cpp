@@ -2,6 +2,11 @@
 #include "Engine/Math/MathUtils.hpp"
 #include<math.h>
 
+const Vec3 Vec3::ZERO( 0.f, 0.f, 0.f );
+const Vec3 Vec3::ONE( 1.f, 1.f, 1.f );
+const Vec3 Vec3::X_AXIS( 1.f, 0.f, 0.f );
+const Vec3 Vec3::Y_AXIS( 0.f, 1.f, 0.f );
+const Vec3 Vec3::Z_AXIS( 0.f, 0.f, 1.f );
 
 //-----------------------------------------------------------------------------------------------
 Vec3::Vec3( Vec3 const& copy )

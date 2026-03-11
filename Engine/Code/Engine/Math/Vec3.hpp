@@ -51,6 +51,12 @@ public:
 	// Static methods (e.g. creation functions)
 	static Vec3 const MakeFromPolarDegrees( float pitchDegrees, float yawDegrees, float length = 1.f );
 
+	static const Vec3 ZERO;
+	static const Vec3 ONE;
+	static const Vec3 X_AXIS;
+	static const Vec3 Y_AXIS;
+	static const Vec3 Z_AXIS;
+
 };
 
 
