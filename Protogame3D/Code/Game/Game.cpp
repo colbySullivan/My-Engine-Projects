@@ -232,8 +232,9 @@ void Game::DebugInput()
 
 	if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
 	{
-		Vec3 playerPos = m_player->m_position;
-		DebugAddWorldWireSphere( Vec3( playerPos.x + 2.f, playerPos.y, playerPos.z ), 1.f, 5.f, Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
+		Vec3 forward = m_player->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
+		Vec3 spawnPos = m_player->m_position + forward * 2.f;
+		DebugAddWorldWireSphere( spawnPos, 1.f, 5.f, Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
 	}
 }
 
