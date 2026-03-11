@@ -93,7 +93,6 @@ void DebugRenderWorld( const Camera& camera )
 		{
 			Mat44 billboardMat = GetBillboardTransform( obj.m_billboardType, camera.GetCameraToWorldTransform(), obj.m_position );
 			TransformVertexArray3D( vertsToRender, billboardMat );
-
 		}
 
 		if ( obj.m_isWireframe )
@@ -383,6 +382,33 @@ void DebugAddWorldWireArrow( const Vec3& start, const Vec3& end, float radius, f
 	}
 
 	AddVertsForArrow3D( obj.m_vertices, start, end, radius, startColor );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+//-----------------------------------------------------------------------------------------------
+void DebugAddWorldBasis( const Mat44& transform, float duration, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
+
+	float arrowLength = 1.f;
+	AddVertsForArrow3D( obj.m_vertices, Vec3::ZERO, transform.GetIBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 255, 0, 0 ) );
+	AddVertsForArrow3D( obj.m_vertices, Vec3::ZERO, transform.GetJBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 255, 0 ) );
+	AddVertsForArrow3D( obj.m_vertices, Vec3::ZERO, transform.GetKBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 0, 255 ) );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }

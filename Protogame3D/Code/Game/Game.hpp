@@ -83,6 +83,7 @@ private:
 	void UpdateBlackHole();
 
 	void CreateProps();
+	void CreateDebugRenderObjects();
 
 	App*			m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
