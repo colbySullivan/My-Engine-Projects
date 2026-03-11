@@ -54,13 +54,13 @@ void Game::Startup()
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
 
-	//DebugAddWorldWireCylinder(Vec3( 2.f, 2.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 0, 100, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::X_RAY );
-	//DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
-	//DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-	DebugAddWorldWireArrow( Vec3( 0.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.1f, 5.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
-	DebugAddWorldBillboardText( "Hello World", Vec3( 0.f, 0.f, 0.f ), 1.f, Vec2( 0.5f, 0.5f ), 60.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	////DebugAddWorldWireCylinder(Vec3( 2.f, 2.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
+	//DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
+	//DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 0, 100, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::X_RAY );
+	////DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
+	////DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	//DebugAddWorldWireArrow( Vec3( 0.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.1f, 5.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
+	//DebugAddWorldBillboardText( "Hello World", Vec3( 0.f, 0.f, 0.f ), 1.f, Vec2( 0.5f, 0.5f ), 60.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 	CreateDebugRenderObjects();
 }
 
@@ -228,6 +228,12 @@ void Game::DebugInput()
 	{
 		Vec3 playerPos = m_player->m_position;
 		DebugAddWorldSphere( Vec3( playerPos.x, playerPos.y, 0.f ), 0.1f, 60.f, Rgba8( 150, 75, 0 ), Rgba8( 150, 75, 0 ), DebugRenderMode::USE_DEPTH );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
+	{
+		Vec3 playerPos = m_player->m_position;
+		DebugAddWorldWireSphere( Vec3( playerPos.x + 2.f, playerPos.y, playerPos.z ), 1.f, 5.f, Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
 	}
 }
 
@@ -425,7 +431,7 @@ void Game::CreateProps()
 		Vec3 linePosition = Vec3( -50.f + ( xGridIndex ), 0.f, 0.f );
 		if ( xGridIndex % 5 == 0 )
 		{
-			xAxisLines->MakeCubeAtPos( Rgba8( 255, 0, 0 ), Vec3( 0.1f, 100.f, 0.1f ), linePosition );
+			xAxisLines->MakeCubeAtPos( Rgba8( 0, 255, 0 ), Vec3( 0.1f, 100.f, 0.1f ), linePosition );
 		}
 		else
 		{
@@ -440,7 +446,7 @@ void Game::CreateProps()
 		Vec3 linePosition = Vec3( 0.f, -50.f + ( yGridIndex ), 0.f );
 		if ( yGridIndex % 5 == 0 )
 		{
-			yAxisLines->MakeCubeAtPos( Rgba8( 0, 255, 0 ), Vec3( 100.f, 0.1f, 0.1f ), linePosition );
+			yAxisLines->MakeCubeAtPos( Rgba8( 255, 0, 0 ), Vec3( 100.f, 0.1f, 0.1f ), linePosition );
 		}
 		else
 		{

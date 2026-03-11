@@ -410,6 +410,56 @@ void DebugAddWorldBasis( const Mat44& transform, float duration, DebugRenderMode
 	AddVertsForArrow3D( obj.m_vertices, Vec3::ZERO, transform.GetJBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 255, 0 ) );
 	AddVertsForArrow3D( obj.m_vertices, Vec3::ZERO, transform.GetKBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 0, 255 ) );
 
+	Mat44 xLabelTransform = transform;
+	xLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetIBasis3D().GetNormalized() * arrowLength ); // #TODO need to move offset
+	DebugAddWorldText( "X", xLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 255, 0, 0 ), Rgba8( 255, 0, 0 ), mode );
+
+	Mat44 yLabelTransform = transform;
+	yLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetJBasis3D().GetNormalized() * arrowLength );
+	DebugAddWorldText( "Y", yLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ), mode );
+
+	Mat44 zLabelTransform = transform;
+	zLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetKBasis3D().GetNormalized() * arrowLength );
+	DebugAddWorldText( "Z", zLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ), mode );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
+void DebugAddWorldText( const std::string& text, const Mat44& transform, float textHeight, const Vec2& alignment, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	std::string fontPath = m_debugRenderSystem->m_config.m_fontPath + m_debugRenderSystem->m_config.m_fontName;
+	BitmapFont* font = g_engine->m_render->CreateOrGetBitmapFont( fontPath.c_str() );
+	if ( !font )
+	{
+		ERROR_AND_DIE( Stringf( "Failed to load font for DebugRender: %s", fontPath.c_str() ) );
+	}
+
+	std::vector<Vertex> verts;
+	font->AddVertsForText3DAtOriginXForward( verts, textHeight, text, startColor, 1.f, alignment );
+	TransformVertexArray3D( verts, transform );
+
+	DebugRenderObject obj;
+	obj.m_vertices = verts;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_isScreen = false;
+	obj.m_isWireframe = false;
+	obj.m_texture = &font->GetTexture();
+	obj.m_billboardType = BillboardType::NONE;
+	obj.m_mode = mode;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
+
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
 
