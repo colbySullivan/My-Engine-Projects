@@ -882,17 +882,15 @@ Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTra
 		Vec3 jBasis = CrossProduct3D( Vec3::Z_AXIS, iBasis ).GetNormalized();
 		Vec3 kBasis = CrossProduct3D( iBasis, jBasis ).GetNormalized();
 		result.SetIJKT3D( iBasis, jBasis, kBasis, billboardPosition );
-		result.Orthonormalize_XFwd_YLeft_ZUp();
 		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
 	}
 
 	if ( billboardType == BillboardType::FULL_OPPOSING )
 	{
-		Vec3 iBasis = -dirToCamera;
-		Vec3 jBasis = CrossProduct3D( Vec3::Z_AXIS, iBasis ).GetNormalized();
-		Vec3 kBasis = CrossProduct3D( iBasis, jBasis ).GetNormalized();
-		result.SetIJKT3D( iBasis, jBasis, kBasis, billboardPosition );
-		result.Orthonormalize_XFwd_YLeft_ZUp();
+		Vec3 camForward = targetTransform.GetIBasis3D();
+		Vec3 camLeft = targetTransform.GetJBasis3D();
+		Vec3 camUp = targetTransform.GetKBasis3D();
+		result.SetIJKT3D( -camForward, -camLeft, camUp, billboardPosition );
 		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
 	}
 
