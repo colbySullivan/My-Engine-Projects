@@ -88,11 +88,11 @@ void DebugRenderWorld( const Camera& camera )
 		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
 		g_engine->m_render->BindTexture( obj.m_texture );
 
-		std::vector<Vertex> vertsToRender = obj.m_vertices;
+		//std::vector<Vertex> vertsToRender = obj.m_vertices;
 		if ( obj.m_billboardType != BillboardType::NONE )
 		{
 			Mat44 billboardMat = GetBillboardTransform( obj.m_billboardType, camera.GetCameraToWorldTransform(), obj.m_position );
-			TransformVertexArray3D( vertsToRender, billboardMat );
+			TransformVertexArray3D( obj.m_vertices, billboardMat );
 		}
 
 		if ( obj.m_isWireframe )
@@ -117,7 +117,7 @@ void DebugRenderWorld( const Camera& camera )
 		if ( obj.m_mode == DebugRenderMode::ALWAYS )
 		{
 			g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
-			g_engine->m_render->DrawVertexArray( vertsToRender );
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
 		}
 		else if ( obj.m_mode == DebugRenderMode::X_RAY )
 		{
@@ -126,7 +126,7 @@ void DebugRenderWorld( const Camera& camera )
 			ghostColor.g = ( unsigned char )( obj.m_startColor.g + ( 255 - obj.m_startColor.g ) * 0.5f );
 			ghostColor.b = ( unsigned char )( obj.m_startColor.b + ( 255 - obj.m_startColor.b ) * 0.5f );
 			ghostColor.a = ( unsigned char )( obj.m_startColor.a * 0.25f );
-			std::vector<Vertex> ghostVerts = vertsToRender;
+			std::vector<Vertex> ghostVerts = obj.m_vertices;
 			for ( int i = 0; i < ( int )ghostVerts.size(); i++ )
 			{
 				ghostVerts[i].m_color = ghostColor;
@@ -137,13 +137,13 @@ void DebugRenderWorld( const Camera& camera )
 
 			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
 			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-			g_engine->m_render->DrawVertexArray( vertsToRender );
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
 		}
 		else
 		{
 			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
 			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-			g_engine->m_render->DrawVertexArray( vertsToRender );
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
 		}
 	}
 
@@ -276,7 +276,7 @@ void DebugAddWorldWireSphere( const Vec3& center, float radius, float duration, 
 	}
 
 	Rgba8 color = startColor;
-	AddVertsForSphere3D( obj.m_vertices, center, radius, 32, 32, color );
+	AddVertsForSphere3D( obj.m_vertices, center, radius, 16, 16, color );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
