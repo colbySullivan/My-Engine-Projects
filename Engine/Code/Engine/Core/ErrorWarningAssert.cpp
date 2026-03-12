@@ -194,7 +194,7 @@ __declspec( noreturn ) void FatalError( char const* filePath, char const* functi
 	}
 
 	char const* fileName = FindStartOfFileNameWithinFilePath( filePath );
-	std::string appName = "Unnamed Application"; // #ToDo: replace with fetch from global config strings
+	std::string appName = "Unnamed Application";
 	std::string fullMessageTitle = appName + " :: Error";
 	std::string fullMessageText = errorMessage;
 	fullMessageText += "\n\nThe application will now close.\n";
@@ -253,7 +253,7 @@ void RecoverableWarning( char const* filePath, char const* functionName, int lin
 	}
 
 	char const* fileName = FindStartOfFileNameWithinFilePath( filePath );
-	std::string appName = "Unnamed Application"; // #ToDo: replace with fetch from global config strings
+	std::string appName = "Unnamed Application";
 	std::string fullMessageTitle = appName + " :: Warning";
 	std::string fullMessageText = errorMessage;
 

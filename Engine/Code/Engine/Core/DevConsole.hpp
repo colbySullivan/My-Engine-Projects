@@ -66,7 +66,7 @@ protected:
 protected:
 	DevConsoleConfig                m_config;
 	DevConsoleMode                  m_mode = DevConsoleMode::HIDDEN; // also OPEN_FULL, and eventually others
-	std::vector<DevConsoleLine>     m_lines;    // #TODO: support a max limited # of lines (e.g. fixed circular buffer)
+	std::vector<DevConsoleLine>     m_lines;
 	int                             m_frameNumber = 0;
 	int 							m_maxCommandHistory = 128;
 	std::string						m_inputText;
