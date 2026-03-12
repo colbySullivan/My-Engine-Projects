@@ -88,30 +88,30 @@ void DebugRenderWorld( const Camera& camera )
 		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
 		g_engine->m_render->BindTexture( obj.m_texture );
 
-		//std::vector<Vertex> vertsToRender = obj.m_vertices;
 		if ( obj.m_billboardType != BillboardType::NONE )
 		{
+			std::vector<Vertex> originalVerts = obj.m_vertices;
 			Mat44 billboardMat = GetBillboardTransform( obj.m_billboardType, camera.GetCameraToWorldTransform(), obj.m_position );
-			TransformVertexArray3D( obj.m_vertices, billboardMat );
+			TransformVertexArray3D( originalVerts, billboardMat );
+			if ( obj.m_isWireframe && (obj.m_billboardType == BillboardType::WORLD_UP_OPPOSING || obj.m_billboardType == BillboardType::FULL_OPPOSING) )
+			{
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+			}
+			if ( obj.m_billboardType == BillboardType::WORLD_UP_OPPOSING || obj.m_billboardType == BillboardType::FULL_OPPOSING )
+			{
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_NONE );
+			}
+			g_engine->m_render->DrawVertexArray( originalVerts );
+			continue;
 		}
 
 		if ( obj.m_isWireframe )
 		{
 			g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
-
-			if ( obj.m_billboardType == BillboardType::WORLD_UP_OPPOSING || obj.m_billboardType == BillboardType::FULL_OPPOSING )
-			{
-				g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
-			}
 		}
 		else
 		{
 			g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
-
-			if ( obj.m_billboardType == BillboardType::WORLD_UP_OPPOSING || obj.m_billboardType == BillboardType::FULL_OPPOSING )
-			{
-				g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_NONE );
-			}
 		}
 
 		if ( obj.m_mode == DebugRenderMode::ALWAYS )
@@ -386,6 +386,45 @@ void DebugAddWorldWireArrow( const Vec3& start, const Vec3& end, float radius, f
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
 
+void DebugAddBasis( const Mat44& transform, float duration, float length, float radius, float colorScale /*= 1.0f*/, float alphaScale /*= 1.0f*/, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
+{
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_mode = mode;
+	obj.m_isScreen = false;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
+
+	float arrowLength = 1.f;
+	Vec3 origin = transform.GetTranslation3D();
+	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetIBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 255, 0, 0 ) );
+	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetJBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 255, 0 ) );
+	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetKBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 0, 255 ) );
+
+	Mat44 xLabelTransform = transform;
+	xLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetIBasis3D().GetNormalized() * arrowLength ); // #TODO need to move offset
+	DebugAddWorldText( "X", xLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 255, 0, 0 ), Rgba8( 255, 0, 0 ), mode );
+
+	Mat44 yLabelTransform = transform;
+	yLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetJBasis3D().GetNormalized() * arrowLength );
+	DebugAddWorldText( "Y", yLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ), mode );
+
+	Mat44 zLabelTransform = transform;
+	zLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetKBasis3D().GetNormalized() * arrowLength );
+	DebugAddWorldText( "Z", zLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ), mode );
+
+	m_debugRenderSystem->m_worldObjects.push_back( obj );
+}
+
 //-----------------------------------------------------------------------------------------------
 void DebugAddWorldBasis( const Mat44& transform, float duration, DebugRenderMode mode /*= DebugRenderMode::USE_DEPTH */ )
 {
@@ -482,7 +521,7 @@ void DebugAddWorldBillboardText( const std::string& text, const Vec3& origin, fl
 	obj.m_isScreen = false;
 	obj.m_isWireframe = false;
 	obj.m_texture = &font->GetTexture();
-	obj.m_billboardType = BillboardType::WORLD_UP_FACING;
+	obj.m_billboardType = BillboardType::FULL_OPPOSING;
 	obj.m_position = origin;
 
 	if ( duration > 0.f )

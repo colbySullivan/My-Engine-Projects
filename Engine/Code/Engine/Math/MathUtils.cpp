@@ -887,10 +887,10 @@ Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTra
 
 	if ( billboardType == BillboardType::FULL_OPPOSING )
 	{
-		Vec3 camForward = targetTransform.GetIBasis3D();
-		Vec3 camLeft = targetTransform.GetJBasis3D();
-		Vec3 camUp = targetTransform.GetKBasis3D();
-		result.SetIJKT3D( -camForward, -camLeft, camUp, billboardPosition );
+		Vec3 iBasis = targetTransform.GetIBasis3D();
+		Vec3 jBasis = targetTransform.GetJBasis3D();
+		Vec3 kBasis = targetTransform.GetKBasis3D();
+		result.SetIJKT3D( -iBasis, -jBasis, kBasis, billboardPosition );
 		result.AppendScaleNonUniform3D( Vec3( billboardScale.x, billboardScale.y, 1.f ) );
 	}
 
