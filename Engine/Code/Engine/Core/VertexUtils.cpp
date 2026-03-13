@@ -303,7 +303,6 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 	Vec3 kBasis = lookAt.GetKBasis3D();
 
 	float uvWidth = UVs.m_maxs.x - UVs.m_mins.x;
-	float uvHeight = UVs.m_maxs.y - UVs.m_mins.y;
 
 	for ( int i = 0; i < numSlices; ++i )
 	{
@@ -383,7 +382,7 @@ void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec
 }
 
 //------------------------------------------------------------------------------
-void AddVertsForArrow3D( std::vector<Vertex>& verts, Vec3 const& start, Vec3 const& end, float radius, Rgba8 const& color /*= Rgba8::WHITE*/, int numSlices /*= 32 */ )
+void AddVertsForArrow3D( std::vector<Vertex>& verts, Vec3 const& start, Vec3 const& end, float radius, Rgba8 const& color /*= Rgba8::WHITE*/, [[maybe_unused]] int numSlices /*= 32 */ )
 {
 	Vec3 shaftEnd = start + ( end - start ) * 0.8f;
 	AddVertsForCylinder3D( verts, start, shaftEnd, radius, color );

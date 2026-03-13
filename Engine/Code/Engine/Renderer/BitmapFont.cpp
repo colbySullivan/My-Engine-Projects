@@ -123,7 +123,7 @@ float BitmapFont::GetTextWidth( float cellHeight, std::string const& text, float
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::AddVertsForText3DAtOriginXForward( std::vector<Vertex>& verts, float cellHeight, std::string const& text, Rgba8 const& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.0f*/, Vec2 const& alignment /*= Vec2( 0.5f, 0.5f )*/, int maxGlyphsToDraw /*= 999 */ )
+void BitmapFont::AddVertsForText3DAtOriginXForward( std::vector<Vertex>& verts, float cellHeight, std::string const& text, Rgba8 const& tint /*= Rgba8::WHITE*/, float cellAspect /*= 1.0f*/, Vec2 const& alignment /*= Vec2( 0.5f, 0.5f )*/, [[maybe_unused]] int maxGlyphsToDraw /*= 999 */ )
 {
 	std::vector<Vertex> text2D;
 	AddVertsForText2D( text2D, Vec2( 0.f, 0.f ), cellHeight, text, tint, cellAspect );

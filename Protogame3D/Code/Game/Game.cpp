@@ -271,7 +271,7 @@ void Game::DebugInput()
 void Game::RenderUI() const
 {
 	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
-	float scale = g_engine->m_systemClock->GetTimeScale();
+	float scale = (float)g_engine->m_systemClock->GetTimeScale();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 

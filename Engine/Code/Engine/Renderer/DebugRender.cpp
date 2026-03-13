@@ -449,11 +449,10 @@ void DebugAddBasis( const Mat44& transform, float duration, float length, float 
 		obj.m_timer->Start();
 	}
 
-	float arrowLength = 1.f;
 	Vec3 origin = transform.GetTranslation3D();
-	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetIBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 255, 0, 0 ) );
-	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetJBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 255, 0 ) );
-	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetKBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 0, 255 ) );
+	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetIBasis3D().GetNormalized() * length, radius, Rgba8( (unsigned char) (255.f * colorScale), 0, 0, (unsigned char) (alphaScale * 255.f) ) );
+	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetJBasis3D().GetNormalized() * length, radius, Rgba8( 0, (unsigned char) (255.f * colorScale), 0, (unsigned char) (alphaScale * 255.f) ) );
+	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetKBasis3D().GetNormalized() * length, radius, Rgba8( 0, 0, (unsigned char) (255.f * colorScale), (unsigned char) (alphaScale * 255.f) ) );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
@@ -553,6 +552,7 @@ void DebugAddWorldBillboardText( const std::string& text, const Vec3& origin, fl
 	obj.m_texture = &font->GetTexture();
 	obj.m_billboardType = BillboardType::FULL_OPPOSING;
 	obj.m_position = origin;
+	obj.m_mode = mode;
 
 	if ( duration > 0.f )
 	{
@@ -640,7 +640,7 @@ void DebugAddMessage( const std::string& text, float duration, const Rgba8& star
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Command_DebugRenderClear( EventArgs& args )
+bool Command_DebugRenderClear( [[maybe_unused]] EventArgs& args )
 {
 	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_worldObjects.size(); ++objectIndex )
 	{
@@ -663,7 +663,7 @@ bool Command_DebugRenderClear( EventArgs& args )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Command_DebugRenderToggle( EventArgs& args )
+bool Command_DebugRenderToggle( [[maybe_unused]] EventArgs& args )
 {
 	if ( m_debugRenderSystem->m_isVisible )
 	{
