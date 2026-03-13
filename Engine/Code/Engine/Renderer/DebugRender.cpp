@@ -22,6 +22,7 @@ struct DebugRenderObject
 	Vec3 					m_position = Vec3( 0.f ,0.f, 0.f );
 	int						m_messageIndex = -1;
 	std::string				m_text = "";
+	bool					m_multiColor = false;
 };
 
 struct DebugRenderSystem
@@ -144,6 +145,11 @@ void DebugRenderWorld( const Camera& camera )
 		}
 		else
 		{
+			g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_NONE );
+			if ( obj.m_isWireframe )
+			{
+				g_engine->m_render->SetRasterizerMode( RasterizerMode::WIREFRAME_CULL_NONE );
+			}
 			g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
 			g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
 			g_engine->m_render->DrawVertexArray( obj.m_vertices );
@@ -226,14 +232,17 @@ void DebugRenderEndFrame()
 			else
 			{
 				obj.m_age += ( float )g_engine->m_systemClock->GetDeltaSeconds();
-				float ageFraction = obj.m_age / obj.m_duration;
-				unsigned char r = ( unsigned char )( obj.m_startColor.r + ( obj.m_endColor.r - obj.m_startColor.r ) * ageFraction );
-				unsigned char g = ( unsigned char )( obj.m_startColor.g + ( obj.m_endColor.g - obj.m_startColor.g ) * ageFraction );
-				unsigned char b = ( unsigned char )( obj.m_startColor.b + ( obj.m_endColor.b - obj.m_startColor.b ) * ageFraction );
-				unsigned char a = ( unsigned char )( obj.m_startColor.a + ( obj.m_endColor.a - obj.m_startColor.a ) * ageFraction );
-				for ( int vertIndex = 0; vertIndex < obj.m_vertices.size(); vertIndex++ )
+				if ( !obj.m_multiColor )
 				{
-					obj.m_vertices[vertIndex].m_color = Rgba8( r, g, b, a );
+					float ageFraction = obj.m_age / obj.m_duration;
+					unsigned char r = ( unsigned char )( obj.m_startColor.r + ( obj.m_endColor.r - obj.m_startColor.r ) * ageFraction );
+					unsigned char g = ( unsigned char )( obj.m_startColor.g + ( obj.m_endColor.g - obj.m_startColor.g ) * ageFraction );
+					unsigned char b = ( unsigned char )( obj.m_startColor.b + ( obj.m_endColor.b - obj.m_startColor.b ) * ageFraction );
+					unsigned char a = ( unsigned char )( obj.m_startColor.a + ( obj.m_endColor.a - obj.m_startColor.a ) * ageFraction );
+					for ( int vertIndex = 0; vertIndex < obj.m_vertices.size(); vertIndex++ )
+					{
+						obj.m_vertices[vertIndex].m_color = Rgba8( r, g, b, a );
+					}
 				}
 			}
 		}
@@ -427,6 +436,7 @@ void DebugAddBasis( const Mat44& transform, float duration, float length, float 
 	DebugRenderObject obj;
 	obj.m_duration = duration;
 	obj.m_mode = mode;
+	obj.m_multiColor = true;
 
 	if ( duration > 0.f )
 	{
@@ -444,18 +454,6 @@ void DebugAddBasis( const Mat44& transform, float duration, float length, float 
 	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetIBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 255, 0, 0 ) );
 	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetJBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 255, 0 ) );
 	AddVertsForArrow3D( obj.m_vertices, origin, origin + transform.GetKBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 0, 255 ) );
-
-	Mat44 xLabelTransform = transform;
-	xLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetIBasis3D().GetNormalized() * arrowLength ); // #TODO need to move offset
-	DebugAddWorldText( "X", xLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 255, 0, 0 ), Rgba8( 255, 0, 0 ), mode );
-
-	Mat44 yLabelTransform = transform;
-	yLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetJBasis3D().GetNormalized() * arrowLength );
-	DebugAddWorldText( "Y", yLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ), mode );
-
-	Mat44 zLabelTransform = transform;
-	zLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetKBasis3D().GetNormalized() * arrowLength );
-	DebugAddWorldText( "Z", zLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ), mode );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
@@ -484,16 +482,18 @@ void DebugAddWorldBasis( const Mat44& transform, float duration, DebugRenderMode
 	AddVertsForArrow3D( obj.m_vertices, Vec3::ZERO, transform.GetKBasis3D().GetNormalized() * arrowLength, .1f, Rgba8( 0, 0, 255 ) );
 
 	Mat44 xLabelTransform = transform;
-	xLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetIBasis3D().GetNormalized() * arrowLength ); // #TODO need to move offset
-	DebugAddWorldText( "X", xLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 255, 0, 0 ), Rgba8( 255, 0, 0 ), mode );
+	xLabelTransform = transform.MakeZRotationDegrees( 90.f );
+	xLabelTransform.SetTranslation3D( transform.GetTranslation3D() + ( transform.GetIBasis3D().GetNormalized() * 0.7f ) + ( transform.GetKBasis3D().GetNormalized() * .3f ) );
+	DebugAddWorldText( "X - Forward", xLabelTransform, 0.1f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 255, 0, 0 ), Rgba8( 255, 0, 0 ), mode );
 
 	Mat44 yLabelTransform = transform;
-	yLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetJBasis3D().GetNormalized() * arrowLength );
-	DebugAddWorldText( "Y", yLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ), mode );
+	yLabelTransform.SetTranslation3D( transform.GetTranslation3D() + ( transform.GetJBasis3D().GetNormalized() * 0.7f ) + ( transform.GetKBasis3D().GetNormalized() * 0.3f ) );
+	DebugAddWorldText( "Y - Left", yLabelTransform, 0.1f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ), mode );
 
 	Mat44 zLabelTransform = transform;
-	zLabelTransform.SetTranslation3D( transform.GetTranslation3D() + transform.GetKBasis3D().GetNormalized() * arrowLength );
-	DebugAddWorldText( "Z", zLabelTransform, 0.2f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ), mode );
+	zLabelTransform = transform.MakeXRotationDegrees( 90.f );
+	zLabelTransform.SetTranslation3D( transform.GetTranslation3D() + (transform.GetKBasis3D().GetNormalized() * 0.5f) - ( transform.GetJBasis3D().GetNormalized() * 0.3f ) );
+	DebugAddWorldText( "Z - Up", zLabelTransform, 0.1f, Vec2( 0.5f, 0.5f ), duration, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ), mode );
 
 	m_debugRenderSystem->m_worldObjects.push_back( obj );
 }
