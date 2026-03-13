@@ -640,6 +640,29 @@ void DebugAddMessage( const std::string& text, float duration, const Rgba8& star
 }
 
 //-----------------------------------------------------------------------------------------------
+bool Command_DebugRenderClear( EventArgs& args )
+{
+	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_worldObjects.size(); ++objectIndex )
+	{
+		DebugRenderObject& obj = m_debugRenderSystem->m_worldObjects[objectIndex];
+		delete obj.m_timer;
+		obj.m_timer = nullptr;
+		m_debugRenderSystem->m_worldObjects.erase( m_debugRenderSystem->m_worldObjects.begin() + objectIndex );
+		objectIndex--;
+	}
+
+	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_screenObjects.size(); ++objectIndex )
+	{
+		DebugRenderObject& obj = m_debugRenderSystem->m_screenObjects[objectIndex];
+		delete obj.m_timer;
+		obj.m_timer = nullptr;
+		m_debugRenderSystem->m_screenObjects.erase( m_debugRenderSystem->m_screenObjects.begin() + objectIndex );
+		objectIndex--;
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
 bool Command_DebugRenderToggle( EventArgs& args )
 {
 	if ( m_debugRenderSystem->m_isVisible )

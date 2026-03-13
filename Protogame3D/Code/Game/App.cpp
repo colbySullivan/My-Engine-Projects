@@ -29,6 +29,7 @@ App::App()
 
 	SubscribeEventCallbackFunction( "Quit", App::Event_Quit );
 	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "ToggleDebug", Command_DebugRenderToggle );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "ClearDebug", Command_DebugRenderClear );
 }
 //-----------------------------------------------------------------------------------------------
 
