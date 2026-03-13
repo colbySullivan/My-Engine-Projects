@@ -14,12 +14,14 @@ struct DebugRenderObject
 	Rgba8					m_startColor;
 	Rgba8					m_endColor;
 	DebugRenderMode			m_mode = DebugRenderMode::USE_DEPTH;
-	bool					m_isScreen = false;
+	bool					m_isScreenMessage = false;
 	bool					m_isWireframe = false;
 	Texture*				m_texture = nullptr;
 	Timer*					m_timer = nullptr;
 	BillboardType			m_billboardType = BillboardType::NONE;
 	Vec3 					m_position = Vec3( 0.f ,0.f, 0.f );
+	int						m_messageIndex = -1;
+	std::string				m_text = "";
 };
 
 struct DebugRenderSystem
@@ -28,6 +30,7 @@ struct DebugRenderSystem
 	bool							m_isVisible = true;
 	std::vector<DebugRenderObject>	m_worldObjects;
 	std::vector<DebugRenderObject>	m_screenObjects;
+	int								m_systemMessageIndex = 0;
 };
 
 static DebugRenderSystem* m_debugRenderSystem = nullptr;
@@ -155,12 +158,51 @@ void DebugRenderScreen( const Camera& camera )
 {
 	g_engine->m_render->BeginCamera( camera );
 
+	AABB2 cameraBounds = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthographicTopRight());
+	float screenWidth = cameraBounds.m_maxs.x - cameraBounds.m_mins.x;
+	float cellHeight = 10.f;
 
-	for ( int objectIndex = 0; objectIndex < m_debugRenderSystem->m_screenObjects.size(); ++objectIndex )
+	std::string fontPath = m_debugRenderSystem->m_config.m_fontPath + m_debugRenderSystem->m_config.m_fontName;
+	BitmapFont* font = g_engine->m_render->CreateOrGetBitmapFont( fontPath.c_str() );
+
+	for ( int lineIndex = 0; lineIndex < m_debugRenderSystem->m_screenObjects.size(); ++lineIndex )
 	{
-		DebugRenderObject& obj = m_debugRenderSystem->m_screenObjects[objectIndex];
+		DebugRenderObject& obj = m_debugRenderSystem->m_screenObjects[lineIndex];
 		g_engine->m_render->BindTexture( obj.m_texture );
-		g_engine->m_render->DrawVertexArray( obj.m_vertices );
+
+		if ( obj.m_isScreenMessage && font )
+		{
+			int visualRow = 0;
+			for ( int otherIndex = 0; otherIndex < m_debugRenderSystem->m_screenObjects.size(); ++otherIndex )
+			{
+				const DebugRenderObject& other = m_debugRenderSystem->m_screenObjects[otherIndex];
+				if ( other.m_isScreenMessage && other.m_messageIndex < obj.m_messageIndex )
+				{
+					visualRow++;
+				}
+			}
+
+			float yTop = cameraBounds.m_maxs.y - ( visualRow * cellHeight ) - 20.f;
+			float yBottom = yTop - cellHeight;
+			AABB2 box( Vec2( cameraBounds.m_mins.x, yBottom ), Vec2( cameraBounds.m_mins.x + screenWidth * 0.5f, yTop ) );
+
+			std::vector<Vertex> verts;
+			Rgba8 currentColor = obj.m_startColor;
+			if ( obj.m_duration > 0.f )
+			{
+				float ageFraction = obj.m_age / obj.m_duration;
+				currentColor.r = ( unsigned char )( obj.m_startColor.r + ( obj.m_endColor.r - obj.m_startColor.r ) * ageFraction );
+				currentColor.g = ( unsigned char )( obj.m_startColor.g + ( obj.m_endColor.g - obj.m_startColor.g ) * ageFraction );
+				currentColor.b = ( unsigned char )( obj.m_startColor.b + ( obj.m_endColor.b - obj.m_startColor.b ) * ageFraction );
+				currentColor.a = ( unsigned char )( obj.m_startColor.a + ( obj.m_endColor.a - obj.m_startColor.a ) * ageFraction );
+			}
+			font->AddVertsForTextInBox2D( verts, obj.m_text, box, cellHeight, currentColor, 1.0f, Vec2( 0.f, 0.5f ), TextBoxMode::SHRINK_TO_FIT );
+			g_engine->m_render->DrawVertexArray( verts );
+		}
+		else
+		{
+			g_engine->m_render->DrawVertexArray( obj.m_vertices );
+		}
 	}
 
 	g_engine->m_render->EndCamera( camera );
@@ -234,7 +276,6 @@ void DebugAddWorldSphere( const Vec3& center, float radius, float duration, cons
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 
 	if ( duration > 0.f )
 	{
@@ -261,7 +302,6 @@ void DebugAddWorldWireSphere( const Vec3& center, float radius, float duration, 
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 	obj.m_isWireframe = true;
 
 	if ( duration > 0.f )
@@ -289,7 +329,6 @@ void DebugAddWorldCylinder( const Vec3& start, const Vec3& end, float radius, fl
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 
 	if ( duration > 0.f )
 	{
@@ -315,7 +354,6 @@ void DebugAddWorldWireCylinder( const Vec3& start, const Vec3& end, float radius
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 	obj.m_isWireframe = true;
 
 	if ( duration > 0.f )
@@ -342,7 +380,6 @@ void DebugAddWorldArrow( const Vec3& start, const Vec3& end, float radius, float
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 
 	if ( duration > 0.f )
 	{
@@ -367,7 +404,6 @@ void DebugAddWorldWireArrow( const Vec3& start, const Vec3& end, float radius, f
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 	obj.m_isWireframe = true;
 
 	if ( duration > 0.f )
@@ -391,7 +427,6 @@ void DebugAddBasis( const Mat44& transform, float duration, float length, float 
 	DebugRenderObject obj;
 	obj.m_duration = duration;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 
 	if ( duration > 0.f )
 	{
@@ -431,7 +466,6 @@ void DebugAddWorldBasis( const Mat44& transform, float duration, DebugRenderMode
 	DebugRenderObject obj;
 	obj.m_duration = duration;
 	obj.m_mode = mode;
-	obj.m_isScreen = false;
 
 	if ( duration > 0.f )
 	{
@@ -482,8 +516,6 @@ void DebugAddWorldText( const std::string& text, const Mat44& transform, float t
 	obj.m_duration = duration;
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
-	obj.m_isScreen = false;
-	obj.m_isWireframe = false;
 	obj.m_texture = &font->GetTexture();
 	obj.m_billboardType = BillboardType::NONE;
 	obj.m_mode = mode;
@@ -518,8 +550,6 @@ void DebugAddWorldBillboardText( const std::string& text, const Vec3& origin, fl
 	obj.m_duration = duration;
 	obj.m_startColor = startColor;
 	obj.m_endColor = endColor;
-	obj.m_isScreen = false;
-	obj.m_isWireframe = false;
 	obj.m_texture = &font->GetTexture();
 	obj.m_billboardType = BillboardType::FULL_OPPOSING;
 	obj.m_position = origin;
@@ -557,7 +587,7 @@ void DebugAddScreenText( const std::string& text, const AABB2& box, float cellHe
     obj.m_duration = duration;
     obj.m_startColor = startColor;
     obj.m_endColor = endColor;
-    obj.m_isScreen = true;
+    obj.m_isScreenMessage = false;
     obj.m_isWireframe = false;
 	obj.m_texture = &font->GetTexture();
 
@@ -573,6 +603,40 @@ void DebugAddScreenText( const std::string& text, const AABB2& box, float cellHe
 	}
 
     m_debugRenderSystem->m_screenObjects.push_back( obj );
+}
+
+//------------------------------------------------------------------------------
+void DebugAddMessage( const std::string& text, float duration, const Rgba8& startColor /*= Rgba8::WHITE*/, const Rgba8& endColor /*= Rgba8::WHITE */ )
+{
+	std::string fontPath = m_debugRenderSystem->m_config.m_fontPath + m_debugRenderSystem->m_config.m_fontName;
+	BitmapFont* font = g_engine->m_render->CreateOrGetBitmapFont( fontPath.c_str() );
+	if ( !font )
+	{
+		ERROR_AND_DIE( Stringf( "Failed to load font for DebugRender: %s", fontPath.c_str() ) );
+	}
+
+	DebugRenderObject obj;
+	obj.m_duration = duration;
+	obj.m_startColor = startColor;
+	obj.m_endColor = endColor;
+	obj.m_isScreenMessage = true;
+	obj.m_texture = &font->GetTexture();
+	obj.m_messageIndex = m_debugRenderSystem->m_systemMessageIndex++;
+
+	if ( duration > 0.f )
+	{
+		obj.m_timer = new Timer( duration );
+		obj.m_timer->Start();
+	}
+	if ( duration == 0.f )
+	{
+		obj.m_timer = new Timer( g_engine->m_systemClock->GetDeltaSeconds() );
+		obj.m_timer->Start();
+	}
+
+	obj.m_text = text;
+
+	m_debugRenderSystem->m_screenObjects.push_back( obj );
 }
 
 //-----------------------------------------------------------------------------------------------

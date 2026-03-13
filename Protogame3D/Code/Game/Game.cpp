@@ -263,7 +263,7 @@ void Game::DebugInput()
 	if ( g_engine->m_input->WasKeyJustPressed( '7' ) )
 	{
 		std::string hudText = Stringf( "Camera orientation: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
-		DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 30.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y - 15.f ) ), 10.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) ); // #TODO Make this the add messages 
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 }
 
