@@ -12,7 +12,6 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
 #include "Game/Player.hpp"
-#include "Game/Prop.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
 RandomNumberGenerator g_rng;
@@ -83,13 +82,6 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
-		for ( int propIndex = 0; propIndex < (int)m_props.size(); ++propIndex )
-		{
-			if ( m_props[propIndex] != nullptr )
-			{
-				m_props[propIndex]->Update( deltaSeconds );
-			}
-		}
 		m_player->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
 }
@@ -117,13 +109,6 @@ void Game::Render() const
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
-		for ( int propIndex = 0; propIndex < (int)m_props.size(); ++propIndex )
-		{
-			if ( m_props[propIndex] != nullptr )
-			{
-				m_props[propIndex]->Render();
-			}
-		}
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
@@ -329,7 +314,7 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
 
 	// Title
-	char title[32] = "Protogame3D";
+	char title[32] = "Doomenstein";
 	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };

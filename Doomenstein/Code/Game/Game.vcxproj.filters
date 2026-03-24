@@ -31,13 +31,7 @@
     <ClCompile Include="Game.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Prop.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,13 +48,7 @@
     <ClInclude Include="Game.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.hpp">
-      <Filter>Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Player.hpp">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Prop.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>

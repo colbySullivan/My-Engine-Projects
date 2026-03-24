@@ -3,12 +3,14 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/Clock.hpp"
+#include "Engine/Math/Mat44.hpp"
+
 
 
 //-----------------------------------------------------------------------------------------------
 Player::Player( Game* owner )
-	: Entity( owner )
 {
+	m_game = owner;
 	PrintControlsToDevConsole();
 	SetUpCamera();
 }	
@@ -156,6 +158,7 @@ void Player::ApplyMovement( Vec3 const& localMoveDir, float speed, float deltaSe
 	m_position += worldDir * speed * deltaSeconds;
 }
 
+//-----------------------------------------------------------------------------------------------
 void Player::SetUpCamera()
 {
 	m_worldCamera = new Camera;
@@ -164,4 +167,12 @@ void Player::SetUpCamera()
 	Mat44 cameraToRenderMatrix;
 	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
 	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
+}
+
+//------------------------------------------------------------------------------
+Mat44 Player::GetModelToWorldTransform() const
+{
+	Mat44 model = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+	model.SetTranslation3D( m_position );
+	return model;
 }
