@@ -19,9 +19,9 @@ App::App()
 	config.m_windowConfig.m_windowTitle = "Doomenstein";
 	g_engine = new Engine( config );
 
+	LoadXmlMap();
 	g_app = this;
 	m_game = new Game();
-	LoadXmlMap();
 
 	g_UICamera = new Camera();
 	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ),  Vec2(g_gameConfig->GetValue("screenSizeX", 0.f), g_gameConfig->GetValue("screenSizeY", 0.f)));

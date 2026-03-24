@@ -8,6 +8,7 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Player.hpp"
@@ -29,7 +30,7 @@ Game::Game()
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	m_player = new Player( this );
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
 	CreateProps();
 }
 
@@ -235,13 +236,15 @@ void Game::DebugInput()
 //-----------------------------------------------------------------------------------------------
 void Game::RenderUI() const
 {
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
 	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
 	float scale = (float)g_engine->m_systemClock->GetTimeScale();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
 }
