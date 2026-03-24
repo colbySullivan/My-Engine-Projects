@@ -360,5 +360,8 @@
     <ClInclude Include="Renderer\DebugRender.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\DiffuseShader.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

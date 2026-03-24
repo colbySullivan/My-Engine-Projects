@@ -212,6 +212,24 @@
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Run\Data\Images\Actor_Marine_7x9.png" />
+    <Image Include="..\..\Run\Data\Images\Actor_Pinky_8x9.png" />
+    <Image Include="..\..\Run\Data\Images\Hud_Base.png" />
+    <Image Include="..\..\Run\Data\Images\Plasma.png" />
+    <Image Include="..\..\Run\Data\Images\Projectile_BloodSplatter.png" />
+    <Image Include="..\..\Run\Data\Images\Projectile_PistolHit.png" />
+    <Image Include="..\..\Run\Data\Images\Projectile_Plasma.png" />
+    <Image Include="..\..\Run\Data\Images\Projectile_PlasmaHit.png" />
+    <Image Include="..\..\Run\Data\Images\Reticle.png" />
+    <Image Include="..\..\Run\Data\Images\Terrain_8x8.png" />
+    <Image Include="..\..\Run\Data\Images\TestUV.png" />
+    <Image Include="..\..\Run\Data\Images\Weapon_Pistol.png" />
+    <Image Include="..\..\Run\Data\Images\Weapon_Plasma.png" />
+    <Image Include="..\..\Run\Data\Maps\MPMap.png" />
+    <Image Include="..\..\Run\Data\Maps\PortalMap.png" />
+    <Image Include="..\..\Run\Data\Maps\TestMap.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

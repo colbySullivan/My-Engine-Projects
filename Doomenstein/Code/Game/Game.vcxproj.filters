@@ -11,9 +11,6 @@
     <Filter Include="Data">
       <UniqueIdentifier>{5959a16a-ae2c-43aa-bfab-295bcf47749b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Data\Shaders">
-      <UniqueIdentifier>{ec2da69f-e342-405a-adc2-667cdaa6ddb6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Entities">
       <UniqueIdentifier>{d6489d8a-8ad8-4510-8927-c0d8b0207228}</UniqueIdentifier>
     </Filter>
@@ -22,6 +19,12 @@
     </Filter>
     <Filter Include="Tiles">
       <UniqueIdentifier>{21d37f89-6c36-4c53-9a24-0c7e3bb07e17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Maps">
+      <UniqueIdentifier>{9aaf6d36-2123-4e22-85cf-38fc0234b29c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Images">
+      <UniqueIdentifier>{dfa20df3-4fb3-4d24-9965-53396fbf7fc0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -80,5 +83,55 @@
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml">
       <Filter>Data\Definitions</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Run\Data\Maps\MPMap.png">
+      <Filter>Data\Maps</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Maps\PortalMap.png">
+      <Filter>Data\Maps</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Maps\TestMap.png">
+      <Filter>Data\Maps</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Actor_Marine_7x9.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Actor_Pinky_8x9.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Hud_Base.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Plasma.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Projectile_BloodSplatter.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Projectile_PistolHit.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Projectile_Plasma.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Projectile_PlasmaHit.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Reticle.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Terrain_8x8.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\TestUV.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Weapon_Pistol.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\Weapon_Plasma.png">
+      <Filter>Data\Images</Filter>
+    </Image>
   </ItemGroup>
 </Project>
