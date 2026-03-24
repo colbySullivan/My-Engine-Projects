@@ -4,7 +4,6 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Math/EulerAngles.hpp"
 #include "Game/Game.hpp"
-#include "Game/Entity.hpp"
 
 //------------------------------------------------------------------------------
 

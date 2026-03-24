@@ -27,6 +27,7 @@ public:
 
 	void SetIsQuitting();
 	bool IsQuitting() const;
+	void LoadXmlMap();
 
 public:
 	Game*		m_game = nullptr;

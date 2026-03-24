@@ -17,6 +17,12 @@
     <Filter Include="Entities">
       <UniqueIdentifier>{d6489d8a-8ad8-4510-8927-c0d8b0207228}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Definitions">
+      <UniqueIdentifier>{33378880-e62f-46b0-a336-9fe75bdcc334}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tiles">
+      <UniqueIdentifier>{21d37f89-6c36-4c53-9a24-0c7e3bb07e17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -33,6 +39,12 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="TileDefinitions.cpp">
+      <Filter>Tiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,5 +63,22 @@
     <ClInclude Include="Player.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
+    <ClInclude Include="Tile.hpp">
+      <Filter>Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="TileDefinitions.hpp">
+      <Filter>Tiles</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/Game.hpp"
 
 
@@ -20,9 +21,10 @@ App::App()
 
 	g_app = this;
 	m_game = new Game();
+	LoadXmlMap();
 
 	g_UICamera = new Camera();
-	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2(WORLD_SIZE_X, WORLD_SIZE_Y) );
+	g_UICamera->SetOrthoView( Vec2( 0.f, 0.f ),  Vec2(g_gameConfig->GetValue("screenSizeX", 0.f), g_gameConfig->GetValue("screenSizeY", 0.f)));
 
 	DebugRenderConfig debugConfig;
 	DebugRenderSystemStartup( debugConfig );
@@ -112,4 +114,17 @@ bool App::Event_Quit( [[maybe_unused]] EventArgs& args )
 {
 	g_theApp->SetIsQuitting();
 	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+void App::LoadXmlMap()
+{
+	g_gameConfig = new NamedStrings();
+	XmlDocument config;
+	XmlError configeResult = config.LoadFile( "Data/Definitions/GameConfig.xml" );
+	if ( configeResult == 0 )
+	{
+		XmlElement* rootElement = config.RootElement();
+		g_gameConfig->PopulateFromXmlElementAttributes( *rootElement );
+	}
 }

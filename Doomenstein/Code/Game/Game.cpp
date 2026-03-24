@@ -10,7 +10,6 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
-#include "Game/Entity.hpp"
 #include "Game/Player.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
