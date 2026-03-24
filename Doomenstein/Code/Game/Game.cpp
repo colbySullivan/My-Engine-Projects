@@ -50,18 +50,6 @@ Game::~Game()
 void Game::Startup()
 {
 	m_isPaused = false;
-
-	m_cubeBlinkTimer = new Timer( 3.5f );
-	m_cubeBlinkTimer->Start();
-
-	////DebugAddWorldWireCylinder(Vec3( 2.f, 2.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	//DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	//DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 0, 100, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::X_RAY );
-	////DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
-	////DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-	//DebugAddWorldWireArrow( Vec3( 0.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.1f, 5.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
-	//DebugAddWorldBillboardText( "Hello World", Vec3( 0.f, 0.f, 0.f ), 1.f, Vec2( 0.5f, 0.5f ), 60.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-	CreateDebugRenderObjects();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -101,13 +89,6 @@ void Game::Update()
 			{
 				m_props[propIndex]->Update( deltaSeconds );
 			}
-		}
-
-		unsigned char elapsedFraction = static_cast<unsigned char>(50 + ( m_cubeBlinkTimer->GetElapsedFraction() * 200 ));
-		m_props[1]->m_color = Rgba8(elapsedFraction, elapsedFraction, elapsedFraction);
-		if ( m_cubeBlinkTimer->DecrementPeriodIfElapsed() )
-		{
-			m_cubeBlinkTimer->Start();
 		}
 		m_player->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
@@ -434,66 +415,5 @@ void Game::UpdateBlackHole()
 //-----------------------------------------------------------------------------------------------
 void Game::CreateProps()
 {
-	Prop* box = new Prop( this );
-	box->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	box->m_position = Vec3( 2.f, 2.f, 0.f );
-	box->m_angularVelocity.m_pitchDegrees = 30.f;
-	box->m_angularVelocity.m_rollDegrees = 30.f;
-	m_props.push_back( box );
 
-	Prop* newBox = new Prop( this );
-	newBox->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	newBox->m_position = Vec3( -2.f, -2.f, 0.f );
-	m_props.push_back( newBox );
-
-	Prop* sphere = new Prop( this );
-	sphere->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
-	sphere->m_texture = m_testTexture;
-	m_props.push_back( sphere );
-
-	Prop* xAxisLines = new Prop( this );
-	for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
-	{
-		Vec3 linePosition = Vec3( -50.f + ( xGridIndex ), 0.f, 0.f );
-		if ( xGridIndex % 5 == 0 )
-		{
-			xAxisLines->MakeCubeAtPos( Rgba8( 0, 255, 0 ), Vec3( 0.1f, 100.f, 0.1f ), linePosition );
-		}
-		else
-		{
-			xAxisLines->MakeCubeAtPos( Rgba8( 120, 120, 120 ), Vec3( 0.05f, 100.f, 0.05f ), linePosition );
-		}
-	}
-	m_props.push_back( xAxisLines );
-
-	Prop* yAxisLines = new Prop( this );
-	for ( int yGridIndex = 0; yGridIndex < 100; ++yGridIndex )
-	{
-		Vec3 linePosition = Vec3( 0.f, -50.f + ( yGridIndex ), 0.f );
-		if ( yGridIndex % 5 == 0 )
-		{
-			yAxisLines->MakeCubeAtPos( Rgba8( 255, 0, 0 ), Vec3( 100.f, 0.1f, 0.1f ), linePosition );
-		}
-		else
-		{
-			yAxisLines->MakeCubeAtPos( Rgba8( 120, 120, 120 ), Vec3( 100.f, 0.05f, 0.05f ), linePosition );
-		}
-	}
-	m_props.push_back( yAxisLines );
-
-	Prop* newCylinder = new Prop( this );
-	newCylinder->MakeCylinder( Vec3( -10.f, 5.f, 0.f ), Vec3( -10.f, 5.f, 2.f ), 0.5f, 32 );
-	newCylinder->m_texture = m_testTexture;
-	m_props.push_back( newCylinder );
-
-	Prop* newCone = new Prop( this );
-	newCone->MakeCone( Vec3( 10.f, 10.f, 0.f ), Vec3( 10.f, 10.f, 2.f ), 0.5f, 32 );
-	newCone->m_texture = m_testTexture;
-	m_props.push_back( newCone );
-}
-
-void Game::CreateDebugRenderObjects()
-{
-	Mat44 worldBasis;
-	DebugAddWorldBasis( worldBasis, -1.f, DebugRenderMode::USE_DEPTH );
 }

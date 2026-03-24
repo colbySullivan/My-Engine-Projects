@@ -58,7 +58,6 @@ public:
 	Game_State			m_nextGameState  = GAMESTATE_ATTRACT;
 	float 				m_roundTime = 0.f;
 	float				m_bestRoundTime = 0.f;
-	Timer*				m_cubeBlinkTimer;
 
 	// Textures
 	BitmapFont* g_testFont = nullptr;
@@ -83,7 +82,6 @@ private:
 	void UpdateBlackHole();
 
 	void CreateProps();
-	void CreateDebugRenderObjects();
 
 	App*			m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
