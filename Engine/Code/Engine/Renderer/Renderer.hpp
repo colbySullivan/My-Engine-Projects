@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/ConstantBuffer.hpp"
+#include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/Mat44.hpp"
 #include "Game/EngineBuildPreferences.hpp"
@@ -135,6 +136,7 @@ protected:
 	VertexBuffer* m_immediateVBO = nullptr;
 	ConstantBuffer* m_cameraCBO = nullptr;
 	ConstantBuffer* m_modelCBO = nullptr;
+	IndexBuffer* m_indexVBO = nullptr;
 
 	std::vector<Shader*> m_loadedShaders;
 	Shader* m_currentShader = nullptr;
@@ -157,6 +159,9 @@ private:
 	void BindVertexBuffer( VertexBuffer* vbo );
 	void DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount );
 	void CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo );
+
+	IndexBuffer* CreateIndexBuffer( const unsigned int size );
+	void DrawIndexBuffer( VertexBuffer* vbo, IndexBuffer* ibo, unsigned int indexCount );
 
 	void SetStatesIfChanged();
 	void CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode );

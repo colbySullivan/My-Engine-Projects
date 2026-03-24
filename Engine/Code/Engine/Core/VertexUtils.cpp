@@ -98,6 +98,11 @@ void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgb
 	verts.push_back( Vertex( Vec3( minX, maxY, 0.f ), color, Vec2( uvAtMins.x, uvAtMaxs.y ) ) );
 }
 
+//-----------------------------------------------------------------------------------------------
+void AddVertsForAABB3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsigned int>& indexes, const AABB3& bounds, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ )
+{
+
+}
 
 //------------------------------------------------------------------------------
 void AddVertsForOBB2D( std::vector<Vertex>& verts, OBB2 const& orientedBox, Rgba8 color )
@@ -228,6 +233,12 @@ void AddVertsForQuad3D( std::vector<Vertex>& verts, const Vec3& bottomLeft, cons
 	verts.push_back( Vertex( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ) ) );
 	verts.push_back( Vertex( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ) ) );
 	verts.push_back( Vertex( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ) ) );
+}
+
+//-----------------------------------------------------------------------------------------------
+void AddVertsForQuad3D( std::vector<Vertex>& vertexes, std::vector<unsigned int>& indexes, const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topRight, const Vec3& topLeft, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ )
+{
+
 }
 
 //------------------------------------------------------------------------------

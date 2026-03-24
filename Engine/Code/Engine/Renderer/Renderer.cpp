@@ -226,6 +226,7 @@ void Renderer::CreateAndBindShaders()
 void Renderer::CreateBuffers()
 {
 	m_immediateVBO = CreateVertexBuffer( sizeof( Vertex ), sizeof( Vertex ) );
+	m_indexVBO = CreateIndexBuffer( sizeof( Vertex ) );
 	m_cameraCBO = CreateConstantBuffer( sizeof( CameraConstants ) );
 	m_modelCBO = CreateConstantBuffer( sizeof( ModelConstants ) );
 }
@@ -503,6 +504,28 @@ void Renderer::CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer
 	m_deviceContext->Map( cbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
 	memcpy( resource.pData, data, size );
 	m_deviceContext->Unmap( cbo->m_buffer, 0 );
+}
+
+IndexBuffer* Renderer::CreateIndexBuffer( const unsigned int size)
+{
+	D3D11_BUFFER_DESC bufferDesc = { };
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.ByteWidth = size;
+	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	IndexBuffer* buffer = new IndexBuffer( size );
+	m_device->CreateBuffer( &bufferDesc, nullptr, &buffer->m_buffer );
+	return buffer;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Renderer::DrawIndexBuffer( VertexBuffer* vbo, IndexBuffer* ibo, unsigned int indexCount )
+{
+	UINT offset = 0;
+	m_deviceContext->IASetVertexBuffers( 0, 1, &vbo->m_buffer, &vbo->m_stride, &offset );
+	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+	m_deviceContext->IASetIndexBuffer( ibo->m_buffer, DXGI_FORMAT_R32_UINT, 0 );
+	m_deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
 //------------------------------------------------------------------------------

@@ -14,6 +14,13 @@ struct ShaderConfig
 	std::string m_pixelEntryPoint = "PixelMain";
 };
 
+enum class VertexType
+{
+	VERTEX_PCU,
+	VERTEX_PCUTBN,
+	COUNT
+};
+
 //------------------------------------------------------------------------------
 class Shader
 {
@@ -26,6 +33,9 @@ public:
 
 	const std::string& GetName() const;
 
+	Shader* CreateOrGetShader( const char* shaderName, VertexType vertexType = VertexType::VERTEX_PCU ); // #TODO Create or Get Shader In instructions Map Code Bottom last step too
+	Shader* CreateShader( char const* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
+	Shader* CreateShader( char const* shaderName, char const* shaderSource, VertexType vertexType = VertexType::VERTEX_PCU );
 
 protected:
 	ShaderConfig m_config;
