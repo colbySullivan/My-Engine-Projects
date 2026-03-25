@@ -22,6 +22,11 @@ Map::~Map()
 
 	delete m_indexBuffer;
 	m_indexBuffer = nullptr;
+
+	delete m_shader;
+	m_shader = nullptr;
+
+	m_tiles.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -65,14 +70,14 @@ void Map::AddGeometryForWall( const AABB3& bounds, const AABB2& UVs )
 //-----------------------------------------------------------------------------------------------
 void Map::AddGeometryForFloor( const AABB3& bounds, const AABB2& UVs )
 {
-	AABB3 floorSlab( Vec3( bounds.m_mins.x, bounds.m_mins.y, -0.1f ), Vec3( bounds.m_maxs.x, bounds.m_maxs.y, 0.0f ) );
+	AABB3 floorSlab( Vec3( bounds.m_mins.x, bounds.m_mins.y, 0.f ), Vec3( bounds.m_maxs.x, bounds.m_maxs.y, 0.f ) );
 	AddVertsForAABB3D( m_vertexes, m_indexes, floorSlab, Rgba8(255, 255, 255, 255), UVs );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 {
-	AABB3 ceilSlab( Vec3( bounds.m_mins.x, bounds.m_mins.y, 1.0f ), Vec3( bounds.m_maxs.x, bounds.m_maxs.y, 1.1f ) );
+	AABB3 ceilSlab( Vec3( bounds.m_mins.x, bounds.m_mins.y, 1.0f ), Vec3( bounds.m_maxs.x, bounds.m_maxs.y, 1.0f ) );
 	AddVertsForAABB3D( m_vertexes, m_indexes, ceilSlab, Rgba8(255, 255, 255, 255), UVs );
 }
 
