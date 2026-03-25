@@ -6,6 +6,7 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Clock.hpp"
+#include "Game/Map.hpp"
 
 class App;
 class Entity;
@@ -18,6 +19,8 @@ class Clock;
 class Player;
 class Prop;
 class Timer;
+class Map;
+struct MapDefinition;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -69,6 +72,12 @@ public:
 	Player* m_player = nullptr;
 	std::vector<Prop*> m_props;
 
+	// Maps
+	std::vector<Map*> m_maps = {};
+	Map* m_currentMap = nullptr;
+	Map* m_nextMap = nullptr;
+	int m_currentMapNumber = 0;
+
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
 	void DebugInput();
@@ -90,4 +99,6 @@ private:
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
+	void ConstructMapFromXML();
+	MapDefinition* CreateMapDef( std::string name, std::string imagePath, std::string  shaderPath, std::string  texturePath, IntVec2 cellCount );
 };

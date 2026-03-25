@@ -26,6 +26,9 @@
     <Filter Include="Data\Images">
       <UniqueIdentifier>{dfa20df3-4fb3-4d24-9965-53396fbf7fc0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Shaders">
+      <UniqueIdentifier>{62ea7a08-0066-4ba1-b680-5d15839c8c71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">

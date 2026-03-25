@@ -7,6 +7,8 @@
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 
+class Game;
+
 //-----------------------------------------------------------------------------------------------
 struct MapDefinition
 {

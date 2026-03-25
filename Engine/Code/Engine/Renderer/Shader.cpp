@@ -22,3 +22,4 @@ const std::string& Shader::GetName() const
 {
 	return m_config.m_name;
 }
+

@@ -1,5 +1,5 @@
 #pragma once
-const char* defaultShaderSource = R"(
+const char* diffuseShaderSource = R"(
 	//------------------------------------------------------------------------------------------------
 	struct vs_input_t
 	{

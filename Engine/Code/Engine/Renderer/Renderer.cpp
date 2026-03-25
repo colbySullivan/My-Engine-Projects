@@ -764,6 +764,9 @@ void Renderer::DeleteReleaseAll()
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
 
+	delete m_indexVBO;
+	m_indexVBO = nullptr; // #TODO this not releasing correctly
+
 	delete m_cameraCBO;
 	m_cameraCBO = nullptr;
 

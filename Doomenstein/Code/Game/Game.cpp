@@ -9,18 +9,24 @@
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/Image.hpp"
+#include "Engine/Renderer/Shader.hpp"
+#include "Engine/Core/XmlUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Player.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
 RandomNumberGenerator g_rng;
+Game* g_game = nullptr;
+XmlUtils m_xml;
+
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
 {
 	m_screenCamera = new Camera;
-
+	g_game = this;
 
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	m_roundNumber = 1;
@@ -32,6 +38,7 @@ Game::Game()
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
 	CreateProps();
+	ConstructMapFromXML();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -403,4 +410,48 @@ void Game::UpdateBlackHole()
 void Game::CreateProps()
 {
 
+}
+
+void Game::ConstructMapFromXML()
+{
+	m_maps.clear();
+	XmlDocument doc;
+	XmlError eResult = doc.LoadFile( "Data/Definitions/MapDefinitions.xml" );
+	if ( eResult == 0 )
+	{
+		XmlElement* rootElement = doc.RootElement();
+		if ( rootElement )
+		{
+			XmlElement* mapDefElement = rootElement->FirstChildElement( "MapDefinition" );
+			while ( mapDefElement )
+			{
+				IntVec2 dimensions = m_xml.ParseXmlAttribute( *mapDefElement, "dimensions", IntVec2( 25, 25 ) );
+				std::string wormTile;
+				std::string name = m_xml.ParseXmlAttribute( *mapDefElement, "name", "TestMap" );
+				std::string imagePath = m_xml.ParseXmlAttribute( *mapDefElement, "image", "Data/Maps/TestMap.png" );
+				std::string shaderPath = m_xml.ParseXmlAttribute( *mapDefElement, "shader", "Data/Shaders/Diffuse" );
+				std::string texturePath = m_xml.ParseXmlAttribute( *mapDefElement, "spriteSheetTexture", "Data/Images/Terrain_8x8.png" );
+				IntVec2 cellCount = m_xml.ParseXmlAttribute( *mapDefElement, "spriteSheetCellCount", IntVec2(0,0) );
+
+				MapDefinition* mapDef = CreateMapDef( name, imagePath, shaderPath, texturePath, cellCount );
+				m_maps.push_back( new Map( g_game, mapDef ) );
+
+				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
+			}
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------------------------
+MapDefinition* Game::CreateMapDef( std::string name, std::string imagePath, std::string  shaderPath, std::string  texturePath, IntVec2 cellCount )
+{
+	MapDefinition* mapDef = new MapDefinition;
+	mapDef->m_name = name;
+	mapDef->m_image = Image( imagePath.c_str() );
+	//mapDef->m_shader = CreateOrGetShader( shaderPath.c_str() );
+	mapDef->m_spriteSheetCellCount = cellCount;
+	mapDef->m_spriteSheetTexture =  g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
+
+	return mapDef;
 }
