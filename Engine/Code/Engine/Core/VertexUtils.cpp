@@ -311,6 +311,26 @@ void AddVertsForQuad3D( std::vector<Vertex>& vertexes, std::vector<unsigned int>
 	indexes.push_back( startIndex + 3 );
 }
 
+//-----------------------------------------------------------------------------------------------
+void AddVertsForQuad3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsigned int>& indexes, const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topRight, const Vec3& topLeft, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ )
+{
+	unsigned int startIndex = ( unsigned int )vertexes.size();
+
+	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+
+
+	indexes.push_back( startIndex + 0 );
+	indexes.push_back( startIndex + 1 );
+	indexes.push_back( startIndex + 2 );
+
+	indexes.push_back( startIndex + 0 );
+	indexes.push_back( startIndex + 2 );
+	indexes.push_back( startIndex + 3 );
+}
+
 //------------------------------------------------------------------------------
 void AddVertsForSphere3D( std::vector<Vertex>& verts, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
 {

@@ -42,7 +42,7 @@ void Map::CreateTiles()
 		for ( int x = 0; x < m_dimensions.x; ++x )
 		{
 			Rgba8 pixelColor = mapImage.GetTexelColor( x, y );
-			std::string tileTypeName = "StoneFloor";
+			std::string tileTypeName = "DefaultTile";
 
 			std::map<std::string, TileDefinition>::const_iterator it;
 			for ( it = TileDefinition::s_definitions.begin(); it != TileDefinition::s_definitions.end(); ++it )
@@ -64,21 +64,50 @@ void Map::CreateTiles()
 //-----------------------------------------------------------------------------------------------
 void Map::AddGeometryForWall( const AABB3& bounds, const AABB2& UVs )
 {
-	AddVertsForAABB3D( m_vertexes, m_indexes, bounds, Rgba8(255, 255, 255, 255), UVs );
+
+	Vec3 bl = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z );
+	Vec3 br = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z );
+	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_maxs.z );
+	Vec3 tl = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_maxs.z );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8(255, 255, 255, 255), UVs );
+
+	bl = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_mins.z );
+	br = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_mins.z );
+	tr = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_maxs.z );
+	tl = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_maxs.z );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
+
+	bl = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z );
+	br = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_mins.z );
+	tr = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_maxs.z );
+	tl = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_maxs.z );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
+
+	bl = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_mins.z );
+	br = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z );
+	tr = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_maxs.z );
+	tl = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_maxs.z );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::AddGeometryForFloor( const AABB3& bounds, const AABB2& UVs )
 {
-	AABB3 floorSlab( Vec3( bounds.m_mins.x, bounds.m_mins.y, 0.f ), Vec3( bounds.m_maxs.x, bounds.m_maxs.y, 0.f ) );
-	AddVertsForAABB3D( m_vertexes, m_indexes, floorSlab, Rgba8(255, 255, 255, 255), UVs );
+	Vec3 bl = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_mins.z );
+	Vec3 br = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z );
+	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z );
+	Vec3 tl = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_mins.z );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8(255, 255, 255, 255), UVs );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 {
-	AABB3 ceilSlab( Vec3( bounds.m_mins.x, bounds.m_mins.y, 1.0f ), Vec3( bounds.m_maxs.x, bounds.m_maxs.y, 1.0f ) );
-	AddVertsForAABB3D( m_vertexes, m_indexes, ceilSlab, Rgba8(255, 255, 255, 255), UVs );
+	Vec3 bl = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_maxs.z );
+	Vec3 br = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_maxs.z );
+	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_maxs.z );
+	Vec3 tl = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_maxs.z );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
 }
 
 void Map::CreateBuffers()
