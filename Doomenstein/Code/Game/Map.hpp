@@ -8,8 +8,10 @@
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
+#include "Game/Actor.hpp"
 
 class Game;
+class Actor;
 
 //-----------------------------------------------------------------------------------------------
 struct MapDefinition
@@ -65,4 +67,7 @@ protected:
 	Shader* m_shader = nullptr;
 	VertexBuffer* m_vertexBuffer = nullptr;
 	IndexBuffer* m_indexBuffer = nullptr;
+
+	std::vector<Actor> m_actorVertexes;
+
 };

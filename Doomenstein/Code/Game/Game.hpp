@@ -9,7 +9,7 @@
 #include "Game/Map.hpp"
 
 class App;
-class Entity;
+class Actor;
 class InputSystem;
 class RandomNumberGenerator;
 class XboxController;

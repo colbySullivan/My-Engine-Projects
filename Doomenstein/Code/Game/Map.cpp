@@ -59,12 +59,14 @@ void Map::CreateTiles()
 			m_tiles.emplace_back( IntVec2( x, y ), tileTypeName );
 		}
 	}
+	m_actorVertexes.push_back(Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 1.f ), 0.5f, 32 ));
+	m_actorVertexes.push_back(Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ));
+	m_actorVertexes.push_back(Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ));
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::AddGeometryForWall( const AABB3& bounds, const AABB2& UVs )
 {
-
 	Vec3 bl = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z );
 	Vec3 br = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z );
 	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_maxs.z );
@@ -152,6 +154,12 @@ void Map::Render() const
 
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->DrawIndexBuffer( m_vertexBuffer, m_indexBuffer, indexCount );
+
+	for ( int actorIndex = 0; actorIndex < m_actorVertexes.size(); ++actorIndex )
+	{
+		Actor currActor = m_actorVertexes[actorIndex];
+		currActor.Render();
+	}
 }
 
 //------------------------------------------------------------------------------
