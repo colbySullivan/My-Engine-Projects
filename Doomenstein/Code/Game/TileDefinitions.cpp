@@ -13,9 +13,6 @@ void TileDefinition::InitializeTileDefs()
 {
 	s_definitions.clear();
 
-	Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile("Data/Images/Terrain_8x8.png");
-	SpriteSheet* tilesSpriteSheet = new SpriteSheet(*spriteSheetTexture, IntVec2(8, 8));
-
 	XmlDocument doc;
 	XmlError eResult = doc.LoadFile( "Data/Definitions/TileDefinitions.xml" );
 	if ( eResult == 0 )
@@ -47,10 +44,8 @@ void TileDefinition::InitializeTileDefs()
 
 TileDefinition::TileDefinition()
 {
-
 }
 
 TileDefinition::~TileDefinition()
 {
-
 }
