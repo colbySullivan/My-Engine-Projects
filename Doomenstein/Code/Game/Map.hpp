@@ -6,6 +6,8 @@
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Renderer/VertexBuffer.hpp"
+#include "Engine/Renderer/IndexBuffer.hpp"
 
 class Game;
 

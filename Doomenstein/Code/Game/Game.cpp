@@ -44,6 +44,12 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
+	for ( int i = 0; i < m_maps.size(); ++i ) 
+	{
+		delete m_maps[i];
+		m_maps[i] = nullptr;
+	}
+	m_maps.clear();
 	delete g_engine;
 	delete m_screenCamera;
 	g_engine = nullptr;
@@ -449,7 +455,7 @@ MapDefinition* Game::CreateMapDef( std::string name, std::string imagePath, std:
 	MapDefinition* mapDef = new MapDefinition;
 	mapDef->m_name = name;
 	mapDef->m_image = Image( imagePath.c_str() );
-	//mapDef->m_shader = CreateOrGetShader( shaderPath.c_str() );
+	mapDef->m_shader = g_engine->m_render->CreateOrGetShader( shaderPath.c_str(), VertexType::VERTEX_PCUTBN );
 	mapDef->m_spriteSheetCellCount = cellCount;
 	mapDef->m_spriteSheetTexture =  g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
 

@@ -11,5 +11,9 @@ Map::Map( Game* game, const MapDefinition* definition )
 //-----------------------------------------------------------------------------------------------
 Map::~Map()
 {
+	delete m_vertexBuffer;
+	m_vertexBuffer = nullptr;
 
+	delete m_indexBuffer;
+	m_indexBuffer = nullptr;
 }

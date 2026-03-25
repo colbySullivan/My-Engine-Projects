@@ -143,4 +143,9 @@
       <Filter>Data\Images</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\Run\Data\Shaders\Diffuse.hlsl">
+      <Filter>Data\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

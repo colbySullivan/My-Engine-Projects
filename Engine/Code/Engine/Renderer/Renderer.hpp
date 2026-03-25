@@ -23,8 +23,8 @@ struct ID3D11RenderTargetView;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
-class Shader;
 class VertexBuffer;
+class IndexBuffer;
 class ConstantBuffer;
 struct Mat44;
 
@@ -112,6 +112,8 @@ public:
 	void CreateDepthStencilStates();
 	void CreateDepthStencilState( DepthMode mode, D3D11_DEPTH_WRITE_MASK writeMask = D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_FUNC func = D3D11_COMPARISON_ALWAYS );
 
+	Shader* CreateOrGetShader( const char* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
+
 	RenderConfig m_config;
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedFonts;
@@ -146,8 +148,8 @@ protected:
 	std::vector<uint8_t> m_pixelShaderByteCode;
 
 private:
-	Shader* CreateShader( char const* shaderName, char const* shaderSource );
-	Shader* CreateShader( char const* shaderName );
+	Shader* CreateShader( char const* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
+	Shader* CreateShader( char const* shaderName, char const* shaderSource, VertexType vertexType = VertexType::VERTEX_PCU );
 	void BindShader( Shader* shader );
 	bool CompileShaderToByteCode( std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target );
 

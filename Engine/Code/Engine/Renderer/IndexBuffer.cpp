@@ -8,7 +8,7 @@ IndexBuffer::IndexBuffer( unsigned int size )
 
 IndexBuffer::~IndexBuffer()
 {
-
+	DX_SAFE_RELEASE( m_buffer );
 }
 
 unsigned int IndexBuffer::GetSize()

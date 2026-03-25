@@ -370,59 +370,93 @@ void Renderer::CreateDepthStencilState( DepthMode mode, D3D11_DEPTH_WRITE_MASK w
 }
 
 //------------------------------------------------------------------------------
-Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource )
+Shader* Renderer::CreateOrGetShader( const char* shaderName, VertexType vertexType /*= VertexType::VERTEX_PCU */ )
+{
+	for ( int i = 0; i < ( int )m_loadedShaders.size(); i++ )
+	{
+		if ( m_loadedShaders[i]->GetName() == shaderName )
+		{
+			return m_loadedShaders[i];
+		}
+	}
+	return CreateShader( shaderName, vertexType );
+}
+
+//------------------------------------------------------------------------------
+Shader* Renderer::CreateShader( char const* shaderName, VertexType vertexType /*= VertexType::VERTEX_PCU */ )
+{
+	std::string fileName = std::string( shaderName ) + ".hlsl";
+	std::string outString;
+	FileReadToString( outString, fileName );
+	return CreateShader( shaderName, outString.c_str(), vertexType );
+}
+
+//------------------------------------------------------------------------------
+Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource, VertexType vertexType /*= VertexType::VERTEX_PCU */ )
 {
 	ShaderConfig config;
 	config.m_name = shaderName;
 	Shader* shader = new Shader( config );
 
+	// Compile vertex shader — same as your existing CreateShader( name, source )
 	std::vector<uint8_t> vertexBytes;
-	CompileShaderToByteCode( vertexBytes, config.m_name.c_str(), shaderSource, config.m_vertexEntryPoint.c_str(), "vs_5_0" );
+	CompileShaderToByteCode( vertexBytes, config.m_name.c_str(), shaderSource,
+		config.m_vertexEntryPoint.c_str(), "vs_5_0" );
 
 	HRESULT hr;
-	hr = m_device->CreateVertexShader( vertexBytes.data(), vertexBytes.size(), NULL, &shader->m_vertexShader );
+	hr = m_device->CreateVertexShader( vertexBytes.data(), vertexBytes.size(),
+		NULL, &shader->m_vertexShader );
 	if ( !SUCCEEDED( hr ) )
 	{
 		ERROR_AND_DIE( "Could not create vertex shader." );
 	}
 
+	// Compile pixel shader
 	std::vector<uint8_t> pixelBytes;
-	CompileShaderToByteCode( pixelBytes, config.m_name.c_str(), shaderSource, config.m_pixelEntryPoint.c_str(), "ps_5_0" );
-	hr = m_device->CreatePixelShader( pixelBytes.data(), pixelBytes.size(), NULL, &shader->m_pixelShader );
+	CompileShaderToByteCode( pixelBytes, config.m_name.c_str(), shaderSource,
+		config.m_pixelEntryPoint.c_str(), "ps_5_0" );
+
+	hr = m_device->CreatePixelShader( pixelBytes.data(), pixelBytes.size(),
+		NULL, &shader->m_pixelShader );
 	if ( !SUCCEEDED( hr ) )
 	{
 		ERROR_AND_DIE( "Could not create pixel shader." );
 	}
 
-	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+	if ( vertexType == VertexType::VERTEX_PCU )
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
+		D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		hr = m_device->CreateInputLayout( inputElementDesc, ARRAYSIZE( inputElementDesc ),
+			vertexBytes.data(), vertexBytes.size(),
+			&shader->m_inputLayout );
+	}
+	else if ( vertexType == VertexType::VERTEX_PCUTBN )
+	{
+		D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+		{
+			{ "POSITION",  0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",     0, DXGI_FORMAT_R8G8B8A8_UNORM,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",  0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+		hr = m_device->CreateInputLayout( inputElementDesc, ARRAYSIZE( inputElementDesc ),
+			vertexBytes.data(), vertexBytes.size(),
+			&shader->m_inputLayout );
+	}
 
-	hr = m_device->CreateInputLayout(
-		inputElementDesc,
-		ARRAYSIZE( inputElementDesc ),
-		vertexBytes.data(),
-		vertexBytes.size(),
-		&shader->m_inputLayout
-	);
 	if ( !SUCCEEDED( hr ) )
 	{
 		ERROR_AND_DIE( "Could not create input layout." );
 	}
 
 	return shader;
-}
-
-//------------------------------------------------------------------------------
-Shader* Renderer::CreateShader( char const* shaderName )
-{
-	std::string fileName = std::string( shaderName ) + ".hlsl";
-	std::string outString;
-	FileReadToString( outString, fileName );
-	return CreateShader( shaderName, outString.c_str() );
 }
 
 //------------------------------------------------------------------------------
@@ -765,7 +799,7 @@ void Renderer::DeleteReleaseAll()
 	m_immediateVBO = nullptr;
 
 	delete m_indexVBO;
-	m_indexVBO = nullptr; // #TODO this not releasing correctly
+	m_indexVBO = nullptr;
 
 	delete m_cameraCBO;
 	m_cameraCBO = nullptr;
