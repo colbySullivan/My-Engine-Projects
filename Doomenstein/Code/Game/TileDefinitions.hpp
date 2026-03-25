@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include <vector>
 #include <string>
@@ -15,10 +16,12 @@ public:
 	static void InitializeTileDefs();
 
 	TileDefinition();
-	TileDefinition( AABB2 uvs, Rgba8 tint, bool isSolid );
 	~TileDefinition();
 
-	AABB2 m_uvs = AABB2( Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ) );
-	Rgba8 m_tint = Rgba8( 255, 255, 255, 255 );
+	std::string m_name;
 	bool m_isSolid = false;
+	Rgba8 m_mapImagePixelColor;
+	IntVec2 m_floorSpriteCoords;
+	IntVec2 m_ceilingSpriteCoords;
+	IntVec2 m_wallSpriteCoords;
 };

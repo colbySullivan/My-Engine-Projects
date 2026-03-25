@@ -35,6 +35,11 @@ void Rgba8::GetAsFloats( float* colorAsFloats ) const
 	colorAsFloats[3] = RangeMap( ( float )a, 0.f, 255.f, 0.f, 1.f );
 }
 
+bool Rgba8::operator==( const Rgba8& other ) const
+{
+	return ( r == other.r && g == other.g && b == other.b && a == other.a );
+}
+
 //-----------------------------------------------------------------------------------------------
 Rgba8 Interpolate( Rgba8 start, Rgba8 end, float fractionOfEnd )
 {

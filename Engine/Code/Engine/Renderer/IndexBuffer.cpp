@@ -18,11 +18,10 @@ unsigned int IndexBuffer::GetSize()
 
 unsigned int IndexBuffer::GetStride()
 {
-	return 0;
+	return sizeof( unsigned int );
 }
 
 unsigned int IndexBuffer::GetCount()
 {
-	return 0; // #TODO Index Buffer
+	return m_size / sizeof( unsigned int );
 }
-

@@ -56,3 +56,13 @@ const void* Image::GetRawData() const
 {
 	return m_texelRgba8Data.data();
 }
+
+//------------------------------------------------------------------------------
+Rgba8 Image::GetTexelColor( int x, int y ) const
+{
+	if ( x < 0 || x >= m_dimensions.x || y < 0 || y >= m_dimensions.y ) 
+	{
+		return Rgba8(0, 0, 0);
+	}
+	return m_texelRgba8Data[x + ( y * m_dimensions.x )];
+}

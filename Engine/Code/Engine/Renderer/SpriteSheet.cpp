@@ -62,3 +62,16 @@ AABB2 SpriteSheet::GetSpriteUVs( int spriteIndex ) const
 {
 	return m_spriteDefs[spriteIndex].GetUVs();
 }
+
+//------------------------------------------------------------------------------
+AABB2 SpriteSheet::GetSpriteUVs( IntVec2 const& spriteCoords ) const
+{
+	int spriteIndex = ( spriteCoords.y * m_dimensions.x ) + spriteCoords.x;
+
+	if ( spriteIndex < 0 || spriteIndex >= ( int )m_spriteDefs.size() )
+	{
+		return AABB2::ZERO_TO_ONE;
+	}
+
+	return m_spriteDefs[spriteIndex].GetUVs();
+}

@@ -17,6 +17,7 @@ public:
 	SpriteDefinition const& GetSpriteDefAtCoords( IntVec2 sprintCoords ) const;
 	void                GetSpriteUVs( Vec2& out_uvAtMins, Vec2& out_uvAtMaxs, int spriteIndex ) const;
 	AABB2               GetSpriteUVs( int spriteIndex ) const;
+	AABB2 GetSpriteUVs( IntVec2 const& spriteCoords ) const;
 
 protected:
 	Texture& m_texture; // reference members must be set in constructor's initializer list

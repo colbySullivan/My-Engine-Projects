@@ -17,6 +17,7 @@ public:
 	IntVec2 GetDimensions() const;
 	const std::string & GetImageFilePath() const;
 	const void* GetRawData() const;
+	Rgba8 GetTexelColor( int x, int y ) const;
 
 private:
 	std::string m_imageFilePath;

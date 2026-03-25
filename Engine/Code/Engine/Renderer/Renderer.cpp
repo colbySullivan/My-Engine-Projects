@@ -411,7 +411,6 @@ Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource
 		ERROR_AND_DIE( "Could not create vertex shader." );
 	}
 
-	// Compile pixel shader
 	std::vector<uint8_t> pixelBytes;
 	CompileShaderToByteCode( pixelBytes, config.m_name.c_str(), shaderSource,
 		config.m_pixelEntryPoint.c_str(), "ps_5_0" );
@@ -555,11 +554,12 @@ IndexBuffer* Renderer::CreateIndexBuffer( const unsigned int size)
 //-----------------------------------------------------------------------------------------------
 void Renderer::DrawIndexBuffer( VertexBuffer* vbo, IndexBuffer* ibo, unsigned int indexCount )
 {
+	SetStatesIfChanged();
 	UINT offset = 0;
 	m_deviceContext->IASetVertexBuffers( 0, 1, &vbo->m_buffer, &vbo->m_stride, &offset );
 	m_deviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 	m_deviceContext->IASetIndexBuffer( ibo->m_buffer, DXGI_FORMAT_R32_UINT, 0 );
-	m_deviceContext->DrawIndexed(indexCount, 0, 0);
+	m_deviceContext->DrawIndexed( indexCount, 0, 0 );
 }
 
 //------------------------------------------------------------------------------
@@ -596,6 +596,14 @@ void Renderer::CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* 
 	m_deviceContext->Map( vbo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
 	memcpy( resource.pData, data, size );
 	m_deviceContext->Unmap( vbo->m_buffer, 0 );
+}
+
+void Renderer::CopyCPUToGPU( const void* data, unsigned int size, IndexBuffer* ibo )
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	m_deviceContext->Map( ibo->m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource );
+	memcpy( resource.pData, data, size );
+	m_deviceContext->Unmap( ibo->m_buffer, 0 );
 }
 
 //------------------------------------------------------------------------------

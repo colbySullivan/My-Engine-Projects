@@ -112,40 +112,40 @@ void AddVertsForAABB3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsign
 	unsigned int startIndex = ( unsigned int )vertexes.size();
 
 	// +X Right face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ), Vec3( 1, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ), Vec3( 1, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ), Vec3( 1, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ), Vec3( 1, 0, 0 ) ) );
-
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+																						
 	// -X Left face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0, -1, 0 ), Vec3( 0, 0, 1 ), Vec3( -1, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0, -1, 0 ), Vec3( 0, 0, 1 ), Vec3( -1, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0, -1, 0 ), Vec3( 0, 0, 1 ), Vec3( -1, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0, -1, 0 ), Vec3( 0, 0, 1 ), Vec3( -1, 0, 0 ) ) );
-
-	// +Y Front face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( -1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, 1, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( -1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, 1, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( -1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, 1, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( -1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, 1, 0 ) ) );
-
-	// -Y Back face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, -1, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, -1, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, -1, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 1, 0, 0 ), Vec3( 0, 0, 1 ), Vec3( 0, -1, 0 ) ) );
-
-	// +Z Top face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMin, vMin ), Vec3( 1, 0, 0 ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMax, vMin ), Vec3( 1, 0, 0 ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 1, 0, 0 ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 1, 0, 0 ), Vec3( 0, 1, 0 ), Vec3( 0, 0, 1 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
+																										
+	// +Y Front face																					
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+																										
+	// -Y Back face																						
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+																										
+	// +Z Top face																						
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
 
 	// -Z Bottom face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 1, 0, 0 ), Vec3( 0, -1, 0 ), Vec3( 0, 0, -1 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 1, 0, 0 ), Vec3( 0, -1, 0 ), Vec3( 0, 0, -1 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMax, vMax ), Vec3( 1, 0, 0 ), Vec3( 0, -1, 0 ), Vec3( 0, 0, -1 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMin, vMax ), Vec3( 1, 0, 0 ), Vec3( 0, -1, 0 ), Vec3( 0, 0, -1 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
+	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
 
 	for ( unsigned int face = 0; face < 6; face++ )
 	{

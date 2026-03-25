@@ -15,6 +15,8 @@ public:
 
 	static const Rgba8 WHITE;
 	void GetAsFloats( float* colorAsFloats ) const;
+
+	bool operator==(const Rgba8& other) const;
 };
 
 Rgba8 Interpolate( Rgba8 start, Rgba8 end, float fractionOfEnd );

@@ -16,6 +16,7 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Player.hpp"
 #include <ThirdParty/stb/stb_image.h>
+#include "TileDefinitions.hpp"
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
@@ -38,7 +39,6 @@ Game::Game()
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
 	CreateProps();
-	ConstructMapFromXML();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -62,6 +62,8 @@ Game::~Game()
 void Game::Startup()
 {
 	m_isPaused = false;
+	TileDefinition::InitializeTileDefs();
+	ConstructMapFromXML();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -122,6 +124,16 @@ void Game::Render() const
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
+
+		//for ( int i = 0; i < ( int )m_maps.size(); ++i )
+		//{
+		//	if ( m_maps[i] )
+		//	{
+		//		m_maps[i]->Render();
+		//	}
+		//}
+		m_maps[0]->Render();
+
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
@@ -432,7 +444,6 @@ void Game::ConstructMapFromXML()
 			while ( mapDefElement )
 			{
 				IntVec2 dimensions = m_xml.ParseXmlAttribute( *mapDefElement, "dimensions", IntVec2( 25, 25 ) );
-				std::string wormTile;
 				std::string name = m_xml.ParseXmlAttribute( *mapDefElement, "name", "TestMap" );
 				std::string imagePath = m_xml.ParseXmlAttribute( *mapDefElement, "image", "Data/Maps/TestMap.png" );
 				std::string shaderPath = m_xml.ParseXmlAttribute( *mapDefElement, "shader", "Data/Shaders/Diffuse" );

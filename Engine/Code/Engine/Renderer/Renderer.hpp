@@ -114,6 +114,17 @@ public:
 
 	Shader* CreateOrGetShader( const char* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
 
+	VertexBuffer* CreateVertexBuffer( const unsigned int size, unsigned int stride );
+	void BindVertexBuffer( VertexBuffer* vbo );
+	void DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount );
+	void CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo );
+
+	void CopyCPUToGPU( const void* data, unsigned int size, IndexBuffer* ibo );
+	IndexBuffer* CreateIndexBuffer( const unsigned int size );
+	void DrawIndexBuffer( VertexBuffer* vbo, IndexBuffer* ibo, unsigned int indexCount );
+
+	void BindShader( Shader* shader );
+
 	RenderConfig m_config;
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedFonts;
@@ -150,20 +161,11 @@ protected:
 private:
 	Shader* CreateShader( char const* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
 	Shader* CreateShader( char const* shaderName, char const* shaderSource, VertexType vertexType = VertexType::VERTEX_PCU );
-	void BindShader( Shader* shader );
 	bool CompileShaderToByteCode( std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target );
 
 	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
 	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
 	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo );
-
-	VertexBuffer* CreateVertexBuffer( const unsigned int size, unsigned int stride );
-	void BindVertexBuffer( VertexBuffer* vbo );
-	void DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount );
-	void CopyCPUToGPU( const void* data, unsigned int size, VertexBuffer* vbo );
-
-	IndexBuffer* CreateIndexBuffer( const unsigned int size );
-	void DrawIndexBuffer( VertexBuffer* vbo, IndexBuffer* ibo, unsigned int indexCount );
 
 	void SetStatesIfChanged();
 	void CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode );
