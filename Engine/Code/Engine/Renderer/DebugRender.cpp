@@ -163,7 +163,7 @@ void DebugRenderWorld( const Camera& camera )
 void DebugRenderScreen( const Camera& camera )
 {
 	g_engine->m_render->BeginCamera( camera );
-
+	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
 	AABB2 cameraBounds = AABB2(camera.GetOrthoBottomLeft(), camera.GetOrthographicTopRight());
 	float screenWidth = cameraBounds.m_maxs.x - cameraBounds.m_mins.x;
 	float cellHeight = 10.f;
