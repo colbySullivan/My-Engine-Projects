@@ -26,6 +26,7 @@ void Actor::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
+	g_engine->m_render->BindShader(nullptr);
 	g_engine->m_render->SetModelConstants( GetModelToWorldTransform(), Rgba8(255,255,255) );
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
