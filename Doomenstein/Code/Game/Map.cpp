@@ -12,6 +12,7 @@ Map::Map( Game* game, const MapDefinition* definition )
 	m_dimensions = m_definition->m_image.GetDimensions();
 	CreateTiles();
 	CreateGeometry();
+	AddActors();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -59,9 +60,6 @@ void Map::CreateTiles()
 			m_tiles.emplace_back( IntVec2( x, y ), tileTypeName );
 		}
 	}
-	m_actorVertexes.push_back(Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 1.f ), 0.5f, 32 ));
-	m_actorVertexes.push_back(Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ));
-	m_actorVertexes.push_back(Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ));
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -110,6 +108,14 @@ void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_maxs.z );
 	Vec3 tl = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_maxs.z );
 	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
+}
+
+//------------------------------------------------------------------------------
+void Map::AddActors()
+{
+	m_actorVertexes.push_back( Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 1.f ), 0.5f, 32 ) );
+	m_actorVertexes.push_back( Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ) );
+	m_actorVertexes.push_back( Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ) );
 }
 
 void Map::CreateBuffers()
