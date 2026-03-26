@@ -316,10 +316,13 @@ void AddVertsForQuad3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsign
 {
 	unsigned int startIndex = ( unsigned int )vertexes.size();
 
-	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
+	Vec3 u = bottomRight - bottomLeft;
+	Vec3 v = topLeft - bottomRight;
+	Vec3 normal = CrossProduct3D(u, v);
+	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+	vertexes.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+	vertexes.push_back( Vertex_PCUTBN( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 
 
 	indexes.push_back( startIndex + 0 );
