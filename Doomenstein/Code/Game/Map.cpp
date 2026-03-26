@@ -1,6 +1,15 @@
 #include "Game/Map.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
+#include "Engine/Renderer/Renderer.hpp"
+
+struct LightingConstants
+{
+	Vec3 SunDirection;
+	float SunIntensity;
+	float AmbientIntensity;
+	Vec3  FakePad;
+};
 
 //-----------------------------------------------------------------------------------------------
 Map::Map( Game* game, const MapDefinition* definition )
@@ -26,6 +35,9 @@ Map::~Map()
 
 	delete m_shader;
 	m_shader = nullptr;
+
+	delete m_lightingConstant;
+	m_lightingConstant = nullptr;
 
 	m_tiles.clear();
 }
@@ -144,6 +156,8 @@ void Map::CreateBuffers()
 	unsigned int indexBufferSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
 	m_indexBuffer = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
 
+	m_lightingConstant = g_engine->m_render->CreateConstantBuffer( sizeof( LightingConstants ) );
+
 	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vertexBuffer );
 	g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_indexBuffer );
 }
@@ -155,7 +169,15 @@ void Map::Render() const
 
 	g_engine->m_render->BindTexture( m_texture );
 
-	//g_engine->m_render->BindShader( m_shader ); // #TODO this is the diffuse shader and should be implemented later
+	LightingConstants lightingConstants = { };
+	lightingConstants.AmbientIntensity = 0.5f;
+	lightingConstants.SunDirection = Vec3(2.f, 1.f, -1.f);
+	lightingConstants.SunIntensity = 0.1f;
+
+	g_engine->m_render->BindConstantBuffer( 1, m_lightingConstant );
+	g_engine->m_render->CopyCPUToGPU( &lightingConstants, sizeof( lightingConstants ), m_lightingConstant );
+	
+	g_engine->m_render->BindShader( m_shader );
 	g_engine->m_render->SetModelConstants( Mat44(), Rgba8(255, 255, 255, 255) );
 
 	unsigned int indexCount = ( unsigned int )m_indexes.size();

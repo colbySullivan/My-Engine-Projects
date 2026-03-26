@@ -139,6 +139,10 @@ public:
 	ID3D11DepthStencilState* m_depthStencilStates[( int )( DepthMode::COUNT )] = {};
 	ID3D11DepthStencilState* m_depthStencilState = nullptr;
 
+	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
+	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
+	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo ); // #TODO Clean this up I moved some from private so map can use it
+
 protected:
 	ID3D11RenderTargetView* m_renderTargetView = nullptr;
 	ID3D11Device* m_device = nullptr;
@@ -163,9 +167,6 @@ private:
 	Shader* CreateShader( char const* shaderName, char const* shaderSource, VertexType vertexType = VertexType::VERTEX_PCU );
 	bool CompileShaderToByteCode( std::vector<unsigned char>& outByteCode, char const* name, char const* source, char const* entryPoint, char const* target );
 
-	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
-	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
-	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo );
 
 	void SetStatesIfChanged();
 	void CreateBlendStates( D3D11_BLEND sourceBlend, D3D11_BLEND destBlend, BlendMode mode );

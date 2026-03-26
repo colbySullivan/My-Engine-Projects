@@ -70,5 +70,5 @@ protected:
 	IndexBuffer* m_indexBuffer = nullptr;
 
 	std::vector<Actor> m_actorVertexes;
-
+	ConstantBuffer* m_lightingConstant;
 };
