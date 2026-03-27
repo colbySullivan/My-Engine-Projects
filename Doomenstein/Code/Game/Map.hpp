@@ -56,6 +56,10 @@ public:
 
 	Game* m_game = nullptr;
 
+	Vec3 m_sunDirection;
+	float m_sunIntensity;
+	float m_AmbientIntensity;
+
 protected:
 
 	const MapDefinition* m_definition = nullptr;
@@ -71,4 +75,6 @@ protected:
 
 	std::vector<Actor> m_actorVertexes;
 	ConstantBuffer* m_lightingConstant;
+private:
+	void SetLighting() const;
 };

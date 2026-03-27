@@ -114,6 +114,10 @@ public:
 
 	Shader* CreateOrGetShader( const char* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
 
+	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo ); // #TODO Clean this up I moved some from private so map can use it
+	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
+	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
+
 	VertexBuffer* CreateVertexBuffer( const unsigned int size, unsigned int stride );
 	void BindVertexBuffer( VertexBuffer* vbo );
 	void DrawVertexBuffer( VertexBuffer* vbo, unsigned int vertexCount );
@@ -138,10 +142,6 @@ public:
 	ID3D11DepthStencilView* m_depthStencilDSV = nullptr;
 	ID3D11DepthStencilState* m_depthStencilStates[( int )( DepthMode::COUNT )] = {};
 	ID3D11DepthStencilState* m_depthStencilState = nullptr;
-
-	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
-	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
-	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo ); // #TODO Clean this up I moved some from private so map can use it
 
 protected:
 	ID3D11RenderTargetView* m_renderTargetView = nullptr;

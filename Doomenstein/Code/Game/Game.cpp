@@ -64,6 +64,11 @@ void Game::Startup()
 	m_isPaused = false;
 	TileDefinition::InitializeTileDefs();
 	ConstructMapFromXML();
+	if ( m_maps.size() > 0 )
+	{
+		m_currentMapNumber = 0;
+		m_currentMap = m_maps[m_currentMapNumber];
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -124,15 +129,7 @@ void Game::Render() const
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
-
-		//for ( int i = 0; i < ( int )m_maps.size(); ++i )
-		//{
-		//	if ( m_maps[i] )
-		//	{
-		//		m_maps[i]->Render();
-		//	}
-		//}
-		m_maps[0]->Render();
+		m_currentMap->Render();
 
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
@@ -201,7 +198,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	}
 
 	DebugInput();
-
 	g_engine->m_input->EndFrame();
 }
 
@@ -256,6 +252,71 @@ void Game::DebugInput()
 		std::string hudText = Stringf( "Camera orientation: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F2 ) )
+	{
+		m_currentMap->m_sunDirection.x -= 1.f;
+		std::string hudText = Stringf( "Sun direction: %5.2f, %5.2f, %5.2f", m_currentMap->m_sunDirection.x, m_currentMap->m_sunDirection.y, m_currentMap->m_sunDirection.z );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F3 ) )
+	{
+		m_currentMap->m_sunDirection.x += 1.f;
+		std::string hudText = Stringf( "Sun direction: %5.2f, %5.2f, %5.2f", m_currentMap->m_sunDirection.x, m_currentMap->m_sunDirection.y, m_currentMap->m_sunDirection.z );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F4 ) )
+	{
+		m_currentMap->m_sunDirection.y -= 1.f;
+		std::string hudText = Stringf( "Sun direction: %5.2f, %5.2f, %5.2f", m_currentMap->m_sunDirection.x, m_currentMap->m_sunDirection.y, m_currentMap->m_sunDirection.z );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F5 ) )
+	{
+		m_currentMap->m_sunDirection.y += 1.f;
+		std::string hudText = Stringf( "Sun direction: %5.2f, %5.2f, %5.2f", m_currentMap->m_sunDirection.x, m_currentMap->m_sunDirection.y, m_currentMap->m_sunDirection.z );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F6 ) )
+	{
+		m_currentMap->m_sunIntensity -= 0.05f;
+		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_sunIntensity );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
+	{
+		m_currentMap->m_sunIntensity += 0.05f;
+		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_sunIntensity );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	{
+		m_currentMap->m_AmbientIntensity -= 0.05f;
+		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_AmbientIntensity );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F9 ) )
+	{
+		m_currentMap->m_AmbientIntensity += 0.05f;
+		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_AmbientIntensity );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F11 ) )
+	{
+		m_currentMap = m_maps[( m_currentMapNumber + 1 ) % m_maps.size()];
+		m_currentMapNumber = ( m_currentMapNumber + 1 ) % m_maps.size();
+		std::string hudText = Stringf( "Swapped to map: %i", m_currentMapNumber );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
 }
 
 //-----------------------------------------------------------------------------------------------

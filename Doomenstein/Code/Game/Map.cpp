@@ -19,6 +19,11 @@ Map::Map( Game* game, const MapDefinition* definition )
 	, m_definition( definition )
 {
 	m_dimensions = m_definition->m_image.GetDimensions();
+
+	m_sunDirection = Vec3( 2.f, 1.f, -1.f );
+	m_sunIntensity = 0.1f;
+	m_AmbientIntensity = 0.5f;
+
 	CreateTiles();
 	CreateGeometry();
 	AddActors();
@@ -169,13 +174,7 @@ void Map::Render() const
 
 	g_engine->m_render->BindTexture( m_texture );
 
-	LightingConstants lightingConstants = { };
-	lightingConstants.AmbientIntensity = 0.5f;
-	lightingConstants.SunDirection = Vec3(2.f, 1.f, -1.f);
-	lightingConstants.SunIntensity = 0.1f;
-
-	g_engine->m_render->BindConstantBuffer( 1, m_lightingConstant );
-	g_engine->m_render->CopyCPUToGPU( &lightingConstants, sizeof( lightingConstants ), m_lightingConstant );
+	SetLighting();
 	
 	g_engine->m_render->BindShader( m_shader );
 	g_engine->m_render->SetModelConstants( Mat44(), Rgba8(255, 255, 255, 255) );
@@ -188,6 +187,17 @@ void Map::Render() const
 		Actor currActor = m_actorVertexes[actorIndex];
 		currActor.Render();
 	}
+}
+
+void Map::SetLighting() const
+{
+	LightingConstants lightingConstants = { };
+	lightingConstants.AmbientIntensity = m_AmbientIntensity;
+	lightingConstants.SunDirection = m_sunDirection;
+	lightingConstants.SunIntensity = m_sunIntensity;
+
+	g_engine->m_render->BindConstantBuffer( 1, m_lightingConstant );
+	g_engine->m_render->CopyCPUToGPU( &lightingConstants, sizeof( lightingConstants ), m_lightingConstant );
 }
 
 //------------------------------------------------------------------------------
