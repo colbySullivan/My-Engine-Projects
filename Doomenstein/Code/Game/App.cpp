@@ -60,12 +60,12 @@ void App::Update()
 {
 	m_game->Update();
 	UpdateCursorMode();
-	if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
-	{
-		delete m_game;
-		m_game = nullptr;
-		m_game = new Game();
-	}
+	//if (g_engine->m_input->IsKeyDown(KEYCODE_F8))
+	//{
+	//	delete m_game;
+	//	m_game = nullptr;
+	//	m_game = new Game();
+	//}
 }
 //-----------------------------------------------------------------------------------------------
 

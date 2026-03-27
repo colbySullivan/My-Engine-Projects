@@ -36,7 +36,8 @@ Game::Game()
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	m_player = new Player( this );
-	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
+	m_player->m_position = Vec3( 2.5f, 8.5, 0.5f );	
+	m_player->m_orientation = EulerAngles( 0.f, 0.f, 0.f );
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
 	CreateProps();
 }
@@ -281,28 +282,28 @@ void Game::DebugInput()
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F6 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F6 ) && ( m_currentMap->m_sunIntensity >= .0f ) )
 	{
 		m_currentMap->m_sunIntensity -= 0.05f;
 		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_sunIntensity );
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) && ( m_currentMap->m_sunIntensity <= 1.0f ) )
 	{
 		m_currentMap->m_sunIntensity += 0.05f;
 		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_sunIntensity );
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) && ( m_currentMap->m_AmbientIntensity >= .0f ) )
 	{
 		m_currentMap->m_AmbientIntensity -= 0.05f;
 		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_AmbientIntensity );
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F9 ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F9 ) && ( m_currentMap->m_AmbientIntensity <= 1.0f ) )
 	{
 		m_currentMap->m_AmbientIntensity += 0.05f;
 		std::string hudText = Stringf( "Sun intensity: %5.2f", m_currentMap->m_AmbientIntensity );

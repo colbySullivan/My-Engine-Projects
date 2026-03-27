@@ -193,8 +193,8 @@ void Map::SetLighting() const
 {
 	LightingConstants lightingConstants = { };
 	lightingConstants.AmbientIntensity = m_AmbientIntensity;
-	lightingConstants.SunDirection = m_sunDirection;
-	lightingConstants.SunIntensity = m_sunIntensity;
+	lightingConstants.SunDirection = Vec3(GetClamped(m_sunDirection.x, 0.f, 1.f), GetClamped(m_sunDirection.y, 0.f, 1.f), GetClamped(m_sunDirection.z, 0.f, 1.f) );
+	lightingConstants.SunIntensity = GetClamped(m_sunIntensity, 0.f, 1.f);
 
 	g_engine->m_render->BindConstantBuffer( 1, m_lightingConstant );
 	g_engine->m_render->CopyCPUToGPU( &lightingConstants, sizeof( lightingConstants ), m_lightingConstant );

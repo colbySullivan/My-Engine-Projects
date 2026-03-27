@@ -71,11 +71,11 @@ constexpr float POWERUP_DELAY = 1.0f;
 
 constexpr float	ROUND_BUFFER = 12.f;
 
-constexpr float MOUSE_SENSITIVITY = 0.125;
+constexpr float MOUSE_SENSITIVITY = 0.075f;
 constexpr int ROLL_RATE = 90;
 constexpr int PITCH_RATE = 120;
 constexpr int YAW_RATE = 120;
-constexpr int MOVE_SPEED = 2;
+constexpr int MOVE_SPEED = 1;
 
 
 //------------------------------------------------------------------------------
