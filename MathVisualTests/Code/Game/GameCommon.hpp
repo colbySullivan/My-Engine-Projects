@@ -75,6 +75,12 @@ constexpr float	ROUND_BUFFER = 12.f;
 
 constexpr int DISC_VERTS = 96;
 
+constexpr float MOUSE_SENSITIVITY = 0.125;
+constexpr int ROLL_RATE = 90;
+constexpr int PITCH_RATE = 120;
+constexpr int YAW_RATE = 120;
+constexpr int MOVE_SPEED = 2;
+
 //------------------------------------------------------------------------------
 enum GameType
 {
@@ -82,6 +88,7 @@ enum GameType
 	GAMEMODE_RAYCAST_VS_DISCS,
 	GAMEMODE_RAYCAST_VS_LINE_SEGMENTS,
 	GAMEMODE_RAYCAST_VS_AABB2,
+	GAMEMODE_TESTSHAPES_3D,
 	GAME_NUM_TYPES
 };
 

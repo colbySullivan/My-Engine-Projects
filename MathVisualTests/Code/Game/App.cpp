@@ -5,11 +5,13 @@
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameNearestPoint.hpp"
 #include "Game/GameRaycastVsDiscs.hpp"
 #include "Game/GameRaycastVsLineSegments.hpp"
 #include "Game/GameRaycastVsAABB2.hpp"
+#include "Game/TestShapes3D.hpp"
 
 
 App* g_app = nullptr;
@@ -21,8 +23,11 @@ App::App()
 	config.m_windowConfig.m_windowTitle = "MathVisualTests";
 	g_engine = new Engine( config );
 
-	g_gameMode = GAMEMODE_RAYCAST_VS_DISCS;
-	m_game = new GameRaycastVsDiscs( this ); // #TODO Revert this to GAMEMODE_NEAREST_POINT
+	DebugRenderConfig debugConfig;
+	DebugRenderSystemStartup( debugConfig );
+
+	g_gameMode = GAMEMODE_TESTSHAPES_3D;
+	m_game = new TestShape3D( this ); // #TODO Revert this to GAMEMODE_NEAREST_POINT
 
 	m_game->Startup();
 }
@@ -54,6 +59,7 @@ void App::RunFrame()
 //-----------------------------------------------------------------------------------------------
 void App::Update( float deltaSeconds )
 {
+	UpdateCursorMode();
 	// Handle mode switching in App
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F7 ) )
 	{
@@ -98,6 +104,7 @@ Game* App::CreateNewGameOfType( GameType type )
 	case GAMEMODE_RAYCAST_VS_DISCS: newGame = new GameRaycastVsDiscs( this ); break;
 	case GAMEMODE_RAYCAST_VS_LINE_SEGMENTS: newGame = new GameRaycastVsLineSegments( this ); break;
 	case GAMEMODE_RAYCAST_VS_AABB2: newGame = new GameRaycastVsAABB2( this ); break;
+	case GAMEMODE_TESTSHAPES_3D: newGame = new TestShape3D( this ); break;
 	}
 	return newGame;
 }
@@ -120,3 +127,20 @@ bool App::IsQuitting() const
 	return m_game->m_isQuitting;
 }
 
+void App::UpdateCursorMode()
+{
+	HWND hwnd = ( HWND )g_engine->m_window->GetHwnd();
+
+	bool windowHasFocus = ( GetForegroundWindow() == hwnd );
+	bool devConsoleOpen = g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL );
+	bool in3DMode = m_game && ( g_gameMode != GAMEMODE_TESTSHAPES_3D );
+
+	if ( !windowHasFocus || devConsoleOpen || in3DMode )
+	{
+		g_engine->m_input->SetCursorMode( CursorMode::POINTER );
+	}
+	else
+	{
+		g_engine->m_input->SetCursorMode( CursorMode::FPS );
+	}
+}

@@ -26,6 +26,7 @@ public:
 
 	void SetIsQuitting();
 	bool IsQuitting() const;
+	void UpdateCursorMode();
 
 
 public:

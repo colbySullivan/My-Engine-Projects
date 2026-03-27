@@ -64,6 +64,12 @@
     <ClCompile Include="GameRaycastVsAABB2.cpp">
       <Filter>GameModes</Filter>
     </ClCompile>
+    <ClCompile Include="TestShapes3D.cpp">
+      <Filter>GameModes</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -113,6 +119,12 @@
     </ClInclude>
     <ClInclude Include="GameRaycastVsAABB2.hpp">
       <Filter>GameModes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapes3D.hpp">
+      <Filter>GameModes</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.hpp">
+      <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
