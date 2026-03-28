@@ -45,6 +45,8 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
+	delete m_teemoModel;
+	m_teemoModel = nullptr;
 	for ( int i = 0; i < m_maps.size(); ++i ) 
 	{
 		delete m_maps[i];
@@ -70,6 +72,10 @@ void Game::Startup()
 		m_currentMapNumber = 0;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
+	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); #TODO The world is not ready for summoners rift obj
+	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
+	m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
+	m_teemoTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/teemo_texture.png" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -131,6 +137,18 @@ void Game::Render() const
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
 		m_currentMap->Render();
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
+		Vec3 modelPosition = Vec3( 10.0f, 5.0f, 0.0f ); // Move it 10 units East, 5 units North
+		float modelScale = 0.01f;                         // Make it half size
+		float modelRotation = 90.0f;                          // Rotate it 45 degrees
+
+		Mat44 modelMatrix;
+		modelMatrix.SetTranslation3D( modelPosition );
+		modelMatrix.AppendScaleUniform3D( modelScale );
+		modelMatrix.AppendXRotation( modelRotation );
+		g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 255, 255, 255, 255 ) );
+		g_engine->m_render->BindTexture( m_teemoTexture );
+		g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
 
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();

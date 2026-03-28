@@ -6,6 +6,7 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Clock.hpp"
+#include "Engine/Renderer/OBJLoader.hpp"
 #include "Game/Map.hpp"
 
 class App;
@@ -77,6 +78,8 @@ public:
 	Map* m_currentMap = nullptr;
 	Map* m_nextMap = nullptr;
 	int m_currentMapNumber = 0;
+	Texture* m_teemoTexture = nullptr;
+	OBJModel* m_teemoModel = nullptr;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
