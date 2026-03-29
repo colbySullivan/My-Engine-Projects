@@ -138,9 +138,9 @@ void Game::Render() const
 		g_engine->m_render->ClearScreen( backgroundColor );
 		m_currentMap->Render();
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
-		Vec3 modelPosition = Vec3( 10.0f, 5.0f, 0.0f ); // Move it 10 units East, 5 units North
-		float modelScale = 0.01f;                         // Make it half size
-		float modelRotation = 90.0f;                          // Rotate it 45 degrees
+		Vec3 modelPosition = Vec3( 10.0f, 5.0f, 0.0f ); 
+		float modelScale = 0.01f;                       
+		float modelRotation = 90.0f;                    
 
 		Mat44 modelMatrix;
 		modelMatrix.SetTranslation3D( modelPosition );

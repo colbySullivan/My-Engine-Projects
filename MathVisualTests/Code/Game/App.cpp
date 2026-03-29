@@ -27,7 +27,7 @@ App::App()
 	DebugRenderSystemStartup( debugConfig );
 
 	g_gameMode = GAMEMODE_TESTSHAPES_3D;
-	m_game = new TestShape3D( this ); // #TODO Revert this to GAMEMODE_NEAREST_POINT
+	m_game = new TestShapes3D( this ); // #TODO Revert this to GAMEMODE_NEAREST_POINT
 
 	m_game->Startup();
 }
@@ -104,7 +104,7 @@ Game* App::CreateNewGameOfType( GameType type )
 	case GAMEMODE_RAYCAST_VS_DISCS: newGame = new GameRaycastVsDiscs( this ); break;
 	case GAMEMODE_RAYCAST_VS_LINE_SEGMENTS: newGame = new GameRaycastVsLineSegments( this ); break;
 	case GAMEMODE_RAYCAST_VS_AABB2: newGame = new GameRaycastVsAABB2( this ); break;
-	case GAMEMODE_TESTSHAPES_3D: newGame = new TestShape3D( this ); break;
+	case GAMEMODE_TESTSHAPES_3D: newGame = new TestShapes3D( this ); break;
 	}
 	return newGame;
 }

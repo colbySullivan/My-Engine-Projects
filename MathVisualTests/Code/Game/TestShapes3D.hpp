@@ -2,14 +2,15 @@
 
 #include "Game/Game.hpp"
 #include "Game/Player.hpp"
+#include "Game/TestShape3D.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
-class TestShape3D : public Game {
+class TestShapes3D : public Game {
 
 public:
-	TestShape3D( App* app );
-	~TestShape3D();
+	TestShapes3D( App* app );
+	~TestShapes3D();
 
 	void Startup() override;
 	void Shutdown() override;
@@ -18,4 +19,5 @@ public:
 
 private:
 	Player* m_player = nullptr;
+	std::vector<TestShape3D*> m_testShapes;
 };

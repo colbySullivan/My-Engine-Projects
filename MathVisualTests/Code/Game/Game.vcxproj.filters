@@ -70,6 +70,12 @@
     <ClCompile Include="Player.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="TestShape3D.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeSphere.cpp">
+      <Filter>Shapes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -125,6 +131,12 @@
     </ClInclude>
     <ClInclude Include="Player.hpp">
       <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShape3D.hpp">
+      <Filter>Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeSphere.hpp">
+      <Filter>Shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
