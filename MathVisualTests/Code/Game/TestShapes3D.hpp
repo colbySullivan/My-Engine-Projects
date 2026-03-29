@@ -20,4 +20,5 @@ public:
 private:
 	Player* m_player = nullptr;
 	std::vector<TestShape3D*> m_testShapes;
+	Texture* m_modelTexture = nullptr;
 };

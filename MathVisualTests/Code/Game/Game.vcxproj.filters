@@ -14,6 +14,12 @@
     <Filter Include="GameModes">
       <UniqueIdentifier>{9b6e9889-3584-4df2-8839-21a25ee1ce1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shapes\2D">
+      <UniqueIdentifier>{3ae89515-06a0-4219-8d3a-3ce41e190f61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shapes\3D">
+      <UniqueIdentifier>{c3cc856e-f09b-403e-b1cc-b1bcc13d7145}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -30,27 +36,6 @@
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShape.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeAABB2.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeCapsule.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeDisc.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeLine.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeOBB2.cpp">
-      <Filter>Shapes</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShapeTriangle.cpp">
-      <Filter>Shapes</Filter>
     </ClCompile>
     <ClCompile Include="GameNearestPoint.cpp">
       <Filter>GameModes</Filter>
@@ -71,10 +56,37 @@
       <Filter>Gameplay</Filter>
     </ClCompile>
     <ClCompile Include="TestShape3D.cpp">
-      <Filter>Shapes</Filter>
+      <Filter>Shapes\3D</Filter>
     </ClCompile>
     <ClCompile Include="TestShapeSphere.cpp">
-      <Filter>Shapes</Filter>
+      <Filter>Shapes\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShape.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeAABB2.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeCapsule.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeDisc.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeLine.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeOBB2.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeTriangle.cpp">
+      <Filter>Shapes\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeAABB3.cpp">
+      <Filter>Shapes\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShapeCylinder.cpp">
+      <Filter>Shapes\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,27 +104,6 @@
     </ClInclude>
     <ClInclude Include="Game.hpp">
       <Filter>Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShape.hpp">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeAABB2.hpp">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeCapsule.hpp">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeDisc.hpp">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeLine.hpp">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeOBB2.hpp">
-      <Filter>Shapes</Filter>
-    </ClInclude>
-    <ClInclude Include="TestShapeTriangle.hpp">
-      <Filter>Shapes</Filter>
     </ClInclude>
     <ClInclude Include="GameNearestPoint.hpp">
       <Filter>GameModes</Filter>
@@ -133,10 +124,37 @@
       <Filter>Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="TestShape3D.hpp">
-      <Filter>Shapes</Filter>
+      <Filter>Shapes\3D</Filter>
     </ClInclude>
     <ClInclude Include="TestShapeSphere.hpp">
-      <Filter>Shapes</Filter>
+      <Filter>Shapes\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShape.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeAABB2.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeCapsule.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeDisc.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeLine.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeOBB2.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeTriangle.hpp">
+      <Filter>Shapes\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeAABB3.hpp">
+      <Filter>Shapes\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="TestShapeCylinder.hpp">
+      <Filter>Shapes\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

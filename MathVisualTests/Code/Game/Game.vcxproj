@@ -206,7 +206,9 @@
     <ClCompile Include="TestShape.cpp" />
     <ClCompile Include="TestShape3D.cpp" />
     <ClCompile Include="TestShapeAABB2.cpp" />
+    <ClCompile Include="TestShapeAABB3.cpp" />
     <ClCompile Include="TestShapeCapsule.cpp" />
+    <ClCompile Include="TestShapeCylinder.cpp" />
     <ClCompile Include="TestShapeDisc.cpp" />
     <ClCompile Include="TestShapeLine.cpp" />
     <ClCompile Include="TestShapeOBB2.cpp" />
@@ -228,7 +230,9 @@
     <ClInclude Include="TestShape.hpp" />
     <ClInclude Include="TestShape3D.hpp" />
     <ClInclude Include="TestShapeAABB2.hpp" />
+    <ClInclude Include="TestShapeAABB3.hpp" />
     <ClInclude Include="TestShapeCapsule.hpp" />
+    <ClInclude Include="TestShapeCylinder.hpp" />
     <ClInclude Include="TestShapeDisc.hpp" />
     <ClInclude Include="TestShapeLine.hpp" />
     <ClInclude Include="TestShapeOBB2.hpp" />

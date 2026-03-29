@@ -1,36 +1,33 @@
-#include "Game/TestShapeSphere.hpp"
+#include "Game/TestShapeAABB3.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
 
 //------------------------------------------------------------------------------
-TestShapeSphere::TestShapeSphere( Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
-	: m_center( center )
-	, m_radius( radius )
+TestShapeAABB3::TestShapeAABB3( const AABB3& bounds, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ )
 {
-	AddVertsForSphere3D( m_sphereVerts, m_center, m_radius, numSlices, numStacks, color );
+	AddVertsForAABB3D( m_aabb3Verts, bounds, color, UVs );
 }
 
 //------------------------------------------------------------------------------
-TestShapeSphere::~TestShapeSphere()
+TestShapeAABB3::~TestShapeAABB3()
 {
-	m_sphereVerts.clear();
+	m_aabb3Verts.clear();
 }
 
 //------------------------------------------------------------------------------
-void TestShapeSphere::Render() const
+void TestShapeAABB3::Render() const
 {
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->DrawVertexArray( ( int )m_sphereVerts.size(), m_sphereVerts.data() );
+	g_engine->m_render->DrawVertexArray( ( int )m_aabb3Verts.size(), m_aabb3Verts.data() );
 }
 
-//------------------------------------------------------------------------------
-void TestShapeSphere::RenderWithTexture( Texture* texture ) const
+void TestShapeAABB3::RenderWithTexture( Texture* texture ) const
 {
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( texture );
-	g_engine->m_render->DrawVertexArray( ( int )m_sphereVerts.size(), m_sphereVerts.data() );
+	g_engine->m_render->DrawVertexArray( ( int )m_aabb3Verts.size(), m_aabb3Verts.data() );
 }
 

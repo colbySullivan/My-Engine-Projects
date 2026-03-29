@@ -2,6 +2,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "TestShapeSphere.hpp"
+#include "TestShapeAABB3.hpp"
 
 //-----------------------------------------------------------------------------------------------
 TestShapes3D::TestShapes3D( App* app )
@@ -9,6 +10,7 @@ TestShapes3D::TestShapes3D( App* app )
 {
 	m_player = new Player( this );
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f );
+	m_modelTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -29,6 +31,9 @@ void TestShapes3D::Startup()
 
 	TestShapeSphere* testShape = new TestShapeSphere( Vec3( 10.f, 10.f, 0.f ), 1.0f, 32, 32 );
 	m_testShapes.push_back( testShape );
+
+	TestShapeAABB3* testShape2 = new TestShapeAABB3( AABB3( Vec3( -1.f, -1.f, -1.f ), Vec3( 1.f, 1.f, 1.f ) ) );
+	m_testShapes.push_back( testShape2 );
 }
 
 void TestShapes3D::Shutdown()
@@ -58,7 +63,7 @@ void TestShapes3D::Render() const
 		TestShape3D* shape = m_testShapes[shapeIndex];
 		if ( shape != nullptr )
 		{
-			shape->Render();
+			shape->RenderWithTexture( m_modelTexture );
 		}
 	}
 	g_engine->m_render->EndCamera( *m_player->m_worldCamera );

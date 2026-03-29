@@ -5,15 +5,14 @@
 #include "Engine/Core/Rgba8.hpp"
 #include <vector>
 
-class TestShapeSphere : public TestShape3D
+class TestShapeCylinder : public TestShape3D
 {
-	public:
-	TestShapeSphere( Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color = Rgba8( 255, 255, 255 ) );
-	~TestShapeSphere();
+public:
+	TestShapeCylinder( );
+	~TestShapeCylinder();
 
 	void Render() const override;
-	void RenderWithTexture( Texture* texture ) const override;
-	
+
 	float m_radius;
 	Vec3 m_center;
 
