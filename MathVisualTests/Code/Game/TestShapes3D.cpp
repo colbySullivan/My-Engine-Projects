@@ -149,6 +149,7 @@ void TestShapes3D::UpdateShapesOverlap()
 		TestShape3D* shape = m_testShapes[shapeIndex];
 		if ( UpdateShapesOverlapWithSphere( shape ) )			shape->m_isOverlapping = true;
 		else if ( UpdateShapesOverlapWithCylinder( shape ) )	shape->m_isOverlapping = true;
+		else if ( UpdateShapesOverlapWithAABB3( shape ) )		shape->m_isOverlapping = true;
 		else													shape->m_isOverlapping = false;
 	}
 }
@@ -195,10 +196,10 @@ bool TestShapes3D::UpdateShapesOverlapWithAABB3( TestShape3D* shape )
 		TestShapeAABB3* otherShape = m_testShapeAABB3[AABB3ShapeIndex];
 		if ( shape != nullptr && otherShape != nullptr && shape != otherShape )
 		{
-			/*if ( shape->DoesCylinderOverlap( Vec2( otherShape->m_center.x, otherShape->m_center.y ), otherShape->m_radius, otherShape->m_zRange ) )
+			if ( shape->DoesAABBOverlap( Vec3( otherShape->m_bounds.m_mins.x, otherShape->m_bounds.m_mins.y, otherShape->m_bounds.m_mins.z ), Vec3( otherShape->m_bounds.m_maxs.x, otherShape->m_bounds.m_maxs.y, otherShape->m_bounds.m_maxs.z ) ) )
 			{
 				return true;
-			}*/
+			}
 		}
 	}
 	return false;

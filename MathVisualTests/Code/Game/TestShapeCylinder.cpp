@@ -46,3 +46,9 @@ bool TestShapeCylinder::DoesCylinderOverlap( Vec2 cylinderCenter, float cylinder
 	return DoCylindersOverlap( Vec3( cylinderCenter.x, cylinderCenter.y, cylinderZRange.m_min ), Vec3( cylinderCenter.x, cylinderCenter.y, cylinderZRange.m_max ), cylinderRadius, Vec3( m_center.x, m_center.y, m_zRange.m_min ), Vec3( m_center.x, m_center.y, m_zRange.m_max ), m_radius );
 }
 
+//------------------------------------------------------------------------------
+bool TestShapeCylinder::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
+{
+	return false; // #todo Implement this function
+}
+

@@ -2,6 +2,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
+#include "Engine/Math/AABB3.hpp"
 #define _USE_MATH_DEFINES // Used for PI
 
 //-----------------------------------------------------------------------------------------------
@@ -78,6 +79,7 @@ bool	IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discR
 bool	IsPointInsideOrientedSector2D( Vec2 const& point, Vec2 const& sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius );
 bool	IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Vec2 const& sectorFwdNormal, float sectorApertureDegrees, float sectorRadius );
 Vec2	GetNearestPointOnDisc2D( Vec2 const& referencePos, Vec2 const& discCenter, float discRadius );
+Vec3    GetNearestPointOnAABB3D( Vec3 const& referencePos, const AABB3& bounds );
 bool	PushDiscOutOfFixedPoint2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint );
 bool	PushDiscOutOfFixedDisc2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedDiscCenter, float fixedDiscRadius );
 bool	PushDiscsOutOfEachOther2D( Vec2& aCenter, float aRadius, Vec2& bCenter, float bRadius );

@@ -310,7 +310,9 @@ bool DoCylindersOverlap( const Vec3& startA, const Vec3& endA, float radiusA, co
 //------------------------------------------------------------------------------
 bool DoSphereABB3Overlap( Vec3 const& sphereCenter, float sphereRadius, Vec3 const& boxMins, Vec3 const& boxMaxs )
 {
-	return false; // #TODO: implement this
+	Vec3 nearestPoint = GetNearestPointOnAABB3D( sphereCenter, AABB3( boxMins, boxMaxs ) );
+	float dist = GetDistance3D( sphereCenter, nearestPoint );
+	return dist < sphereRadius;
 }
 
 //------------------------------------------------------------------------------
@@ -362,6 +364,16 @@ Vec2 GetNearestPointOnDisc2D( Vec2 const& referencePos, Vec2 const& discCenter, 
 	Vec2 centerToPoint = referencePos - discCenter; 
 	centerToPoint.ClampLength( discRadius );
 	return discCenter + centerToPoint;
+}
+
+Vec3 GetNearestPointOnAABB3D( Vec3 const& referencePos, const AABB3& bounds )
+{
+	Vec3 nearestPoint;
+	nearestPoint.x = GetClamped( referencePos.x, bounds.m_mins.x, bounds.m_maxs.x );
+	nearestPoint.y = GetClamped( referencePos.y, bounds.m_mins.y, bounds.m_maxs.y );
+	nearestPoint.z = GetClamped( referencePos.z, bounds.m_mins.z, bounds.m_maxs.z );
+
+	return nearestPoint;
 }
 
 bool PushDiscOutOfFixedPoint2D( Vec2& mobileDiscCenter, float discRadius, Vec2 const& fixedPoint )
