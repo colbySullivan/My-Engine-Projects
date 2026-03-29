@@ -3,6 +3,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "TestShapeSphere.hpp"
 #include "TestShapeAABB3.hpp"
+#include "TestShapeCylinder.hpp"
 
 //-----------------------------------------------------------------------------------------------
 TestShapes3D::TestShapes3D( App* app )
@@ -16,40 +17,32 @@ TestShapes3D::TestShapes3D( App* app )
 //-----------------------------------------------------------------------------------------------
 TestShapes3D::~TestShapes3D()
 {
-
+	Shutdown();
+	delete m_player;
 }
 
+//------------------------------------------------------------------------------
 void TestShapes3D::Startup()
 {
 	Game::Startup();
-	DebugAddWorldBasis( m_player->GetModelToWorldTransform(), 0.f );
-	float halfHeight = 0.5f;
-	Mat44 toWorld = m_player->GetModelToWorldTransform();
-	Vec3 upVector = toWorld.GetKBasis3D();
-	Vec3 startPos = m_player->m_position - ( upVector * halfHeight );
-	Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
-
-	TestShapeSphere* testShape = new TestShapeSphere( Vec3( 10.f, 10.f, 0.f ), 1.0f, 32, 32 );
-	m_testShapes.push_back( testShape );
-
-	TestShapeAABB3* testShape2 = new TestShapeAABB3( AABB3( Vec3( -1.f, -1.f, -1.f ), Vec3( 1.f, 1.f, 1.f ) ) );
-	m_testShapes.push_back( testShape2 );
+	SpawnInitialTestShapes();
 }
 
+//------------------------------------------------------------------------------
 void TestShapes3D::Shutdown()
 {
-
+	ClearTestShapes();
 }
 
+//------------------------------------------------------------------------------
 void TestShapes3D::Update( float deltaSeconds )
 {
 	m_player->Update( ( float )g_engine->m_systemClock->GetDeltaSeconds() );
-
-
+	UpdateSpawnNewTestShapes();
 	Game::UpdateKeyboardInput();
-
 }
 
+//------------------------------------------------------------------------------
 void TestShapes3D::Render() const
 {
 	g_engine->m_render->BindTexture( nullptr );
@@ -58,7 +51,19 @@ void TestShapes3D::Render() const
 	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 	g_engine->m_render->ClearScreen( backgroundColor );
 	DebugRenderWorld( *m_player->m_worldCamera );
-	for ( int shapeIndex = 0; shapeIndex < static_cast<int>( m_testShapes.size() ); ++shapeIndex )
+
+	RenderTestShapes();
+
+	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
+	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::RenderTestShapes() const
+{
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 	{
 		TestShape3D* shape = m_testShapes[shapeIndex];
 		if ( shape != nullptr )
@@ -66,9 +71,67 @@ void TestShapes3D::Render() const
 			shape->RenderWithTexture( m_modelTexture );
 		}
 	}
-	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
-	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
-	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
-	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::SpawnInitialTestShapes()
+{
+	DebugAddWorldBasis( m_player->GetModelToWorldTransform(), 0.f );
+	float halfHeight = 0.5f;
+	Mat44 toWorld = m_player->GetModelToWorldTransform();
+	Vec3 upVector = toWorld.GetKBasis3D();
+	Vec3 startPos = m_player->m_position - ( upVector * halfHeight );
+	Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
+
+	TestShapeSphere* sphereShape = new TestShapeSphere( Vec3( 10.f, 10.f, 0.f ), 1.0f, 32, 32 );
+	m_testShapes.push_back( sphereShape );
+
+	TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( Vec3( -10.f, -10.f, -10.f ), Vec3( 10.f, 10.f, 10.f ) ) );
+	m_testShapes.push_back( aabb3Shape );
+
+	TestShapeCylinder* cylinderShape = new TestShapeCylinder( startPos, endPos, 0.25f );
+	m_testShapes.push_back( cylinderShape );
+}
+
+void TestShapes3D::UpdateSpawnNewTestShapes()
+{
+	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
+	{
+		Mat44 toWorld = Mat44();
+		Vec3 upVector = toWorld.GetKBasis3D();
+		float halfHeight = 0.5f;
+		Vec3 startPos = m_player->m_position - ( upVector * halfHeight );
+		Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
+		TestShapeCylinder* cylinderShape = new TestShapeCylinder( startPos, endPos, 0.25f );
+		m_testShapes.push_back( cylinderShape );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '2' ) )
+	{
+		TestShapeSphere* sphereShape = new TestShapeSphere( m_player->m_position, 1.0f, 32, 32 );
+		m_testShapes.push_back( sphereShape );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
+	{
+		Vec3 boundsMins = m_player->m_position - Vec3( 0.5f, 0.5f, 0.5f );
+		Vec3 boundsMaxs = m_player->m_position + Vec3( 0.5f, 0.5f, 0.5f );
+		TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( boundsMins, boundsMaxs ) );
+		m_testShapes.push_back( aabb3Shape );
+	}
+
+}
+
+void TestShapes3D::ClearTestShapes()
+{
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	{
+		TestShape3D* shape = m_testShapes[shapeIndex];
+		if ( shape != nullptr )
+		{
+			delete shape;
+			m_testShapes[shapeIndex] = nullptr;
+		}
+	}
 }
 

@@ -17,6 +17,12 @@ public:
 	void Update( float deltaSeconds ) override;
 	void Render() const override;
 
+	void RenderTestShapes() const;
+	void SpawnInitialTestShapes();
+	void UpdateSpawnNewTestShapes();
+	void ClearTestShapes();
+
+
 private:
 	Player* m_player = nullptr;
 	std::vector<TestShape3D*> m_testShapes;
