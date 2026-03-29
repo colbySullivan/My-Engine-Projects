@@ -16,6 +16,7 @@ TestShapeCylinder::~TestShapeCylinder()
 
 void TestShapeCylinder::Render() const
 {
+	IsOverlapped();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
@@ -24,9 +25,16 @@ void TestShapeCylinder::Render() const
 
 void TestShapeCylinder::RenderWithTexture( Texture* texture ) const
 {
+	IsOverlapped();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( texture );
 	g_engine->m_render->DrawVertexArray( ( int )m_cylinderVerts.size(), m_cylinderVerts.data() );
+}
+
+//------------------------------------------------------------------------------
+bool TestShapeCylinder::DoesSphereOverlap( Vec3 sphereCenter, float radius ) const
+{
+	return false; // #todo Implement this function
 }
 

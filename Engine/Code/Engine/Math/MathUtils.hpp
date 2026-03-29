@@ -104,6 +104,7 @@ Vec2    GetNearestPointOnLineSegment2D(Vec2 referencePos, Vec2 start, Vec2 end);
 Vec2    GetNearestPointOnCapsule2D(Vec2 referencePos, Vec2 boneStart, Vec2 boneEnd, float radius);
 Vec2    GetNearestPointOnTriangle2D(Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2); // Counter-Clockwise (positive winding)
 
+
 //-----------------------------------------------------------------------------------------------
 // Basic util functions
 float	GetFloatMax( float a, float b );

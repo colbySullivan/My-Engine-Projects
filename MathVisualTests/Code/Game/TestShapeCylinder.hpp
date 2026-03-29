@@ -14,6 +14,8 @@ public:
 	void Render() const override;
 	void RenderWithTexture( Texture* texture ) const override;
 
+	bool DoesSphereOverlap( Vec3 sphereCenter, float radius ) const override;
+
 	float m_radius;
 	Vec3 m_center;
 

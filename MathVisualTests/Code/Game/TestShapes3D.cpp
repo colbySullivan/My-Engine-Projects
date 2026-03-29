@@ -39,6 +39,7 @@ void TestShapes3D::Update( float deltaSeconds )
 {
 	m_player->Update( ( float )g_engine->m_systemClock->GetDeltaSeconds() );
 	UpdateSpawnNewTestShapes();
+	UpdateShapesOverlap();
 	Game::UpdateKeyboardInput();
 }
 
@@ -85,6 +86,7 @@ void TestShapes3D::SpawnInitialTestShapes()
 
 	TestShapeSphere* sphereShape = new TestShapeSphere( Vec3( 10.f, 10.f, 0.f ), 1.0f, 32, 32 );
 	m_testShapes.push_back( sphereShape );
+	m_testShapeSpheres.push_back( sphereShape );
 
 	TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( Vec3( -10.f, -10.f, -10.f ), Vec3( 10.f, 10.f, 10.f ) ) );
 	m_testShapes.push_back( aabb3Shape );
@@ -110,6 +112,7 @@ void TestShapes3D::UpdateSpawnNewTestShapes()
 	{
 		TestShapeSphere* sphereShape = new TestShapeSphere( m_player->m_position, 1.0f, 32, 32 );
 		m_testShapes.push_back( sphereShape );
+		m_testShapeSpheres.push_back( sphereShape );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
@@ -135,3 +138,29 @@ void TestShapes3D::ClearTestShapes()
 	}
 }
 
+void TestShapes3D::UpdateShapesOverlap()
+{
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	{
+		TestShape3D* shape = m_testShapes[shapeIndex];
+		if ( UpdateShapesOverlapWithSphere( shape ) ) shape->m_isOverlapping = true;
+		else										  shape->m_isOverlapping = false;
+	}
+}
+
+//------------------------------------------------------------------------------
+bool TestShapes3D::UpdateShapesOverlapWithSphere( TestShape3D* sphereShape )
+{
+	for ( int sphereShapeIndex = 0; sphereShapeIndex < static_cast< int >( m_testShapeSpheres.size() ); ++sphereShapeIndex )
+	{
+		TestShapeSphere* otherShape = m_testShapeSpheres[sphereShapeIndex];
+		if ( sphereShape != nullptr && otherShape != nullptr && sphereShape != otherShape )
+		{
+			if ( sphereShape->DoesSphereOverlap( otherShape->m_center, otherShape->m_radius ) )
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}

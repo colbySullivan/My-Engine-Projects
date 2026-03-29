@@ -1,6 +1,7 @@
 #include "Game/TestShapeSphere.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //------------------------------------------------------------------------------
 TestShapeSphere::TestShapeSphere( Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
@@ -19,6 +20,7 @@ TestShapeSphere::~TestShapeSphere()
 //------------------------------------------------------------------------------
 void TestShapeSphere::Render() const
 {
+	IsOverlapped();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
@@ -28,9 +30,16 @@ void TestShapeSphere::Render() const
 //------------------------------------------------------------------------------
 void TestShapeSphere::RenderWithTexture( Texture* texture ) const
 {
+	IsOverlapped();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( texture );
 	g_engine->m_render->DrawVertexArray( ( int )m_sphereVerts.size(), m_sphereVerts.data() );
+}
+
+//------------------------------------------------------------------------------
+bool TestShapeSphere::DoesSphereOverlap( Vec3 sphereCenter, float radius ) const
+{
+	return DoSpheresOverlap( m_center, m_radius, sphereCenter, radius );
 }
 

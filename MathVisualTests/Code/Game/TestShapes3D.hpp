@@ -3,6 +3,7 @@
 #include "Game/Game.hpp"
 #include "Game/Player.hpp"
 #include "Game/TestShape3D.hpp"
+#include "Game/TestShapeSphere.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -26,5 +27,8 @@ public:
 private:
 	Player* m_player = nullptr;
 	std::vector<TestShape3D*> m_testShapes;
+	std::vector<TestShapeSphere*> m_testShapeSpheres;
 	Texture* m_modelTexture = nullptr;
+	void UpdateShapesOverlap();
+	bool UpdateShapesOverlapWithSphere( TestShape3D* sphereShape );
 };
