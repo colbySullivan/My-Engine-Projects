@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Engine/Math/FloatRange.hpp"
+#include "Engine/Math/Vec2.hpp"
 
 
 struct TestShape3D
@@ -12,6 +14,7 @@ struct TestShape3D
 	virtual void RenderWithTexture( Texture* texture ) const = 0;
 
 	virtual bool DoesSphereOverlap( Vec3 sphereCenter, float radius ) const = 0;
+	virtual bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const = 0;
 
 	bool m_isOverlapping = false;
 

@@ -39,3 +39,9 @@ bool TestShapeAABB3::DoesSphereOverlap( Vec3 sphereCenter, float radius ) const
 	return false; // #todo Implement this function
 }
 
+//------------------------------------------------------------------------------
+bool TestShapeAABB3::DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const
+{
+	return false; // #todo Implement this function
+}
+

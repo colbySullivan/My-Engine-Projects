@@ -90,9 +90,11 @@ void TestShapes3D::SpawnInitialTestShapes()
 
 	TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( Vec3( -10.f, -10.f, -10.f ), Vec3( 10.f, 10.f, 10.f ) ) );
 	m_testShapes.push_back( aabb3Shape );
+	m_testShapeAABB3.push_back( aabb3Shape );
 
 	TestShapeCylinder* cylinderShape = new TestShapeCylinder( startPos, endPos, 0.25f );
 	m_testShapes.push_back( cylinderShape );
+	m_testShapeCylinder.push_back( cylinderShape );
 }
 
 void TestShapes3D::UpdateSpawnNewTestShapes()
@@ -106,6 +108,7 @@ void TestShapes3D::UpdateSpawnNewTestShapes()
 		Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
 		TestShapeCylinder* cylinderShape = new TestShapeCylinder( startPos, endPos, 0.25f );
 		m_testShapes.push_back( cylinderShape );
+		m_testShapeCylinder.push_back( cylinderShape );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '2' ) )
@@ -121,6 +124,7 @@ void TestShapes3D::UpdateSpawnNewTestShapes()
 		Vec3 boundsMaxs = m_player->m_position + Vec3( 0.5f, 0.5f, 0.5f );
 		TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( boundsMins, boundsMaxs ) );
 		m_testShapes.push_back( aabb3Shape );
+		m_testShapeAABB3.push_back( aabb3Shape );
 	}
 
 }
@@ -143,23 +147,58 @@ void TestShapes3D::UpdateShapesOverlap()
 	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 	{
 		TestShape3D* shape = m_testShapes[shapeIndex];
-		if ( UpdateShapesOverlapWithSphere( shape ) ) shape->m_isOverlapping = true;
-		else										  shape->m_isOverlapping = false;
+		if ( UpdateShapesOverlapWithSphere( shape ) )			shape->m_isOverlapping = true;
+		else if ( UpdateShapesOverlapWithCylinder( shape ) )	shape->m_isOverlapping = true;
+		else													shape->m_isOverlapping = false;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool TestShapes3D::UpdateShapesOverlapWithSphere( TestShape3D* sphereShape )
+bool TestShapes3D::UpdateShapesOverlapWithSphere( TestShape3D* shape )
 {
 	for ( int sphereShapeIndex = 0; sphereShapeIndex < static_cast< int >( m_testShapeSpheres.size() ); ++sphereShapeIndex )
 	{
 		TestShapeSphere* otherShape = m_testShapeSpheres[sphereShapeIndex];
-		if ( sphereShape != nullptr && otherShape != nullptr && sphereShape != otherShape )
+		if ( shape != nullptr && otherShape != nullptr && shape != otherShape )
 		{
-			if ( sphereShape->DoesSphereOverlap( otherShape->m_center, otherShape->m_radius ) )
+			if ( shape->DoesSphereOverlap( otherShape->m_center, otherShape->m_radius ) )
 			{
 				return true;
 			}
+		}
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool TestShapes3D::UpdateShapesOverlapWithCylinder( TestShape3D* shape )
+{
+	for ( int cylinderShapeIndex = 0; cylinderShapeIndex < static_cast< int >( m_testShapeCylinder.size() ); ++cylinderShapeIndex )
+	{
+		TestShapeCylinder* otherShape = m_testShapeCylinder[cylinderShapeIndex];
+		if ( shape != nullptr && otherShape != nullptr && shape != otherShape )
+		{
+			if ( shape->DoesCylinderOverlap( Vec2( otherShape->m_center.x, otherShape->m_center.y ), otherShape->m_radius, otherShape->m_zRange ) )
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool TestShapes3D::UpdateShapesOverlapWithAABB3( TestShape3D* shape )
+{
+	for ( int AABB3ShapeIndex = 0; AABB3ShapeIndex < static_cast< int >( m_testShapeAABB3.size() ); ++AABB3ShapeIndex )
+	{
+		TestShapeAABB3* otherShape = m_testShapeAABB3[AABB3ShapeIndex];
+		if ( shape != nullptr && otherShape != nullptr && shape != otherShape )
+		{
+			/*if ( shape->DoesCylinderOverlap( Vec2( otherShape->m_center.x, otherShape->m_center.y ), otherShape->m_radius, otherShape->m_zRange ) )
+			{
+				return true;
+			}*/
 		}
 	}
 	return false;

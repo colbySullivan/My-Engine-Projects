@@ -71,6 +71,9 @@ Vec2	GetProjectedVector2D( Vec2 const& vectorToProject, Vec2 const& vectorToProj
 bool    DoDiscsOverlap(Vec2 const& centerA, float radiusA, Vec2 const& centerB, float radiusB);
 bool    DoSpheresOverlap(Vec3 const& centerA, float radiusA, Vec3 const& centerB, float radiusB);
 bool    DoAABB2sOverlap( AABB2 const& alignedBoxA, AABB2 const& alignedBoxB );
+bool	DoCylindersOverlap( const Vec3& startA, const Vec3& endA, float radiusA, const Vec3& startB, const Vec3& endB, float radiusB );
+bool	DoSphereABB3Overlap( Vec3 const& sphereCenter, float sphereRadius, Vec3 const& boxMins, Vec3 const& boxMaxs );
+bool	DoSphereCylinderOverlap( Vec3 const& sphereCenter, float sphereRadius, const Vec3& start, const Vec3& end, float radius );
 bool	IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius );
 bool	IsPointInsideOrientedSector2D( Vec2 const& point, Vec2 const& sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius );
 bool	IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Vec2 const& sectorFwdNormal, float sectorApertureDegrees, float sectorRadius );
@@ -103,7 +106,6 @@ Vec2    GetNearestPointOnInfiniteLine2D(Vec2 referencePos, Vec2 pointOnLine, Vec
 Vec2    GetNearestPointOnLineSegment2D(Vec2 referencePos, Vec2 start, Vec2 end);
 Vec2    GetNearestPointOnCapsule2D(Vec2 referencePos, Vec2 boneStart, Vec2 boneEnd, float radius);
 Vec2    GetNearestPointOnTriangle2D(Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2); // Counter-Clockwise (positive winding)
-
 
 //-----------------------------------------------------------------------------------------------
 // Basic util functions

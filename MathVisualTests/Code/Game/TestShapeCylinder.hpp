@@ -15,9 +15,11 @@ public:
 	void RenderWithTexture( Texture* texture ) const override;
 
 	bool DoesSphereOverlap( Vec3 sphereCenter, float radius ) const override;
+	bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const override;
 
 	float m_radius;
 	Vec3 m_center;
+	FloatRange m_zRange;
 
 	std::vector<Vertex> m_cylinderVerts;
 };

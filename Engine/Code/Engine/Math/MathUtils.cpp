@@ -292,6 +292,37 @@ bool DoAABB2sOverlap( AABB2 const& alignedBoxA, AABB2 const& alignedBoxB )
 	return true;
 }
 
+//------------------------------------------------------------------------------
+bool DoCylindersOverlap( const Vec3& startA, const Vec3& endA, float radiusA, const Vec3& startB, const Vec3& endB, float radiusB )
+{
+	FloatRange rangeA( startA.z, endA.z );
+	FloatRange rangeB( startB.z, endB.z );
+	if ( rangeA.IsOverlappingWith( rangeB ) )
+	{
+		Vec2 centerA( startA.x, startA.y );
+		Vec2 centerB( startB.x, startB.y );
+		return DoDiscsOverlap( centerA, radiusA, centerB, radiusB );
+	}
+	return false;
+
+}
+
+//------------------------------------------------------------------------------
+bool DoSphereABB3Overlap( Vec3 const& sphereCenter, float sphereRadius, Vec3 const& boxMins, Vec3 const& boxMaxs )
+{
+	return false; // #TODO: implement this
+}
+
+//------------------------------------------------------------------------------
+bool DoSphereCylinderOverlap( Vec3 const& sphereCenter, float sphereRadius, const Vec3& start, const Vec3& end, float radius )
+{
+	if ( DoDiscsOverlap( Vec2( sphereCenter.x, sphereCenter.y ), sphereRadius, Vec2( start.x, start.y ), radius ) )
+	{
+		return ( sphereCenter.z >= start.z - sphereRadius ) && ( sphereCenter.z <= end.z + sphereRadius );
+	}
+	return false;
+}
+
 bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius )
 {
 	Vec2 centerToPoint = discCenter - point;

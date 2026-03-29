@@ -43,3 +43,9 @@ bool TestShapeSphere::DoesSphereOverlap( Vec3 sphereCenter, float radius ) const
 	return DoSpheresOverlap( m_center, m_radius, sphereCenter, radius );
 }
 
+//------------------------------------------------------------------------------
+bool TestShapeSphere::DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const
+{
+	return DoSphereCylinderOverlap( m_center, m_radius, Vec3( cylinderCenter.x, cylinderCenter.y, cylinderZRange.m_min ), Vec3( cylinderCenter.x, cylinderCenter.y, cylinderZRange.m_max ), cylinderRadius );
+}
+

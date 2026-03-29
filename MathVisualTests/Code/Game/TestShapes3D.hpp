@@ -4,6 +4,8 @@
 #include "Game/Player.hpp"
 #include "Game/TestShape3D.hpp"
 #include "Game/TestShapeSphere.hpp"
+#include "Game/TestShapeCylinder.hpp"
+#include "Game/TestShapeAABB3.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -28,7 +30,11 @@ private:
 	Player* m_player = nullptr;
 	std::vector<TestShape3D*> m_testShapes;
 	std::vector<TestShapeSphere*> m_testShapeSpheres;
+	std::vector<TestShapeCylinder*> m_testShapeCylinder;
+	std::vector<TestShapeAABB3*> m_testShapeAABB3;
 	Texture* m_modelTexture = nullptr;
 	void UpdateShapesOverlap();
-	bool UpdateShapesOverlapWithSphere( TestShape3D* sphereShape );
+	bool UpdateShapesOverlapWithSphere( TestShape3D* shape );
+	bool UpdateShapesOverlapWithCylinder( TestShape3D* shape );
+	bool UpdateShapesOverlapWithAABB3( TestShape3D* shape );
 };
