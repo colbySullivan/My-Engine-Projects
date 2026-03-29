@@ -104,60 +104,108 @@ void AddVertsForAABB3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsign
 	Vec3 mins = bounds.m_mins;
 	Vec3 maxs = bounds.m_maxs;
 
-	float uMin = UVs.m_mins.x;
-	float uMax = UVs.m_maxs.x;
-	float vMin = UVs.m_mins.y;
-	float vMax = UVs.m_maxs.y;
-
-	unsigned int startIndex = ( unsigned int )vertexes.size();
-
 	// +X Right face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-																						
+	AddVertsForQuad3D( vertexes, indexes,
+		Vec3( maxs.x, mins.y, mins.z ),
+		Vec3( maxs.x, maxs.y, mins.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		color, UVs );
+
 	// -X Left face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0  ),Vec3( 0,0,0  ),Vec3( 0,0,0 ) ) );
-																										
-	// +Y Front face																					
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ) ) );
-																										
-	// -Y Back face																						
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-																										
-	// +Z Top face																						
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, maxs.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, maxs.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, maxs.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, maxs.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3( 0,0,0 ) ) );
+	AddVertsForQuad3D( vertexes, indexes,
+		Vec3( mins.x, maxs.y, mins.z ),
+		Vec3( mins.x, mins.y, mins.z ),
+		Vec3( mins.x, mins.y, maxs.z ),
+		Vec3( mins.x, maxs.y, maxs.z ),
+		color, UVs );
+
+	// +Y Front face
+	AddVertsForQuad3D( vertexes, indexes,
+		Vec3( maxs.x, maxs.y, mins.z ),
+		Vec3( mins.x, maxs.y, mins.z ),
+		Vec3( mins.x, maxs.y, maxs.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		color, UVs );
+
+	// -Y Back face
+	AddVertsForQuad3D( vertexes, indexes,
+		Vec3( mins.x, mins.y, mins.z ),
+		Vec3( maxs.x, mins.y, mins.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		Vec3( mins.x, mins.y, maxs.z ),
+		color, UVs );
+
+	// +Z Top face
+	AddVertsForQuad3D( vertexes, indexes,
+		Vec3( mins.x, maxs.y, maxs.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		Vec3( mins.x, mins.y, maxs.z ),
+		color, UVs );
 
 	// -Z Bottom face
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, mins.y, mins.z ), color, Vec2( uMin, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, mins.y, mins.z ), color, Vec2( uMax, vMin ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( maxs.x, maxs.y, mins.z ), color, Vec2( uMax, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
-	vertexes.push_back( Vertex_PCUTBN( Vec3( mins.x, maxs.y, mins.z ), color, Vec2( uMin, vMax ), Vec3( 0,0,0 ), Vec3( 0,0,0 ), Vec3(0,0,0 ) ) );
+	AddVertsForQuad3D( vertexes, indexes,
+		Vec3( mins.x, mins.y, mins.z ),
+		Vec3( maxs.x, mins.y, mins.z ),
+		Vec3( maxs.x, maxs.y, mins.z ),
+		Vec3( mins.x, maxs.y, mins.z ),
+		color, UVs );
+}
 
-	for ( unsigned int face = 0; face < 6; face++ )
-	{
-		unsigned int i = startIndex + face * 4;
-		indexes.push_back( i + 0 );
-		indexes.push_back( i + 1 );
-		indexes.push_back( i + 2 );
+//-----------------------------------------------------------------------------------------------
+void AddVertsForAABB3D( std::vector<Vertex>& vertexes, const AABB3& bounds, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ )
+{
+	Vec3 mins = bounds.m_mins;
+	Vec3 maxs = bounds.m_maxs;
 
-		indexes.push_back( i + 0 );
-		indexes.push_back( i + 2 );
-		indexes.push_back( i + 3 );
-	}
+	// +X Right face
+	AddVertsForQuad3D( vertexes,
+		Vec3( maxs.x, mins.y, mins.z ),
+		Vec3( maxs.x, maxs.y, mins.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		color, UVs );
+
+	// -X Left face
+	AddVertsForQuad3D( vertexes,
+		Vec3( mins.x, maxs.y, mins.z ),
+		Vec3( mins.x, mins.y, mins.z ),
+		Vec3( mins.x, mins.y, maxs.z ),
+		Vec3( mins.x, maxs.y, maxs.z ),
+		color, UVs );
+
+	// +Y Front face
+	AddVertsForQuad3D( vertexes,
+		Vec3( maxs.x, maxs.y, mins.z ),
+		Vec3( mins.x, maxs.y, mins.z ),
+		Vec3( mins.x, maxs.y, maxs.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		color, UVs );
+
+	// -Y Back face
+	AddVertsForQuad3D( vertexes,
+		Vec3( mins.x, mins.y, mins.z ),
+		Vec3( maxs.x, mins.y, mins.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		Vec3( mins.x, mins.y, maxs.z ),
+		color, UVs );
+
+	// +Z Top face
+	AddVertsForQuad3D( vertexes,
+		Vec3( mins.x, mins.y, maxs.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		Vec3( mins.x, maxs.y, maxs.z ),
+		color, UVs );
+
+	// -Z Bottom face
+	AddVertsForQuad3D( vertexes,
+		Vec3( mins.x, maxs.y, mins.z ),
+		Vec3( maxs.x, maxs.y, mins.z ),
+		Vec3( maxs.x, mins.y, mins.z ),
+		Vec3( mins.x, mins.y, mins.z ),
+		color, UVs );
 }
 
 //------------------------------------------------------------------------------
