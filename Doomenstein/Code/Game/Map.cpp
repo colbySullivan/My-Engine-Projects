@@ -130,9 +130,15 @@ void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 //------------------------------------------------------------------------------
 void Map::AddActors()
 {
-	m_actorVertexes.push_back( Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 1.f ), 0.5f, 32 ) );
-	m_actorVertexes.push_back( Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ) );
-	m_actorVertexes.push_back( Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 1.f ), 0.5f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 1.f, 1.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.5f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 2.f, 2.f, 0.f ), Vec3( 2.f, 2.f, 1.f ), 0.5f, 32 ) );
+
+	Actor* projectile = new Actor( m_game, Vec3( 3.5f, 8.5, 0.0f ), Vec3( 3.5f, 8.5, 0.3f ), 0.1f, 32 );
+	projectile->m_controlledByPlayer = true;
+	m_actorVector.push_back( projectile );
 }
 
 void Map::CreateBuffers()
@@ -167,6 +173,113 @@ void Map::CreateBuffers()
 	g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_indexBuffer );
 }
 
+//-----------------------------------------------------------------------------------------------
+bool Map::AreCoordsInBounds( int x, int y ) const
+{
+	return ( x < m_dimensions.x && y < m_dimensions.y && x >= 0 && y >= 0 );
+}
+
+//-----------------------------------------------------------------------------------------------
+const Tile* Map::GetTile( int x, int y ) const
+{
+	int tileIndex = (y * m_dimensions.x) + x;
+	return &m_tiles[tileIndex];
+	
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::Update()
+{
+	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	{
+		m_actorVector[actorIndex]->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
+	}
+	CollideActorsWithMap();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::CollideActorsWithMap()
+{
+	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	{
+		Actor* actor = m_actorVector[actorIndex];
+		if ( actor->m_controlledByPlayer )
+		{
+			CollideActorWithMap( actor );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::CollideActorWithMap( Actor* actor )
+{
+
+	Vec2 actorLocation = Vec2( actor->m_position.x, actor->m_position.y );
+	IntVec2 myTileCoords = GetTileCoordsForWorldPos( actorLocation );
+
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
+
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
+	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+}
+
+//-----------------------------------------------------------------------------------------------
+IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
+{
+	int tileX = static_cast< int >( floorf( worldPos.x ) );
+	int tileY = static_cast< int >( floorf( worldPos.y ) );
+	return IntVec2( tileX, tileY );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::PushEntityOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
+{
+	if ( !IsTileSolidAtTileCoords( tileCoords ) )
+	{
+		return;
+	}
+
+	AABB2 tileBounds = GetTileBounds( tileCoords );
+	Vec2 actorLocation = Vec2( actor.m_position.x, actor.m_position.y );
+	Vec2 nearestPointOnTile = tileBounds.GetNearestPoint( actorLocation );
+	PushDiscOutOfFixedPoint2D( actorLocation, actor.m_radius, nearestPointOnTile );
+	actor.m_position.x = actorLocation.x;
+	actor.m_position.y = actorLocation.y;
+}
+
+//-----------------------------------------------------------------------------------------------
+int Map::GetTileIndexForTileCoords( IntVec2 tileCoords ) const
+{
+	return ( tileCoords.y * m_dimensions.x ) + tileCoords.x;
+}
+
+//-----------------------------------------------------------------------------------------------
+AABB2 Map::GetTileBounds( IntVec2 const& tileCoords ) const
+{
+	float minX = static_cast< float >( tileCoords.x );
+	float minY = static_cast< float >( tileCoords.y );
+	float maxX = minX + 1.0f;
+	float maxY = minY + 1.0f;
+
+	return AABB2( minX, minY, maxX, maxY );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Map::IsTileSolidAtTileCoords( IntVec2 tileCoords ) const
+{
+	if ( tileCoords.x < 0 || tileCoords.x >= m_dimensions.x ||
+		tileCoords.y < 0 || tileCoords.y >= m_dimensions.y )
+	{
+		return true;
+	}
+	return m_tiles[GetTileIndexForTileCoords( tileCoords )].IsSolid();
+}
+
 void Map::Render() const
 {
 	if ( m_vertexBuffer == nullptr || m_indexBuffer == nullptr )
@@ -182,10 +295,10 @@ void Map::Render() const
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->DrawIndexBuffer( m_vertexBuffer, m_indexBuffer, indexCount );
 
-	for ( int actorIndex = 0; actorIndex < m_actorVertexes.size(); ++actorIndex )
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
-		Actor currActor = m_actorVertexes[actorIndex];
-		currActor.Render();
+		Actor* currActor = m_actorVector[actorIndex];
+		currActor->Render();
 	}
 }
 
@@ -210,7 +323,8 @@ void Map::CreateGeometry()
 
 	for ( int i = 0; i < ( int )m_tiles.size(); ++i )
 	{
-		Tile const& tile = m_tiles[i];
+		//Tile const& tile = m_tiles[i];
+		Tile& tile = m_tiles[i];
 
 		if ( TileDefinition::s_definitions.count( tile.m_type ) == 0 )
 		{
@@ -222,7 +336,7 @@ void Map::CreateGeometry()
 		float x = ( float )tile.m_tileCoords.x;
 		float y = ( float )tile.m_tileCoords.y;
 		AABB3 bounds( Vec3( x, y, 0.f ), Vec3( x + 1.f, y + 1.f, 1.f ) );
-
+		tile.m_bounds = bounds;
 		if ( def.m_isSolid )
 		{
 			AddGeometryForWall( bounds, terrainSheet.GetSpriteUVs( def.m_wallSpriteCoords ) );

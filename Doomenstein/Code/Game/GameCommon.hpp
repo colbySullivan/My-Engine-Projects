@@ -77,6 +77,15 @@ constexpr int PITCH_RATE = 120;
 constexpr int YAW_RATE = 120;
 constexpr int MOVE_SPEED = 1;
 
+const IntVec2 STEP_EAST = IntVec2( 1, 0 );
+const IntVec2 STEP_WEST = IntVec2( -1, 0 );
+const IntVec2 STEP_NORTH = IntVec2( 0, 1 );
+const IntVec2 STEP_SOUTH = IntVec2( 0, -1 );
+const IntVec2 STEP_NE = IntVec2( 1, 1 );
+const IntVec2 STEP_NW = IntVec2( -1, 1 );
+const IntVec2 STEP_SE = IntVec2( 1, -1 );
+const IntVec2 STEP_SW = IntVec2( -1, -1 );
+
 
 //------------------------------------------------------------------------------
 enum PowerUp

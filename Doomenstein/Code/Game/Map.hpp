@@ -8,6 +8,7 @@
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include "Game/Actor.hpp"
 
 class Game;
@@ -44,8 +45,9 @@ public:
 	void Update();
 	//void CollideActors();
 	//void CollideActors( Actor* actorA, Actor* actorB );
-	//void CollideActorsWithMap();
-	//void CollideActorWithMap( Actor* actor );
+	void CollideActorsWithMap();
+	void CollideActorWithMap( Actor* actor );
+
 
 	void Render() const;
 
@@ -73,8 +75,13 @@ protected:
 	VertexBuffer* m_vertexBuffer = nullptr;
 	IndexBuffer* m_indexBuffer = nullptr;
 
-	std::vector<Actor> m_actorVertexes;
+	std::vector<Actor*> m_actorVector;
 	ConstantBuffer* m_lightingConstant;
 private:
 	void SetLighting() const;
+	IntVec2 GetTileCoordsForWorldPos( Vec2 const& worldPos ) const;
+	void PushEntityOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords );
+	int GetTileIndexForTileCoords( IntVec2 tileCoords ) const;
+	AABB2 GetTileBounds( IntVec2 const& tileCoords ) const;
+	bool IsTileSolidAtTileCoords( IntVec2 tileCoords ) const;
 };
