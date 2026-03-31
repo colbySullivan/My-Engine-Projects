@@ -80,7 +80,7 @@ protected:
 private:
 	void SetLighting() const;
 	IntVec2 GetTileCoordsForWorldPos( Vec2 const& worldPos ) const;
-	void PushEntityOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords );
+	void PushActorOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords );
 	int GetTileIndexForTileCoords( IntVec2 tileCoords ) const;
 	AABB2 GetTileBounds( IntVec2 const& tileCoords ) const;
 	bool IsTileSolidAtTileCoords( IntVec2 tileCoords ) const;

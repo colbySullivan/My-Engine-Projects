@@ -194,18 +194,36 @@ void Map::Update()
 		m_actorVector[actorIndex]->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
 	CollideActorsWithMap();
+	CollideActors();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActors()
 {
-
+	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	{
+		Actor* firstActor = m_actorVector[actorIndex];
+		for (int otherActorIndex = actorIndex + 1; otherActorIndex < m_actorVector.size() ; ++otherActorIndex)
+		{
+			Actor* otherActor = m_actorVector[otherActorIndex];
+			CollideActors( firstActor, otherActor );
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActors( Actor* actorA, Actor* actorB )
 {
+	Vec2 actorAXY = Vec2( actorA->m_position.x, actorA->m_position.y );
+	Vec2 actorBXY = Vec2( actorB->m_position.x, actorB->m_position.y );
+	if ( PushDiscOutOfFixedDisc2D( actorAXY, actorA->m_radius, actorBXY, actorB->m_radius ) )
+	{
+		actorA->m_position.x = actorAXY.x;
+		actorA->m_position.y = actorAXY.y;
 
+		actorB->m_position.x = actorBXY.x;
+		actorB->m_position.y = actorBXY.y;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -228,15 +246,15 @@ void Map::CollideActorWithMap( Actor* actor )
 	Vec2 actorLocation = Vec2( actor->m_position.x, actor->m_position.y );
 	IntVec2 myTileCoords = GetTileCoordsForWorldPos( actorLocation );
 
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
 
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
-	PushEntityOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
+	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -248,7 +266,7 @@ IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::PushEntityOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
+void Map::PushActorOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
 {
 	if ( !IsTileSolidAtTileCoords( tileCoords ) )
 	{
