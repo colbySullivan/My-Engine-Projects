@@ -73,10 +73,11 @@ void Game::Startup()
 		m_currentMapNumber = 0;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
-	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); #TODO The world is not ready for summoners rift obj
+	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // #TODO The world is not ready for summoners rift obj
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
-	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
-	//m_teemoTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/teemo_texture.png" );
+	m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
+	m_teemoTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/teemo_texture.png" );
+	//m_teemoTexture = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -144,13 +145,13 @@ void Game::Render() const
 		float modelScale = 0.01f;                       
 		float modelRotation = 90.0f;                    
 
-		//Mat44 modelMatrix;
-		//modelMatrix.SetTranslation3D( modelPosition );
-		//modelMatrix.AppendScaleUniform3D( modelScale );
-		//modelMatrix.AppendXRotation( modelRotation );
-		//g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 255, 255, 255, 255 ) );
-		//g_engine->m_render->BindTexture( m_teemoTexture );
-		//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
+		Mat44 modelMatrix;
+		modelMatrix.SetTranslation3D( modelPosition );
+		modelMatrix.AppendScaleUniform3D( modelScale );
+		modelMatrix.AppendXRotation( modelRotation );
+		g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 255, 255, 255, 255 ) );
+		g_engine->m_render->BindTexture( m_teemoTexture );
+		g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
 
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
@@ -345,6 +346,25 @@ void Game::DebugInput()
 		std::string hudText = Stringf( "Swapped to map: %i", m_currentMapNumber );
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	{
+		Vec3 rayStart = m_player->m_position;
+		Vec3 rayDir = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp().GetIBasis3D().GetNormalized();
+		float rayDist = 10.f;
+
+		RaycastResult3D result = m_currentMap->RaycastAll( rayStart, rayDir, rayDist );
+		Mat44 toWorld = m_player->GetModelToWorldTransform();
+		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 10.f;
+		DebugAddWorldCylinder( m_player->m_position, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
+		if ( result.m_didImpact )
+		{
+			DebugAddWorldSphere( result.m_impactPos, 0.03f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+			Vec3 arrowEndPos = result.m_impactPos + result.m_impactNormal * 0.2f;
+			DebugAddWorldArrow( result.m_impactPos, arrowEndPos, 0.02f, 10.f, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ) );
+		}
+	}
+
 
 }
 
