@@ -273,6 +273,14 @@ void Game::DebugInput()
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F1 ) )
+	{
+		m_controlPlayerMode = !m_controlPlayerMode;
+		std::string hudText = Stringf( "Player control" );
+		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F2 ) )
 	{
 		m_currentMap->m_sunDirection.x -= 1.f;

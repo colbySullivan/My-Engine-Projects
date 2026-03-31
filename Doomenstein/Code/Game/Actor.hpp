@@ -7,6 +7,13 @@
 
 //-----------------------------------------------------------------------------------------------
 
+enum ActorType
+{
+	ACTOR,
+	PROJECTILE,
+	ActorTypeCount
+};
+
 struct EulerAngles;
 class Game;
 
@@ -32,6 +39,7 @@ public:
 	std::vector<Vertex> m_vertexes;
 	float	m_radius;
 	bool	m_controlledByPlayer = false;
+	ActorType m_actorType = ACTOR;
 private:
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
 };

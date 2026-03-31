@@ -43,8 +43,8 @@ public:
 	const Tile* GetTile( int x, int y ) const;
 
 	void Update();
-	//void CollideActors();
-	//void CollideActors( Actor* actorA, Actor* actorB );
+	void CollideActors();
+	void CollideActors( Actor* actorA, Actor* actorB );
 	void CollideActorsWithMap();
 	void CollideActorWithMap( Actor* actor );
 

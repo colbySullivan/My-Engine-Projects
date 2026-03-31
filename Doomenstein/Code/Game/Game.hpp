@@ -72,6 +72,7 @@ public:
 	// Player and props
 	Player* m_player = nullptr;
 	std::vector<Prop*> m_props;
+	bool m_controlPlayerMode = false;
 
 	// Maps
 	std::vector<Map*> m_maps = {};

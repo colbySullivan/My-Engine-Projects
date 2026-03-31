@@ -133,11 +133,10 @@ void Map::AddActors()
 	m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 1.f ), 0.5f, 32 ) );
 	m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ) );
 	m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ) );
-	m_actorVector.push_back( new Actor( m_game, Vec3( 1.f, 1.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.5f, 32 ) );
-	m_actorVector.push_back( new Actor( m_game, Vec3( 2.f, 2.f, 0.f ), Vec3( 2.f, 2.f, 1.f ), 0.5f, 32 ) );
 
-	Actor* projectile = new Actor( m_game, Vec3( 3.5f, 8.5, 0.0f ), Vec3( 3.5f, 8.5, 0.3f ), 0.1f, 32 );
+	Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.25f ), 0.0625f, 32 );
 	projectile->m_controlledByPlayer = true;
+	projectile->m_actorType = PROJECTILE;
 	m_actorVector.push_back( projectile );
 }
 
@@ -195,6 +194,18 @@ void Map::Update()
 		m_actorVector[actorIndex]->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
 	CollideActorsWithMap();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::CollideActors()
+{
+
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::CollideActors( Actor* actorA, Actor* actorB )
+{
+
 }
 
 //-----------------------------------------------------------------------------------------------
