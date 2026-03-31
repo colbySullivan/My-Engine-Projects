@@ -15,6 +15,15 @@ struct RaycastResult2D
 	Vec2	m_impactNormal;
 };
 
+//-----------------------------------------------------------------------------------------------
+struct RaycastResult3D
+{
+	bool	m_didImpact = false;
+	float	m_impactDist = 0.f;
+	Vec3	m_impactPos;
+	Vec3	m_impactNormal;
+};
+
 //-----------------------------------------------------------------------------------
 // Forward type declarations
 struct Vec2;

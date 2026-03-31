@@ -1,7 +1,9 @@
 #include "Game/Map.hpp"
+#include "Game/Player.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 struct LightingConstants
 {
@@ -196,6 +198,16 @@ void Map::Update()
 	}
 	CollideActorsWithMap();
 	CollideActors();
+	Vec3 rayStart = m_game->m_player->m_position;
+	Vec3 rayDir =  m_game->m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp().GetIBasis3D();
+	float rayDist = 10.f;
+
+	RaycastResult3D result = RaycastAll( rayStart, rayDir, rayDist );
+
+	if ( result.m_didImpact )
+	{
+		DebugAddWorldSphere( result.m_impactPos, 0.1f, 0.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -332,6 +344,77 @@ void Map::Render() const
 		Actor* currActor = m_actorVector[actorIndex];
 		currActor->Render();
 	}
+}
+
+//------------------------------------------------------------------------------
+RaycastResult3D Map::RaycastAll( const Vec3& start, const Vec3& direction, float distance, Actor* owner /*= nullptr */ ) const
+{
+	RaycastResult3D closest;
+	closest.m_didImpact = false;
+	closest.m_impactDist = distance;
+	closest.m_impactPos = start + ( direction * distance );
+
+	RaycastResult3D xyResult = RaycastWorldXY( start, direction, distance );
+	if ( xyResult.m_didImpact && xyResult.m_impactDist < closest.m_impactDist )
+	{
+		closest = xyResult;
+	}
+
+	RaycastResult3D zResult = RaycastWorldZ( start, direction, distance );
+	if ( zResult.m_didImpact && zResult.m_impactDist < closest.m_impactDist )
+	{
+		closest = zResult;
+	}
+
+	for ( int actorIndex = 0; actorIndex < ( int )m_actorVector.size(); ++actorIndex )
+	{
+		Actor* actor = m_actorVector[actorIndex];
+		if ( actor == owner )
+		{
+			continue;
+		}
+
+		Vec3 actorEnd = actor->m_position + Vec3( 0.f, 0.f, actor->m_height );
+		//RaycastResult3D actorResult = TODO
+	}
+
+	return closest;
+}
+
+//------------------------------------------------------------------------------
+RaycastResult3D Map::RaycastWorldXY( const Vec3& start, const Vec3& direction, float distance ) const
+{
+	constexpr float TINY_STEPS_PER_UNIT = 10.f;
+	int numSteps = static_cast< int >( distance * TINY_STEPS_PER_UNIT );
+	Vec3 tinyStepForward = direction * ( distance / numSteps );
+	Vec3 currentPos = start;
+
+	for ( int i = 0; i < numSteps; ++i )
+	{
+		currentPos += tinyStepForward;
+		IntVec2 tileCoords( static_cast< int >( floorf( currentPos.x ) ),
+			static_cast< int >( floorf( currentPos.y ) ) );
+		if ( IsTileSolidAtTileCoords( tileCoords ) )
+		{
+			RaycastResult3D hitResult;
+			hitResult.m_didImpact = true;
+			hitResult.m_impactPos = currentPos;
+			hitResult.m_impactDist = GetDistance3D( start, currentPos );
+			return hitResult;
+		}
+	}
+
+	RaycastResult3D missResult;
+	missResult.m_didImpact = false;
+	missResult.m_impactPos = start + ( direction * distance );
+	missResult.m_impactDist = distance;
+	return missResult;
+}
+
+RaycastResult3D Map::RaycastWorldZ( const Vec3& start, const Vec3& direction, float distance ) const
+{
+	RaycastResult3D missResult;
+	return missResult;
 }
 
 void Map::SetLighting() const
