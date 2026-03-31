@@ -432,6 +432,27 @@ bool PushDiscOutOfFixedAABB2D( Vec2& mobileDiscCenter, float discRadius, AABB2 c
 	return PushDiscOutOfFixedPoint2D( mobileDiscCenter, discRadius, nearestPoint );
 }
 
+//------------------------------------------------------------------------------
+bool PushCylinderOutOfFixedCylinder( Vec3& mobileStart, Vec3& mobileEnd, float mobileRadius, const Vec3& fixedStart, const Vec3& fixedEnd, float fixedRadius )
+{
+	FloatRange mobileZRange( mobileStart.z, mobileEnd.z );
+	FloatRange fixedZRange( fixedStart.z, fixedEnd.z );
+	if ( mobileZRange.IsOverlappingWith( fixedZRange ) )
+	{
+		Vec2 mobileCenter( mobileStart.x, mobileStart.y );
+		Vec2 fixedCenter( fixedStart.x, fixedStart.y );
+		if ( PushDiscOutOfFixedDisc2D( mobileCenter, mobileRadius, fixedCenter, fixedRadius ) )
+		{
+			mobileStart.x = mobileCenter.x;
+			mobileStart.y = mobileCenter.y;
+			mobileEnd.x = mobileCenter.x;
+			mobileEnd.y = mobileCenter.y;
+			return true;
+		}
+	}
+	return false;
+}
+
 //-----------------------------------------------------------------------------------------------
 void TransformPosition2D(Vec2& posToTransform, float uniformScale, float rotationDegrees, Vec2 const& translation)
 {

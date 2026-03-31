@@ -64,6 +64,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	// #todo there is an issue if you load and unload the game multiple times before exiting
 	m_isPaused = false;
 	TileDefinition::InitializeTileDefs();
 	ConstructMapFromXML();

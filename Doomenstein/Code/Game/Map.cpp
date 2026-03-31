@@ -134,9 +134,10 @@ void Map::AddActors()
 	m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 1.f ), 0.5f, 32 ) );
 	m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 1.f ), 0.5f, 32 ) );
 
-	Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.25f ), 0.0625f, 32 );
+	Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
 	projectile->m_controlledByPlayer = true;
 	projectile->m_actorType = PROJECTILE;
+	projectile->m_canBePushed = true;
 	m_actorVector.push_back( projectile );
 }
 
@@ -214,15 +215,18 @@ void Map::CollideActors()
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActors( Actor* actorA, Actor* actorB )
 {
-	Vec2 actorAXY = Vec2( actorA->m_position.x, actorA->m_position.y );
-	Vec2 actorBXY = Vec2( actorB->m_position.x, actorB->m_position.y );
-	if ( PushDiscOutOfFixedDisc2D( actorAXY, actorA->m_radius, actorBXY, actorB->m_radius ) )
-	{
-		actorA->m_position.x = actorAXY.x;
-		actorA->m_position.y = actorAXY.y;
+	Vec3 actorAEnd = actorA->m_position + Vec3( 0.f, 0.f, actorA->m_height );
+	Vec3 actorBEnd = actorB->m_position + Vec3( 0.f, 0.f, actorB->m_height );
 
-		actorB->m_position.x = actorBXY.x;
-		actorB->m_position.y = actorBXY.y;
+	if ( actorA->m_canBePushed && !actorB->m_canBePushed )
+	{
+		PushCylinderOutOfFixedCylinder( actorA->m_position, actorAEnd, actorA->m_radius,
+			actorB->m_position, actorBEnd, actorB->m_radius );
+	}
+	else if ( !actorA->m_canBePushed && actorB->m_canBePushed )
+	{
+		PushCylinderOutOfFixedCylinder( actorB->m_position, actorBEnd, actorB->m_radius,
+			actorA->m_position, actorAEnd, actorA->m_radius );
 	}
 }
 
@@ -277,8 +281,7 @@ void Map::PushActorOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
 	Vec2 actorLocation = Vec2( actor.m_position.x, actor.m_position.y );
 	Vec2 nearestPointOnTile = tileBounds.GetNearestPoint( actorLocation );
 	PushDiscOutOfFixedPoint2D( actorLocation, actor.m_radius, nearestPointOnTile );
-	actor.m_position.x = actorLocation.x;
-	actor.m_position.y = actorLocation.y;
+	actor.SetPosXY( actorLocation.x, actorLocation.y );
 }
 
 //-----------------------------------------------------------------------------------------------
