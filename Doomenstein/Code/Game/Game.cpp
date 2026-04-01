@@ -87,7 +87,6 @@ void Game::Update()
 
 	float deltaSeconds = ( float )m_gameClock->GetDeltaSeconds();
 
-	UpdateKeyboardInput( controller );
 
 	if ( m_currentGameState != m_nextGameState )
 	{
@@ -113,7 +112,10 @@ void Game::Update()
 		m_roundTime += deltaSeconds;
 		m_player->Update( deltaSeconds );
 		m_currentMap->Update();
+		DebugInput();
 	}
+	UpdateKeyboardInput( controller );
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -219,7 +221,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		g_drawDebug = !g_drawDebug;
 	}
 
-	DebugInput();
 	g_engine->m_input->EndFrame();
 }
 
