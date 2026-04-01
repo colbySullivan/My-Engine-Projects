@@ -581,6 +581,7 @@ RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 
 	float adjustmentDistance = sqrtf( ( discRadius * discRadius ) - ( SCj * SCj ) );
 	float impactDist = SCi - adjustmentDistance;
+	result.m_exitDist = SCi + adjustmentDistance;
 
 	if ( impactDist >= maxDist )
 	{
@@ -750,9 +751,12 @@ RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, 
 RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist, Vec3 cylinderStart, Vec3 cylinderEnd, float radius )
 {
 	RaycastResult3D result;
-	Vec2 startPosXY = Vec2( startPos.x, startPos.y );
-	Vec2 otherCylinderPos = Vec2( cylinderStart.x, cylinderStart.y );
-	if ( IsPointInsideDisc2D( startPosXY, otherCylinderPos, radius ) )
+	fwdNormal = fwdNormal.GetNormalized();
+
+	// Ray starts inside cylinder
+	Vec2 startPosXY( startPos.x, startPos.y );
+	Vec2 cylPosXY( cylinderStart.x, cylinderStart.y );
+	if ( IsPointInsideDisc2D( startPosXY, cylPosXY, radius ) )
 	{
 		result.m_didImpact = true;
 		result.m_impactDist = 0.f;
@@ -761,37 +765,63 @@ RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist,
 		return result;
 	}
 
+	// Ray intersects on the Z axis
 	float startZ = startPos.z;
 	float endZ = startPos.z + ( fwdNormal.z * maxDist );
-
 	FloatRange rayZRange( fminf( startZ, endZ ), fmaxf( startZ, endZ ) );
-	FloatRange cylZRange( fminf(cylinderStart.z, cylinderEnd.z), fmaxf(cylinderStart.z, cylinderEnd.z) );
+	FloatRange cylZRange( fminf( cylinderStart.z, cylinderEnd.z ), fmaxf( cylinderStart.z, cylinderEnd.z ) );
 	if ( !rayZRange.IsOverlappingWith( cylZRange ) )
 	{
 		return result;
 	}
-	float rayZAtCylStart = startPos.z + ( fwdNormal.z * GetFractionWithinRange( cylinderStart.z, rayZRange.m_min, rayZRange.m_max ) * maxDist );
 
-	Vec2 rayStart2D = Vec2( startPos.x, startPos.y );
-	Vec2 rayFwd2D = Vec2( fwdNormal.x, fwdNormal.y );
-	Vec2 cylStart2D = Vec2( cylinderStart.x, cylinderStart.y );
-	Vec2 cylEnd2D = Vec2( cylinderEnd.x, cylinderEnd.y );
-	RaycastResult2D raycast2DResultMinZ = RaycastVsDisc2D( rayStart2D, rayFwd2D, maxDist, cylStart2D, radius );
-	if ( raycast2DResultMinZ.m_didImpact )
+	// Ray intersects on the XY plane
+	Vec2 rayFwd2D( fwdNormal.x, fwdNormal.y );
+	RaycastResult2D hit2D = RaycastVsDisc2D( startPosXY, rayFwd2D, maxDist, cylPosXY, radius );
+
+	if ( !hit2D.m_didImpact )
 	{
-		Vec2 impactPos2D = rayStart2D + ( rayFwd2D * raycast2DResultMinZ.m_impactDist );
-		result.m_didImpact = true;
-		result.m_impactDist = raycast2DResultMinZ.m_impactDist;
-		result.m_impactNormal = Vec3( raycast2DResultMinZ.m_impactNormal.x, raycast2DResultMinZ.m_impactNormal.y, 0.f );
-		result.m_impactPos = startPos + ( fwdNormal * result.m_impactDist );
 		return result;
 	}
 
-	RaycastResult2D raycast2DResultMaxZ = RaycastVsDisc2D( rayStart2D, rayFwd2D, maxDist, cylEnd2D, radius );
-	if ( raycast2DResultMaxZ.m_didImpact )
+	// Ray intersects on Z and XY within range
+	float tDiscEnter = hit2D.m_impactDist / maxDist;
+	float tDiscExit = hit2D.m_exitDist / maxDist;
+	FloatRange tSideRange( tDiscEnter, tDiscExit );
+
+	float zStep = fwdNormal.z * maxDist;
+	float cylMinZ = fminf( cylinderStart.z, cylinderEnd.z );
+	float cylMaxZ = fmaxf( cylinderStart.z, cylinderEnd.z );
+	float tAtMinZ = ( cylMinZ - startPos.z ) / zStep;
+	float tAtMaxZ = ( cylMaxZ - startPos.z ) / zStep;
+
+	FloatRange tCapRange = FloatRange( fminf( tAtMinZ, tAtMaxZ ), fmaxf( tAtMinZ, tAtMaxZ ) );
+
+	if ( !tSideRange.IsOverlappingWith( tCapRange ) )
 	{
-		Vec2 impactPos2D = rayStart2D + ( rayFwd2D * raycast2DResultMaxZ.m_impactDist );
-		
+		return result;
+	}
+
+	float tEnter = fmaxf( tSideRange.m_min, tCapRange.m_min );
+	float tExit = fminf( tSideRange.m_max, tCapRange.m_max );
+
+	if ( tEnter > 1.f || tExit < 0.f )
+	{
+		return result;
+	}
+
+	tEnter = fmaxf( tEnter, 0.f );
+
+	result.m_didImpact = true;
+	result.m_impactDist = tEnter * maxDist;
+	result.m_impactPos = startPos + fwdNormal * result.m_impactDist;
+	result.m_impactNormal = Vec3( hit2D.m_impactNormal.x, hit2D.m_impactNormal.y, 0.f );
+
+	bool hitCap = ( tEnter == tCapRange.m_min ) && ( tEnter > tSideRange.m_min );
+	if ( hitCap )
+	{
+		float capNormalZ = ( fwdNormal.z < 0.f ) ? 1.f : -1.f;
+		result.m_impactNormal = Vec3( 0.f, 0.f, capNormalZ );
 	}
 
 	return result;

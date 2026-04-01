@@ -13,6 +13,7 @@ struct RaycastResult2D
 	float	m_impactDist = 0.f;
 	Vec2	m_impactPos;
 	Vec2	m_impactNormal;
+	float	m_exitDist;
 };
 
 //-----------------------------------------------------------------------------------------------
