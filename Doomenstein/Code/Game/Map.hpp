@@ -55,7 +55,7 @@ public:
 	RaycastResult3D RaycastAll( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
 	RaycastResult3D RaycastWorldXY( const Vec3& start, const Vec3& direction, float distance ) const;
 	RaycastResult3D RaycastWorldZ( const Vec3& start, const Vec3& direction, float distance ) const;
-	//RaycastResult RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
+	RaycastResult3D RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
 
 	Game* m_game = nullptr;
 

@@ -357,17 +357,11 @@ RaycastResult3D Map::RaycastAll( const Vec3& start, const Vec3& direction, float
 		closest = zResult;
 	}
 
-	//for ( int actorIndex = 0; actorIndex < ( int )m_actorVector.size(); ++actorIndex )
-	//{
-	//	Actor* actor = m_actorVector[actorIndex];
-	//	if ( actor == owner )
-	//	{
-	//		continue;
-	//	}
-
-	//	Vec3 actorEnd = actor->m_position + Vec3( 0.f, 0.f, actor->m_height );
-	//	//RaycastResult3D actorResult = TODO
-	//}
+	RaycastResult3D actorResult = RaycastWorldActors( start, direction, distance, owner );
+	if ( actorResult.m_didImpact && actorResult.m_impactDist < closest.m_impactDist )
+	{
+		closest = actorResult;
+	}
 
 	return closest;
 }
@@ -385,6 +379,7 @@ RaycastResult3D Map::RaycastWorldXY( const Vec3& start, const Vec3& direction, f
 		impactResult.m_didImpact = true;
 		impactResult.m_impactDist = 0.f;
 		impactResult.m_impactNormal = -directionNormal;
+		impactResult.m_impactPos = start;
 		return impactResult;
 	}
 
@@ -483,6 +478,32 @@ RaycastResult3D Map::RaycastWorldZ( const Vec3& start, const Vec3& direction, fl
 		}
 	}
 	return impactResult;
+}
+
+//-----------------------------------------------------------------------------------------------
+RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner /*= nullptr */ ) const
+{
+	RaycastResult3D actorRayResult;
+	//Vec2 ownerPos = Vec2( owner->m_position.x, owner->m_position.y );
+	Vec2 startPosXY = Vec2( start.x, start.y );
+	Vec2 directionNormalXY = Vec2( direction.x, direction.y ).GetNormalized();
+	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	{
+		if ( m_actorVector[actorIndex] != owner )
+		{
+			Actor* otherActor = m_actorVector[actorIndex];
+			Vec2 otherActorPos = Vec2( otherActor->m_position.x, otherActor->m_position.y );
+			if ( IsPointInsideDisc2D( startPosXY, otherActorPos, otherActor->m_radius ) )
+			{
+				actorRayResult.m_didImpact = true;
+				actorRayResult.m_impactDist = 0.f;
+				actorRayResult.m_impactNormal = -direction;
+				actorRayResult.m_impactPos = start;
+				return actorRayResult;
+			}
+			//RaycastVsDisc2D(startPosXY, directionNormalXY, distance, otherActorPos, otherActor->m_radius)
+		}
+	}
 }
 
 void Map::SetLighting() const

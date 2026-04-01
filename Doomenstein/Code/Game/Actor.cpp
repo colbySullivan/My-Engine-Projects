@@ -32,8 +32,6 @@ void Actor::Update( float deltaSeconds )
 	//m_orientation.m_yawDegrees += m_angularVelocity.m_yawDegrees * deltaSeconds;
 	if ( m_controlledByPlayer && m_game->m_controlPlayerMode )
 	{
-		std::string hudText = Stringf( "Player location: %5.2f, %5.2f, %5.2f", m_position.x, m_position.y, m_position.z );
-		DebugAddMessage( hudText, 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 		UpdateMove();
 	}
 }

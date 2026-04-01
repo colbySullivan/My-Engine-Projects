@@ -278,8 +278,6 @@ void Game::DebugInput()
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F1 ) )
 	{
 		m_controlPlayerMode = !m_controlPlayerMode;
-		std::string hudText = Stringf( "Player control" );
-		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
 
@@ -359,9 +357,27 @@ void Game::DebugInput()
 		DebugAddWorldCylinder( m_player->m_position, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
 		if ( result.m_didImpact )
 		{
-			DebugAddWorldSphere( result.m_impactPos, 0.03f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-			Vec3 arrowEndPos = result.m_impactPos + result.m_impactNormal * 0.2f;
-			DebugAddWorldArrow( result.m_impactPos, arrowEndPos, 0.02f, 10.f, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ) );
+			DebugAddWorldSphere( result.m_impactPos, 0.06f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+			Vec3 arrowEndPos = result.m_impactPos + result.m_impactNormal * 0.3f;
+			DebugAddWorldArrow( result.m_impactPos, arrowEndPos, 0.03f, 10.f, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ) );
+		}
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_RIGHT_MOUSE ) )
+	{
+		Vec3 rayStart = m_player->m_position;
+		Vec3 rayDir = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp().GetIBasis3D().GetNormalized();
+		float rayDist = 0.25f;
+
+		RaycastResult3D result = m_currentMap->RaycastAll( rayStart, rayDir, rayDist );
+		Mat44 toWorld = m_player->GetModelToWorldTransform();
+		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 0.25f;
+		DebugAddWorldCylinder( m_player->m_position, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
+		if ( result.m_didImpact )
+		{
+			DebugAddWorldSphere( result.m_impactPos, 0.06f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+			Vec3 arrowEndPos = result.m_impactPos + result.m_impactNormal * 0.3f;
+			DebugAddWorldArrow( result.m_impactPos, arrowEndPos, 0.03f, 10.f, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ) );
 		}
 	}
 
@@ -380,6 +396,10 @@ void Game::RenderUI() const
 
 	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	hudText = Stringf( "Player Mode", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
+	Rgba8 playerControlColor = ( !m_controlPlayerMode ) ? Rgba8( 255, 255, 255 ) : Rgba8( 0, 0, 255 );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 55.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, playerControlColor, playerControlColor );
 
 	DebugRenderScreen( *m_screenCamera );
 }
