@@ -12,7 +12,7 @@ Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
 	, m_start( start )
 	, m_end( end )
 {
-	float m_height = m_end.z - m_start.z;
+	m_height = m_end.z - m_start.z;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, radius, m_color, AABB2::ZERO_TO_ONE, numSlices );

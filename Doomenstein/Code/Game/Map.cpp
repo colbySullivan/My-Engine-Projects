@@ -133,14 +133,14 @@ void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 void Map::AddActors()
 {
 	m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	//m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	//m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
 
-	Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
-	projectile->m_controlledByPlayer = true;
-	projectile->m_actorType = PROJECTILE;
-	projectile->m_canBePushed = true;
-	m_actorVector.push_back( projectile );
+	//Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
+	//projectile->m_controlledByPlayer = true;
+	//projectile->m_actorType = PROJECTILE;
+	//projectile->m_canBePushed = true;
+	//m_actorVector.push_back( projectile );
 }
 
 void Map::CreateBuffers()
@@ -307,6 +307,10 @@ AABB2 Map::GetTileBounds( IntVec2 const& tileCoords ) const
 //-----------------------------------------------------------------------------------------------
 bool Map::IsTileSolidAtTileCoords( IntVec2 tileCoords ) const
 {
+	if ( m_tiles.empty() )
+	{
+		return false;
+	}
 	if ( tileCoords.x < 0 || tileCoords.x >= m_dimensions.x ||
 		tileCoords.y < 0 || tileCoords.y >= m_dimensions.y )
 	{
@@ -345,7 +349,7 @@ RaycastResult3D Map::RaycastAll( const Vec3& start, const Vec3& direction, float
 	closest.m_impactDist = 9999999.f;
 	closest.m_impactPos = start + ( direction * distance );
 
-	RaycastResult3D xyResult = RaycastWorldXY( start, direction, distance );
+	/*RaycastResult3D xyResult = RaycastWorldXY( start, direction, distance );
 	if ( xyResult.m_didImpact && xyResult.m_impactDist < closest.m_impactDist )
 	{
 		closest = xyResult;
@@ -355,7 +359,7 @@ RaycastResult3D Map::RaycastAll( const Vec3& start, const Vec3& direction, float
 	if ( zResult.m_didImpact && zResult.m_impactDist < closest.m_impactDist )
 	{
 		closest = zResult;
-	}
+	}*/
 
 	RaycastResult3D actorResult = RaycastWorldActors( start, direction, distance, owner );
 	if ( actorResult.m_didImpact && actorResult.m_impactDist < closest.m_impactDist )
@@ -481,29 +485,29 @@ RaycastResult3D Map::RaycastWorldZ( const Vec3& start, const Vec3& direction, fl
 }
 
 //-----------------------------------------------------------------------------------------------
-RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner /*= nullptr */ ) const
+RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner ) const
 {
-	RaycastResult3D actorRayResult;
-	//Vec2 ownerPos = Vec2( owner->m_position.x, owner->m_position.y );
-	Vec2 startPosXY = Vec2( start.x, start.y );
-	Vec2 directionNormalXY = Vec2( direction.x, direction.y ).GetNormalized();
-	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	RaycastResult3D closestResult;
+	closestResult.m_impactDist = distance;
+
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
-		if ( m_actorVector[actorIndex] != owner )
+		//Actor* otherActor = m_actorVector[actorIndex];
+		Actor* otherActor = m_actorVector[0];
+		if ( otherActor == owner ) continue;
+
+		Vec3 otherActorEnd = otherActor->m_position;
+		otherActorEnd.z += otherActor->m_height;
+
+		RaycastResult3D currentActorHit = RaycastVsCylinder( start, direction.GetNormalized(), distance, otherActor->m_position, otherActorEnd, otherActor->m_radius );
+
+		if ( currentActorHit.m_didImpact && currentActorHit.m_impactDist < closestResult.m_impactDist )
 		{
-			Actor* otherActor = m_actorVector[actorIndex];
-			Vec2 otherActorPos = Vec2( otherActor->m_position.x, otherActor->m_position.y );
-			if ( IsPointInsideDisc2D( startPosXY, otherActorPos, otherActor->m_radius ) )
-			{
-				actorRayResult.m_didImpact = true;
-				actorRayResult.m_impactDist = 0.f;
-				actorRayResult.m_impactNormal = -direction;
-				actorRayResult.m_impactPos = start;
-				return actorRayResult;
-			}
-			//RaycastVsDisc2D(startPosXY, directionNormalXY, distance, otherActorPos, otherActor->m_radius)
+			closestResult = currentActorHit;
 		}
 	}
+
+	return closestResult;
 }
 
 void Map::SetLighting() const
