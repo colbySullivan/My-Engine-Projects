@@ -789,7 +789,7 @@ RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist,
 	}
 
 	// Get max of min for intersect T
-	float tEnter = fmax( tSideRange.m_min, tCylRange.m_min );
+	float tEnter = fmaxf( tSideRange.m_min, tCylRange.m_min );
 	float tExit = fminf( tSideRange.m_max, tCylRange.m_max );
 
 	if ( tEnter > 1.f || tExit < 0.f )

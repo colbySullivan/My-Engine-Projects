@@ -133,14 +133,14 @@ void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 void Map::AddActors()
 {
 	m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	//m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	//m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
 
-	//Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
-	//projectile->m_controlledByPlayer = true;
-	//projectile->m_actorType = PROJECTILE;
-	//projectile->m_canBePushed = true;
-	//m_actorVector.push_back( projectile );
+	Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
+	projectile->m_controlledByPlayer = true;
+	projectile->m_actorType = PROJECTILE;
+	projectile->m_canBePushed = true;
+	m_actorVector.push_back( projectile );
 }
 
 void Map::CreateBuffers()
@@ -349,7 +349,7 @@ RaycastResult3D Map::RaycastAll( const Vec3& start, const Vec3& direction, float
 	closest.m_impactDist = 9999999.f;
 	closest.m_impactPos = start + ( direction * distance );
 
-	/*RaycastResult3D xyResult = RaycastWorldXY( start, direction, distance );
+	RaycastResult3D xyResult = RaycastWorldXY( start, direction, distance );
 	if ( xyResult.m_didImpact && xyResult.m_impactDist < closest.m_impactDist )
 	{
 		closest = xyResult;
@@ -359,7 +359,7 @@ RaycastResult3D Map::RaycastAll( const Vec3& start, const Vec3& direction, float
 	if ( zResult.m_didImpact && zResult.m_impactDist < closest.m_impactDist )
 	{
 		closest = zResult;
-	}*/
+	}
 
 	RaycastResult3D actorResult = RaycastWorldActors( start, direction, distance, owner );
 	if ( actorResult.m_didImpact && actorResult.m_impactDist < closest.m_impactDist )
@@ -405,8 +405,8 @@ RaycastResult3D Map::RaycastWorldXY( const Vec3& start, const Vec3& direction, f
 		yImpactSurfaceNormal = Vec3( 0.f, 1.f, 0.f );
 	}
 
-	float xAtFirstXCrossing = tileX + ( tileStepDirectionX + 1 ) / 2;
-	float yAtFirstYCrossing = tileY + ( tileStepDirectionY + 1 ) / 2;
+	float xAtFirstXCrossing = (float)tileX + (float)( tileStepDirectionX + 1 ) / 2;
+	float yAtFirstYCrossing = (float)tileY + (float)( tileStepDirectionY + 1 ) / 2;
 
 	float xDistToFirstXCrossing = xAtFirstXCrossing - start.x;
 	float yDistToFirstYCrossing = yAtFirstYCrossing - start.y;
@@ -492,8 +492,7 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
-		//Actor* otherActor = m_actorVector[actorIndex];
-		Actor* otherActor = m_actorVector[0];
+		Actor* otherActor = m_actorVector[actorIndex];
 		if ( otherActor == owner ) continue;
 
 		Vec3 otherActorEnd = otherActor->m_position;
