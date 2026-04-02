@@ -569,6 +569,10 @@ RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 		return result; // Too early; disc is before ray start
 	}
 
+	float adjustmentDistance = sqrtf( ( discRadius * discRadius ) - ( SCj * SCj ) );
+	float impactDist = SCi - adjustmentDistance;
+	result.m_exitDist = SCi + adjustmentDistance;
+
 	if ( IsPointInsideDisc2D( startPos, discCenter, discRadius ) )
 	{
 		// Hit started inside the disc
@@ -577,11 +581,7 @@ RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 		result.m_impactPos = startPos;
 		result.m_impactNormal = -fwdNormal;
 		return result;
-	}	
-
-	float adjustmentDistance = sqrtf( ( discRadius * discRadius ) - ( SCj * SCj ) );
-	float impactDist = SCi - adjustmentDistance;
-	result.m_exitDist = SCi + adjustmentDistance;
+	}
 
 	if ( impactDist >= maxDist )
 	{
@@ -753,31 +753,7 @@ RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist,
 	RaycastResult3D result;
 	fwdNormal = fwdNormal.GetNormalized();
 
-	// Ray starts inside cylinder
-	Vec2 startPosXY( startPos.x, startPos.y );
 	Vec2 cylPosXY( cylinderStart.x, cylinderStart.y );
-	if ( IsPointInsideDisc2D( startPosXY, cylPosXY, radius ) )
-	{
-		result.m_didImpact = true;
-		result.m_impactDist = 0.f;
-		result.m_impactNormal = -fwdNormal;
-		result.m_impactPos = startPos;
-		return result;
-	}
-
-	//// Ray intersects on the Z axis
-	//float startZ = startPos.z;
-	//float endZ   = startPos.z + ( fwdNormal.z * maxDist );
-
-
-
-
-	//FloatRange rayZRange( fminf( startZ, endZ ), fmaxf( startZ, endZ ) );
-	//FloatRange cylZRange( fminf( cylinderStart.z, cylinderEnd.z ), fmaxf( cylinderStart.z, cylinderEnd.z ) );
-	//if ( !rayZRange.IsOverlappingWith( cylZRange ) )
-	//{
-	//	return result;
-	//}
 
 	// Ray intersects on the XY plane
 	Vec2 rayFwd2D( fwdNormal.x, fwdNormal.y );
@@ -787,24 +763,12 @@ RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist,
 	Vec2 rayEnd2D = Vec2( endX, endY );
 	float rayLength = ( rayEnd2D -  rayStart2D).GetLength();
 	rayFwd2D = rayFwd2D.GetNormalized();
-
-	//Vec3 vector3D = startPos + fwdNormal * maxDist;
-	//float dist2d = vector3D.GetLengthXY();
-
-
-
-	RaycastResult2D hit2D = RaycastVsDisc2D( startPosXY, rayFwd2D, rayLength, cylPosXY, radius );
+	RaycastResult2D hit2D = RaycastVsDisc2D( rayStart2D, rayFwd2D, rayLength, cylPosXY, radius );
 
 	if ( !hit2D.m_didImpact )
 	{
 		return result;
 	}
-
-	// Ray intersects on Z and XY within range
-
-
-
-
 
 	float tDiscEnter = hit2D.m_impactDist / rayLength;
 	float tDiscExit = hit2D.m_exitDist / rayLength;
@@ -818,6 +782,7 @@ RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist,
 
 	FloatRange tCylRange = FloatRange( fminf( tAtMinZ, tAtMaxZ ), fmaxf( tAtMinZ, tAtMaxZ ) );
 
+	// Ray intersects on Z and XY within range
 	if ( !tSideRange.IsOverlappingWith( tCylRange ) )
 	{
 		return result;
