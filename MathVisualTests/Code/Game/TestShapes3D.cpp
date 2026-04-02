@@ -54,6 +54,7 @@ void TestShapes3D::Render() const
 	DebugRenderWorld( *m_player->m_worldCamera );
 
 	RenderTestShapes();
+	RaycastTestShapes();
 
 	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
@@ -203,4 +204,25 @@ bool TestShapes3D::UpdateShapesOverlapWithAABB3( TestShape3D* shape )
 		}
 	}
 	return false;
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::RaycastTestShapes() const
+{
+	Vec3 playerPosition = m_player->m_position;
+	Mat44 rotationMatrix = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+	Vec3 forwardNormal = rotationMatrix.GetIBasis3D().GetNormalized();
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	{
+		TestShape3D* shape = m_testShapes[shapeIndex];
+		if ( shape != nullptr )
+		{
+			RaycastResult3D result = shape->RaycastTestShape( playerPosition, forwardNormal, 10.f );
+			if ( result.m_didImpact )
+			{
+				DebugAddWorldSphere( result.m_impactPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ));
+				DebugAddWorldCylinder( result.m_impactPos, playerPosition, 0.001f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+			}
+		}
+	}
 }

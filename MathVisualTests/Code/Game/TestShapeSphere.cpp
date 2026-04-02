@@ -38,6 +38,13 @@ void TestShapeSphere::RenderWithTexture( Texture* texture ) const
 }
 
 //------------------------------------------------------------------------------
+RaycastResult3D TestShapeSphere::RaycastTestShape( Vec3 startPos, Vec3 forwardNormal, float maxDistance ) const
+{
+	RaycastResult3D result;
+	return result;
+}
+
+//------------------------------------------------------------------------------
 bool TestShapeSphere::DoesSphereOverlap( Vec3 sphereCenter, float radius ) const
 {
 	return DoSpheresOverlap( m_center, m_radius, sphereCenter, radius );

@@ -37,4 +37,5 @@ private:
 	bool UpdateShapesOverlapWithSphere( TestShape3D* shape );
 	bool UpdateShapesOverlapWithCylinder( TestShape3D* shape );
 	bool UpdateShapesOverlapWithAABB3( TestShape3D* shape );
+	void RaycastTestShapes() const;
 };

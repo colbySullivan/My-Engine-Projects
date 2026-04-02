@@ -36,6 +36,7 @@ App::App()
 
 App::~App()
 {
+	DebugRenderSystemShutdown();
 	delete m_game;
 	m_game = nullptr;
 
@@ -51,8 +52,13 @@ void App::RunFrame()
 	m_lastFrameTime = timeNow;
 
 	g_engine->BeginFrame();
-	Update(deltaSeconds);
+	
+	Update(g_engine->m_systemClock->GetDeltaSeconds());
 	Render();
+	if ( g_gameMode == GAMEMODE_TESTSHAPES_3D )
+	{
+		DebugRenderEndFrame();
+	}
 	g_engine->EndFrame();
 }
 
@@ -91,8 +97,8 @@ void App::Update( float deltaSeconds )
 		m_game->Startup();
 		return;
 	}
-
 	m_game->Update( deltaSeconds );
+	
 }
 
 Game* App::CreateNewGameOfType( GameType type )

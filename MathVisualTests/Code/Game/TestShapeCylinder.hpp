@@ -3,6 +3,7 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/AABB2.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include <vector>
 
 class TestShapeCylinder : public TestShape3D
@@ -14,13 +15,14 @@ public:
 	void Render() const override;
 	void RenderWithTexture( Texture* texture ) const override;
 
+	RaycastResult3D RaycastTestShape( Vec3 startPos, Vec3 forwardNormal, float maxDistance ) const override;
 	bool DoesSphereOverlap( Vec3 sphereCenter, float radius ) const override;
 	bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const override;
 	bool DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const override;
 
 	float m_radius;
 	Vec3 m_center;
-	FloatRange m_zRange;
+	FloatRange m_zRange = FloatRange(0.f, 1.0f);
 
 	std::vector<Vertex> m_cylinderVerts;
 };

@@ -16,6 +16,7 @@ public:
 	void Render() const override;
 	void RenderWithTexture( Texture* texture ) const override;
 
+	RaycastResult3D RaycastTestShape( Vec3 startPos, Vec3 forwardNormal, float maxDistance ) const override;
 	bool DoesSphereOverlap( Vec3 sphereCenter, float radius ) const override;
 	bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const override;
 	bool DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const override;
