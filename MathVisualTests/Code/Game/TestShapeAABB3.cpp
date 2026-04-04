@@ -51,12 +51,17 @@ bool TestShapeAABB3::DoesSphereOverlap( Vec3 sphereCenter, float radius ) const
 //------------------------------------------------------------------------------
 bool TestShapeAABB3::DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const
 {
-	return false; // #todo Implement this function
+	return DoAABB3sCylinderOverlap( m_bounds.m_mins, m_bounds.m_maxs, cylinderCenter, cylinderRadius, cylinderZRange );
 }
 
 //------------------------------------------------------------------------------
 bool TestShapeAABB3::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 {
-	return false; // #todo Implement this function
+	return DoAABB3sOverlap( m_bounds.m_mins, m_bounds.m_maxs, aabbMins, aabbMaxs );
+}
+
+Vec3 TestShapeAABB3::GetClosestPoint( Vec3 referencePos ) const
+{
+	return GetNearestPointOnAABB3( referencePos, m_bounds.m_mins, m_bounds.m_maxs );
 }
 

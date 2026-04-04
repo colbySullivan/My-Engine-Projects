@@ -40,8 +40,7 @@ void TestShapeSphere::RenderWithTexture( Texture* texture ) const
 //------------------------------------------------------------------------------
 RaycastResult3D TestShapeSphere::RaycastTestShape( Vec3 startPos, Vec3 forwardNormal, float maxDistance ) const
 {
-	RaycastResult3D result;
-	return result;
+	return RaycastVsSphere( startPos, forwardNormal, maxDistance, m_center, m_radius );
 }
 
 //------------------------------------------------------------------------------
@@ -60,5 +59,10 @@ bool TestShapeSphere::DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRa
 bool TestShapeSphere::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 {
 	return DoSphereABB3Overlap( m_center, m_radius, aabbMins, aabbMaxs );
+}
+
+Vec3 TestShapeSphere::GetClosestPoint( Vec3 referencePos ) const
+{
+	return GetNearestPointOnSphere( referencePos, m_center, m_radius );
 }
 

@@ -39,4 +39,5 @@ private:
 	bool UpdateShapesOverlapWithAABB3( TestShape3D* shape );
 	void RaycastTestShapes() const;
 	void RenderBasis() const;
+	void UpdateClosePoints();
 };

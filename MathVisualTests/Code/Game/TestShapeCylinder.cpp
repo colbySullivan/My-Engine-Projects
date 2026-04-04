@@ -57,6 +57,12 @@ bool TestShapeCylinder::DoesCylinderOverlap( Vec2 cylinderCenter, float cylinder
 //------------------------------------------------------------------------------
 bool TestShapeCylinder::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 {
-	return false; // #todo Implement this function
+	Vec2 cylinderCenter = Vec2( m_center.x, m_center.y );
+	return DoAABB3sCylinderOverlap( aabbMins, aabbMaxs, cylinderCenter, m_radius, m_zRange );
+}
+
+Vec3 TestShapeCylinder::GetClosestPoint( Vec3 referencePos ) const
+{
+	return Vec3(0.f,0.f,0.f);
 }
 

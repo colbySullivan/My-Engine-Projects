@@ -18,6 +18,7 @@ struct TestShape3D
 	virtual bool DoesSphereOverlap( Vec3 sphereCenter, float radius ) const = 0;
 	virtual bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const = 0;
 	virtual bool DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const = 0;
+	virtual Vec3 GetClosestPoint( Vec3 referencePos ) const = 0;
 
 
 	bool m_isOverlapping = false;

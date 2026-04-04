@@ -3,6 +3,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/OBB2.hpp"
 #include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #define _USE_MATH_DEFINES // Used for PI
 
 //-----------------------------------------------------------------------------------------------
@@ -85,6 +86,8 @@ bool    DoAABB2sOverlap( AABB2 const& alignedBoxA, AABB2 const& alignedBoxB );
 bool	DoCylindersOverlap( const Vec3& startA, const Vec3& endA, float radiusA, const Vec3& startB, const Vec3& endB, float radiusB );
 bool	DoSphereABB3Overlap( Vec3 const& sphereCenter, float sphereRadius, Vec3 const& boxMins, Vec3 const& boxMaxs );
 bool	DoSphereCylinderOverlap( Vec3 const& sphereCenter, float sphereRadius, const Vec3& start, const Vec3& end, float radius );
+bool	DoAABB3sOverlap( const Vec3& minsA, const Vec3& maxsA, const Vec3& minsB, const Vec3& maxsB );
+bool	DoAABB3sCylinderOverlap( const Vec3& minsA, const Vec3& maxsA, Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange );
 bool	IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius );
 bool	IsPointInsideOrientedSector2D( Vec2 const& point, Vec2 const& sectorTip, float sectorFwdDegrees, float sectorApertureDegrees, float sectorRadius );
 bool	IsPointInsideDirectedSector2D( Vec2 const& point, Vec2 const& sectorTip, Vec2 const& sectorFwdNormal, float sectorApertureDegrees, float sectorRadius );
@@ -112,6 +115,7 @@ RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 RaycastResult2D RaycastVsLine2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, Vec2 pointA, Vec2 pointB );
 RaycastResult2D RaycastVsAABB22D( Vec2 startPos, Vec2 fwdNormal, float maxDist, AABB2& box );
 RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist, Vec3 cylinderStart, Vec3 cylinderEnd, float radius );
+RaycastResult3D RaycastVsSphere( Vec3 startPos, Vec3 fwdNormal, float maxDist, Vec3 sphereCenter, float sphereRadius );
 
 //-----------------------------------------------------------------------------------------------
 Vec2    GetNearestPointOnAABB2D(Vec2 referencePos, AABB2 const& alignedBox);
@@ -120,6 +124,9 @@ Vec2    GetNearestPointOnInfiniteLine2D(Vec2 referencePos, Vec2 pointOnLine, Vec
 Vec2    GetNearestPointOnLineSegment2D(Vec2 referencePos, Vec2 start, Vec2 end);
 Vec2    GetNearestPointOnCapsule2D(Vec2 referencePos, Vec2 boneStart, Vec2 boneEnd, float radius);
 Vec2    GetNearestPointOnTriangle2D(Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2); // Counter-Clockwise (positive winding)
+Vec3    GetNearestPointOnSphere( Vec3 referencePos, Vec3 sphereCenter, float sphereRadius );
+Vec3	GetNearestPointOnCylinder( Vec3 referencePos, Vec3 cylinderStart, Vec3 cylinderEnd, float radius );
+Vec3	GetNearestPointOnAABB3( Vec3 referencePos, Vec3 boxMins, Vec3 boxMaxs );
 
 //-----------------------------------------------------------------------------------------------
 // Basic util functions

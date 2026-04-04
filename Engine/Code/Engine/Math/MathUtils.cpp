@@ -325,6 +325,26 @@ bool DoSphereCylinderOverlap( Vec3 const& sphereCenter, float sphereRadius, cons
 	return false;
 }
 
+//------------------------------------------------------------------------------
+bool DoAABB3sOverlap( const Vec3& minsA, const Vec3& maxsA, const Vec3& minsB, const Vec3& maxsB )
+{
+	if ( minsA.x >= maxsB.x || minsB.x >= maxsA.x ) return false;
+	if ( minsA.y >= maxsB.y || minsB.y >= maxsA.y ) return false;
+	if ( minsA.z >= maxsB.z || minsB.z >= maxsA.z ) return false;
+	return true;
+}
+
+//------------------------------------------------------------------------------
+bool DoAABB3sCylinderOverlap( const Vec3& minsA, const Vec3& maxsA, Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange )
+{
+	FloatRange rangeA( minsA.z, maxsA.z );
+	if ( rangeA.IsOverlappingWith( cylinderZRange ) )
+	{
+		Vec2 centerA( minsA.x + (maxsA.x - minsA.x) * 0.5f, minsA.y + (maxsA.y - minsA.y) * 0.5f );
+		return DoDiscsOverlap( centerA, GetDistance2D( Vec2(minsA.x, minsA.y), Vec2(maxsA.x, maxsA.y) ) * 0.5f, cylinderCenter, cylinderRadius );
+	}
+}
+
 bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius )
 {
 	Vec2 centerToPoint = discCenter - point;
@@ -550,6 +570,7 @@ RaycastResult2D RaycastVsDisc2D( Vec2 startPos, Vec2 fwdNormal, float maxDist, V
 	Vec2 j = fwdNormal.GetRotatedBy90Degrees();
 	Vec2 SC = discCenter - startPos;
 	float SCj = DotProduct2D( SC, j );
+
 	if ( SCj >= discRadius )
 	{
 		return result; // Too far to the left
@@ -815,6 +836,44 @@ RaycastResult3D RaycastVsCylinder( Vec3 startPos, Vec3 fwdNormal, float maxDist,
 	return result;
 }
 
+//------------------------------------------------------------------------------
+RaycastResult3D RaycastVsSphere( Vec3 startPos, Vec3 fwdNormal, float maxDist, Vec3 sphereCenter, float sphereRadius )
+{
+	Vec3 rayEndPoint = startPos + ( fwdNormal * maxDist );
+	Vec3 rayToCenter = sphereCenter - startPos;
+	Vec3 SCj = CrossProduct3D( rayToCenter, fwdNormal );
+
+	RaycastResult3D result;
+	if ( SCj.GetLength() >= sphereRadius )
+	{
+		return result; // Too far to the side
+	}
+
+	float SCi = DotProduct3D( rayToCenter, fwdNormal );
+	if ( SCi >= maxDist + sphereRadius )
+	{
+		return result; // Too late; sphere is after ray end
+	}
+
+	if ( SCi <= -sphereRadius )
+	{
+		return result; // Too early; sphere is before ray start
+	}
+
+	float adjustmentDistance = sqrtf( ( sphereRadius * sphereRadius ) - ( SCj.GetLengthSquared() ) );
+	float impactDist = SCi - adjustmentDistance;
+	if ( impactDist >= maxDist || impactDist <= 0.f )
+	{
+		return result; // Impact point is outside of ray segment
+	}
+
+	result.m_didImpact = true;
+	result.m_impactDist = impactDist;
+	result.m_impactPos = startPos + ( fwdNormal * result.m_impactDist );
+	result.m_impactNormal = ( result.m_impactPos - sphereCenter ).GetNormalized();
+	return result;
+}
+
 //-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnAABB2D( Vec2 referencePos, AABB2 const& alignedBox )
 {
@@ -961,6 +1020,28 @@ Vec2 GetNearestPointOnTriangle2D( Vec2 referencePos, Vec2 ccw0, Vec2 ccw1, Vec2 
 	}
 
 	return nearestCA;
+}
+
+//------------------------------------------------------------------------------
+Vec3 GetNearestPointOnSphere( Vec3 referencePos, Vec3 sphereCenter, float sphereRadius )
+{
+	Vec3 centerToPoint = referencePos - sphereCenter;
+	return sphereCenter + ( centerToPoint.GetNormalized() * sphereRadius );
+}
+
+//------------------------------------------------------------------------------
+Vec3 GetNearestPointOnCylinder( Vec3 referencePos, Vec3 cylinderStart, Vec3 cylinderEnd, float radius )
+{
+	return Vec3( 0.f, 0.f, 0.f );
+}
+
+//------------------------------------------------------------------------------
+Vec3 GetNearestPointOnAABB3( Vec3 referencePos, Vec3 boxMins, Vec3 boxMaxs )
+{
+	float x = GetClamped( referencePos.x, boxMins.x, boxMaxs.x );
+	float y = GetClamped( referencePos.y, boxMins.y, boxMaxs.y );
+	float z = GetClamped( referencePos.z, boxMins.z, boxMaxs.z );
+	return Vec3( x, y, z );
 }
 
 //-----------------------------------------------------------------------------------------------

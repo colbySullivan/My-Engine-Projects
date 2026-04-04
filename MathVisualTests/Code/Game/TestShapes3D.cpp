@@ -40,6 +40,7 @@ void TestShapes3D::Update( float deltaSeconds )
 	m_player->Update( ( float )g_engine->m_systemClock->GetDeltaSeconds() );
 	UpdateSpawnNewTestShapes();
 	UpdateShapesOverlap();
+	UpdateClosePoints();
 	Game::UpdateKeyboardInput();
 }
 
@@ -242,4 +243,20 @@ void TestShapes3D::RenderBasis() const
 	worldBasisTransform.SetTranslation3D( indicatorPos );
 
 	DebugAddBasis( worldBasisTransform, 0.f, 2.0f, 0.1f );
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::UpdateClosePoints()
+{
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	{
+		TestShape3D* shape = m_testShapes[shapeIndex];
+		if ( shape != nullptr )
+		{
+			Vec3 playerPosition = m_player->m_position;
+			Vec3 closestPoint = shape->GetClosestPoint( playerPosition );
+			DebugAddWorldSphere( closestPoint, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
+			//DebugAddWorldCylinder( closestPoint, playerPosition, 0.001f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ) );
+		}
+	}
 }
