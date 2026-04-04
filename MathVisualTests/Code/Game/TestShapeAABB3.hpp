@@ -12,7 +12,7 @@ public:
 	TestShapeAABB3( const AABB3& bounds, const Rgba8& color = Rgba8( 255, 255, 255 ), const AABB2& UVs = AABB2::ZERO_TO_ONE);
 	~TestShapeAABB3();
 
-
+	void Update() override;
 	void Render() const override;
 	void RenderWithTexture( Texture* texture ) const override;
 
@@ -23,6 +23,8 @@ public:
 	Vec3 GetClosestPoint( Vec3 referencePos ) const override;
 
 	AABB3 m_bounds;
+	Rgba8 m_color;
+	const AABB2& m_UVs;
 
 	std::vector<Vertex>	m_aabb3Verts;
 };

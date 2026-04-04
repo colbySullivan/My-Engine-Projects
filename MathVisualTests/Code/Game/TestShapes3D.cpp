@@ -39,10 +39,13 @@ void TestShapes3D::Shutdown()
 void TestShapes3D::Update( float deltaSeconds )
 {
 	m_player->Update( ( float )g_engine->m_systemClock->GetDeltaSeconds() );
+	UpdateShapes();
 	UpdateSpawnNewTestShapes();
 	UpdateShapesOverlap();
 	UpdateClosePoints();
+	RaycastTestShapes();
 	UpdateMoveRaycast();
+	UpdateMoveClosetShape();
 	Game::UpdateKeyboardInput();
 }
 
@@ -57,7 +60,6 @@ void TestShapes3D::Render() const
 	DebugRenderWorld( *m_player->m_worldCamera );
 
 	RenderTestShapes();
-	RaycastTestShapes();
 	RenderBasis();
 
 	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
@@ -93,9 +95,9 @@ void TestShapes3D::SpawnInitialTestShapes()
 	m_testShapes.push_back( sphereShape );
 	m_testShapeSpheres.push_back( sphereShape );
 
-	TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( Vec3( -10.f, -10.f, -10.f ), Vec3( 10.f, 10.f, 10.f ) ) );
-	m_testShapes.push_back( aabb3Shape );
-	m_testShapeAABB3.push_back( aabb3Shape );
+	//TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( Vec3( -10.f, -10.f, -10.f ), Vec3( 10.f, 10.f, 10.f ) ) );
+	//m_testShapes.push_back( aabb3Shape );
+	//m_testShapeAABB3.push_back( aabb3Shape );
 
 	TestShapeCylinder* cylinderShape = new TestShapeCylinder( startPos, endPos, 0.25f );
 	m_testShapes.push_back( cylinderShape );
@@ -211,8 +213,11 @@ bool TestShapes3D::UpdateShapesOverlapWithAABB3( TestShape3D* shape )
 }
 
 //------------------------------------------------------------------------------
-void TestShapes3D::RaycastTestShapes() const
+void TestShapes3D::RaycastTestShapes()
 {
+	m_closestShape = nullptr;
+	float closestImpactDist = 999999.f;
+	RaycastResult3D shortestResult = RaycastResult3D();
 	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 	{
 		TestShape3D* shape = m_testShapes[shapeIndex];
@@ -221,17 +226,32 @@ void TestShapes3D::RaycastTestShapes() const
 			RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, 10.f );
 			if ( result.m_didImpact )
 			{
-				DebugAddWorldSphere( result.m_impactPos, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ));
-				Vec3 raycastEndPos = result.m_impactPos + ( result.m_impactNormal * 1.0f );
-				DebugAddWorldArrow( result.m_impactPos, raycastEndPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
-				if ( !m_isRaycastMoveMode )	
+				if ( result.m_impactDist < closestImpactDist )
 				{
-					DebugAddWorldCylinder( result.m_impactPos, m_raycastStartPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+					if ( m_closestShape != nullptr )
+					{
+						m_closestShape->m_isClosestRaycast = false;
+					}
+					closestImpactDist = result.m_impactDist;
+					m_closestShape = shape;
+					shortestResult = result;
 				}
-				return; // #TODO : only show the shortest raycast hit
 			}
 		}
 	}
+	if ( m_closestShape != nullptr )
+	{
+		m_closestShape->m_isClosestRaycast = true;
+
+	}
+	DebugAddWorldSphere( shortestResult.m_impactPos, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	Vec3 raycastEndPos = shortestResult.m_impactPos + ( shortestResult.m_impactNormal * 1.0f );
+	DebugAddWorldArrow( shortestResult.m_impactPos, raycastEndPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
+	if ( !m_isRaycastMoveMode )
+	{
+		DebugAddWorldCylinder( shortestResult.m_impactPos, m_raycastStartPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+	}
+
 }
 
 //------------------------------------------------------------------------------
@@ -248,6 +268,53 @@ void TestShapes3D::RenderBasis() const
 	worldBasisTransform.SetTranslation3D( indicatorPos );
 
 	DebugAddBasis( worldBasisTransform, 0.f, 0.02f, 0.001f );
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::UpdateMoveClosetShape()
+{
+	if ( m_closestShape != nullptr && g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
+	{
+		Mat44 toWorld = m_player->GetModelToWorldTransform();
+		Vec3 forwardNormal = toWorld.GetIBasis3D().GetNormalized();
+		Vec3 newPos = m_player->m_position + ( forwardNormal * 0.5f );
+		if ( TestShapeSphere* sphereShape = dynamic_cast<TestShapeSphere*>( m_closestShape ) )
+		{
+			sphereShape->m_center = newPos;
+		}
+
+		else if ( TestShapeCylinder* cylinderShape = dynamic_cast<TestShapeCylinder*>( m_closestShape ) )
+		{
+			float halfHeight = 0.5f;
+			Vec3 upVector = Vec3::Z_AXIS;
+			Vec3 startPos = newPos - ( upVector * halfHeight );
+			Vec3 endPos = newPos + ( upVector * halfHeight );
+			cylinderShape->m_center = newPos;
+			cylinderShape->m_start = startPos;
+			cylinderShape->m_end = endPos;
+		}
+
+		else if ( TestShapeAABB3* aabb3Shape = dynamic_cast<TestShapeAABB3*>( m_closestShape ) )
+		{
+			Vec3 boundsHalfExtents = ( aabb3Shape->m_bounds.m_maxs - aabb3Shape->m_bounds.m_mins ) * 0.5f;
+			aabb3Shape->m_bounds.m_mins = newPos - boundsHalfExtents;
+			aabb3Shape->m_bounds.m_maxs = newPos + boundsHalfExtents;
+		}
+		
+	}
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::UpdateShapes()
+{
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	{
+		TestShape3D* shape = m_testShapes[shapeIndex];
+		if ( shape != nullptr )
+		{
+			shape->Update();
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

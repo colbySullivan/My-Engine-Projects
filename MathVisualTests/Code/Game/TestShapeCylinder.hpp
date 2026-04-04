@@ -11,6 +11,7 @@ class TestShapeCylinder : public TestShape3D
 public:
 	TestShapeCylinder( const Vec3& start, const Vec3& end, float radius, const Rgba8& color = Rgba8( 255, 255, 255 ), const AABB2& UVs = AABB2::ZERO_TO_ONE, int numSlices = 32);
 	~TestShapeCylinder();
+	void Update() override;
 
 	void Render() const override;
 	void RenderWithTexture( Texture* texture ) const override;
@@ -24,6 +25,11 @@ public:
 	float m_radius;
 	Vec3 m_center;
 	FloatRange m_zRange = FloatRange(0.f, 1.0f);
+	Vec3 m_start;  
+	Vec3 m_end;    
+	AABB2 m_UVs;   
+	Rgba8 m_color;
+	int m_numSlices;
 
 	std::vector<Vertex> m_cylinderVerts;
 };

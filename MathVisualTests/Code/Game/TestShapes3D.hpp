@@ -30,6 +30,7 @@ private:
 	Player* m_player = nullptr;
 	Vec3 m_raycastStartPos;
 	Vec3 m_savedForwardRaycastNormal;
+	TestShape3D* m_closestShape = nullptr;
 	bool m_isRaycastMoveMode = true;
 	std::vector<TestShape3D*> m_testShapes;
 	std::vector<TestShapeSphere*> m_testShapeSpheres;
@@ -42,6 +43,8 @@ private:
 	bool UpdateShapesOverlapWithAABB3( TestShape3D* shape );
 	void UpdateClosePoints();
 	void UpdateMoveRaycast();
-	void RaycastTestShapes() const;
+	void RaycastTestShapes();
 	void RenderBasis() const;
+	void UpdateMoveClosetShape();
+	void UpdateShapes();
 };

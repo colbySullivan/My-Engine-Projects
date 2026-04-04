@@ -4,13 +4,16 @@
 #include "Engine/Math/FloatRange.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/Timer.hpp"
 
 
 struct TestShape3D
 {
 	TestShape3D() = default;
 	virtual ~TestShape3D() = default;
+	virtual void Update() = 0;
 	virtual void IsOverlapped() const;
+	virtual void IsCasted() const;
 	virtual void Render() const = 0;
 	virtual void RenderWithTexture( Texture* texture ) const = 0;
 
@@ -22,5 +25,6 @@ struct TestShape3D
 
 
 	bool m_isOverlapping = false;
-
+	bool m_isClosestRaycast = false;
+	Timer* m_shapeBlinkTimer;
 };

@@ -11,7 +11,7 @@ class TestShapeSphere : public TestShape3D
 	public:
 	TestShapeSphere( Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color = Rgba8( 255, 255, 255 ) );
 	~TestShapeSphere();
-
+	void Update() override;
 	void Render() const override;
 	void RenderWithTexture( Texture* texture ) const override;
 	
@@ -23,6 +23,9 @@ class TestShapeSphere : public TestShape3D
 
 	float m_radius;
 	Vec3 m_center;
+	int m_numSlices;
+	int m_numStacks;
+	Rgba8 m_color;
 
 	std::vector<Vertex> m_sphereVerts;
 };

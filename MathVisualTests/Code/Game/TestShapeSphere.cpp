@@ -2,13 +2,19 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
 
 //------------------------------------------------------------------------------
 TestShapeSphere::TestShapeSphere( Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
 	: m_center( center )
 	, m_radius( radius )
+	, m_numSlices( numSlices )
+	, m_numStacks( numStacks )
+	, m_color( color )
 {
-	AddVertsForSphere3D( m_sphereVerts, m_center, m_radius, numSlices, numStacks, color );
+	AddVertsForSphere3D( m_sphereVerts, m_center, m_radius, m_numSlices, m_numStacks, m_color );
+	m_shapeBlinkTimer = new Timer( 0.5f );
+	m_shapeBlinkTimer->Start();
 }
 
 //------------------------------------------------------------------------------
@@ -18,9 +24,17 @@ TestShapeSphere::~TestShapeSphere()
 }
 
 //------------------------------------------------------------------------------
+void TestShapeSphere::Update()
+{
+	m_sphereVerts.clear();
+	AddVertsForSphere3D( m_sphereVerts, m_center, m_radius, m_numSlices, m_numStacks, m_color );
+}
+
+//------------------------------------------------------------------------------
 void TestShapeSphere::Render() const
 {
 	IsOverlapped();
+	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
@@ -31,6 +45,7 @@ void TestShapeSphere::Render() const
 void TestShapeSphere::RenderWithTexture( Texture* texture ) const
 {
 	IsOverlapped();
+	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( texture );

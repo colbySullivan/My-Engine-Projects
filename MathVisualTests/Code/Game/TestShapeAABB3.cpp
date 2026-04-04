@@ -6,8 +6,12 @@
 //------------------------------------------------------------------------------
 TestShapeAABB3::TestShapeAABB3( const AABB3& bounds, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ )
 	: m_bounds( bounds )
+	, m_color( color )
+	, m_UVs( UVs )
 {
-	AddVertsForAABB3D( m_aabb3Verts, m_bounds, color, UVs );
+	AddVertsForAABB3D( m_aabb3Verts, m_bounds, m_color, m_UVs );
+	m_shapeBlinkTimer = new Timer( 1.5f );
+	m_shapeBlinkTimer->Start();
 }
 
 //------------------------------------------------------------------------------
@@ -17,9 +21,17 @@ TestShapeAABB3::~TestShapeAABB3()
 }
 
 //------------------------------------------------------------------------------
+void TestShapeAABB3::Update()
+{
+	m_aabb3Verts.clear();
+	AddVertsForAABB3D( m_aabb3Verts, m_bounds, m_color, m_UVs );
+}
+
+//------------------------------------------------------------------------------
 void TestShapeAABB3::Render() const
 {
 	IsOverlapped();
+	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
@@ -29,6 +41,7 @@ void TestShapeAABB3::Render() const
 void TestShapeAABB3::RenderWithTexture( Texture* texture ) const
 {
 	IsOverlapped();
+	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( texture );

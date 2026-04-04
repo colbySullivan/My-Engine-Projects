@@ -6,10 +6,15 @@
 TestShapeCylinder::TestShapeCylinder( const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
 	: m_radius( radius )
 	, m_center( ( start + end ) * 0.5f )
+	, m_start( start )
+	, m_end( end )
+	, m_color( color )
+	, m_UVs( UVs )
+	, m_numSlices( numSlices )
 {
-	m_zRange.m_min = fminf( start.z, end.z );
-	m_zRange.m_max = fmaxf( start.z, end.z );
-	AddVertsForCylinder3D( m_cylinderVerts, start, end, radius, color, UVs, numSlices );
+	AddVertsForCylinder3D( m_cylinderVerts, m_start, m_end, m_radius, m_color, m_UVs, m_numSlices );
+	m_shapeBlinkTimer = new Timer( 0.5f );
+	m_shapeBlinkTimer->Start();
 }
 
 TestShapeCylinder::~TestShapeCylinder()
@@ -17,9 +22,19 @@ TestShapeCylinder::~TestShapeCylinder()
 
 }
 
+//------------------------------------------------------------------------------
+void TestShapeCylinder::Update()
+{
+	m_cylinderVerts.clear();
+	m_zRange.m_min = fminf( m_start.z, m_end.z );
+	m_zRange.m_max = fmaxf( m_start.z, m_end.z );
+	AddVertsForCylinder3D( m_cylinderVerts, m_start, m_end, m_radius, m_color, m_UVs, m_numSlices );
+}
+
 void TestShapeCylinder::Render() const
 {
 	IsOverlapped();
+	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( nullptr );
@@ -29,6 +44,7 @@ void TestShapeCylinder::Render() const
 void TestShapeCylinder::RenderWithTexture( Texture* texture ) const
 {
 	IsOverlapped();
+	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindTexture( texture );
