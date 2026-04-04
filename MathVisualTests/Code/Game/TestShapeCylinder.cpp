@@ -63,6 +63,6 @@ bool TestShapeCylinder::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 
 Vec3 TestShapeCylinder::GetClosestPoint( Vec3 referencePos ) const
 {
-	return Vec3(0.f,0.f,0.f);
+	return GetNearestPointOnCylinder( referencePos, Vec3( m_center.x, m_center.y, m_zRange.m_min ), Vec3( m_center.x, m_center.y, m_zRange.m_max ), m_radius );
 }
 

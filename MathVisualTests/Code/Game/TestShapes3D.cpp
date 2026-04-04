@@ -228,6 +228,7 @@ void TestShapes3D::RaycastTestShapes() const
 				{
 					DebugAddWorldCylinder( result.m_impactPos, m_raycastStartPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
 				}
+				return; // #TODO : only show the shortest raycast hit
 			}
 		}
 	}

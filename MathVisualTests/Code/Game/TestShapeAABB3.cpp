@@ -38,8 +38,7 @@ void TestShapeAABB3::RenderWithTexture( Texture* texture ) const
 //------------------------------------------------------------------------------
 RaycastResult3D TestShapeAABB3::RaycastTestShape( Vec3 startPos, Vec3 forwardNormal, float maxDistance ) const
 {
-	RaycastResult3D result;
-	return result;
+	return RaycastVsAABB3( startPos, forwardNormal, maxDistance, m_bounds.m_mins, m_bounds.m_maxs );
 }
 
 //------------------------------------------------------------------------------

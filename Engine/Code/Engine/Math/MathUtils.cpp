@@ -343,6 +343,7 @@ bool DoAABB3sCylinderOverlap( const Vec3& minsA, const Vec3& maxsA, Vec2 cylinde
 		Vec2 centerA( minsA.x + (maxsA.x - minsA.x) * 0.5f, minsA.y + (maxsA.y - minsA.y) * 0.5f );
 		return DoDiscsOverlap( centerA, GetDistance2D( Vec2(minsA.x, minsA.y), Vec2(maxsA.x, maxsA.y) ) * 0.5f, cylinderCenter, cylinderRadius );
 	}
+	return false;
 }
 
 bool IsPointInsideDisc2D( Vec2 const& point, Vec2 const& discCenter, float discRadius )
@@ -560,6 +561,14 @@ bool IsPointInsideTriangle2D( Vec2 point, Vec2 ccw0, Vec2 ccw1, Vec2 ccw2 )
 
 	return ( aSection <= 0 && bSection <= 0 && cSection <= 0  );
 
+}
+
+//------------------------------------------------------------------------------
+bool IsPointInsideAABB3( Vec3 startPos, Vec3 boxMins, Vec3 boxMaxs )
+{
+	return ( startPos.x >= boxMins.x && startPos.x <= boxMaxs.x &&
+			 startPos.y >= boxMins.y && startPos.y <= boxMaxs.y &&
+			 startPos.z >= boxMins.z && startPos.z <= boxMaxs.z );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -874,6 +883,120 @@ RaycastResult3D RaycastVsSphere( Vec3 startPos, Vec3 fwdNormal, float maxDist, V
 	return result;
 }
 
+//------------------------------------------------------------------------------
+RaycastResult3D RaycastVsAABB3( Vec3 startPos, Vec3 fwdNormal, float maxDist, Vec3 boxMins, Vec3 boxMaxs )
+{
+	RaycastResult3D result;
+	if ( IsPointInsideAABB3( startPos, boxMins, boxMaxs ) )
+	{
+		result.m_didImpact = true;
+		result.m_impactDist = 0.f;
+		result.m_impactPos = startPos;
+		result.m_impactNormal = -fwdNormal;
+		return result;
+	}
+	Vec3 rayEndPoint = startPos + ( fwdNormal * maxDist );
+	Vec3 rayMins = Vec3( GetFloatMin( rayEndPoint.x, startPos.x ), GetFloatMin( rayEndPoint.y, startPos.y ), GetFloatMin( rayEndPoint.z, startPos.z ) );
+	Vec3 rayMaxs = Vec3( GetFloatMax( rayEndPoint.x, startPos.x ), GetFloatMax( rayEndPoint.y, startPos.y ), GetFloatMax( rayEndPoint.z, startPos.z ) );
+	if ( !DoAABB3sOverlap( rayMins, rayMaxs, boxMins, boxMaxs ) )
+	{
+		return result;
+	}
+	float xLength = rayEndPoint.x - startPos.x;
+	float tMinX = ( boxMins.x - startPos.x ) / xLength;
+	float tMaxX = ( boxMaxs.x - startPos.x ) / xLength;
+	float yLength = rayEndPoint.y - startPos.y;
+	float tMinY = ( boxMins.y - startPos.y ) / yLength;
+	float tMaxY = ( boxMaxs.y - startPos.y ) / yLength;
+	float zLength = rayEndPoint.z - startPos.z;
+	float tMinZ = ( boxMins.z - startPos.z ) / zLength;
+	float tMaxZ = ( boxMaxs.z - startPos.z ) / zLength;
+	if ( tMinX > tMaxX )
+	{
+		float temp = tMinX;
+		tMinX = tMaxX;
+		tMaxX = temp;
+	}
+	if ( tMinY > tMaxY )
+	{
+		float temp = tMinY;
+		tMinY = tMaxY;
+		tMaxY = temp;
+	}
+	if ( tMinZ > tMaxZ )
+	{
+		float temp = tMinZ;
+		tMinZ = tMaxZ;
+		tMaxZ = temp;
+	}
+	FloatRange xRange = FloatRange( tMinX, tMaxX );
+	FloatRange yRange = FloatRange( tMinY, tMaxY );
+	FloatRange zRange = FloatRange( tMinZ, tMaxZ );
+	if ( !xRange.IsOverlappingWith( yRange ) || !xRange.IsOverlappingWith( zRange ) || !yRange.IsOverlappingWith( zRange ) )
+	{
+		return result;
+	}
+	float tEnter = tMinX;
+	if ( tMinY > tEnter )
+	{
+		tEnter = tMinY;
+	}
+	if ( tMinZ > tEnter )
+	{
+		tEnter = tMinZ;
+	}
+	float tExit = tMaxX;
+	if ( tMaxY < tExit )
+	{
+		tExit = tMaxY;
+	}
+	if ( tMaxZ < tExit )
+	{
+		tExit = tMaxZ;
+	}
+	if ( tEnter > tExit || tEnter >= 1.f || tExit <= 0.f )
+	{
+		return result;
+	}
+	result.m_didImpact = true;
+	result.m_impactDist = tEnter * maxDist;
+	result.m_impactPos = startPos + ( fwdNormal * result.m_impactDist );
+	if ( tMinX > tMinY && tMinX > tMinZ )
+	{
+		if ( fwdNormal.x < 0.f )
+		{
+			result.m_impactNormal = Vec3( 1.f, 0.f, 0.f );
+		}
+		else
+		{
+			result.m_impactNormal = Vec3( -1.f, 0.f, 0.f );
+		}
+	}
+	else if ( tMinY > tMinZ )
+	{
+		if ( fwdNormal.y < 0.f )
+		{
+			result.m_impactNormal = Vec3( 0.f, 1.f, 0.f );
+		}
+		else
+		{
+			result.m_impactNormal = Vec3( 0.f, -1.f, 0.f );
+		}
+	}
+	else
+	{
+		if ( fwdNormal.z < 0.f )
+		{
+			result.m_impactNormal = Vec3( 0.f, 0.f, 1.f );
+		}
+		else
+		{
+			result.m_impactNormal = Vec3( 0.f, 0.f, -1.f );
+		}
+	}
+	return result;
+}
+
 //-----------------------------------------------------------------------------------------------
 Vec2 GetNearestPointOnAABB2D( Vec2 referencePos, AABB2 const& alignedBox )
 {
@@ -1032,7 +1155,16 @@ Vec3 GetNearestPointOnSphere( Vec3 referencePos, Vec3 sphereCenter, float sphere
 //------------------------------------------------------------------------------
 Vec3 GetNearestPointOnCylinder( Vec3 referencePos, Vec3 cylinderStart, Vec3 cylinderEnd, float radius )
 {
-	return Vec3( 0.f, 0.f, 0.f );
+	FloatRange zRange( cylinderStart.z, cylinderEnd.z );
+	FloatRange pointZRange( referencePos.z, referencePos.z );
+	Vec2 pointXY = Vec2( referencePos.x, referencePos.y );
+	Vec2 cylinderXY = Vec2( cylinderStart.x, cylinderStart.y );
+	Vec2 nearestOnDisc = GetNearestPointOnDisc2D( pointXY, cylinderXY, radius );
+	if ( zRange.IsOverlappingWith( pointZRange ) )
+	{
+		return Vec3( nearestOnDisc.x, nearestOnDisc.y, referencePos.z );
+	}
+	return Vec3( nearestOnDisc.x, nearestOnDisc.y, GetClamped( referencePos.z, cylinderStart.z, cylinderEnd.z ) );
 }
 
 //------------------------------------------------------------------------------
