@@ -55,6 +55,7 @@ void TestShapes3D::Render() const
 
 	RenderTestShapes();
 	RaycastTestShapes();
+	RenderBasis();
 
 	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
@@ -225,4 +226,20 @@ void TestShapes3D::RaycastTestShapes() const
 			}
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::RenderBasis() const
+{
+	Mat44 toWorld = m_player->GetModelToWorldTransform();
+	Vec3 playerPos = toWorld.GetTranslation3D();
+	Vec3 playerForward = toWorld.GetIBasis3D().GetNormalized();
+
+	float offsetDistance = 30.0f;
+	Vec3 indicatorPos = playerPos + playerForward * offsetDistance;
+
+	Mat44 worldBasisTransform;
+	worldBasisTransform.SetTranslation3D( indicatorPos );
+
+	DebugAddBasis( worldBasisTransform, 0.f, 2.0f, 0.1f );
 }
