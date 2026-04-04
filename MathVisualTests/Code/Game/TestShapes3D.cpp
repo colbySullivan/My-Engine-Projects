@@ -11,6 +11,7 @@ TestShapes3D::TestShapes3D( App* app )
 {
 	m_player = new Player( this );
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f );
+	m_raycastStartPos = m_player->m_position;
 	m_modelTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
 }
 
@@ -41,6 +42,7 @@ void TestShapes3D::Update( float deltaSeconds )
 	UpdateSpawnNewTestShapes();
 	UpdateShapesOverlap();
 	UpdateClosePoints();
+	UpdateMoveRaycast();
 	Game::UpdateKeyboardInput();
 }
 
@@ -211,19 +213,21 @@ bool TestShapes3D::UpdateShapesOverlapWithAABB3( TestShape3D* shape )
 //------------------------------------------------------------------------------
 void TestShapes3D::RaycastTestShapes() const
 {
-	Vec3 playerPosition = m_player->m_position;
-	Mat44 rotationMatrix = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
-	Vec3 forwardNormal = rotationMatrix.GetIBasis3D().GetNormalized();
 	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 	{
 		TestShape3D* shape = m_testShapes[shapeIndex];
 		if ( shape != nullptr )
 		{
-			RaycastResult3D result = shape->RaycastTestShape( playerPosition, forwardNormal, 10.f );
+			RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, 10.f );
 			if ( result.m_didImpact )
 			{
-				DebugAddWorldSphere( result.m_impactPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ));
-				DebugAddWorldCylinder( result.m_impactPos, playerPosition, 0.001f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+				DebugAddWorldSphere( result.m_impactPos, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ));
+				Vec3 raycastEndPos = result.m_impactPos + ( result.m_impactNormal * 1.0f );
+				DebugAddWorldArrow( result.m_impactPos, raycastEndPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
+				if ( !m_isRaycastMoveMode )	
+				{
+					DebugAddWorldCylinder( result.m_impactPos, m_raycastStartPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+				}
 			}
 		}
 	}
@@ -236,13 +240,13 @@ void TestShapes3D::RenderBasis() const
 	Vec3 playerPos = toWorld.GetTranslation3D();
 	Vec3 playerForward = toWorld.GetIBasis3D().GetNormalized();
 
-	float offsetDistance = 30.0f;
+	float offsetDistance = 0.5f;
 	Vec3 indicatorPos = playerPos + playerForward * offsetDistance;
 
 	Mat44 worldBasisTransform;
 	worldBasisTransform.SetTranslation3D( indicatorPos );
 
-	DebugAddBasis( worldBasisTransform, 0.f, 2.0f, 0.1f );
+	DebugAddBasis( worldBasisTransform, 0.f, 0.02f, 0.001f );
 }
 
 //------------------------------------------------------------------------------
@@ -256,7 +260,22 @@ void TestShapes3D::UpdateClosePoints()
 			Vec3 playerPosition = m_player->m_position;
 			Vec3 closestPoint = shape->GetClosestPoint( playerPosition );
 			DebugAddWorldSphere( closestPoint, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
-			//DebugAddWorldCylinder( closestPoint, playerPosition, 0.001f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ) );
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void TestShapes3D::UpdateMoveRaycast()
+{
+	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) )
+	{
+		m_isRaycastMoveMode = !m_isRaycastMoveMode;
+	}
+
+	if ( m_isRaycastMoveMode ) 
+	{
+		Mat44 rotationMatrix = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+		m_savedForwardRaycastNormal = rotationMatrix.GetIBasis3D().GetNormalized();
+		m_raycastStartPos = m_player->m_position;
 	}
 }
