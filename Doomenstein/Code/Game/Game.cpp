@@ -74,10 +74,10 @@ void Game::Startup()
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // #TODO The world is not ready for summoners rift obj
-	m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
+	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
 	//m_teemoTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/teemo_texture.png" );
-	m_teemoTexture = nullptr;
+	//m_teemoTexture = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -152,8 +152,8 @@ void Game::Render() const
 		modelMatrix.AppendScaleUniform3D( modelScale );
 		modelMatrix.AppendXRotation( modelRotation );
 		g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 255, 255, 255, 255 ) );
-		g_engine->m_render->BindTexture( m_teemoTexture );
-		g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
+		//g_engine->m_render->BindTexture( m_teemoTexture );
+		//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
 
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
