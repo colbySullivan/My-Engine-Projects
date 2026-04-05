@@ -6,7 +6,7 @@ void TestShape3D::IsOverlapped() const
 {
 	if ( m_isOverlapping )
 	{
-		float flash = 0.5f + 0.5f * SinDegrees( m_shapeBlinkTimer->GetElapsedFraction() * 360.f );
+		float flash = 0.5f + 0.5f * SinDegrees( (float) m_shapeBlinkTimer->GetElapsedFraction() * 360.f );
 		unsigned char alpha = ( unsigned char )( flash * 127.f + 127.f );
 		g_engine->m_render->SetModelConstants( Mat44(), Rgba8( alpha, alpha, alpha, alpha ) );
 	}

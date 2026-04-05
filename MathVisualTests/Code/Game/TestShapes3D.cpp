@@ -38,7 +38,7 @@ void TestShapes3D::Shutdown()
 //------------------------------------------------------------------------------
 void TestShapes3D::Update( float deltaSeconds )
 {
-	m_player->Update( ( float )g_engine->m_systemClock->GetDeltaSeconds() );
+	m_player->Update( deltaSeconds );
 	UpdateShapes();
 	UpdateSpawnNewTestShapes();
 	UpdateShapesOverlap();
@@ -244,12 +244,16 @@ void TestShapes3D::RaycastTestShapes()
 		m_closestShape->m_isClosestRaycast = true;
 
 	}
-	DebugAddWorldSphere( shortestResult.m_impactPos, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-	Vec3 raycastEndPos = shortestResult.m_impactPos + ( shortestResult.m_impactNormal * 1.0f );
-	DebugAddWorldArrow( shortestResult.m_impactPos, raycastEndPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
-	if ( !m_isRaycastMoveMode )
+	if ( shortestResult.m_didImpact )
 	{
-		DebugAddWorldCylinder( shortestResult.m_impactPos, m_raycastStartPos, 0.01f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+		float deltaSeconds = (float) g_engine->m_systemClock->GetDeltaSeconds();
+		DebugAddWorldSphere( shortestResult.m_impactPos, 0.05f, deltaSeconds, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+		Vec3 raycastEndPos = shortestResult.m_impactPos + ( shortestResult.m_impactNormal * 1.0f );
+		DebugAddWorldArrow( shortestResult.m_impactPos, raycastEndPos, 0.01f, deltaSeconds, Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
+		if ( !m_isRaycastMoveMode )
+		{
+			DebugAddWorldCylinder( shortestResult.m_impactPos, m_raycastStartPos, 0.01f, deltaSeconds, Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+		}
 	}
 
 }
@@ -325,9 +329,10 @@ void TestShapes3D::UpdateClosePoints()
 		TestShape3D* shape = m_testShapes[shapeIndex];
 		if ( shape != nullptr )
 		{
+			float deltaSeconds = ( float )g_engine->m_systemClock->GetDeltaSeconds();
 			Vec3 playerPosition = m_player->m_position;
 			Vec3 closestPoint = shape->GetClosestPoint( playerPosition );
-			DebugAddWorldSphere( closestPoint, 0.05f, g_engine->m_systemClock->GetDeltaSeconds(), Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
+			DebugAddWorldSphere( closestPoint, 0.05f, deltaSeconds, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
 		}
 	}
 }

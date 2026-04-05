@@ -47,13 +47,9 @@ App::~App()
 
 void App::RunFrame()
 {
-	float timeNow = (float)GetCurrentTimeSeconds();
-	float deltaSeconds = timeNow - m_lastFrameTime;
-	m_lastFrameTime = timeNow;
-
 	g_engine->BeginFrame();
 	
-	Update(g_engine->m_systemClock->GetDeltaSeconds());
+	Update((float)g_engine->m_systemClock->GetDeltaSeconds());
 	Render();
 	if ( g_gameMode == GAMEMODE_TESTSHAPES_3D )
 	{
