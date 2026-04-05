@@ -33,6 +33,8 @@ private:
 	TestShape3D* m_closestShape = nullptr;
 	bool m_isRaycastMoveMode = true;
 	std::vector<TestShape3D*> m_testShapes;
+	std::vector<TestShape3D*> m_testShapesWired;
+	std::vector<TestShape3D*> m_testShapesTextured;
 	std::vector<TestShapeSphere*> m_testShapeSpheres;
 	std::vector<TestShapeCylinder*> m_testShapeCylinder;
 	std::vector<TestShapeAABB3*> m_testShapeAABB3;
@@ -47,4 +49,6 @@ private:
 	void RenderBasis() const;
 	void UpdateMoveClosetShape();
 	void UpdateShapes();
+
+	Vec3 RandomPoint();
 };

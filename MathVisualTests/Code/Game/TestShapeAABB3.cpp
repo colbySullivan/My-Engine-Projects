@@ -33,7 +33,7 @@ void TestShapeAABB3::Render() const
 	IsOverlapped();
 	IsCasted();
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
-	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_NONE;
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->DrawVertexArray( ( int )m_aabb3Verts.size(), m_aabb3Verts.data() );
 }

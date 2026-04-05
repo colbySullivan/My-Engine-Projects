@@ -5,6 +5,8 @@
 #include "TestShapeAABB3.hpp"
 #include "TestShapeCylinder.hpp"
 
+RandomNumberGenerator rng;
+
 //-----------------------------------------------------------------------------------------------
 TestShapes3D::TestShapes3D( App* app )
 	: Game(app)
@@ -71,12 +73,21 @@ void TestShapes3D::Render() const
 //------------------------------------------------------------------------------
 void TestShapes3D::RenderTestShapes() const
 {
-	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapesTextured.size() ); ++shapeIndex )
 	{
-		TestShape3D* shape = m_testShapes[shapeIndex];
+		TestShape3D* shape = m_testShapesTextured[shapeIndex];
 		if ( shape != nullptr )
 		{
 			shape->RenderWithTexture( m_modelTexture );
+		}
+	}
+
+	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapesWired.size() ); ++shapeIndex )
+	{
+		TestShape3D* shape = m_testShapesWired[shapeIndex];
+		if ( shape != nullptr )
+		{
+			shape->Render();
 		}
 	}
 }
@@ -85,23 +96,63 @@ void TestShapes3D::RenderTestShapes() const
 void TestShapes3D::SpawnInitialTestShapes()
 {
 	DebugAddWorldBasis( m_player->GetModelToWorldTransform(), 0.f );
-	float halfHeight = 0.5f;
-	Mat44 toWorld = m_player->GetModelToWorldTransform();
-	Vec3 upVector = toWorld.GetKBasis3D();
-	Vec3 startPos = m_player->m_position - ( upVector * halfHeight );
-	Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
 
-	TestShapeSphere* sphereShape = new TestShapeSphere( Vec3( 10.f, 10.f, 0.f ), 1.0f, 32, 32 );
-	m_testShapes.push_back( sphereShape );
-	m_testShapeSpheres.push_back( sphereShape );
+	int numSpheres = 6;
+	int numAABBs = 6;
+	int numCylinders = 6;
 
-	//TestShapeAABB3* aabb3Shape = new TestShapeAABB3( AABB3( Vec3( -10.f, -10.f, -10.f ), Vec3( 10.f, 10.f, 10.f ) ) );
-	//m_testShapes.push_back( aabb3Shape );
-	//m_testShapeAABB3.push_back( aabb3Shape );
+	for ( int i = 0; i < numSpheres; ++i )
+	{
+		float radius = rng.RollRandomFloatInRange( 0.3f, 2.0f );
+		bool  isWired = ( i % 2 == 0 );
 
-	TestShapeCylinder* cylinderShape = new TestShapeCylinder( startPos, endPos, 0.25f );
-	m_testShapes.push_back( cylinderShape );
-	m_testShapeCylinder.push_back( cylinderShape );
+		TestShapeSphere* shape = new TestShapeSphere( RandomPoint(), radius, 32, 32 );
+		m_testShapes.push_back( shape );
+		m_testShapeSpheres.push_back( shape );
+		if ( isWired )
+			m_testShapesWired.push_back( shape );
+		else
+			m_testShapesTextured.push_back( shape );
+	}
+
+	for ( int i = 0; i < numAABBs; ++i )
+	{
+		Vec3  center = RandomPoint();
+		float halfW = rng.RollRandomFloatInRange( 0.3f, 1.5f );
+		float halfD = rng.RollRandomFloatInRange( 0.3f, 1.5f );
+		float halfH = rng.RollRandomFloatInRange( 0.3f, 1.5f );
+		bool  isWired = ( i % 2 == 0 );
+
+		AABB3 box( center - Vec3( halfW, halfD, halfH ),
+			center + Vec3( halfW, halfD, halfH ) );
+
+		TestShapeAABB3* shape = new TestShapeAABB3( box );
+		m_testShapes.push_back( shape );
+		m_testShapeAABB3.push_back( shape );
+		if ( isWired )
+			m_testShapesWired.push_back( shape );
+		else
+			m_testShapesTextured.push_back( shape );
+	}
+
+	for ( int i = 0; i < numCylinders; ++i )
+	{
+		Vec3  base = RandomPoint();
+		float height = rng.RollRandomFloatInRange( 0.5f, 3.0f );
+		float radius = rng.RollRandomFloatInRange( 0.1f, 0.6f );
+		bool  isWired = ( i % 2 == 0 );
+
+		Vec3 start = base;
+		Vec3 end = base + Vec3( 0.f, 0.f, height );
+
+		TestShapeCylinder* shape = new TestShapeCylinder( start, end, radius );
+		m_testShapes.push_back( shape );
+		m_testShapeCylinder.push_back( shape );
+		if ( isWired )
+			m_testShapesWired.push_back( shape );
+		else
+			m_testShapesTextured.push_back( shape );
+	}
 }
 
 void TestShapes3D::UpdateSpawnNewTestShapes()
@@ -319,6 +370,17 @@ void TestShapes3D::UpdateShapes()
 			shape->Update();
 		}
 	}
+}
+
+Vec3 TestShapes3D::RandomPoint()
+{
+	float spawnRadius = 20.f;
+	float spawnHeight = 10.f;
+
+	float x = rng.RollRandomFloatInRange( -spawnRadius, spawnRadius );
+	float y = rng.RollRandomFloatInRange( -spawnRadius, spawnRadius );
+	float z = rng.RollRandomFloatInRange( 0.f, spawnHeight );
+	return Vec3( x, y, z );
 }
 
 //------------------------------------------------------------------------------
