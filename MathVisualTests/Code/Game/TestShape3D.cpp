@@ -24,13 +24,9 @@ void TestShape3D::IsOverlapped() const
 //------------------------------------------------------------------------------
 void TestShape3D::IsCasted() const
 {
-	//if ( m_isOverlapping )
-	//{
-	//	g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 255, 255, 0 ) );
-	//}
-	//else
-	//{
-	//	g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 255, 255, 255 ) );
-	//}
+	if ( m_isClosestRaycast )
+	{
+		g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 255, 0, 0 ) );
+	}
 }
 

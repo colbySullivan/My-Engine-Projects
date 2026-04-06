@@ -15,6 +15,9 @@ TestShapes3D::TestShapes3D( App* app )
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f );
 	m_raycastStartPos = m_player->m_position;
 	m_modelTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
+	m_screenCamera = new Camera;
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) );
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -65,6 +68,7 @@ void TestShapes3D::Render() const
 	RenderBasis();
 
 	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
+	RenderUI();
 	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
 	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
 	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
@@ -92,21 +96,37 @@ void TestShapes3D::RenderTestShapes() const
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+void TestShapes3D::RenderUI() const
+{
+	float screenSizeY = 800.f;
+	float screenSizeX = 1600.f;
+	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
+	float scale = ( float )g_engine->m_systemClock->GetTimeScale();
+	std::string hudText = Stringf( "FPS: %6.1f Scale: %.2f", fps, scale );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	DebugRenderScreen( *m_screenCamera );
+}
+
 //------------------------------------------------------------------------------
 void TestShapes3D::SpawnInitialTestShapes()
 {
 	DebugAddWorldBasis( m_player->GetModelToWorldTransform(), 0.f );
 
-	int numSpheres = 6;
+	int numSpheres = 0;
 	int numAABBs = 6;
-	int numCylinders = 6;
+	int numCylinders = 0;
 
 	for ( int i = 0; i < numSpheres; ++i )
 	{
 		float radius = rng.RollRandomFloatInRange( 0.3f, 2.0f );
 		bool  isWired = ( i % 2 == 0 );
 
-		TestShapeSphere* shape = new TestShapeSphere( RandomPoint(), radius, 32, 32 );
+		TestShapeSphere* shape = new TestShapeSphere( RandomPoint(), radius, 16, 16 );
 		m_testShapes.push_back( shape );
 		m_testShapeSpheres.push_back( shape );
 		if ( isWired )
@@ -274,6 +294,7 @@ void TestShapes3D::RaycastTestShapes()
 		for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 		{
 			TestShape3D* shape = m_testShapes[shapeIndex];
+			shape->m_isClosestRaycast = false;
 			if ( shape != nullptr )
 			{
 				RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, 10.f );
@@ -281,10 +302,6 @@ void TestShapes3D::RaycastTestShapes()
 				{
 					if ( result.m_impactDist < closestImpactDist )
 					{
-						if ( m_closestShape != nullptr )
-						{
-							m_closestShape->m_isClosestRaycast = false;
-						}
 						closestImpactDist = result.m_impactDist;
 						m_closestShape = shape;
 						m_shortestResult = result;
@@ -332,6 +349,7 @@ void TestShapes3D::UpdateMoveClosetShape()
 {
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
+		m_isRaycastMoveMode = true;
 		if ( !m_isLeftClickMoveMode && m_closestShape != nullptr )
 		{
 			m_grabbedShape = m_closestShape;

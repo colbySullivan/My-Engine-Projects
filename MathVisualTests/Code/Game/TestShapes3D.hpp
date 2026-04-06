@@ -21,6 +21,7 @@ public:
 	void Render() const override;
 
 	void RenderTestShapes() const;
+	void RenderUI() const;
 	void SpawnInitialTestShapes();
 	void UpdateSpawnNewTestShapes();
 	void ClearTestShapes();
@@ -30,6 +31,7 @@ private:
 	Player* m_player = nullptr;
 	Vec3 m_raycastStartPos;
 	Vec3 m_savedForwardRaycastNormal;
+	Camera* m_screenCamera = nullptr;
 
 	RaycastResult3D m_shortestResult;
 	float m_grabbedDistance = 0.f;
