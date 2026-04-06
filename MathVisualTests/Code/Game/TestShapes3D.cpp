@@ -101,13 +101,15 @@ void TestShapes3D::RenderUI() const
 {
 	float screenSizeY = 800.f;
 	float screenSizeX = 1600.f;
-	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
-	float scale = ( float )g_engine->m_systemClock->GetTimeScale();
-	std::string hudText = Stringf( "FPS: %6.1f Scale: %.2f", fps, scale );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-
-	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	std::string hudText = Stringf( "Mode (F6/F7 for prev/next): Test Shapes 3D" );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
+	
+	std::string hudText2 = Stringf( "F8 to Randomize; ESDF = fly horizontal, AZ = fly vertical, space = lock raycast, hold t = slow") ;
+	if ( m_closestShape != nullptr )
+	{
+		hudText2 = Stringf( "F8 to Randomize; ESDF = fly horizontal, AZ = fly vertical, space = lock raycast, hold t = slow, LMB = grab object" );
+	}
+	DebugAddScreenText( hudText2, AABB2( Vec2( 0.f, screenSizeY - 55.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
 }

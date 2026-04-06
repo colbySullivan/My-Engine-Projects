@@ -75,7 +75,7 @@ void Player::UpdateKeyboardAndControllerInput( float deltaSeconds, XboxControlle
 	{
 		speed *= 10.f;
 	}
-
+	//hudText2 = Stringf( "F8 to Randomize; ESDF = fly horizontal, AZ = fly vertical, space = lock raycast, hold t = slow, LMB = grab object" );
 	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
 	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
 	{
@@ -136,8 +136,8 @@ void Player::PrintControlsToDevConsole()
 //------------------------------------------------------------------------------
 void Player::ApplyMovement( Vec3 const& localMoveDir, float speed, float deltaSeconds )
 {
-	m_orientation.m_pitchDegrees = GetClamped( m_orientation.m_pitchDegrees, -85.f, 85.f );
-	m_orientation.m_rollDegrees = GetClamped( m_orientation.m_rollDegrees, -45.f, 45.f );
+	//m_orientation.m_pitchDegrees = GetClamped( m_orientation.m_pitchDegrees, -85.f, 85.f );
+	//m_orientation.m_rollDegrees = GetClamped( m_orientation.m_rollDegrees, -45.f, 45.f );
 
 	if ( localMoveDir == Vec3( 0.f, 0.f, 0.f ) )
 	{
@@ -147,8 +147,9 @@ void Player::ApplyMovement( Vec3 const& localMoveDir, float speed, float deltaSe
 	Mat44 rotationMatrix = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
 
 	Vec3 forward = rotationMatrix.GetIBasis3D();
+	forward = Vec3( forward.x, forward.y, 0.f );
 	Vec3 left = rotationMatrix.GetJBasis3D();
-	Vec3 up = rotationMatrix.GetKBasis3D();
+	Vec3 up = Vec3::Z_AXIS;
 
 	Vec3 worldDir = forward * localMoveDir.x + left * localMoveDir.y + up * localMoveDir.z;
 	worldDir = worldDir.GetNormalized();
