@@ -21,6 +21,7 @@ public:
 	bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const override;
 	bool DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const override;
 	Vec3 GetClosestPoint( Vec3 referencePos ) const override;
+	Vec3 GetCenter() override;
 
 	AABB3 m_bounds;
 	Rgba8 m_color;

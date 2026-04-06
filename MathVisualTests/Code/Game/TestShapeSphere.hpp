@@ -20,6 +20,7 @@ class TestShapeSphere : public TestShape3D
 	bool DoesCylinderOverlap( Vec2 cylinderCenter, float cylinderRadius, FloatRange cylinderZRange ) const override;
 	bool DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const override;
 	Vec3 GetClosestPoint( Vec3 referencePos ) const override;
+	Vec3 GetCenter() override;
 
 	float m_radius;
 	Vec3 m_center;

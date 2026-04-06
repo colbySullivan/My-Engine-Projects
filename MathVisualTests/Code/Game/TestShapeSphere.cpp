@@ -76,8 +76,15 @@ bool TestShapeSphere::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 	return DoSphereABB3Overlap( m_center, m_radius, aabbMins, aabbMaxs );
 }
 
+//------------------------------------------------------------------------------
 Vec3 TestShapeSphere::GetClosestPoint( Vec3 referencePos ) const
 {
 	return GetNearestPointOnSphere( referencePos, m_center, m_radius );
+}
+
+//------------------------------------------------------------------------------
+Vec3 TestShapeSphere::GetCenter()
+{
+	return m_center;
 }
 

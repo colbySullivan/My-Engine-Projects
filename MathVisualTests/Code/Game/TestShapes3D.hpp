@@ -30,8 +30,10 @@ private:
 	Player* m_player = nullptr;
 	Vec3 m_raycastStartPos;
 	Vec3 m_savedForwardRaycastNormal;
-	TestShape3D* m_closestShape = nullptr;
-	bool m_isRaycastMoveMode = true;
+
+	RaycastResult3D m_shortestResult;
+	float m_grabbedDistance = 0.f;
+	Vec3 m_grabbedOffset = Vec3::ZERO;
 	std::vector<TestShape3D*> m_testShapes;
 	std::vector<TestShape3D*> m_testShapesWired;
 	std::vector<TestShape3D*> m_testShapesTextured;
@@ -51,4 +53,9 @@ private:
 	void UpdateShapes();
 
 	Vec3 RandomPoint();
+
+	TestShape3D* m_grabbedShape= nullptr;
+	TestShape3D* m_closestShape = nullptr;
+	bool m_isRaycastMoveMode = true;
+	bool m_isLeftClickMoveMode = false;
 };

@@ -31,6 +31,7 @@ void TestShapeCylinder::Update()
 	AddVertsForCylinder3D( m_cylinderVerts, m_start, m_end, m_radius, m_color, m_UVs, m_numSlices );
 }
 
+//------------------------------------------------------------------------------
 void TestShapeCylinder::Render() const
 {
 	IsOverlapped();
@@ -41,6 +42,7 @@ void TestShapeCylinder::Render() const
 	g_engine->m_render->DrawVertexArray( ( int )m_cylinderVerts.size(), m_cylinderVerts.data() );
 }
 
+//------------------------------------------------------------------------------
 void TestShapeCylinder::RenderWithTexture( Texture* texture ) const
 {
 	IsOverlapped();
@@ -77,8 +79,15 @@ bool TestShapeCylinder::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 	return DoAABB3sCylinderOverlap( aabbMins, aabbMaxs, cylinderCenter, m_radius, m_zRange );
 }
 
+//------------------------------------------------------------------------------
 Vec3 TestShapeCylinder::GetClosestPoint( Vec3 referencePos ) const
 {
 	return GetNearestPointOnCylinder( referencePos, Vec3( m_center.x, m_center.y, m_zRange.m_min ), Vec3( m_center.x, m_center.y, m_zRange.m_max ), m_radius );
+}
+
+//------------------------------------------------------------------------------
+Vec3 TestShapeCylinder::GetCenter()
+{
+	return m_center;
 }
 

@@ -72,8 +72,19 @@ bool TestShapeAABB3::DoesAABBOverlap( Vec3 aabbMins, Vec3 aabbMaxs ) const
 	return DoAABB3sOverlap( m_bounds.m_mins, m_bounds.m_maxs, aabbMins, aabbMaxs );
 }
 
+//------------------------------------------------------------------------------
 Vec3 TestShapeAABB3::GetClosestPoint( Vec3 referencePos ) const
 {
 	return GetNearestPointOnAABB3( referencePos, m_bounds.m_mins, m_bounds.m_maxs );
+}
+
+//------------------------------------------------------------------------------
+Vec3 TestShapeAABB3::GetCenter()
+{
+	Vec3 center;
+	center.x = ( m_bounds.m_mins.x + m_bounds.m_maxs.x ) * 0.5f;
+	center.y = ( m_bounds.m_mins.y + m_bounds.m_maxs.y ) * 0.5f;
+	center.z = ( m_bounds.m_mins.z + m_bounds.m_maxs.z ) * 0.5f;
+	return center;
 }
 

@@ -266,47 +266,49 @@ bool TestShapes3D::UpdateShapesOverlapWithAABB3( TestShape3D* shape )
 //------------------------------------------------------------------------------
 void TestShapes3D::RaycastTestShapes()
 {
-	m_closestShape = nullptr;
-	float closestImpactDist = 999999.f;
-	RaycastResult3D shortestResult = RaycastResult3D();
-	for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
+	if ( !m_isLeftClickMoveMode ) 
 	{
-		TestShape3D* shape = m_testShapes[shapeIndex];
-		if ( shape != nullptr )
+		m_closestShape = nullptr;
+		float closestImpactDist = 999999.f;
+		m_shortestResult = RaycastResult3D();
+		for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 		{
-			RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, 10.f );
-			if ( result.m_didImpact )
+			TestShape3D* shape = m_testShapes[shapeIndex];
+			if ( shape != nullptr )
 			{
-				if ( result.m_impactDist < closestImpactDist )
+				RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, 10.f );
+				if ( result.m_didImpact )
 				{
-					if ( m_closestShape != nullptr )
+					if ( result.m_impactDist < closestImpactDist )
 					{
-						m_closestShape->m_isClosestRaycast = false;
+						if ( m_closestShape != nullptr )
+						{
+							m_closestShape->m_isClosestRaycast = false;
+						}
+						closestImpactDist = result.m_impactDist;
+						m_closestShape = shape;
+						m_shortestResult = result;
 					}
-					closestImpactDist = result.m_impactDist;
-					m_closestShape = shape;
-					shortestResult = result;
 				}
 			}
 		}
-	}
-	if ( m_closestShape != nullptr )
-	{
-		m_closestShape->m_isClosestRaycast = true;
-
-	}
-	if ( shortestResult.m_didImpact )
-	{
-		float deltaSeconds = (float) g_engine->m_systemClock->GetDeltaSeconds();
-		DebugAddWorldSphere( shortestResult.m_impactPos, 0.05f, deltaSeconds, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-		Vec3 raycastEndPos = shortestResult.m_impactPos + ( shortestResult.m_impactNormal * 1.0f );
-		DebugAddWorldArrow( shortestResult.m_impactPos, raycastEndPos, 0.01f, deltaSeconds, Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
-		if ( !m_isRaycastMoveMode )
+		if ( m_closestShape != nullptr )
 		{
-			DebugAddWorldCylinder( shortestResult.m_impactPos, m_raycastStartPos, 0.01f, deltaSeconds, Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+			m_closestShape->m_isClosestRaycast = true;
+
+		}
+		if ( m_shortestResult.m_didImpact )
+		{
+			float deltaSeconds = ( float )g_engine->m_systemClock->GetDeltaSeconds();
+			DebugAddWorldSphere( m_shortestResult.m_impactPos, 0.05f, deltaSeconds, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+			Vec3 raycastEndPos = m_shortestResult.m_impactPos + ( m_shortestResult.m_impactNormal * 1.0f );
+			DebugAddWorldArrow( m_shortestResult.m_impactPos, raycastEndPos, 0.01f, deltaSeconds, Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
+			if ( !m_isRaycastMoveMode )
+			{
+				DebugAddWorldCylinder( m_shortestResult.m_impactPos, m_raycastStartPos, 0.01f, deltaSeconds, Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+			}
 		}
 	}
-
 }
 
 //------------------------------------------------------------------------------
@@ -328,34 +330,45 @@ void TestShapes3D::RenderBasis() const
 //------------------------------------------------------------------------------
 void TestShapes3D::UpdateMoveClosetShape()
 {
-	if ( m_closestShape != nullptr && g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
-		Mat44 toWorld = m_player->GetModelToWorldTransform();
-		Vec3 forwardNormal = toWorld.GetIBasis3D().GetNormalized();
-		Vec3 newPos = m_player->m_position + ( forwardNormal * 0.5f );
-		if ( TestShapeSphere* sphereShape = dynamic_cast<TestShapeSphere*>( m_closestShape ) )
+		if ( !m_isLeftClickMoveMode && m_closestShape != nullptr )
 		{
-			sphereShape->m_center = newPos;
+			m_grabbedShape = m_closestShape;
+			Mat44 toWorld = m_player->GetModelToWorldTransform();
+			Vec3 forwardNormal = toWorld.GetIBasis3D().GetNormalized();
+			m_grabbedDistance = ( m_grabbedShape->GetCenter() - m_player->m_position ).GetLength();
 		}
+		else
+		{
+			m_grabbedShape = nullptr;
+		}
+		m_isLeftClickMoveMode = !m_isLeftClickMoveMode;
+	}
 
-		else if ( TestShapeCylinder* cylinderShape = dynamic_cast<TestShapeCylinder*>( m_closestShape ) )
-		{
-			float halfHeight = 0.5f;
-			Vec3 upVector = Vec3::Z_AXIS;
-			Vec3 startPos = newPos - ( upVector * halfHeight );
-			Vec3 endPos = newPos + ( upVector * halfHeight );
-			cylinderShape->m_center = newPos;
-			cylinderShape->m_start = startPos;
-			cylinderShape->m_end = endPos;
-		}
+	if ( !m_isLeftClickMoveMode || m_grabbedShape == nullptr )
+		return;
 
-		else if ( TestShapeAABB3* aabb3Shape = dynamic_cast<TestShapeAABB3*>( m_closestShape ) )
-		{
-			Vec3 boundsHalfExtents = ( aabb3Shape->m_bounds.m_maxs - aabb3Shape->m_bounds.m_mins ) * 0.5f;
-			aabb3Shape->m_bounds.m_mins = newPos - boundsHalfExtents;
-			aabb3Shape->m_bounds.m_maxs = newPos + boundsHalfExtents;
-		}
-		
+	Mat44 toWorld = m_player->GetModelToWorldTransform();
+	Vec3 forwardNormal = toWorld.GetIBasis3D().GetNormalized();
+	Vec3 newPos = m_player->m_position + ( forwardNormal * m_grabbedDistance );
+
+	if ( TestShapeSphere* sphereShape = dynamic_cast< TestShapeSphere* >( m_grabbedShape ) )
+	{
+		sphereShape->m_center = newPos;
+	}
+	else if ( TestShapeCylinder* cylinderShape = dynamic_cast< TestShapeCylinder* >( m_grabbedShape ) )
+	{
+		float halfHeight = ( cylinderShape->m_end - cylinderShape->m_start ).GetLength() * 0.5f;
+		cylinderShape->m_center = newPos;
+		cylinderShape->m_start = newPos - ( Vec3::Z_AXIS * halfHeight );
+		cylinderShape->m_end = newPos + ( Vec3::Z_AXIS * halfHeight );
+	}
+	else if ( TestShapeAABB3* aabb3Shape = dynamic_cast< TestShapeAABB3* >( m_grabbedShape ) )
+	{
+		Vec3 half = ( aabb3Shape->m_bounds.m_maxs - aabb3Shape->m_bounds.m_mins ) * 0.5f;
+		aabb3Shape->m_bounds.m_mins = newPos - half;
+		aabb3Shape->m_bounds.m_maxs = newPos + half;
 	}
 }
 
