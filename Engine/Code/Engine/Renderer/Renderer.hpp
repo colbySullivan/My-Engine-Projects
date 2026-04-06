@@ -114,7 +114,7 @@ public:
 
 	Shader* CreateOrGetShader( const char* shaderName, VertexType vertexType = VertexType::VERTEX_PCU );
 
-	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo ); // #TODO Clean this up I moved some from private so map can use it
+	void CopyCPUToGPU( const void* data, unsigned int size, ConstantBuffer* cbo );
 	ConstantBuffer* CreateConstantBuffer( const unsigned int size );
 	void BindConstantBuffer( int slot, ConstantBuffer* cbo );
 

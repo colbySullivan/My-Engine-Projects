@@ -39,7 +39,7 @@ Game::Game()
 	m_player->m_position = Vec3( 2.5f, 8.5, 0.5f );	
 	m_player->m_orientation = EulerAngles( 0.f, 0.f, 0.f );
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
-	CreateProps();
+	TileDefinition::InitializeTileDefs();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -66,14 +66,14 @@ void Game::Startup()
 {
 	// #todo there is an issue if you load and unload the game multiple times before exiting
 	m_isPaused = false;
-	TileDefinition::InitializeTileDefs();
+	CreateProps();
 	ConstructMapFromXML();
 	if ( m_maps.size() > 0 )
 	{
 		m_currentMapNumber = 0;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
-	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // #TODO The world is not ready for summoners rift obj
+	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // The world is not ready for summoners rift obj
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
 	//m_teemoTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/teemo_texture.png" );
@@ -141,7 +141,10 @@ void Game::Render() const
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
-		m_currentMap->Render();
+		if ( m_currentMap != nullptr )
+		{
+			m_currentMap->Render();
+		}
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
 		Vec3 modelPosition = Vec3( 10.0f, 5.0f, 0.0f ); 
 		float modelScale = 0.01f;                       
@@ -169,7 +172,13 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
-
+	for (int mapIndex = 0; mapIndex < m_maps.size() ; ++mapIndex)
+	{
+		delete m_maps[mapIndex];
+		m_maps[mapIndex] = nullptr;
+	}
+	m_maps.clear();
+	m_currentMap = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -189,6 +198,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
+		Shutdown();
 	}
 
 	m_isSlowMo = g_engine->m_input->IsKeyDown('T');  // Slows simulation time to 1/10th the normal rate

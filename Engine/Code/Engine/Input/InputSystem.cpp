@@ -179,7 +179,7 @@ Vec2 InputSystem::GetCursorClientPosition() const
 }
 
 //-----------------------------------------------------------------------------------------------
-Vec2 InputSystem::GetCursorNormalizedPosition() const // #TODO Optional for this project
+Vec2 InputSystem::GetCursorNormalizedPosition() const
 {
 	return Vec2(0.f, 0.f);
 }
