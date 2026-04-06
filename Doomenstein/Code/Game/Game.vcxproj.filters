@@ -58,6 +58,9 @@
     <ClCompile Include="Actor.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="ActorHandle.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -85,6 +88,9 @@
       <Filter>Tiles</Filter>
     </ClInclude>
     <ClInclude Include="Actor.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorHandle.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
