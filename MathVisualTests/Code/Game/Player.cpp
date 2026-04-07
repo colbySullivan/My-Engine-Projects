@@ -62,20 +62,19 @@ void Player::UpdateKeyboardAndControllerInput( float deltaSeconds, XboxControlle
 		m_orientation.m_yawDegrees -= rightStickPos.x * deltaSeconds * YAW_RATE;
 	}
 
-	if ( g_engine->m_input->IsKeyDown( 'Q' ) || ( controller.GetLeftTrigger() != 0 ) )
-	{
-		m_orientation.m_rollDegrees -= ROLL_RATE * deltaSeconds;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'E' ) || ( controller.GetRightTrigger() != 0 ) )
-	{
-		m_orientation.m_rollDegrees += ROLL_RATE * deltaSeconds;
-	}
+	//if ( g_engine->m_input->IsKeyDown( 'Q' ) || ( controller.GetLeftTrigger() != 0 ) )
+	//{
+	//	m_orientation.m_rollDegrees -= ROLL_RATE * deltaSeconds;
+	//}
+	//if ( g_engine->m_input->IsKeyDown( 'E' ) || ( controller.GetRightTrigger() != 0 ) )
+	//{
+	//	m_orientation.m_rollDegrees += ROLL_RATE * deltaSeconds;
+	//}
 	float speed = MOVE_SPEED;
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) || controller.IsButtonDown(XboxButtonID::A) )
 	{
 		speed *= 10.f;
 	}
-	//hudText2 = Stringf( "F8 to Randomize; ESDF = fly horizontal, AZ = fly vertical, space = lock raycast, hold t = slow, LMB = grab object" );
 	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
 	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
 	{
@@ -93,11 +92,11 @@ void Player::UpdateKeyboardAndControllerInput( float deltaSeconds, XboxControlle
 	{
 		localMoveDir.y -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'Z' ) || controller.IsButtonDown(XboxButtonID::LEFT_BUMPER) )
+	if ( g_engine->m_input->IsKeyDown( 'E' ) || controller.IsButtonDown(XboxButtonID::LEFT_BUMPER) )
 	{
 		localMoveDir.z -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'C' ) || controller.IsButtonDown(XboxButtonID::RIGHT_BUMPER) )
+	if ( g_engine->m_input->IsKeyDown( 'Q' ) || controller.IsButtonDown(XboxButtonID::RIGHT_BUMPER) )
 	{
 		localMoveDir.z += 1.f;
 	}
@@ -136,8 +135,8 @@ void Player::PrintControlsToDevConsole()
 //------------------------------------------------------------------------------
 void Player::ApplyMovement( Vec3 const& localMoveDir, float speed, float deltaSeconds )
 {
-	//m_orientation.m_pitchDegrees = GetClamped( m_orientation.m_pitchDegrees, -85.f, 85.f );
-	//m_orientation.m_rollDegrees = GetClamped( m_orientation.m_rollDegrees, -45.f, 45.f );
+	m_orientation.m_pitchDegrees = GetClamped( m_orientation.m_pitchDegrees, -85.f, 85.f );
+	m_orientation.m_rollDegrees = GetClamped( m_orientation.m_rollDegrees, -45.f, 45.f );
 
 	if ( localMoveDir == Vec3( 0.f, 0.f, 0.f ) )
 	{

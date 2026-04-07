@@ -14,7 +14,6 @@ TestShapes3D::TestShapes3D( App* app )
 	m_player = new Player( this );
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f );
 	m_raycastStartPos = m_player->m_position;
-	m_modelTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
 	m_screenCamera = new Camera;
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) );
 
@@ -30,6 +29,7 @@ TestShapes3D::~TestShapes3D()
 //------------------------------------------------------------------------------
 void TestShapes3D::Startup()
 {
+	m_modelTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/Test_StbiFlippedAndOpenGL.png" );
 	Game::Startup();
 	SpawnInitialTestShapes();
 }
@@ -104,10 +104,10 @@ void TestShapes3D::RenderUI() const
 	std::string hudText = Stringf( "Mode (F6/F7 for prev/next): Test Shapes 3D" );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
 	
-	std::string hudText2 = Stringf( "F8 to Randomize; ESDF = fly horizontal, AZ = fly vertical, space = lock raycast, hold t = slow") ;
+	std::string hudText2 = Stringf( "F8 to Randomize; WASD = fly horizontal, EQ = fly vertical, space = lock raycast, hold t = slow") ;
 	if ( m_closestShape != nullptr )
 	{
-		hudText2 = Stringf( "F8 to Randomize; ESDF = fly horizontal, AZ = fly vertical, space = lock raycast, hold t = slow, LMB = grab object" );
+		hudText2 = Stringf( "F8 to Randomize; WASD = fly horizontal, EQ = fly vertical, space = lock raycast, hold t = slow, LMB = grab object" );
 	}
 	DebugAddScreenText( hudText2, AABB2( Vec2( 0.f, screenSizeY - 55.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 255 ) );
 
@@ -119,9 +119,9 @@ void TestShapes3D::SpawnInitialTestShapes()
 {
 	DebugAddWorldBasis( m_player->GetModelToWorldTransform(), 0.f );
 
-	int numSpheres = 0;
+	int numSpheres = 4;
 	int numAABBs = 6;
-	int numCylinders = 0;
+	int numCylinders = 4;
 
 	for ( int i = 0; i < numSpheres; ++i )
 	{
@@ -220,6 +220,12 @@ void TestShapes3D::ClearTestShapes()
 			m_testShapes[shapeIndex] = nullptr;
 		}
 	}
+	m_testShapes.clear();
+	m_testShapesWired.clear();
+	m_testShapesTextured.clear();
+	m_testShapeSpheres.clear();
+	m_testShapeCylinder.clear();
+	m_testShapeAABB3.clear();
 }
 
 void TestShapes3D::UpdateShapesOverlap()
@@ -292,6 +298,7 @@ void TestShapes3D::RaycastTestShapes()
 	{
 		m_closestShape = nullptr;
 		float closestImpactDist = 999999.f;
+		float raycastSize = 10.f;
 		m_shortestResult = RaycastResult3D();
 		for ( int shapeIndex = 0; shapeIndex < static_cast< int >( m_testShapes.size() ); ++shapeIndex )
 		{
@@ -299,7 +306,7 @@ void TestShapes3D::RaycastTestShapes()
 			shape->m_isClosestRaycast = false;
 			if ( shape != nullptr )
 			{
-				RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, 10.f );
+				RaycastResult3D result = shape->RaycastTestShape( m_raycastStartPos, m_savedForwardRaycastNormal, raycastSize );
 				if ( result.m_didImpact )
 				{
 					if ( result.m_impactDist < closestImpactDist )
@@ -325,6 +332,9 @@ void TestShapes3D::RaycastTestShapes()
 			if ( !m_isRaycastMoveMode )
 			{
 				DebugAddWorldCylinder( m_shortestResult.m_impactPos, m_raycastStartPos, 0.01f, deltaSeconds, Rgba8( 0, 100, 255 ), Rgba8( 0, 100, 255 ) );
+				float raycastLeftToEnd = raycastSize - m_shortestResult.m_impactDist;
+				Vec3 endRaycast = m_shortestResult.m_impactPos + m_savedForwardRaycastNormal * raycastLeftToEnd;
+				DebugAddWorldCylinder( m_shortestResult.m_impactPos, endRaycast, 0.01f, deltaSeconds, Rgba8( 100, 100, 100 ), Rgba8( 100, 100, 100 ) );
 			}
 		}
 	}
@@ -427,7 +437,7 @@ void TestShapes3D::UpdateClosePoints()
 			float deltaSeconds = ( float )g_engine->m_systemClock->GetDeltaSeconds();
 			Vec3 playerPosition = m_player->m_position;
 			Vec3 closestPoint = shape->GetClosestPoint( playerPosition );
-			DebugAddWorldSphere( closestPoint, 0.05f, deltaSeconds, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ) );
+			DebugAddWorldSphere( closestPoint, 0.05f, deltaSeconds, Rgba8( 255, 165, 0 ), Rgba8( 255, 165, 0 ) );
 		}
 	}
 }
