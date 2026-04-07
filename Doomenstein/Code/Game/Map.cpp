@@ -29,6 +29,7 @@ Map::Map( Game* game, const MapDefinition* definition )
 	CreateTiles();
 	CreateGeometry();
 	AddActors();
+	GetActorByHandle(m_actorVector[4]->m_actorHandle)->m_position = Vec3( 0.f, 0.f, 0.f );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -141,6 +142,11 @@ void Map::AddActors()
 	projectile->m_actorType = PROJECTILE;
 	projectile->m_canBePushed = true;
 	m_actorVector.push_back( projectile );
+
+	SpawnInfo newSpawn;
+	newSpawn.m_actorOrientation = EulerAngles(0.f,0.f,0.f);
+	newSpawn.m_spawnLocation = Vec3( 5.5f, 5.5f, 0.25f );
+	SpawnActor(newSpawn);
 }
 
 void Map::CreateBuffers()
@@ -339,6 +345,26 @@ void Map::Render() const
 		Actor* currActor = m_actorVector[actorIndex];
 		currActor->Render();
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
+{
+	Actor* newActor = new Actor( m_game, spawnInfo.m_spawnLocation, spawnInfo.m_actorOrientation );
+	newActor->m_actorHandle = ActorHandle( m_nextActorUID, m_actorVector.size() );
+	m_actorVector.push_back( newActor );
+	m_nextActorUID++;
+	return newActor;
+}
+
+//-----------------------------------------------------------------------------------------------
+Actor* Map::GetActorByHandle( const ActorHandle handle ) const
+{
+	if ( handle.IsValid() )
+	{
+		return m_actorVector[handle.GetIndex()];
+	}
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------

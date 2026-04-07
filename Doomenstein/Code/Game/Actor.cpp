@@ -19,6 +19,18 @@ Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
 }
 
 //-----------------------------------------------------------------------------------------------
+Actor::Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation )
+	: m_game( owner )
+	, m_position( spawn )
+	, m_orientation( startOrientation )
+{
+	m_height = 0.5f;
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, 0.35f, m_color, AABB2::ZERO_TO_ONE, 32 );
+}
+
+//-----------------------------------------------------------------------------------------------
 Actor::~Actor()
 {
 

@@ -29,6 +29,9 @@
     <Filter Include="Data\Shaders">
       <UniqueIdentifier>{62ea7a08-0066-4ba1-b680-5d15839c8c71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Textures">
+      <UniqueIdentifier>{d1e64668-735f-4191-a2db-09b325b60427}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -104,6 +107,18 @@
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml">
       <Filter>Data\Definitions</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\GameConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\ProjectileActorDefinitions.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Run\Data\Maps\MPMap.png">
@@ -153,6 +168,21 @@
     </Image>
     <Image Include="..\..\Run\Data\Images\Weapon_Plasma.png">
       <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Textures\PlayerTankBase.png">
+      <Filter>Data\Textures</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Textures\PlayerTankTop.png">
+      <Filter>Data\Textures</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Textures\teemo_texture.png">
+      <Filter>Data\Textures</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Textures\Test_StbiFlippedAndOpenGL.png">
+      <Filter>Data\Textures</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Textures\TestUV.png">
+      <Filter>Data\Textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

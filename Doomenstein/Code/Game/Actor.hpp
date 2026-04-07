@@ -4,6 +4,7 @@
 #include "Engine/Math/EulerAngles.hpp"
 #include "Engine/Renderer/Texture.hpp"
 #include "Engine/Math/Vec3.hpp"
+#include "Game/ActorHandle.hpp"
 
 //-----------------------------------------------------------------------------------------------
 
@@ -22,6 +23,7 @@ class Actor
 {
 public:
 	Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices );
+	Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation );
 	virtual ~Actor();
 
 	virtual void Update( float deltaSeconds );
@@ -41,7 +43,8 @@ public:
 	bool		m_controlledByPlayer = false;
 	bool		m_isDead = false;
 	bool		m_canBePushed = false;
-	ActorType m_actorType = ACTOR;
+	ActorType	m_actorType = ACTOR;
+	ActorHandle	m_actorHandle;
 
 	EulerAngles	m_orientation = EulerAngles( 0.f, 0.f, 0.f );
 	EulerAngles m_angularVelocity;

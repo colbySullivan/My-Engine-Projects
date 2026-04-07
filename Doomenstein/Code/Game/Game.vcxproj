@@ -214,9 +214,13 @@
     <ClInclude Include="TileDefinitions.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\ProjectileActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml" />
+    <Xml Include="..\..\Run\Data\GameConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Run\Data\Images\Actor_Marine_7x9.png" />
@@ -235,6 +239,11 @@
     <Image Include="..\..\Run\Data\Maps\MPMap.png" />
     <Image Include="..\..\Run\Data\Maps\PortalMap.png" />
     <Image Include="..\..\Run\Data\Maps\TestMap.png" />
+    <Image Include="..\..\Run\Data\Textures\PlayerTankBase.png" />
+    <Image Include="..\..\Run\Data\Textures\PlayerTankTop.png" />
+    <Image Include="..\..\Run\Data\Textures\teemo_texture.png" />
+    <Image Include="..\..\Run\Data\Textures\TestUV.png" />
+    <Image Include="..\..\Run\Data\Textures\Test_StbiFlippedAndOpenGL.png" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Run\Data\Shaders\Diffuse.hlsl">

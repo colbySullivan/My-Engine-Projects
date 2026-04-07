@@ -10,7 +10,9 @@
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Math/EulerAngles.hpp"
 #include "Game/Actor.hpp"
+#include "Game/ActorHandle.hpp"
 
 class Game;
 class Actor;
@@ -23,6 +25,14 @@ struct MapDefinition
 	Shader*			m_shader;
 	Texture*		m_spriteSheetTexture;
 	IntVec2			m_spriteSheetCellCount;
+};
+
+//-----------------------------------------------------------------------------------------------
+struct SpawnInfo
+{
+	std::string		m_name;
+	Vec3			m_spawnLocation;
+	EulerAngles		m_actorOrientation;
 };
 
 class Map
@@ -52,6 +62,9 @@ public:
 
 	void Render() const;
 
+	Actor* SpawnActor( const SpawnInfo& spawnInfo );
+	Actor* GetActorByHandle( const ActorHandle handle ) const;
+
 	RaycastResult3D RaycastAll( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
 	RaycastResult3D RaycastWorldXY( const Vec3& start, const Vec3& direction, float distance ) const;
 	RaycastResult3D RaycastWorldZ( const Vec3& start, const Vec3& direction, float distance ) const;
@@ -77,6 +90,8 @@ protected:
 	IndexBuffer* m_indexBuffer = nullptr;
 
 	std::vector<Actor*> m_actorVector;
+	unsigned int m_nextActorUID = 0;
+
 	ConstantBuffer* m_lightingConstant;
 private:
 	void SetLighting() const;

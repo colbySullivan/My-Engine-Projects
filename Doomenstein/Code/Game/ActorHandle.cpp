@@ -15,7 +15,8 @@ ActorHandle::ActorHandle( unsigned int uid, unsigned int index )
 
 bool ActorHandle::IsValid() const
 {
-	return false; // #todo implement this
+	//return m_data != INVALID;
+	return true;
 }
 
 unsigned int ActorHandle::GetIndex() const
