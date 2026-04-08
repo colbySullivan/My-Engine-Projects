@@ -2,6 +2,7 @@
 #include "Thirdparty/TinyXML2/tinyxml2.h"
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Math/Vec2.hpp"
+#include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include <string>
@@ -21,6 +22,7 @@ public:
 	float ParseXmlAttribute( XmlElement const& element, char const* attributeName, float defaultValue );
 	Rgba8 ParseXmlAttribute( XmlElement const& element, char const* attributeName, Rgba8 const& defaultValue );
 	Vec2 ParseXmlAttribute( XmlElement const& element, char const* attributeName, Vec2 const& defaultValue );
+	Vec3 ParseXmlAttribute( XmlElement const& element, char const* attributeName, Vec3 const& defaultValue );
 	IntVec2 ParseXmlAttribute( XmlElement const& element, char const* attributeName, IntVec2 const& defaultValue );
 	std::string ParseXmlAttribute( XmlElement const& element, char const* attributeName, std::string const& defaultValue );
 	std::string ParseXmlAttribute( XmlElement const& element, char const* attributeName, char const* defaultValue );

@@ -30,6 +30,14 @@ Actor::Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation )
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, 0.35f, m_color, AABB2::ZERO_TO_ONE, 32 );
 }
 
+Actor::Actor( ActorDefinition* ActorDef )
+	: m_actorDef( ActorDef )
+{
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+}
+
 //-----------------------------------------------------------------------------------------------
 Actor::~Actor()
 {

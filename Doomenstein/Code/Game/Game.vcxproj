@@ -198,6 +198,7 @@
     <ClCompile Include="GameCommon.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapDefinition.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinitions.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameCommon.hpp" />
     <ClInclude Include="Map.hpp" />
+    <ClInclude Include="MapDefinition.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinitions.hpp" />

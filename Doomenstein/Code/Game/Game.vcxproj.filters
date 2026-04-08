@@ -32,6 +32,9 @@
     <Filter Include="Data\Textures">
       <UniqueIdentifier>{d1e64668-735f-4191-a2db-09b325b60427}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameDefinitions">
+      <UniqueIdentifier>{9afb09b2-2720-46d8-8401-91fe4cd1bca9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -52,9 +55,6 @@
     <ClCompile Include="Tile.cpp">
       <Filter>Tiles</Filter>
     </ClCompile>
-    <ClCompile Include="TileDefinitions.cpp">
-      <Filter>Tiles</Filter>
-    </ClCompile>
     <ClCompile Include="Map.cpp">
       <Filter>Tiles</Filter>
     </ClCompile>
@@ -64,8 +64,14 @@
     <ClCompile Include="ActorHandle.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="TileDefinitions.cpp">
+      <Filter>GameDefinitions</Filter>
+    </ClCompile>
     <ClCompile Include="ActorDefinitions.cpp">
-      <Filter>Entities</Filter>
+      <Filter>GameDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="MapDefinition.cpp">
+      <Filter>GameDefinitions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +93,6 @@
     <ClInclude Include="Tile.hpp">
       <Filter>Tiles</Filter>
     </ClInclude>
-    <ClInclude Include="TileDefinitions.hpp">
-      <Filter>Tiles</Filter>
-    </ClInclude>
     <ClInclude Include="Map.hpp">
       <Filter>Tiles</Filter>
     </ClInclude>
@@ -99,8 +102,14 @@
     <ClInclude Include="ActorHandle.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
+    <ClInclude Include="TileDefinitions.hpp">
+      <Filter>GameDefinitions</Filter>
+    </ClInclude>
     <ClInclude Include="ActorDefinitions.hpp">
-      <Filter>Entities</Filter>
+      <Filter>GameDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="MapDefinition.hpp">
+      <Filter>GameDefinitions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

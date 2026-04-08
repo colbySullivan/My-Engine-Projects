@@ -27,7 +27,7 @@ class Actor
 public:
 	Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices );
 	Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation );
-	Actor( ActorDefinition*	m_actorDef );
+	Actor( ActorDefinition*	ActorDef );
 	virtual ~Actor();
 
 	virtual void Update( float deltaSeconds );

@@ -13,18 +13,26 @@
 #include "Engine/Math/EulerAngles.hpp"
 #include "Game/Actor.hpp"
 #include "Game/ActorHandle.hpp"
+#include "MapDefinition.hpp"
 
 class Game;
 class Actor;
 
-//-----------------------------------------------------------------------------------------------
-struct MapDefinition
+////-----------------------------------------------------------------------------------------------
+//struct MapDefinition
+//{
+//	std::string		m_name;
+//	Image			m_image;
+//	Shader*			m_shader;
+//	Texture*		m_spriteSheetTexture;
+//	IntVec2			m_spriteSheetCellCount;
+//};
+
+struct MapSpawnInfo
 {
 	std::string		m_name;
-	Image			m_image;
-	Shader*			m_shader;
-	Texture*		m_spriteSheetTexture;
-	IntVec2			m_spriteSheetCellCount;
+	Vec3			m_spawnPosition;
+	EulerAngles		m_spawnOrientation;
 };
 
 //-----------------------------------------------------------------------------------------------

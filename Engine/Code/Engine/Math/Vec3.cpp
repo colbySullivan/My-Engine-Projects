@@ -1,5 +1,6 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Core/StringUtils.hpp"
 #include<math.h>
 
 const Vec3 Vec3::ZERO( 0.f, 0.f, 0.f );
@@ -204,4 +205,12 @@ Vec3 const Vec3::MakeFromPolarDegrees( float pitchDegrees, float yawDegrees, flo
 		length * SinDegrees( pitchDegrees ) * CosDegrees( yawDegrees ),
 		length * -SinDegrees( yawDegrees )
 	);
+}
+
+//-----------------------------------------------------------------------------------------------
+void Vec3::SetFromText( char const* text )
+{
+	Strings splitVec2 = SplitStringOnDelimiter( text, ',' );
+	x = static_cast< float >( atof( splitVec2[0].c_str() ) );
+	y = static_cast< float >( atof( splitVec2[1].c_str() ) );
 }

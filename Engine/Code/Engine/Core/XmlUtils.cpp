@@ -83,6 +83,20 @@ Vec2 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attribu
 }
 
 //-----------------------------------------------------------------------------------------------
+Vec3 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, Vec3 const& defaultValue )
+{
+	const char* queriedResult;
+	XmlError result = element.QueryAttribute( attributeName, &queriedResult );
+	if ( result == 0 )
+	{
+		Vec3 queriedPoint;
+		queriedPoint.SetFromText( queriedResult );
+		return queriedPoint;
+	}
+	return defaultValue;
+}
+
+//-----------------------------------------------------------------------------------------------
 IntVec2 XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, IntVec2 const& defaultValue )
 {
 	const char* queriedResult;

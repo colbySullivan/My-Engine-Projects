@@ -21,7 +21,7 @@ class Player;
 class Prop;
 class Timer;
 class Map;
-struct MapDefinition;
+struct MapSpawnInfo;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -76,6 +76,7 @@ public:
 
 	// Maps
 	std::vector<Map*> m_maps = {};
+	std::vector<MapSpawnInfo*> m_spawnInfo = {};
 	Map* m_currentMap = nullptr;
 	Map* m_nextMap = nullptr;
 	int m_currentMapNumber = 0;
@@ -103,6 +104,5 @@ private:
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
-	void ConstructMapFromXML();
-	MapDefinition* CreateMapDef( std::string name, std::string imagePath, std::string  shaderPath, std::string  texturePath, IntVec2 cellCount );
+	void CreateMapsFromDef();
 };
