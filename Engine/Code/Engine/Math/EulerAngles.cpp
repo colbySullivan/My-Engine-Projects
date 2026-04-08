@@ -1,4 +1,5 @@
 #include "Engine/Math/EulerAngles.hpp"
+#include "Engine/Core/StringUtils.hpp"
 
 //------------------------------------------------------------------------------
 EulerAngles::EulerAngles(float yawDegrees, float pitchDegrees, float rollDegrees)
@@ -84,4 +85,13 @@ EulerAngles const Interpolate( EulerAngles const& from, EulerAngles const& to, f
 	result.m_pitchDegrees = InterpolateShortestDis(from.m_pitchDegrees, to.m_pitchDegrees, lerpFraction);
 	result.m_rollDegrees = InterpolateShortestDis(from.m_rollDegrees, to.m_rollDegrees, lerpFraction);
 	return result;
+}
+
+//-----------------------------------------------------------------------------------------------
+void EulerAngles::SetFromText( char const* text )
+{
+	Strings splitEulerAngles = SplitStringOnDelimiter( text, ',' );
+	m_yawDegrees = static_cast< float >( atof( splitEulerAngles[0].c_str() ) );
+	m_pitchDegrees = static_cast< float >( atof( splitEulerAngles[1].c_str() ) );
+	m_rollDegrees  = static_cast< float >( atof( splitEulerAngles[2].c_str() ) );
 }

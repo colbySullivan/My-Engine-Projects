@@ -2,8 +2,17 @@
 #include "Engine/Core/Image.hpp"
 #include "Engine/Renderer/Shader.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Math/EulerAngles.hpp"
 #include <string>
 #include <map>
+
+//-----------------------------------------------------------------------------------------------
+struct SpawnInfo
+{
+	std::string		m_name;
+	Vec3			m_spawnLocation;
+	EulerAngles		m_actorOrientation;
+};
 
 class MapDefinition
 {
@@ -19,4 +28,5 @@ public:
 	Shader* m_shader;
 	Texture* m_spriteSheetTexture;
 	IntVec2			m_spriteSheetCellCount;
+	std::vector<SpawnInfo> m_spawnInfos;
 };

@@ -13,6 +13,7 @@ public:
 	void GetAsVectors_IFwd_JLeft_KUp(Vec3& out_forwardIBasis, Vec3& out_leftJBasis, Vec3& out_upKBasis) const;
 	// void GetAsVectors_IRight_JUp_KFwd( Vec3& out_rightIBasis, Vec3& out_upJBasis, Vec3& out_forwardKBasis ) const;
 	Mat44 GetAsMatrix_IFwd_JLeft_KUp() const;
+	void SetFromText( char const* text );
 	// Mat44 GetAsMatrix_IRight_JUp_KFwd() const;
 
 	void operator += (EulerAngles const& anglesToAdd);

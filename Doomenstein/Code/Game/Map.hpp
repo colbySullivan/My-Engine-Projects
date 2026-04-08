@@ -18,31 +18,6 @@
 class Game;
 class Actor;
 
-////-----------------------------------------------------------------------------------------------
-//struct MapDefinition
-//{
-//	std::string		m_name;
-//	Image			m_image;
-//	Shader*			m_shader;
-//	Texture*		m_spriteSheetTexture;
-//	IntVec2			m_spriteSheetCellCount;
-//};
-
-struct MapSpawnInfo
-{
-	std::string		m_name;
-	Vec3			m_spawnPosition;
-	EulerAngles		m_spawnOrientation;
-};
-
-//-----------------------------------------------------------------------------------------------
-struct SpawnInfo
-{
-	std::string		m_name;
-	Vec3			m_spawnLocation;
-	EulerAngles		m_actorOrientation;
-};
-
 class Map
 {
 public:

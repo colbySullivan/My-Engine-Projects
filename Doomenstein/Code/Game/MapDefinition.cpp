@@ -25,27 +25,25 @@ void MapDefinition::InitializeMapDefs()
 				std::string shaderPath = m_xml.ParseXmlAttribute( *mapDefElement, "shader", "Data/Shaders/Diffuse" );
 				std::string texturePath = m_xml.ParseXmlAttribute( *mapDefElement, "spriteSheetTexture", "Data/Images/Terrain_8x8.png" );
 				IntVec2 cellCount = m_xml.ParseXmlAttribute( *mapDefElement, "spriteSheetCellCount", IntVec2( 0, 0 ) );
-
-				//XmlElement* inventoryElem = mapDefElement->FirstChildElement( "SpawnInfos" );
-				//if ( inventoryElem )
-				//{
-				//	XmlElement* spawnElem = inventoryElem->FirstChildElement( "SpawnInfo" );
-				//	while ( spawnElem )
-				//	{
-				//		SpawnInfo spawnI;
-				//		spawnI.m_name = m_xml.ParseXmlAttribute( *mapDefElement, "actor", "nothing" );
-				//		spawnI.m_spawnLocation = m_xml.ParseXmlAttribute( *mapDefElement, "position", Vec3( 0.f, 0.f, 0.f ) );
-				//		if ( spawnI.m_name != "nothing" )
-				//		{
-				//			//m_spawnInfo.push_back( spawnI );
-				//			spawnI.m_spawnLocation = Vec3::ZERO;
-				//		}
-				//		spawnElem = spawnElem->NextSiblingElement( "SpawnInfo" );
-
-				//	}
-				//}
-
+				
 				MapDefinition* mapDef = CreateMapDef( name, imagePath, shaderPath, texturePath, cellCount );
+
+				XmlElement* spawnInfosElem = mapDefElement->FirstChildElement( "SpawnInfos" );
+				if ( spawnInfosElem )
+				{
+					XmlElement* spawnElem = spawnInfosElem->FirstChildElement( "SpawnInfo" );
+					while ( spawnElem )
+					{
+						SpawnInfo spawnI;
+						spawnI.m_name = m_xml.ParseXmlAttribute( *spawnElem, "actor", "nothing" );
+						spawnI.m_spawnLocation = m_xml.ParseXmlAttribute( *spawnElem, "position", Vec3( 0.f, 0.f, 0.f ) );
+						spawnI.m_actorOrientation = m_xml.ParseXmlAttribute( *spawnElem, "orientation", EulerAngles( 0.f, 0.f, 0.f ) );
+
+						mapDef->m_spawnInfos.push_back( spawnI );
+						spawnElem = spawnElem->NextSiblingElement( "SpawnInfo" );
+					}
+				}
+
 				s_definitions[mapDef->m_name] = mapDef;
 				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
 			}

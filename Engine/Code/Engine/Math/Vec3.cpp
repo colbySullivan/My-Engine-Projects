@@ -213,4 +213,5 @@ void Vec3::SetFromText( char const* text )
 	Strings splitVec2 = SplitStringOnDelimiter( text, ',' );
 	x = static_cast< float >( atof( splitVec2[0].c_str() ) );
 	y = static_cast< float >( atof( splitVec2[1].c_str() ) );
+	z = static_cast< float >( atof( splitVec2[2].c_str() ) );
 }
