@@ -4,6 +4,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
 
 struct LightingConstants
 {
@@ -350,21 +351,57 @@ void Map::Render() const
 //-----------------------------------------------------------------------------------------------
 Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 {
+	int freeIndex = -1;
+	for ( int i = 0; i < ( int )m_actorVector.size(); ++i )
+	{
+		if ( m_actorVector[i] == nullptr )
+		{
+			freeIndex = i;
+			break;
+		}
+	}
+	if ( freeIndex == -1 )
+	{
+		if ( m_actorVector.size() >= ActorHandle::MAX_ACTOR_INDEX )
+		{
+			ERROR_AND_DIE( "Exceeded max actor count!" );
+		}
+		m_actorVector.push_back( nullptr );
+		freeIndex = ( int )m_actorVector.size() - 1;
+	}
+
+	if ( m_nextActorUID > ActorHandle::MAX_ACTOR_UID )
+	{
+		ERROR_AND_DIE( "Actor UID overflow!" );
+	}
+
 	Actor* newActor = new Actor( m_game, spawnInfo.m_spawnLocation, spawnInfo.m_actorOrientation );
-	newActor->m_actorHandle = ActorHandle( m_nextActorUID, m_actorVector.size() );
-	m_actorVector.push_back( newActor );
-	m_nextActorUID++;
+	newActor->m_actorHandle = ActorHandle( m_nextActorUID++, freeIndex );
+	m_actorVector[freeIndex] = newActor;
 	return newActor;
 }
 
 //-----------------------------------------------------------------------------------------------
 Actor* Map::GetActorByHandle( const ActorHandle handle ) const
 {
-	if ( handle.IsValid() )
+	unsigned int index = handle.GetIndex();
+	if ( index >= m_actorVector.size() )
 	{
-		return m_actorVector[handle.GetIndex()];
+		return nullptr;
 	}
-	return nullptr;
+
+	Actor* actor = m_actorVector[index];
+	if ( actor == nullptr )
+	{
+		return nullptr;
+	}
+
+	if ( actor->m_actorHandle != handle ) 
+	{
+		return nullptr;
+	}
+
+	return actor;
 }
 
 //------------------------------------------------------------------------------
