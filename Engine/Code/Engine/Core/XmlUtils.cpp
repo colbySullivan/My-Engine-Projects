@@ -24,6 +24,11 @@ bool XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attribu
 	const char* stringBool = nullptr;
 	element.QueryAttribute( attributeName, &stringBool );
 
+	if ( stringBool == nullptr )
+	{
+		return defaultValue;
+	}
+
 	if ( strcmp( stringBool, "1" ) == 0 || strcmp( stringBool, "yes" ) == 0 || strcmp( stringBool, "true" ) == 0 || strcmp( stringBool, "t" ) == 0 )
 	{
 		return true;
