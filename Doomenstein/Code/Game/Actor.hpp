@@ -7,6 +7,7 @@
 #include "Game/ActorHandle.hpp"
 #include "Game/Map.hpp"
 #include "Game/ActorDefinitions.hpp"
+#include "Game/MapDefinition.hpp"
 
 //-----------------------------------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ class Actor
 {
 public:
 	Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices );
-	Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation );
+	Actor( Game* owner, SpawnInfo spawnInfo );
 	Actor( ActorDefinition*	ActorDef );
 	virtual ~Actor();
 
@@ -38,7 +39,7 @@ public:
 
 public:
 	ActorHandle	m_actorHandle;
-	ActorDefinition*	m_actorDef;
+	const ActorDefinition*	m_actorDef;
 	Map*		m_map;
 	Vec3        m_position;
 	EulerAngles	m_orientation = EulerAngles( 0.f, 0.f, 0.f );
@@ -67,4 +68,7 @@ public:
 
 private:
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
+	void CreatePlayer();
+	void CreateDemon();
+	void CreateSpawnPoint();
 };

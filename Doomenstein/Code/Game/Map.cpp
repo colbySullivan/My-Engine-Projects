@@ -134,20 +134,21 @@ void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 //------------------------------------------------------------------------------
 void Map::AddActors()
 {
-	m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	//m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	//m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
+	//m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
 
-	Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
-	projectile->m_controlledByPlayer = true;
-	projectile->m_actorType = PROJECTILE;
-	projectile->m_canBePushed = true;
-	m_actorVector.push_back( projectile );
+	//Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
+	//projectile->m_controlledByPlayer = true;
+	//projectile->m_actorType = PROJECTILE;
+	//projectile->m_canBePushed = true;
+	//m_actorVector.push_back( projectile );
 
-	SpawnInfo newSpawn;
-	newSpawn.m_actorOrientation = EulerAngles(0.f,0.f,0.f);
-	newSpawn.m_spawnLocation = Vec3( 5.5f, 5.5f, 0.25f );
-	SpawnActor(newSpawn);
+
+	for ( SpawnInfo spawnInfo : m_definition->m_spawnInfos )
+	{
+		SpawnActor( spawnInfo );
+	}
 }
 
 void Map::CreateBuffers()
@@ -375,7 +376,7 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 		ERROR_AND_DIE( "Actor UID overflow!" );
 	}
 
-	Actor* newActor = new Actor( m_game, spawnInfo.m_spawnLocation, spawnInfo.m_actorOrientation );
+	Actor* newActor = new Actor( m_game, spawnInfo );
 	newActor->m_actorHandle = ActorHandle( m_nextActorUID++, freeIndex );
 	m_actorVector[freeIndex] = newActor;
 	return newActor;

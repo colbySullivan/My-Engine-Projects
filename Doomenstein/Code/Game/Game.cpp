@@ -68,7 +68,6 @@ Game::~Game()
 void Game::Startup()
 {
 	CreateMapsFromDef();
-	// #todo there is an issue if you load and unload the game multiple times before exiting
 	m_isPaused = false;
 	CreateProps();
 	if ( m_maps.size() > 0 )

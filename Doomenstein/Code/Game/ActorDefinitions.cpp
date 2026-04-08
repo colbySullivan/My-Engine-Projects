@@ -27,8 +27,8 @@ void ActorDefinition::InitializeActorDefs()
 		XmlElement* collElem = actorElem->FirstChildElement( "Collision" );
 		if ( collElem ) 
 		{
-			def.m_physicsRadius = xml.ParseXmlAttribute( *collElem, "physicsRadius", 0.f );
-			def.m_physicsHeight = xml.ParseXmlAttribute( *collElem, "physicsHeight", 0.f );
+			def.m_physicsRadius = xml.ParseXmlAttribute( *collElem, "radius", 1.f );
+			def.m_physicsHeight = xml.ParseXmlAttribute( *collElem, "height", 1.f );
 			def.m_collidesWithWorld = xml.ParseXmlAttribute( *collElem, "collidesWithWorld", false );
 			def.m_collidesWithActors = xml.ParseXmlAttribute( *collElem, "collidesWithActors", false );
 		}

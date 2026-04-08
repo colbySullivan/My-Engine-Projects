@@ -19,15 +19,14 @@ Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
 }
 
 //-----------------------------------------------------------------------------------------------
-Actor::Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation )
+Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	: m_game( owner )
-	, m_position( spawn )
-	, m_orientation( startOrientation )
+	, m_position( spawnInfo.m_spawnLocation )
+	, m_orientation( spawnInfo.m_actorOrientation ) // #todo rest of the variables
 {
-	m_height = 0.5f;
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, 0.35f, m_color, AABB2::ZERO_TO_ONE, 32 );
+	if ( spawnInfo.m_name == "Marine" )			CreatePlayer();
+	if ( spawnInfo.m_name == "Demon" )			CreateDemon();
+	if ( spawnInfo.m_name == "SpawnPoint" )		CreateSpawnPoint();
 }
 
 Actor::Actor( ActorDefinition* ActorDef )
@@ -162,4 +161,38 @@ void Actor::ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds )
 	worldDir = worldDir.GetNormalized();
 
 	m_position += worldDir * speed * deltaSeconds;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::CreatePlayer()
+{
+	m_actorDef = ActorDefinition::GetByName( "Marine" );
+	m_height = m_actorDef->m_physicsHeight;
+	m_radius = m_actorDef->m_physicsRadius;
+
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	m_height = m_actorDef->m_physicsHeight;
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::CreateDemon()
+{
+	m_actorDef =  ActorDefinition::GetByName( "Demon");
+	m_height = m_actorDef->m_physicsHeight;
+	m_radius = m_actorDef->m_physicsRadius;
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
+	//Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::CreateSpawnPoint()
+{
+	m_actorDef =  ActorDefinition::GetByName( "SpawnPoint" );
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
 }

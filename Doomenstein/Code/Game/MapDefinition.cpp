@@ -34,12 +34,12 @@ void MapDefinition::InitializeMapDefs()
 					XmlElement* spawnElem = spawnInfosElem->FirstChildElement( "SpawnInfo" );
 					while ( spawnElem )
 					{
-						SpawnInfo spawnI;
-						spawnI.m_name = m_xml.ParseXmlAttribute( *spawnElem, "actor", "nothing" );
-						spawnI.m_spawnLocation = m_xml.ParseXmlAttribute( *spawnElem, "position", Vec3( 0.f, 0.f, 0.f ) );
-						spawnI.m_actorOrientation = m_xml.ParseXmlAttribute( *spawnElem, "orientation", EulerAngles( 0.f, 0.f, 0.f ) );
+						SpawnInfo mapSpawnInfo;
+						mapSpawnInfo.m_name = m_xml.ParseXmlAttribute( *spawnElem, "actor", "nothing" );
+						mapSpawnInfo.m_spawnLocation = m_xml.ParseXmlAttribute( *spawnElem, "position", Vec3( 0.f, 0.f, 0.f ) );
+						mapSpawnInfo.m_actorOrientation = m_xml.ParseXmlAttribute( *spawnElem, "orientation", EulerAngles( 0.f, 0.f, 0.f ) );
 
-						mapDef->m_spawnInfos.push_back( spawnI );
+						mapDef->m_spawnInfos.push_back( mapSpawnInfo );
 						spawnElem = spawnElem->NextSiblingElement( "SpawnInfo" );
 					}
 				}
