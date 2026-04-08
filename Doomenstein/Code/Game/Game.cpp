@@ -17,6 +17,7 @@
 #include "Game/Player.hpp"
 #include <ThirdParty/stb/stb_image.h>
 #include "TileDefinitions.hpp"
+#include "ActorDefinitions.hpp"
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
@@ -40,6 +41,7 @@ Game::Game()
 	m_player->m_orientation = EulerAngles( 0.f, 0.f, 0.f );
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
 	TileDefinition::InitializeTileDefs();
+	ActorDefinition::InitializeActorDefs();
 }
 
 //-----------------------------------------------------------------------------------------------

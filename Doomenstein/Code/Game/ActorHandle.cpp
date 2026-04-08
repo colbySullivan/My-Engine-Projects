@@ -1,6 +1,6 @@
 #include "Game/ActorHandle.hpp"
 
-//const ActorHandle ActorHandle::INVALID = 0x0000ffffu;
+const ActorHandle ActorHandle::INVALID = ActorHandle();
 
 
 ActorHandle::ActorHandle()
@@ -15,8 +15,7 @@ ActorHandle::ActorHandle( unsigned int uid, unsigned int index )
 
 bool ActorHandle::IsValid() const
 {
-	//return m_data != INVALID;
-	return true;
+	return m_data != INVALID.m_data;
 }
 
 unsigned int ActorHandle::GetIndex() const
@@ -27,11 +26,11 @@ unsigned int ActorHandle::GetIndex() const
 
 bool ActorHandle::operator!=( const ActorHandle& other ) const
 {
-	return false; // #todo implement this
+	return m_data != other.m_data;
 }
 
 bool ActorHandle::operator==( const ActorHandle& other ) const
 {
-	return false; // #todo implement this
+	return m_data == other.m_data;
 }
 

@@ -6,6 +6,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Game/ActorHandle.hpp"
 #include "Game/Map.hpp"
+#include "Game/ActorDefinitions.hpp"
 
 //-----------------------------------------------------------------------------------------------
 
@@ -14,12 +15,6 @@ enum ActorType
 	ACTOR,
 	PROJECTILE,
 	ActorTypeCount
-};
-
-//-----------------------------------------------------------------------------------------------
-struct ActorDef
-{
-	
 };
 
 struct EulerAngles;
@@ -32,6 +27,7 @@ class Actor
 public:
 	Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices );
 	Actor( Game* owner, Vec3 spawn, EulerAngles startOrientation );
+	Actor( ActorDefinition*	m_actorDef );
 	virtual ~Actor();
 
 	virtual void Update( float deltaSeconds );
@@ -42,7 +38,7 @@ public:
 
 public:
 	ActorHandle	m_actorHandle;
-	ActorDef*	m_actorDef;
+	ActorDefinition*	m_actorDef;
 	Map*		m_map;
 	Vec3        m_position;
 	EulerAngles	m_orientation = EulerAngles( 0.f, 0.f, 0.f );

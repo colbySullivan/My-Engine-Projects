@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="ActorDefinitions.cpp" />
     <ClCompile Include="ActorHandle.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -203,6 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.hpp" />
+    <ClInclude Include="ActorDefinitions.hpp" />
     <ClInclude Include="ActorHandle.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
