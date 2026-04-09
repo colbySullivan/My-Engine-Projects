@@ -128,6 +128,11 @@ void Actor::OnUnpossessed()
 	}
 }
 
+bool Actor::IsPossessed() const
+{
+	return m_currentController != nullptr;
+}
+
 //------------------------------------------------------------------------------
 void Actor::ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds )
 {

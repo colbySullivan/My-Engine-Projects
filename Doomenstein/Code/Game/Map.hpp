@@ -28,6 +28,7 @@ public:
 
 	void CreateTiles();
 	void CreateGeometry();
+	void DebugPrintActors();
 	void AddGeometryForWall( const AABB3& bounds, const AABB2& UVs );
 	void AddGeometryForFloor( const AABB3& bounds, const AABB2& UVs );
 	void AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs );

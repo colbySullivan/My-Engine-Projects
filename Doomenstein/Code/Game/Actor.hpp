@@ -30,6 +30,7 @@ public:
 	virtual Mat44 GetModelToWorldTransform() const;
 	void OnPossessed( class Controller* newController );
 	void OnUnpossessed();
+	bool IsPossessed() const;
 	void MoveInDirection( const Vec3& direction, float speed );
 
 public:

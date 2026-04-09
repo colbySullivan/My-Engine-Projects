@@ -83,6 +83,7 @@ public:
 	int m_currentMapNumber = 0;
 	Texture* m_teemoTexture = nullptr;
 	OBJModel* m_teemoModel = nullptr;
+	PlayerController* m_playerController = nullptr;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -107,5 +108,4 @@ private:
 	int				m_roundBlackHoleAmount = 2;
 	void CreateMapsFromDef();
 
-	PlayerController* m_playerController = nullptr;
 };

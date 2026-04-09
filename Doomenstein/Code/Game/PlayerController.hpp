@@ -17,6 +17,8 @@ public:
 
 	void UpdateInput( float deltaSeconds );
 	void UpdateCamera( float deltaSeconds );
+	
+	bool		m_isFreeFlyMode;
 
 private:
 	void HandleActorInput( float deltaSeconds );
@@ -30,7 +32,6 @@ private:
 	Camera*		m_camera;
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
-	bool		m_isFreeFlyMode;
 
 	// Input parameters
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;

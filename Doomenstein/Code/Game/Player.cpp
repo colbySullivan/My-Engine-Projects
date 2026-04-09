@@ -26,12 +26,14 @@ Player::~Player()
 void Player::Update( [[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
-	if ( !m_game->m_controlPlayerMode )
+
+	bool isInActorMode = m_game->m_playerController && !m_game->m_playerController->m_isFreeFlyMode;
+
+	if ( !isInActorMode )
 	{
 		UpdateKeyboardAndControllerInput( deltaSeconds, controller );
+		m_worldCamera->SetPositionAndOrientation( m_position, m_orientation );
 	}
-
-	m_worldCamera->SetPositionAndOrientation( m_position, m_orientation );
 	
 }
 
@@ -106,7 +108,7 @@ void Player::UpdateKeyboardAndControllerInput( float deltaSeconds, XboxControlle
 		localMoveDir.z += 1.f;
 	}
 
-	ApplyMovement( localMoveDir, speed, deltaSeconds );
+	//ApplyMovement( localMoveDir, speed, deltaSeconds );
 
 	if ( g_engine->m_input->IsKeyDown( 'H' ) || controller.WasButtonJustPressed(XboxButtonID::START) )
 	{

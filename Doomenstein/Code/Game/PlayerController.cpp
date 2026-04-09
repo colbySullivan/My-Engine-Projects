@@ -30,6 +30,11 @@ void PlayerController::Update( float deltaSeconds )
 	UpdateCamera( deltaSeconds );
 
 	Actor* actor = GetActor();
+
+	if ( input->WasKeyJustPressed( 'L' ) ) 
+	{
+		m_map->DebugPrintActors();
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -120,7 +125,8 @@ void PlayerController::ProcessMovementInput( float deltaSeconds )
 	{
 		moveDir = moveDir.GetNormalized();
 
-		Mat44 cameraMatrix = actor->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+		//Mat44 cameraMatrix = actor->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+		Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
 		Vec3 forward = cameraMatrix.GetIBasis3D();
 		Vec3 left = cameraMatrix.GetJBasis3D();
 
@@ -138,8 +144,8 @@ void PlayerController::ProcessLookInput( float deltaSeconds )
 	Vec2 mouseDelta = g_engine->m_input->GetCursorClientDelta();
 	Vec2 lookInput = Vec2( static_cast< float >( mouseDelta.x ), static_cast< float >( mouseDelta.y ) );
 
-	m_freeFlyCameraOrientation.m_yawDegrees += lookInput.x * MOUSE_SENSITIVITY;
-	m_freeFlyCameraOrientation.m_pitchDegrees -= lookInput.y * MOUSE_SENSITIVITY;
+	m_freeFlyCameraOrientation.m_yawDegrees -= lookInput.x * MOUSE_SENSITIVITY;
+	m_freeFlyCameraOrientation.m_pitchDegrees += lookInput.y * MOUSE_SENSITIVITY;
 
 	m_freeFlyCameraOrientation.m_pitchDegrees = GetClamped( m_freeFlyCameraOrientation.m_pitchDegrees, -MAX_CAMERA_PITCH, MAX_CAMERA_PITCH );
 
@@ -160,14 +166,18 @@ void PlayerController::UpdateCamera( float deltaSeconds )
 		Vec3 cameraPos = actor->m_position;
 		cameraPos.z += actor->m_actorDef->m_eyeHeight;
 
-		m_camera->SetPosition( cameraPos );
+		m_camera->SetPositionAndOrientation( cameraPos, m_freeFlyCameraOrientation );
 
 		if ( actor->m_isDead )
 		{
 			// #todo death camera behavior
 		}
 	}
-	// #Todo free fly camera
+	else
+	{
+		// Free-fly mode
+		m_camera->SetPositionAndOrientation( m_freeFlyCameraPosition, m_freeFlyCameraOrientation );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -193,6 +203,11 @@ void PlayerController::PossessNextActor()
 		if ( GetActor() )
 		{
 			m_isFreeFlyMode = false;
+
+			Actor* newActor = GetActor();
+			m_freeFlyCameraOrientation.m_yawDegrees = newActor->m_orientation.m_yawDegrees;
+			m_freeFlyCameraOrientation.m_pitchDegrees = 0.f;
+			m_freeFlyCameraOrientation.m_rollDegrees = 0.f;
 		}
 	}
 }

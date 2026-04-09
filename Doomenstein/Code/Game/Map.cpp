@@ -246,7 +246,7 @@ void Map::CollideActorsWithMap()
 	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
 	{
 		Actor* actor = m_actorVector[actorIndex];
-		if ( actor->m_controlledByPlayer )
+		if ( actor && actor->m_actorDef->m_simulated )
 		{
 			CollideActorWithMap( actor );
 		}
@@ -698,4 +698,26 @@ void Map::CreateGeometry()
 		}
 	}
 	CreateBuffers();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::DebugPrintActors()
+{
+	g_engine->m_console->AddLine( Rgba8(120,120,0), "=== ACTORS IN MAP ===");
+	for ( int i = 0; i < ( int )m_actorVector.size(); ++i )
+	{
+		Actor* actor = m_actorVector[i];
+		if ( actor )
+		{
+			std::string canPossess = actor->m_actorDef->m_canBePossessed ? "YES" : "NO";
+			std::string isDead = actor->m_isDead ? "DEAD" : "ALIVE";
+			g_engine->m_console->AddLine( Rgba8(120,120,0),
+				Stringf( "[%d] %s - Possessable: %s, %s",
+					i, actor->m_actorDef->m_name.c_str(), canPossess.c_str(), isDead.c_str() ) );
+		}
+		else
+		{
+			g_engine->m_console->AddLine( Rgba8(120,120,120), "[%d] (empty slot)", i );
+		}
+	}
 }
