@@ -48,11 +48,17 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 {
 	//m_orientation.m_pitchDegrees += m_angularVelocity.m_pitchDegrees * deltaSeconds;
 	//m_orientation.m_rollDegrees += m_angularVelocity.m_rollDegrees * deltaSeconds;
-	//m_orientation.m_yawDegrees += m_angularVelocity.m_yawDegrees * deltaSeconds;
-	if ( m_controlledByPlayer && m_game->m_controlPlayerMode )
+	////m_orientation.m_yawDegrees += m_angularVelocity.m_yawDegrees * deltaSeconds;
+	//if ( m_controlledByPlayer && m_game->m_controlPlayerMode )
+	//{
+	//	UpdateMove();
+	//}
+
+	if ( m_actorDef && m_actorDef->m_simulated && !m_isDead )
 	{
 		UpdateMove();
 	}
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -77,51 +83,11 @@ void Actor::Render() const
 void Actor::UpdateMove()
 {
 	float deltaSeconds =  (float) g_engine->m_systemClock->GetDeltaSeconds();
-	XboxController const& controller = g_engine->m_input->GetController( 0 );
-
-	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
-	{
-		return;
-	}
-	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
-	Vec2 rightStickPos = controller.GetRightStick().GetPosition();
-	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
-	float rightThreshold = controller.GetRightStick().GetInnerDeadZoneFraction();
-
-	if ( rightStickPos.y > rightThreshold || rightStickPos.y < -rightThreshold )
-	{
-		m_orientation.m_pitchDegrees -= rightStickPos.y * deltaSeconds * PITCH_RATE;
-	}
-
-	if ( rightStickPos.x > rightThreshold || rightStickPos.x < -rightThreshold )
-	{
-		m_orientation.m_yawDegrees -= rightStickPos.x * deltaSeconds * YAW_RATE;
-	}
-	float speed = MOVE_SPEED;
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) || controller.IsButtonDown( XboxButtonID::A ) )
-	{
-		speed *= 10.f;
-	}
-
-	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
-	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
-	{
-		localMoveDir.x += 1.f;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'S' ) || leftStickPos.y < -leftThreshold )
-	{
-		localMoveDir.x -= 1.f;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'A' ) || leftStickPos.x < -leftThreshold )
-	{
-		localMoveDir.y += 1.f;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'D' ) || leftStickPos.x > leftThreshold )
-	{
-		localMoveDir.y -= 1.f;
-	}
-
-	ApplyMovement( localMoveDir, speed, deltaSeconds );
+	Vec3 dragForce = -m_velocity * m_actorDef->m_drag;
+	m_acceleration += dragForce;
+	m_velocity += m_acceleration * deltaSeconds;
+	m_position += m_velocity * deltaSeconds;
+	m_acceleration = Vec3( 0.f, 0.f, 0.f );
 }
 
 //------------------------------------------------------------------------------
@@ -139,6 +105,30 @@ Mat44 Actor::GetModelToWorldTransform() const
 	return model;
 }
 
+//-----------------------------------------------------------------------------------------------
+void Actor::OnPossessed( Controller* newController )
+{
+	if ( m_currentController && m_currentController != newController )
+	{
+		m_savedAIController = m_currentController;
+	}
+
+	m_currentController = newController;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::OnUnpossessed()
+{
+	m_currentController = nullptr;
+
+	if ( m_savedAIController )
+	{
+		m_savedAIController->Possess( this );
+		m_savedAIController = nullptr;
+	}
+}
+
+//------------------------------------------------------------------------------
 void Actor::ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds )
 {
 	if ( localMoveDir == Vec3( 0.f, 0.f, 0.f ) )
@@ -193,5 +183,22 @@ void Actor::CreateSpawnPoint()
 	m_color = Rgba8( 255.f, 255.f, 0.f );
 	m_height = 1.f;
 	m_radius = 0.5;
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE, 32 );
+	//AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE, 32 );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::MoveInDirection( const Vec3& direction, float speed )
+{
+	if ( m_isDead || !m_actorDef )
+		return;
+
+	Vec3 moveForce = direction * speed * m_actorDef->m_drag;
+	AddForce( moveForce );
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Actor::AddForce( const Vec3& force )
+{
+	m_acceleration += force;
 }

@@ -75,6 +75,13 @@ void ActorDefinition::InitializeActorDefs()
 			def.m_cellCount = xml.ParseXmlAttribute( *visualsElem, "cellCount", IntVec2( 1, 1 ) );
 		}
 
+		XmlElement* cameraElem = actorElem->FirstChildElement( "Camera" );
+		if ( cameraElem )
+		{
+			def.m_eyeHeight = xml.ParseXmlAttribute( *cameraElem, "eyeHeight", 0.f );
+			def.m_cameraFOV = xml.ParseXmlAttribute( *cameraElem, "cameraFOV", 60.f );
+		}
+
 		s_definitions[def.m_name] = def;
 		actorElem = actorElem->NextSiblingElement( "ActorDefinition" );
 	}

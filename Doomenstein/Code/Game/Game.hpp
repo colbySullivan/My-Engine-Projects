@@ -8,6 +8,7 @@
 #include "Engine/Core/Clock.hpp"
 #include "Engine/Renderer/OBJLoader.hpp"
 #include "Game/Map.hpp"
+#include "PlayerController.hpp"
 
 class App;
 class Actor;
@@ -105,4 +106,6 @@ private:
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
 	void CreateMapsFromDef();
+
+	PlayerController* m_playerController = nullptr;
 };

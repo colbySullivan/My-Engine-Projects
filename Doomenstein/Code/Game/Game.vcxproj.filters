@@ -35,6 +35,9 @@
     <Filter Include="GameDefinitions">
       <UniqueIdentifier>{9afb09b2-2720-46d8-8401-91fe4cd1bca9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controllers">
+      <UniqueIdentifier>{5d12cb02-e57b-4b0c-bd30-054f2783f732}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -73,6 +76,15 @@
     <ClCompile Include="MapDefinition.cpp">
       <Filter>GameDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="AiController.cpp">
+      <Filter>Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -110,6 +122,15 @@
     </ClInclude>
     <ClInclude Include="MapDefinition.hpp">
       <Filter>GameDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.hpp">
+      <Filter>Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="AiController.hpp">
+      <Filter>Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.hpp">
+      <Filter>Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

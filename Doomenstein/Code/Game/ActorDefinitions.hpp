@@ -47,6 +47,10 @@ public:
 	std::string m_spriteSheetPath;
 	IntVec2     m_cellCount = IntVec2( 1, 1 );
 
+	// Camera
+	float       m_eyeHeight = 0.f;
+	float       m_cameraFOV = 60.f;
+
 	// Weapons and Inventory
 	std::vector<std::string> m_weaponNames;
 

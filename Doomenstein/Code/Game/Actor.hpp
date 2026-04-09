@@ -8,6 +8,7 @@
 #include "Game/Map.hpp"
 #include "Game/ActorDefinitions.hpp"
 #include "Game/MapDefinition.hpp"
+#include "Controller.hpp"
 
 struct EulerAngles;
 class Game;
@@ -27,6 +28,9 @@ public:
 	void UpdateMove();
 	void SetPosXY( float x, float y );
 	virtual Mat44 GetModelToWorldTransform() const;
+	void OnPossessed( class Controller* newController );
+	void OnUnpossessed();
+	void MoveInDirection( const Vec3& direction, float speed );
 
 public:
 	ActorHandle	m_actorHandle;
@@ -57,8 +61,12 @@ public:
 	bool		m_canBePushed = false;
 
 private:
+	Controller* m_currentController = nullptr;
+	Controller* m_savedAIController = nullptr;
+
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
 	void CreatePlayer();
 	void CreateDemon();
 	void CreateSpawnPoint();
+	void AddForce( const Vec3& force );
 };

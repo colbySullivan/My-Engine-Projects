@@ -14,9 +14,11 @@
 #include "Game/Actor.hpp"
 #include "Game/ActorHandle.hpp"
 #include "MapDefinition.hpp"
+#include "Controller.hpp"
 
 class Game;
 class Actor;
+class Controller;
 
 class Map
 {
@@ -41,6 +43,9 @@ public:
 	void CollideActors( Actor* actorA, Actor* actorB );
 	void CollideActorsWithMap();
 	void CollideActorWithMap( Actor* actor );
+
+	void PossessNextActor( Controller* controller );
+	void SpawnPlayer( Controller* playerController );
 
 
 	void Render() const;

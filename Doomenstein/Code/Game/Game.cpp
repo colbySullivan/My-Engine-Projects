@@ -75,6 +75,13 @@ void Game::Startup()
 		m_currentMapNumber = 0;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
+
+	if ( m_currentMap )
+	{
+		m_playerController = new PlayerController( m_currentMap, m_player->m_worldCamera );
+		m_currentMap->SpawnPlayer( m_playerController );
+	}
+
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // The world is not ready for summoners rift obj
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
@@ -115,6 +122,11 @@ void Game::Update()
 		m_player->Update( deltaSeconds );
 		m_currentMap->Update();
 		DebugInput();
+		if ( m_playerController )
+		{
+			m_playerController->Update( deltaSeconds );
+			m_playerController->UpdateInput( deltaSeconds );
+		}
 	}
 	UpdateKeyboardInput( controller );
 

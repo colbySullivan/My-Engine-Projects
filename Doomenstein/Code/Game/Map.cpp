@@ -30,7 +30,6 @@ Map::Map( Game* game, const MapDefinition* definition )
 	CreateTiles();
 	CreateGeometry();
 	AddActors();
-	GetActorByHandle(m_actorVector[4]->m_actorHandle)->m_position = Vec3( 0.f, 0.f, 0.f );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -273,6 +272,78 @@ void Map::CollideActorWithMap( Actor* actor )
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::PossessNextActor( Controller* controller )
+{
+	if ( !controller )
+		return;
+
+	ActorHandle currentHandle = controller->GetActorHandle();
+	int startIndex = 0;
+
+	if ( currentHandle.IsValid() )
+	{
+		startIndex = currentHandle.GetIndex() + 1;
+	}
+
+	for ( int i = startIndex; i < ( int )m_actorVector.size(); ++i )
+	{
+		Actor* actor = m_actorVector[i];
+		if ( actor && actor->m_actorDef && !actor->m_isDead && actor->m_actorDef->m_canBePossessed )
+		{
+			controller->Possess( actor );
+			return;
+		}
+	}
+
+	for ( int i = 0; i < startIndex; ++i )
+	{
+		Actor* actor = m_actorVector[i];
+		if ( actor && actor->m_actorDef && !actor->m_isDead && actor->m_actorDef->m_canBePossessed )
+		{
+			controller->Possess( actor );
+			return;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::SpawnPlayer( Controller* playerController )
+{
+	if ( !playerController )
+		return;
+
+	Actor* spawnPointActor = nullptr;
+
+	for ( int i = 0; i < ( int )m_actorVector.size(); ++i )
+	{
+		Actor* actor = m_actorVector[i];
+		if ( actor && actor->m_actorDef && actor->m_actorDef->m_name == "SpawnPoint" )
+		{
+			spawnPointActor = actor;
+			break;
+		}
+	}
+
+	Vec3 spawnPos = Vec3( 5.f, 5.f, 0.f );
+	if ( spawnPointActor )
+	{
+		spawnPos = spawnPointActor->m_position;
+	}
+
+	SpawnInfo playerSpawnInfo;
+	playerSpawnInfo.m_name = "Marine";
+	playerSpawnInfo.m_spawnLocation = spawnPos;
+	playerSpawnInfo.m_actorOrientation = EulerAngles( 0.f, 0.f, 0.f );
+
+	Actor* playerActor = SpawnActor( playerSpawnInfo );
+
+	if ( playerActor )
+	{
+		playerController->Possess( playerActor );
+	}
+}
+
+//------------------------------------------------------------------------------
 IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
 {
 	int tileX = static_cast< int >( floorf( worldPos.x ) );
@@ -377,6 +448,7 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 	}
 
 	Actor* newActor = new Actor( m_game, spawnInfo );
+	newActor->m_map = this;
 	newActor->m_actorHandle = ActorHandle( m_nextActorUID++, freeIndex );
 	m_actorVector[freeIndex] = newActor;
 	return newActor;
