@@ -60,17 +60,13 @@ void Actor::Render() const
 {
 	Mat44 modelToWorld = GetModelToWorldTransform();
 	g_engine->m_render->BindShader(nullptr);
-	g_engine->m_render->SetModelConstants( modelToWorld, Rgba8(255, 255, 255));
+	g_engine->m_render->SetModelConstants( modelToWorld, m_color);
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
 	g_engine->m_render->BindTexture( m_texture );
 	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
 
 	Rgba8 modelColor = Rgba8(255,0,0);
-	if ( m_actorType == PROJECTILE )
-	{
-		modelColor = Rgba8( 0, 0, 255 );
-	}
 
 	g_engine->m_render->SetModelConstants( modelToWorld, modelColor );
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
@@ -183,7 +179,7 @@ void Actor::CreateDemon()
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
 	//Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
 }
@@ -193,6 +189,9 @@ void Actor::CreateSpawnPoint()
 {
 	m_actorDef =  ActorDefinition::GetByName( "SpawnPoint" );
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
+	m_color = Rgba8( 255.f, 255.f, 0.f );
+	m_height = 1.f;
+	m_radius = 0.5;
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE, 32 );
 }

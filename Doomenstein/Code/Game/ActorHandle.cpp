@@ -1,6 +1,6 @@
 #include "Game/ActorHandle.hpp"
 
-const ActorHandle ActorHandle::INVALID = ActorHandle();
+const ActorHandle ActorHandle::INVALID(0x0000ffffu, 0x0000ffffu);
 
 
 ActorHandle::ActorHandle()

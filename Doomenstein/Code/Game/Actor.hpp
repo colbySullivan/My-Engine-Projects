@@ -9,15 +9,6 @@
 #include "Game/ActorDefinitions.hpp"
 #include "Game/MapDefinition.hpp"
 
-//-----------------------------------------------------------------------------------------------
-
-enum ActorType
-{
-	ACTOR,
-	PROJECTILE,
-	ActorTypeCount
-};
-
 struct EulerAngles;
 class Game;
 class Map;
@@ -55,16 +46,15 @@ public:
 
 
 	EulerAngles m_angularVelocity;
-	Rgba8 m_color = Rgba8( 255, 255, 255 );
-	Texture* m_texture = nullptr;
-	Game* m_game = nullptr;
+	Rgba8		m_color = Rgba8( 255, 255, 255 );
+	Texture*	m_texture = nullptr;
+	Game*		m_game = nullptr;
 	Vec3        m_start;
 	Vec3        m_end;
 	float		m_radius;
 	float		m_height;
 	bool		m_controlledByPlayer = false;
 	bool		m_canBePushed = false;
-	ActorType	m_actorType = ACTOR;
 
 private:
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
