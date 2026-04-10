@@ -74,34 +74,59 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 {
-	InputSystem* input = g_engine->m_input;
+	XboxController const& controller = g_engine->m_input->GetController( 0 );
 	ProcessLookInput( deltaSeconds );
 
 	float moveSpeed = FREE_FLY_SPEED;
-	if ( input->IsKeyDown( KEYCODE_SHIFT ) )
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) || controller.IsButtonDown( XboxButtonID::A ) )
 	{
 		moveSpeed = FREE_FLY_SPRINT_SPEED;
 	}
 
-	Vec3 moveDir = Vec3( 0.f, 0.f, 0.f );
 
-	if ( input->IsKeyDown( 'W' ) )		moveDir.x += 1.f;
-	if ( input->IsKeyDown( 'S' ) )		moveDir.x -= 1.f;
-	if ( input->IsKeyDown( 'A' ) )		moveDir.y -= 1.f;
-	if ( input->IsKeyDown( 'D' ) )		moveDir.y += 1.f;
-	if ( input->IsKeyDown( 'Z' ) )		moveDir.z -= 1.f;
-	if ( input->IsKeyDown( 'C' ) )		moveDir.z += 1.f;
-
-	if ( moveDir.GetLength() > 0.f )
+	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
 	{
-		moveDir = moveDir.GetNormalized();
+		return;
+	}
+	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
+	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
+
+	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
+	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
+	{
+		localMoveDir.x += 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'S' ) || leftStickPos.y < -leftThreshold )
+	{
+		localMoveDir.x -= 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'A' ) || leftStickPos.x < -leftThreshold )
+	{
+		localMoveDir.y -= 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'D' ) || leftStickPos.x > leftThreshold )
+	{
+		localMoveDir.y += 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'Z' ) || controller.IsButtonDown( XboxButtonID::LEFT_BUMPER ) )
+	{
+		localMoveDir.z -= 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'C' ) || controller.IsButtonDown( XboxButtonID::RIGHT_BUMPER ) )
+	{
+		localMoveDir.z += 1.f;
+	}
+
+	if ( localMoveDir.GetLength() > 0.f )
+	{
+		localMoveDir = localMoveDir.GetNormalized();
 
 		Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
 		Vec3 forward = cameraMatrix.GetIBasis3D();
 		Vec3 left = -cameraMatrix.GetJBasis3D();
 		Vec3 up = Vec3::Z_AXIS;
 
-		Vec3 worldMoveDir = forward * moveDir.x + left * moveDir.y + up * moveDir.z;
+		Vec3 worldMoveDir = forward * localMoveDir.x + left * localMoveDir.y + up * localMoveDir.z;
 		worldMoveDir = worldMoveDir.GetNormalized();
 
 		m_freeFlyCameraPosition += worldMoveDir * moveSpeed * deltaSeconds;
@@ -115,29 +140,49 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 	if ( !actor )
 		return;
 
+	XboxController const& controller = g_engine->m_input->GetController( 0 );
+
 	float moveSpeed = actor->m_actorDef->m_walkSpeed;
 
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) )
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) || controller.IsButtonDown( XboxButtonID::A ) )
 	{
 		moveSpeed = actor->m_actorDef->m_runSpeed;
 	}
 
-	Vec3 moveDir = Vec3( 0.f, 0.f, 0.f );
-
-	if ( g_engine->m_input->IsKeyDown( 'W' ) )		moveDir.x += 1.f;
-	if ( g_engine->m_input->IsKeyDown( 'S' ) )		moveDir.x -= 1.f;
-	if ( g_engine->m_input->IsKeyDown( 'A' ) )		moveDir.y += 1.f;
-	if ( g_engine->m_input->IsKeyDown( 'D' ) )		moveDir.y -= 1.f;
-
-	if ( moveDir.GetLength() > 0.f )
+	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
 	{
-		moveDir = moveDir.GetNormalized();
+		return;
+	}
+	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
+	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
+
+	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
+	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
+	{
+		localMoveDir.x += 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'S' ) || leftStickPos.y < -leftThreshold )
+	{
+		localMoveDir.x -= 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'A' ) || leftStickPos.x < -leftThreshold )
+	{
+		localMoveDir.y += 1.f;
+	}
+	if ( g_engine->m_input->IsKeyDown( 'D' ) || leftStickPos.x > leftThreshold )
+	{
+		localMoveDir.y -= 1.f;
+	}
+
+	if ( localMoveDir.GetLength() > 0.f )
+	{
+		localMoveDir = localMoveDir.GetNormalized();
 
 		Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
 		Vec3 forward = cameraMatrix.GetIBasis3D();
 		Vec3 left = cameraMatrix.GetJBasis3D();
 
-		Vec3 worldMoveDir = forward * moveDir.x + left * moveDir.y;
+		Vec3 worldMoveDir = forward * localMoveDir.x + left * localMoveDir.y;
 		worldMoveDir.z = 0.f; 
 		worldMoveDir = worldMoveDir.GetNormalized();
 
@@ -148,11 +193,25 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 //-----------------------------------------------------------------------------------------------
 void PlayerController::ProcessLookInput( [[maybe_unused]] float deltaSeconds )
 {
+	XboxController const& controller = g_engine->m_input->GetController( 0 );
+
 	Vec2 mouseDelta = g_engine->m_input->GetCursorClientDelta();
 	Vec2 lookInput = Vec2( static_cast< float >( mouseDelta.x ), static_cast< float >( mouseDelta.y ) );
+	Vec2 rightStickPos = controller.GetRightStick().GetPosition();
+	float rightThreshold = controller.GetRightStick().GetInnerDeadZoneFraction();
 
 	m_freeFlyCameraOrientation.m_yawDegrees -= lookInput.x * MOUSE_SENSITIVITY;
 	m_freeFlyCameraOrientation.m_pitchDegrees += lookInput.y * MOUSE_SENSITIVITY;
+
+	if ( rightStickPos.y > rightThreshold || rightStickPos.y < -rightThreshold )
+	{
+		m_freeFlyCameraOrientation.m_pitchDegrees -= rightStickPos.y * deltaSeconds * PITCH_RATE;
+	}
+
+	if ( rightStickPos.x > rightThreshold || rightStickPos.x < -rightThreshold )
+	{
+		m_freeFlyCameraOrientation.m_yawDegrees -= rightStickPos.x * deltaSeconds * YAW_RATE;
+	}
 
 	m_freeFlyCameraOrientation.m_pitchDegrees = GetClamped( m_freeFlyCameraOrientation.m_pitchDegrees, -MAX_CAMERA_PITCH, MAX_CAMERA_PITCH );
 
