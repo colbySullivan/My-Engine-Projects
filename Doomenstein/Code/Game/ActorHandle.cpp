@@ -10,7 +10,7 @@ ActorHandle::ActorHandle()
 
 ActorHandle::ActorHandle( unsigned int uid, unsigned int index )
 {
-	m_data = ( uid << 16 ) | ( index & 0x0000fffeu );
+	m_data = ( uid << 16 ) | ( index & 0x0000ffffu );
 }
 
 bool ActorHandle::IsValid() const
@@ -20,7 +20,7 @@ bool ActorHandle::IsValid() const
 
 unsigned int ActorHandle::GetIndex() const
 {
-	return ( m_data & 0x0000fffeu );
+	return ( m_data & 0x0000ffffu );
 }
 
 

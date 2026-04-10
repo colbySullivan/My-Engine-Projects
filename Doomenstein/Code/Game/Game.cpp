@@ -531,7 +531,7 @@ void Game::RenderAttractMode() const
 
 	std::vector<Vertex> testTextureVerts;
 	AABB2 texturedAABB2( 0.f, 0.f, 512.f, 512.f );
-	AddVertsForAABB2D( testTextureVerts, texturedAABB2, Rgba8( 255, 255, 255, 255 ) ); // This should now set UVs on each Vertex!!
+	AddVertsForAABB2D( testTextureVerts, texturedAABB2, Rgba8( 255, 255, 255, 255 ) );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
@@ -622,7 +622,6 @@ Vec3 Game::GetRaycastOrigin() const
 	}
 	else if ( m_playerController )
 	{
-		// Free-fly mode - get camera position from PlayerController
 		return m_playerController->GetCameraPosition();
 	}
 	return m_player ? m_player->m_position : Vec3( 0, 0, 0 );

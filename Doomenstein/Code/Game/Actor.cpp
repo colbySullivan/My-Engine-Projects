@@ -185,7 +185,7 @@ void Actor::CreateSpawnPoint()
 	m_actorDef =  ActorDefinition::GetByName( "SpawnPoint" );
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
-	m_color = Rgba8( 255.f, 255.f, 0.f );
+	m_color = Rgba8( 255, 255, 0);
 	m_height = 1.f;
 	m_radius = 0.5;
 	//AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE, 32 );
