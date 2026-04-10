@@ -37,9 +37,8 @@ private:
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
 
-	// Input parameters
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
-	static constexpr float FREE_FLY_SPEED = 1.f;
+	static constexpr float FREE_FLY_SPEED = 2.f;
 	static constexpr float FREE_FLY_SPRINT_SPEED = 15.f;
 	static constexpr float MAX_CAMERA_PITCH = 85.f;
 };

@@ -125,7 +125,6 @@ void Game::Update()
 		if ( m_playerController )
 		{
 			m_playerController->Update( deltaSeconds );
-			m_playerController->UpdateInput( deltaSeconds );
 		}
 	}
 	UpdateKeyboardInput( controller );

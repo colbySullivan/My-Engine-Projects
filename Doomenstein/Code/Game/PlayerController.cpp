@@ -25,13 +25,12 @@ PlayerController::~PlayerController()
 //-----------------------------------------------------------------------------------------------
 void PlayerController::Update( float deltaSeconds )
 {
-	InputSystem* input = g_engine->m_input;
 	UpdateInput( deltaSeconds );
 	UpdateCamera( deltaSeconds );
 
 	Actor* actor = GetActor();
 
-	if ( input->WasKeyJustPressed( 'L' ) ) 
+	if ( g_engine->m_input->WasKeyJustPressed( 'L' ) ) 
 	{
 		m_map->DebugPrintActors();
 	}
@@ -45,6 +44,7 @@ void PlayerController::UpdateInput( float deltaSeconds )
 	if ( input->WasKeyJustPressed( 'F' ) )
 	{
 		ToggleCameraMode();
+		g_engine->m_console->AddLine( Rgba8( 255, 255, 0 ), Stringf( "Free Fly Mode: %s", m_isFreeFlyMode ? "TRUE" : "FALSE" ) );
 	}
 
 	if ( input->WasKeyJustPressed( 'N' ) )
@@ -76,27 +76,37 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 {
+	InputSystem* input = g_engine->m_input;
 	ProcessLookInput( deltaSeconds );
 
 	float moveSpeed = FREE_FLY_SPEED;
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) )
+	if ( input->IsKeyDown( KEYCODE_SHIFT ) )
 	{
 		moveSpeed = FREE_FLY_SPRINT_SPEED;
 	}
 
 	Vec3 moveDir = Vec3( 0.f, 0.f, 0.f );
 
-	if (  g_engine->m_input->IsKeyDown( 'W' ) )		moveDir.x += 1.f;
-	if (  g_engine->m_input->IsKeyDown( 'S' ) )		moveDir.x -= 1.f;
-	if (  g_engine->m_input->IsKeyDown( 'A' ) )		moveDir.y += 1.f;
-	if (  g_engine->m_input->IsKeyDown( 'D' ) )		moveDir.y -= 1.f;
-	if (  g_engine->m_input->IsKeyDown( 'Z' ) )		moveDir.z -= 1.f;
-	if (  g_engine->m_input->IsKeyDown( 'C' ) )		moveDir.z += 1.f;
+	if ( input->IsKeyDown( 'W' ) )		moveDir.x += 1.f;
+	if ( input->IsKeyDown( 'S' ) )		moveDir.x -= 1.f;
+	if ( input->IsKeyDown( 'A' ) )		moveDir.y -= 1.f;
+	if ( input->IsKeyDown( 'D' ) )		moveDir.y += 1.f;
+	if ( input->IsKeyDown( 'Z' ) )		moveDir.z -= 1.f;
+	if ( input->IsKeyDown( 'C' ) )		moveDir.z += 1.f;
 
 	if ( moveDir.GetLength() > 0.f )
 	{
 		moveDir = moveDir.GetNormalized();
-		m_freeFlyCameraPosition += moveDir * moveSpeed * deltaSeconds;
+
+		Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
+		Vec3 forward = cameraMatrix.GetIBasis3D();
+		Vec3 left = -cameraMatrix.GetJBasis3D();
+		Vec3 up = Vec3::Z_AXIS;
+
+		Vec3 worldMoveDir = forward * moveDir.x + left * moveDir.y + up * moveDir.z;
+		worldMoveDir = worldMoveDir.GetNormalized();
+
+		m_freeFlyCameraPosition += worldMoveDir * moveSpeed * deltaSeconds;
 	}
 }
 
@@ -125,7 +135,6 @@ void PlayerController::ProcessMovementInput( float deltaSeconds )
 	{
 		moveDir = moveDir.GetNormalized();
 
-		//Mat44 cameraMatrix = actor->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
 		Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
 		Vec3 forward = cameraMatrix.GetIBasis3D();
 		Vec3 left = cameraMatrix.GetJBasis3D();
@@ -175,7 +184,6 @@ void PlayerController::UpdateCamera( float deltaSeconds )
 	}
 	else
 	{
-		// Free-fly mode
 		m_camera->SetPositionAndOrientation( m_freeFlyCameraPosition, m_freeFlyCameraOrientation );
 	}
 }
@@ -209,6 +217,12 @@ void PlayerController::ToggleCameraMode()
 		Actor* actor = GetActor();
 		m_freeFlyCameraPosition = actor->m_position;
 		m_freeFlyCameraPosition.z += actor->m_actorDef->m_eyeHeight;
+	}
+	else if ( !m_isFreeFlyMode && GetActor() )
+	{
+		Actor* actor = GetActor();
+		m_freeFlyCameraOrientation.m_yawDegrees = actor->m_orientation.m_yawDegrees;
+		m_freeFlyCameraOrientation.m_pitchDegrees = 0.f;
 	}
 }
 
