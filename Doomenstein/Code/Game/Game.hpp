@@ -108,4 +108,8 @@ private:
 	int				m_roundBlackHoleAmount = 2;
 	void CreateMapsFromDef();
 
+	Vec3 GetRaycastOrigin() const;
+	Vec3 GetRaycastDirection() const;
+	Mat44 GetRaycastTransform() const;
+
 };

@@ -180,6 +180,25 @@ void PlayerController::UpdateCamera( float deltaSeconds )
 	}
 }
 
+//------------------------------------------------------------------------------
+Camera* PlayerController::GetCamera() const
+{
+	return m_camera;
+}
+
+//------------------------------------------------------------------------------
+Vec3 PlayerController::GetRaycastDirection() const
+{
+	Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
+	return cameraMatrix.GetIBasis3D();
+}
+
+//------------------------------------------------------------------------------
+Vec3 PlayerController::GetCameraPosition() const
+{
+	return m_freeFlyCameraPosition;
+}
+
 //-----------------------------------------------------------------------------------------------
 void PlayerController::ToggleCameraMode()
 {

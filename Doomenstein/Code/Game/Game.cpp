@@ -372,14 +372,20 @@ void Game::DebugInput()
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
-		Vec3 rayStart = m_player->m_position;
-		Vec3 rayDir = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp().GetIBasis3D().GetNormalized();
 		float rayDist = 10.f;
+		Vec3 rayStart = GetRaycastOrigin();
+		Vec3 rayDir = GetRaycastDirection();
+		Mat44 toWorld = GetRaycastTransform();
+		Actor* ownerActor = nullptr;
+		if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+		{
+			ownerActor = m_playerController->GetActor();
+		}
+		RaycastResult3D result = m_currentMap->RaycastAll( rayStart, rayDir, rayDist, ownerActor );
 
-		RaycastResult3D result = m_currentMap->RaycastAll( rayStart, rayDir, rayDist );
-		Mat44 toWorld = m_player->GetModelToWorldTransform();
-		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 10.f;
-		DebugAddWorldCylinder( m_player->m_position, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
+		Vec3 endPos = rayStart + rayDir * rayDist;
+		DebugAddWorldCylinder( rayStart, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
+
 		if ( result.m_didImpact )
 		{
 			DebugAddWorldSphere( result.m_impactPos, 0.06f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
@@ -390,14 +396,20 @@ void Game::DebugInput()
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_RIGHT_MOUSE ) )
 	{
-		Vec3 rayStart = m_player->m_position;
-		Vec3 rayDir = m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp().GetIBasis3D().GetNormalized();
 		float rayDist = 0.25f;
+		Vec3 rayStart = GetRaycastOrigin();
+		Vec3 rayDir = GetRaycastDirection();
+		Mat44 toWorld = GetRaycastTransform();
+		Actor* ownerActor = nullptr;
+		if ( m_playerController && !m_playerController->m_isFreeFlyMode ) 
+		{
+			ownerActor = m_playerController->GetActor();
+		}
+		RaycastResult3D result = m_currentMap->RaycastAll( rayStart, rayDir, rayDist, ownerActor );
 
-		RaycastResult3D result = m_currentMap->RaycastAll( rayStart, rayDir, rayDist );
-		Mat44 toWorld = m_player->GetModelToWorldTransform();
-		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 0.25f;
-		DebugAddWorldCylinder( m_player->m_position, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
+		Vec3 endPos = rayStart + rayDir * rayDist;
+		DebugAddWorldCylinder( rayStart, endPos, 0.01f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ), DebugRenderMode::X_RAY );
+
 		if ( result.m_didImpact )
 		{
 			DebugAddWorldSphere( result.m_impactPos, 0.06f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
@@ -593,4 +605,57 @@ void Game::CreateMapsFromDef()
 		MapDefinition* def = pair.second;
 		m_maps.push_back( new Map( g_game, def ) );
 	}
+}
+//-----------------------------------------------------------------------------------------------
+Vec3 Game::GetRaycastOrigin() const
+{
+	if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+	{
+		Actor* actor = m_playerController->GetActor();
+		if ( actor && actor->m_actorDef )
+		{
+			// Raycast from camera height (eye height), not from ground
+			Vec3 rayOrigin = actor->m_position;
+			rayOrigin.z += actor->m_actorDef->m_eyeHeight;
+			return rayOrigin;
+		}
+	}
+	else if ( m_playerController )
+	{
+		// Free-fly mode - get camera position from PlayerController
+		return m_playerController->GetCameraPosition();
+	}
+	return m_player ? m_player->m_position : Vec3( 0, 0, 0 );
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec3 Game::GetRaycastDirection() const
+{
+	if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+	{
+		Actor* actor = m_playerController->GetActor();
+		if ( actor )
+		{
+			return m_playerController->GetRaycastDirection();
+		}
+	}
+	else if ( m_playerController )
+	{
+		return m_playerController->GetRaycastDirection();
+	}
+	return Vec3( 1.f, 0.f, 0.f );
+}
+
+//-----------------------------------------------------------------------------------------------
+Mat44 Game::GetRaycastTransform() const
+{
+	if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+	{
+		Actor* actor = m_playerController->GetActor();
+		if ( actor )
+		{
+			return actor->GetModelToWorldTransform();
+		}
+	}
+	return Mat44();
 }

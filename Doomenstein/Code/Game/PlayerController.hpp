@@ -18,6 +18,10 @@ public:
 	void UpdateInput( float deltaSeconds );
 	void UpdateCamera( float deltaSeconds );
 	
+	Camera* GetCamera() const;
+	Vec3 GetRaycastDirection() const;
+	Vec3 GetCameraPosition() const;
+
 	bool		m_isFreeFlyMode;
 
 private:
