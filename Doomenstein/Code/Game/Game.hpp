@@ -84,6 +84,7 @@ public:
 	Texture* m_teemoTexture = nullptr;
 	OBJModel* m_teemoModel = nullptr;
 	PlayerController* m_playerController = nullptr;
+	Camera* m_worldCamera = nullptr;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -104,7 +105,6 @@ private:
 
 	App*			m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
-	Camera*			m_worldCamera = nullptr;
 	Texture*		m_testTexture = nullptr;
 
 	// Black hole

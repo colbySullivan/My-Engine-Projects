@@ -74,6 +74,12 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 {
+
+	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
+	{
+		return;
+	}
+
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 	ProcessLookInput( deltaSeconds );
 
@@ -83,11 +89,6 @@ void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 		moveSpeed = FREE_FLY_SPRINT_SPEED;
 	}
 
-
-	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
-	{
-		return;
-	}
 	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
 	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
 
@@ -136,6 +137,11 @@ void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds )
 {
+	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
+	{
+		return;
+	}
+
 	Actor* actor = GetActor();
 	if ( !actor )
 		return;
@@ -149,10 +155,6 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 		moveSpeed = actor->m_actorDef->m_runSpeed;
 	}
 
-	if ( g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL ) )
-	{
-		return;
-	}
 	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
 	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
 

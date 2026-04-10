@@ -72,14 +72,15 @@ void Game::Startup()
 	CreateProps();
 	if ( m_maps.size() > 0 )
 	{
-		m_currentMapNumber = 0;
+		m_currentMapNumber = 1;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
 
 	if ( m_currentMap )
 	{
-		m_playerController = new PlayerController( m_currentMap, m_worldCamera );
-		m_currentMap->SpawnPlayer( m_playerController );
+		/*m_playerController = new PlayerController( m_currentMap, m_worldCamera );
+		m_currentMap->SpawnPlayer( m_playerController );*/
+		m_currentMap->Startup();
 	}
 
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // The world is not ready for summoners rift obj
@@ -362,10 +363,12 @@ void Game::DebugInput()
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F11 ) )
 	{
+		m_currentMap->Shutdown();
 		m_currentMap = m_maps[( m_currentMapNumber + 1 ) % m_maps.size()];
 		m_currentMapNumber = ( m_currentMapNumber + 1 ) % m_maps.size();
 		std::string hudText = Stringf( "Swapped to map: %i", m_currentMapNumber );
 		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+		m_currentMap->Startup();
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 #include "Game/Tile.hpp"
 #include "Game/Game.hpp"
 #include "Engine/Core/Image.hpp"
@@ -25,6 +26,9 @@ class Map
 public:
 	Map( Game* game, const MapDefinition* definition );
 	~Map();
+
+	void Startup();
+	void Shutdown();
 
 	void CreateTiles();
 	void CreateGeometry();
@@ -70,7 +74,6 @@ protected:
 	const MapDefinition* m_definition = nullptr;
 	std::vector<Tile> m_tiles;
 	IntVec2 m_dimensions;
-
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;
 	Texture* m_texture = nullptr;

@@ -50,6 +50,20 @@ Map::~Map()
 	m_tiles.clear();
 }
 
+//-----------------------------------------------------------------------------------------------
+void Map::Startup()
+{
+	m_game->m_playerController = new PlayerController( m_game->m_currentMap, m_game->m_worldCamera );
+	SpawnPlayer( m_game->m_playerController );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::Shutdown()
+{
+	m_game->m_playerController = nullptr;
+	delete m_game->m_playerController;
+}
+
 //------------------------------------------------------------------------------
 void Map::CreateTiles()
 {
