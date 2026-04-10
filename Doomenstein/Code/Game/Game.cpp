@@ -36,10 +36,8 @@ Game::Game()
 	m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
-	m_player = new Player( this );
-	m_player->m_position = Vec3( 2.5f, 8.5, 0.5f );	
-	m_player->m_orientation = EulerAngles( 0.f, 0.f, 0.f );
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
+	SetUpCamera();
+	PrintConsoleHelpCommands();
 	TileDefinition::InitializeTileDefs();
 	ActorDefinition::InitializeActorDefs();
 	MapDefinition::InitializeMapDefs();
@@ -60,6 +58,8 @@ Game::~Game()
 	delete m_screenCamera;
 	g_engine = nullptr;
 	m_screenCamera = nullptr;
+	delete m_worldCamera;
+	m_worldCamera = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ void Game::Startup()
 
 	if ( m_currentMap )
 	{
-		m_playerController = new PlayerController( m_currentMap, m_player->m_worldCamera );
+		m_playerController = new PlayerController( m_currentMap, m_worldCamera );
 		m_currentMap->SpawnPlayer( m_playerController );
 	}
 
@@ -119,7 +119,6 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
-		m_player->Update( deltaSeconds );
 		m_currentMap->Update();
 		DebugInput();
 		if ( m_playerController )
@@ -135,7 +134,7 @@ void Game::Update()
 void Game::Render() const
 {
 	//g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->BeginCamera( *m_player->m_worldCamera );
+	g_engine->m_render->BeginCamera( *m_worldCamera );
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
@@ -171,9 +170,9 @@ void Game::Render() const
 		//g_engine->m_render->BindTexture( m_teemoTexture );
 		//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
 
-		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
+		g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderUI();
-		DebugRenderWorld( *m_player->m_worldCamera );
+		DebugRenderWorld( *m_worldCamera );
 		
 	}
 
@@ -430,12 +429,12 @@ void Game::RenderUI() const
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	/*hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );*/
 
-	hudText = Stringf( "Player Mode", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
+	/*hudText = Stringf( "Player Mode", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
 	Rgba8 playerControlColor = ( !m_controlPlayerMode ) ? Rgba8( 255, 255, 255 ) : Rgba8( 0, 0, 255 );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 55.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, playerControlColor, playerControlColor );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 55.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, playerControlColor, playerControlColor );*/
 
 	DebugRenderScreen( *m_screenCamera );
 }
@@ -594,6 +593,40 @@ void Game::UpdateBlackHole()
 void Game::CreateProps()
 {
 
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetUpCamera()
+{
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
+	m_worldCamera = new Camera;
+	float aspect = ( ( float )g_engine->m_window->GetClientDimensions().x / ( float )g_engine->m_window->GetClientDimensions().y );
+	m_worldCamera->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
+	Mat44 cameraToRenderMatrix;
+	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
+	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::PrintConsoleHelpCommands()
+{
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "=== CAMERA CONTROLS ===" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Mouse X / Right Stick X  : Yaw" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Mouse Y / Right Stick Y  : Pitch" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Q / Left Trigger         : Roll left" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "E / Right Trigger        : Roll right" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "W / Left Stick Up        : Move forward" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "S / Left Stick Down      : Move backward" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "A / Left Stick Left      : Move left" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "D / Left Stick Right     : Move right" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Z / Left Shoulder        : Move down" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "C / Right Shoulder       : Move up" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Shift / A-Button         : Sprint" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "H / Start                : Reset position and orientation" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "P                        : Pause / unpause game clock" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "O                        : Single-step one frame" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "T                        : Toggle slow-motion mode" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "================================" );
 }
 
 //-----------------------------------------------------------------------------------------------

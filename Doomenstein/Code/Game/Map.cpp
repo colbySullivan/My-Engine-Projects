@@ -711,11 +711,11 @@ void Map::DebugPrintActors()
 		{
 			std::string canPossess = actor->m_actorDef->m_canBePossessed ? "YES" : "NO";
 			std::string isDead = actor->m_isDead ? "DEAD" : "ALIVE";
-			g_engine->m_console->AddLine( Rgba8( 120,120,0 ), Stringf( "[%d] %s - Possessable: %s, %s", i, actor->m_actorDef->m_name.c_str(), canPossess.c_str(), isDead.c_str() ) );
+			g_engine->m_console->AddLine( Rgba8( 120,120,0 ), Stringf( "[%d] %s - Possessable: %s, %s", (float) i, actor->m_actorDef->m_name.c_str(), canPossess.c_str(), isDead.c_str() ) );
 		}
 		else
 		{
-			g_engine->m_console->AddLine( Rgba8( 120,120,120 ), "[%d] (empty slot)", i );
+			g_engine->m_console->AddLine( Rgba8( 120,120,120 ), "[%d] (empty slot)", (float) i );
 		}
 	}
 }

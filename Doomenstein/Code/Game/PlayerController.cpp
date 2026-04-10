@@ -28,8 +28,6 @@ void PlayerController::Update( float deltaSeconds )
 	UpdateInput( deltaSeconds );
 	UpdateCamera( deltaSeconds );
 
-	Actor* actor = GetActor();
-
 	if ( g_engine->m_input->WasKeyJustPressed( 'L' ) ) 
 	{
 		m_map->DebugPrintActors();
@@ -111,7 +109,7 @@ void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void PlayerController::ProcessMovementInput( float deltaSeconds )
+void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds )
 {
 	Actor* actor = GetActor();
 	if ( !actor )
@@ -148,7 +146,7 @@ void PlayerController::ProcessMovementInput( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void PlayerController::ProcessLookInput( float deltaSeconds )
+void PlayerController::ProcessLookInput( [[maybe_unused]] float deltaSeconds )
 {
 	Vec2 mouseDelta = g_engine->m_input->GetCursorClientDelta();
 	Vec2 lookInput = Vec2( static_cast< float >( mouseDelta.x ), static_cast< float >( mouseDelta.y ) );
@@ -166,7 +164,7 @@ void PlayerController::ProcessLookInput( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void PlayerController::UpdateCamera( float deltaSeconds )
+void PlayerController::UpdateCamera( [[maybe_unused]] float deltaSeconds )
 {
 	Actor* actor = GetActor();
 
