@@ -33,7 +33,10 @@ Game::Game()
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
-	m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+	//m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
+	//m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/gradient.png" );
+	m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/harshgradiant.png" );
+	m_riftShader = g_engine->m_render->CreateOrGetShader( "Data/Shaders/SummonersRiftShader", VertexType::VERTEX_PCUTBN);
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	Vec2 worldCenter( WORLD_SIZE_X * 0.5f, WORLD_SIZE_Y * 0.5f );
 	SetUpCamera();
@@ -85,6 +88,7 @@ void Game::Startup()
 
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // The world is not ready for summoners rift obj
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
+	m_teemoModel = LoadOBJFromFile( "Data/Textures/Summoner's Rift.obj", g_engine->m_render );
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Teemo.obj", g_engine->m_render );
 	//m_teemoTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/teemo_texture.png" );
 	//m_teemoTexture = nullptr;
@@ -134,7 +138,7 @@ void Game::Update()
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	//g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 
@@ -159,17 +163,18 @@ void Game::Render() const
 			m_currentMap->Render();
 		}
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
-		Vec3 modelPosition = Vec3( 10.0f, 5.0f, 0.0f ); 
-		float modelScale = 0.01f;                       
-		float modelRotation = 90.0f;                    
+		Vec3 modelPosition = Vec3( 50.0f, 50.0f, -0.1f ); 
+		float modelScale = 0.1f;                       
+		float modelRotation = 90.f;                    
 
+		g_engine->m_render->BindShader( m_riftShader );
 		Mat44 modelMatrix;
 		modelMatrix.SetTranslation3D( modelPosition );
 		modelMatrix.AppendScaleUniform3D( modelScale );
 		modelMatrix.AppendXRotation( modelRotation );
-		g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 255, 255, 255, 255 ) );
-		//g_engine->m_render->BindTexture( m_teemoTexture );
-		//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
+		g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 120, 120, 120, 255 ) );
+		g_engine->m_render->BindTexture( m_testTexture );
+		g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
 
 		g_engine->m_render->EndCamera( *m_worldCamera );
 		RenderUI();

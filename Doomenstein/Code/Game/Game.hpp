@@ -106,6 +106,8 @@ private:
 	App*			m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
 	Texture*		m_testTexture = nullptr;
+	Shader*			m_riftShader = nullptr;
+
 
 	// Black hole
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];

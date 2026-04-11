@@ -225,5 +225,8 @@
     <FxCompile Include="..\..\Run\Data\Shaders\Diffuse.hlsl">
       <Filter>Data\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="SummonersRiftShader.hlsl">
+      <Filter>Data\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
