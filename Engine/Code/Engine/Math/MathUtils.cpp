@@ -474,6 +474,37 @@ bool PushCylinderOutOfFixedCylinder( Vec3& mobileStart, Vec3& mobileEnd, float m
 	return false;
 }
 
+//------------------------------------------------------------------------------
+bool PushCylindersOutOfEachOther( Vec3& aStart, Vec3& aEnd, float aRadius, Vec3& bStart, Vec3& bEnd, float bRadius )
+{
+	FloatRange aZRange( aStart.z, aEnd.z );
+	FloatRange bZRange( bStart.z, bEnd.z );
+	if ( !aZRange.IsOverlappingWith( bZRange ) )
+	{
+		return false;
+	}
+
+	Vec2 aCenter( aStart.x, aStart.y );
+	Vec2 bCenter( bStart.x, bStart.y );
+
+	if ( !PushDiscsOutOfEachOther2D( aCenter, aRadius, bCenter, bRadius ) )
+	{
+		return false;
+	}
+
+	aStart.x = aCenter.x;
+	aStart.y = aCenter.y;
+	aEnd.x = aCenter.x;
+	aEnd.y = aCenter.y;
+
+	bStart.x = bCenter.x;
+	bStart.y = bCenter.y;
+	bEnd.x = bCenter.x;
+	bEnd.y = bCenter.y;
+
+	return true;
+}
+
 //-----------------------------------------------------------------------------------------------
 void TransformPosition2D(Vec2& posToTransform, float uniformScale, float rotationDegrees, Vec2 const& translation)
 {

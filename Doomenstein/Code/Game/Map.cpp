@@ -260,6 +260,11 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 		PushCylinderOutOfFixedCylinder( actorB->m_position, actorBEnd, actorB->m_radius,
 			actorA->m_position, actorAEnd, actorA->m_radius );
 	}
+	else
+	{
+		PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius,
+			actorB->m_position, actorBEnd, actorB->m_radius );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
