@@ -5,47 +5,59 @@
 #include "Engine/Renderer/SpriteDefinition.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 
+//-----------------------------------------------------------------------------------------------
 std::map<std::string, TileDefinition> TileDefinition::s_definitions;
-//SpriteSheet* g_testSpriteSheet = nullptr;
-XmlUtils m_xml2;
 
+//-----------------------------------------------------------------------------------------------
+static void LoadTileDefsFromFile( char const* filePath )
+{
+	XmlDocument doc;
+	XmlError eResult = doc.LoadFile( filePath );
+
+	XmlElement* rootElement = doc.RootElement();
+	if ( !rootElement )
+	{
+		return;
+	}
+
+	XmlElement* tileElem = rootElement->FirstChildElement( "TileDefinition" );
+	XmlUtils xml;
+
+	while ( tileElem )
+	{
+		std::string name = xml.ParseXmlAttribute( *tileElem, "name", std::string( "Unnamed" ) );
+		TileDefinition& def = TileDefinition::s_definitions[name];
+
+		def.m_name = name;
+		def.m_isSolid = xml.ParseXmlAttribute( *tileElem, "isSolid", false );
+
+		std::string colorStr = xml.ParseXmlAttribute( *tileElem, "mapImagePixelColor", std::string( "255,255,255" ) );
+		def.m_mapImagePixelColor.SetFromText( colorStr.c_str() );
+
+		def.m_floorSpriteCoords = xml.ParseXmlAttribute( *tileElem, "floorSpriteCoords", IntVec2( -1, -1 ) );
+		def.m_ceilingSpriteCoords = xml.ParseXmlAttribute( *tileElem, "ceilingSpriteCoords", IntVec2( -1, -1 ) );
+		def.m_wallSpriteCoords = xml.ParseXmlAttribute( *tileElem, "wallSpriteCoords", IntVec2( -1, -1 ) );
+
+		tileElem = tileElem->NextSiblingElement( "TileDefinition" );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void TileDefinition::InitializeTileDefs()
 {
 	s_definitions.clear();
-
-	XmlDocument doc;
-	XmlError eResult = doc.LoadFile( "Data/Definitions/TileDefinitions.xml" );
-	if ( eResult == 0 )
-	{
-		XmlElement* rootElement = doc.RootElement();
-		if ( rootElement )
-		{
-			XmlElement* mapDefElement = rootElement->FirstChildElement( "TileDefinition" );
-			while ( mapDefElement )
-			{
-				std::string name = m_xml2.ParseXmlAttribute( *mapDefElement, "name", "Unnamed" );
-				TileDefinition& def = TileDefinition::s_definitions[name];
-
-				def.m_name = name;
-				def.m_isSolid = m_xml2.ParseXmlAttribute( *mapDefElement, "isSolid", false );
-
-				std::string colorStr = m_xml2.ParseXmlAttribute( *mapDefElement, "mapImagePixelColor", "255,255,255" );
-				def.m_mapImagePixelColor.SetFromText( colorStr.c_str() );
-
-				def.m_floorSpriteCoords = m_xml2.ParseXmlAttribute( *mapDefElement, "floorSpriteCoords", IntVec2( -1, -1 ) );
-				def.m_ceilingSpriteCoords = m_xml2.ParseXmlAttribute( *mapDefElement, "ceilingSpriteCoords", IntVec2( -1, -1 ) );
-				def.m_wallSpriteCoords = m_xml2.ParseXmlAttribute( *mapDefElement, "wallSpriteCoords", IntVec2( -1, -1 ) );
-
-				mapDefElement = mapDefElement->NextSiblingElement( "TileDefinition" );
-			}
-		}
-	}
- }
-
-TileDefinition::TileDefinition()
-{
+	LoadTileDefsFromFile( "Data/Definitions/TileDefinitions.xml" );
 }
 
-TileDefinition::~TileDefinition()
+//-----------------------------------------------------------------------------------------------
+const TileDefinition* TileDefinition::GetByName( const std::string& name )
 {
+	std::map<std::string, TileDefinition>::iterator it = s_definitions.find( name );
+	if ( it == s_definitions.end() )
+	{
+		return nullptr;
+	}
+
+	const TileDefinition& foundDefinition = it->second;
+	return &foundDefinition;
 }

@@ -25,20 +25,17 @@ void WeaponDefinition::InitializeWeaponDefs()
 		def.m_name       = xml.ParseXmlAttribute( *weaponElem, "name",       std::string( "Unnamed" ) );
 		def.m_refireTime = xml.ParseXmlAttribute( *weaponElem, "refireTime", 0.f );
 
-		// Ray weapon attributes
 		def.m_rayCount   = xml.ParseXmlAttribute( *weaponElem, "rayCount",   0 );
 		def.m_rayCone    = xml.ParseXmlAttribute( *weaponElem, "rayCone",    0.f );
 		def.m_rayRange   = xml.ParseXmlAttribute( *weaponElem, "rayRange",   0.f );
 		def.m_rayDamage  = xml.ParseXmlAttribute( *weaponElem, "rayDamage",  FloatRange( 0.f, 1.f ) );
 		def.m_rayImpulse = xml.ParseXmlAttribute( *weaponElem, "rayImpulse", 0.f );
 
-		// Projectile weapon attributes
 		def.m_projectileCount       = xml.ParseXmlAttribute( *weaponElem, "projectileCount", 0 );
 		def.m_projectileActorName   = xml.ParseXmlAttribute( *weaponElem, "projectileActor", std::string( "" ) );
 		def.m_projectileConeDegrees = xml.ParseXmlAttribute( *weaponElem, "projectileCone",  0.f );
 		def.m_projectileSpeed       = xml.ParseXmlAttribute( *weaponElem, "projectileSpeed", 0.f );
 
-		// Melee weapon attributes
 		def.m_meleeCount    = xml.ParseXmlAttribute( *weaponElem, "meleeCount",  0 );
 		def.m_meleeArcDegrees = xml.ParseXmlAttribute( *weaponElem, "meleeArc",   0.f );
 		def.m_meleeRange    = xml.ParseXmlAttribute( *weaponElem, "meleeRange",  0.f );

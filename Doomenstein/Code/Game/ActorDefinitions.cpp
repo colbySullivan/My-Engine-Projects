@@ -22,7 +22,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 	{
 		ActorDefinition def;
 
-		// Base
 		def.m_name = xml.ParseXmlAttribute( *actorElem, "name", "Unnamed" );
 		def.m_visible = xml.ParseXmlAttribute( *actorElem, "visible", false );
 		def.m_health = xml.ParseXmlAttribute( *actorElem, "health", 1 );
@@ -30,7 +29,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 		def.m_faction = xml.ParseXmlAttribute( *actorElem, "faction", "NEUTRAL" );
 		def.m_canBePossessed = xml.ParseXmlAttribute( *actorElem, "canBePossessed", false );
 
-		// Collision
 		XmlElement* collElem = actorElem->FirstChildElement( "Collision" );
 		if ( collElem )
 		{
@@ -45,7 +43,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_dieOnCollide = xml.ParseXmlAttribute( *collElem, "dieOnCollide", false );
 		}
 
-		// Physics
 		XmlElement* physElem = actorElem->FirstChildElement( "Physics" );
 		if ( physElem )
 		{
@@ -64,7 +61,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_aiEnabled = xml.ParseXmlAttribute( *aiElem, "aiEnabled", false );
 		}
 
-		// Inventory
 		XmlElement* inventoryElem = actorElem->FirstChildElement( "Inventory" );
 		if ( inventoryElem )
 		{
@@ -80,7 +76,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 			}
 		}
 
-		// Visuals
 		XmlElement* visualsElem = actorElem->FirstChildElement( "Visuals" );
 		if ( visualsElem )
 		{
@@ -94,7 +89,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_cellCount = xml.ParseXmlAttribute( *visualsElem, "cellCount", IntVec2( 1, 1 ) );
 		}
 
-		// Camera
 		XmlElement* cameraElem = actorElem->FirstChildElement( "Camera" );
 		if ( cameraElem )
 		{

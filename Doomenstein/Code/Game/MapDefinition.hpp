@@ -23,10 +23,10 @@ public:
 	static MapDefinition* CreateMapDef( std::string name, std::string imagePath, std::string shaderPath, std::string texturePath, IntVec2 cellCount );
 
 	static std::map<std::string, MapDefinition*> s_definitions;
-	std::string		m_name;
-	Image			m_image;
-	Shader* m_shader;
-	Texture* m_spriteSheetTexture;
-	IntVec2			m_spriteSheetCellCount;
-	std::vector<SpawnInfo> m_spawnInfos;
+	std::string				m_name;
+	Image					m_image;
+	Shader*					m_shader;
+	Texture*				m_spriteSheetTexture;
+	IntVec2					m_spriteSheetCellCount;
+	std::vector<SpawnInfo>	m_spawnInfos;
 };
