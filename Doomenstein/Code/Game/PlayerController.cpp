@@ -49,6 +49,19 @@ void PlayerController::UpdateInput( float deltaSeconds )
 		PossessNextActor();
 	}
 
+	if ( g_engine->m_input->WasKeyJustPressed( 'J' ) )
+	{
+		Actor* actor = GetActor();
+		if ( actor && m_map )
+		{
+			const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( "PlasmaRifle" );
+			if ( weaponDef )
+			{
+				m_map->SpawnProjectileFromActor( actor, *weaponDef, GetRaycastDirection() );
+			}
+		}
+	}
+
 	if ( m_isFreeFlyMode )
 	{
 		HandleFreeFlyInput( deltaSeconds );

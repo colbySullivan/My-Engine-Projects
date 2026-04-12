@@ -2,6 +2,7 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/Vec2.hpp"
 #include "Engine/Math/FloatRange.hpp"
+#include "Engine/Math/IntVec2.hpp"
 #include <map>
 #include <string>
 #include <vector>
@@ -27,13 +28,18 @@ public:
 	bool        m_collidesWithWorld = false;
 	bool        m_collidesWithActors = false;
 
+	// Projectile / collision extras
+	FloatRange  m_damageOnCollide = FloatRange( 0.f, 0.f );
+	float       m_impulseOnCollide = 0.f;
+	bool        m_dieOnCollide = false;
+
 	// Physics
 	bool        m_simulated = false;
 	float       m_walkSpeed = 0.f;
 	float       m_runSpeed = 0.f;
 	float       m_turnSpeed = 0.f;
 	float       m_drag = 0.f;
-
+	bool        m_flying = false;
 	// AI
 	bool        m_aiEnabled = false;
 

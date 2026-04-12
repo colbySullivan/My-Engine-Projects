@@ -85,6 +85,9 @@
     <ClCompile Include="PlayerController.cpp">
       <Filter>Controllers</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponDefinition.cpp">
+      <Filter>GameDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -131,6 +134,9 @@
     </ClInclude>
     <ClInclude Include="PlayerController.hpp">
       <Filter>Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponDefinition.hpp">
+      <Filter>GameDefinitions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

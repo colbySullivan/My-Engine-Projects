@@ -9,6 +9,7 @@
 #include "Game/ActorDefinitions.hpp"
 #include "Game/MapDefinition.hpp"
 #include "Controller.hpp"
+#include "WeaponDefinition.hpp"
 
 struct EulerAngles;
 class Game;
@@ -36,6 +37,8 @@ public:
 public:
 	ActorHandle	m_actorHandle;
 	const ActorDefinition*	m_actorDef;
+	const WeaponDefinition*	m_weaponDef;
+
 	Map*		m_map;
 	Vec3        m_position;
 	EulerAngles	m_orientation = EulerAngles( 0.f, 0.f, 0.f );
@@ -67,5 +70,6 @@ private:
 	void CreatePlayer();
 	void CreateDemon();
 	void CreateSpawnPoint();
+	void CreateProjectile( std::string name );
 	void AddForce( const Vec3& force );
 };

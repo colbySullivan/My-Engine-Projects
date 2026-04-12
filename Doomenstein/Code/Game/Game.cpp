@@ -16,9 +16,10 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Player.hpp"
 #include <ThirdParty/stb/stb_image.h>
-#include "TileDefinitions.hpp"
-#include "ActorDefinitions.hpp"
-#include "MapDefinition.hpp"
+#include "Game/TileDefinitions.hpp"
+#include "Game/ActorDefinitions.hpp"
+#include "Game/MapDefinition.hpp"
+#include "Game/WeaponDefinition.hpp"
 
 RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
@@ -43,6 +44,7 @@ Game::Game()
 	PrintConsoleHelpCommands();
 	TileDefinition::InitializeTileDefs();
 	ActorDefinition::InitializeActorDefs();
+	WeaponDefinition::InitializeWeaponDefs();
 	MapDefinition::InitializeMapDefs();
 }
 

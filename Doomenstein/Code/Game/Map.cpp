@@ -273,6 +273,10 @@ void Map::CollideActorsWithMap()
 	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
 	{
 		Actor* actor = m_actorVector[actorIndex];
+		if ( !actor || !actor->m_actorDef )
+		{
+			continue;
+		}
 		if ( actor && actor->m_actorDef->m_simulated )
 		{
 			CollideActorWithMap( actor );
@@ -296,6 +300,48 @@ void Map::CollideActorWithMap( Actor* actor )
 	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
 	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
 	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+}
+
+//------------------------------------------------------------------------------
+Actor* Map::SpawnProjectileFromActor( Actor* owner, const WeaponDefinition& weaponDef, Vec3 direction )
+{
+	if ( !owner )
+	{
+		return nullptr;
+	}
+
+	if ( weaponDef.m_projectileCount <= 0 || weaponDef.m_projectileActorName.empty() )
+	{
+		return nullptr;
+	}
+
+	Vec3 forwardNormal = direction.GetNormalized();
+
+	Vec3 spawnPos = owner->m_position;
+	if ( owner->m_actorDef )
+	{
+		spawnPos.z += owner->m_actorDef->m_eyeHeight;
+	}
+
+	spawnPos += forwardNormal * 0.5f;
+
+	SpawnInfo spawnInfo;
+	spawnInfo.m_name = weaponDef.m_projectileActorName;
+	spawnInfo.m_spawnLocation = spawnPos;
+	spawnInfo.m_actorOrientation = owner->m_orientation;
+
+	Actor* projectile = SpawnActor( spawnInfo );
+	if ( !projectile )
+	{
+		return nullptr;
+	}
+
+	projectile->m_owner = owner;
+	projectile->m_canBePushed = true;
+
+	projectile->m_velocity = forwardNormal * weaponDef.m_projectileSpeed;
+
+	return projectile;
 }
 
 //-----------------------------------------------------------------------------------------------

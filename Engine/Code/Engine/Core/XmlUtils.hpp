@@ -6,6 +6,7 @@
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/EulerAngles.hpp"
+#include "Engine/Math/FloatRange.hpp"
 #include <string>
 
 typedef tinyxml2::XMLDocument		XmlDocument;
@@ -29,6 +30,7 @@ public:
 	std::string ParseXmlAttribute( XmlElement const& element, char const* attributeName, std::string const& defaultValue );
 	std::string ParseXmlAttribute( XmlElement const& element, char const* attributeName, char const* defaultValue );
 	Strings ParseXmlAttribute( XmlElement const& element, char const* attributeName, Strings const& defaultValues, char delimiter = ',' );
+	FloatRange ParseXmlAttribute( XmlElement const& element, char const* attributeName, FloatRange const& defaultValues, char delimiter = ',' );
 
 private:
 };

@@ -159,3 +159,21 @@ Strings XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attr
 	}
 	return defaultValues;
 }
+
+//------------------------------------------------------------------------------
+FloatRange XmlUtils::ParseXmlAttribute( XmlElement const& element, char const* attributeName, FloatRange const& defaultValues, char delimiter /*= ',' */ )
+{
+	const char* queriedString;
+	XmlError result = element.QueryAttribute( attributeName, &queriedString );
+	if ( result == 0 )
+	{
+		Strings splitString = SplitStringOnDelimiter( queriedString, delimiter );
+		if ( splitString.size() == 2 )
+		{
+			float min = static_cast<float>( atof( splitString[0].c_str() ) );
+			float max = static_cast<float>( atof( splitString[1].c_str() ) );
+			return FloatRange( min, max );
+		}
+	}
+	return defaultValues;
+}

@@ -14,8 +14,9 @@
 #include "Engine/Math/EulerAngles.hpp"
 #include "Game/Actor.hpp"
 #include "Game/ActorHandle.hpp"
-#include "MapDefinition.hpp"
-#include "Controller.hpp"
+#include "Game/MapDefinition.hpp"
+#include "Game/Controller.hpp"
+#include "Game/WeaponDefinition.hpp"
 
 class Game;
 class Actor;
@@ -48,6 +49,8 @@ public:
 	void CollideActors( Actor* actorA, Actor* actorB );
 	void CollideActorsWithMap();
 	void CollideActorWithMap( Actor* actor );
+
+	Actor* SpawnProjectileFromActor( Actor* owner, const WeaponDefinition& weaponDef, Vec3 direction );
 
 	void PossessNextActor( Controller* controller );
 	void SpawnPlayer( Controller* playerController );
