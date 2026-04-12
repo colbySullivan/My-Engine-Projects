@@ -37,16 +37,15 @@ void PlayerController::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::UpdateInput( float deltaSeconds )
 {
-	InputSystem* input = g_engine->m_input;
-
-	if ( input->WasKeyJustPressed( 'F' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'F' ) )
 	{
 		ToggleCameraMode();
 		g_engine->m_console->AddLine( Rgba8( 255, 255, 0 ), Stringf( "Free Fly Mode: %s", m_isFreeFlyMode ? "TRUE" : "FALSE" ) );
 	}
 
-	if ( input->WasKeyJustPressed( 'N' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
 	{
+		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame
 		PossessNextActor();
 	}
 

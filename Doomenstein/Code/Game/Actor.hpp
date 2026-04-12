@@ -46,8 +46,6 @@ public:
 	Actor*		m_owner;
 	bool		m_isDead = false;
 	int			m_health;
-	Actor*		m_controller;
-	Actor*		m_controllerAI;
 
 
 	EulerAngles m_angularVelocity;

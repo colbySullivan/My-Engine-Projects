@@ -5,6 +5,7 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
+#include "AiController.hpp"
 
 struct LightingConstants
 {
@@ -62,6 +63,12 @@ void Map::Shutdown()
 {
 	m_game->m_playerController = nullptr;
 	delete m_game->m_playerController;
+
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
+	{
+		delete m_actorVector[actorIndex];
+		m_actorVector[actorIndex] = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -213,9 +220,10 @@ const Tile* Map::GetTile( int x, int y ) const
 //-----------------------------------------------------------------------------------------------
 void Map::Update()
 {
+	float deltaSeconds = (float) g_engine->m_systemClock->GetDeltaSeconds();
 	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
 	{
-		m_actorVector[actorIndex]->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
+		m_actorVector[actorIndex]->Update( deltaSeconds );
 	}
 	CollideActorsWithMap();
 	CollideActors();
@@ -465,6 +473,11 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 	newActor->m_map = this;
 	newActor->m_actorHandle = ActorHandle( m_nextActorUID++, freeIndex );
 	m_actorVector[freeIndex] = newActor;
+	if ( spawnInfo.m_name == "Demon" )
+	{
+		AiController* aiController = new AiController( this, m_game->m_worldCamera );
+		aiController->Possess( newActor );
+	}
 	return newActor;
 }
 

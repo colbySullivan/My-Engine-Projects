@@ -46,13 +46,10 @@ Actor::~Actor()
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( [[maybe_unused]] float deltaSeconds )
 {
-	//m_orientation.m_pitchDegrees += m_angularVelocity.m_pitchDegrees * deltaSeconds;
-	//m_orientation.m_rollDegrees += m_angularVelocity.m_rollDegrees * deltaSeconds;
-	////m_orientation.m_yawDegrees += m_angularVelocity.m_yawDegrees * deltaSeconds;
-	//if ( m_controlledByPlayer && m_game->m_controlPlayerMode )
-	//{
-	//	UpdateMove();
-	//}
+	if ( m_currentController )
+	{
+		m_currentController->Update( deltaSeconds );
+	}
 
 	if ( m_actorDef && m_actorDef->m_simulated && !m_isDead )
 	{
@@ -116,14 +113,14 @@ void Actor::OnPossessed( Controller* newController )
 	m_currentController = newController;
 }
 
-//-----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void Actor::OnUnpossessed()
 {
 	m_currentController = nullptr;
 
 	if ( m_savedAIController )
 	{
-		m_savedAIController->Possess( this );
+		m_currentController = m_savedAIController;
 		m_savedAIController = nullptr;
 	}
 }

@@ -17,7 +17,7 @@ public:
 	std::string m_name;
 	std::string m_faction = "NEUTRAL";
 	int         m_health = 1;
-	bool        m_canBePossessed = false;
+	bool        m_canBePossessed = true;
 	float       m_corpseLifetime = 0.f;
 	bool        m_visible = false;
 

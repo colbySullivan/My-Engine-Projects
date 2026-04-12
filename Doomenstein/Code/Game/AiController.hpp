@@ -15,15 +15,14 @@ public:
 
 	virtual void Update( float deltaSeconds ) override;
 
-	void UpdateInput( float deltaSeconds );
-	void UpdateCamera( float deltaSeconds );
+	void HandleMovement( float deltaSeconds );
 
 	Vec3 GetRaycastDirection() const;
-	Vec3 GetCameraPosition() const;
 
 private:
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
+	EulerAngles m_orientation;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

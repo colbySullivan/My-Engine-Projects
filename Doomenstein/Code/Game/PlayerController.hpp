@@ -23,6 +23,7 @@ public:
 	Vec3 GetCameraPosition() const;
 
 	bool		m_isFreeFlyMode;
+	bool		m_canProcessPossessInput = true;
 
 private:
 	void HandleActorInput( float deltaSeconds );
