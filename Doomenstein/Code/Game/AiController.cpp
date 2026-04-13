@@ -19,7 +19,7 @@ AiController::~AiController()
 //-----------------------------------------------------------------------------------------------
 void AiController::Update( float deltaSeconds )
 {
-	HandleMovement( deltaSeconds );
+	MoveToPlayer( deltaSeconds );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -48,8 +48,88 @@ Vec3 AiController::GetRaycastDirection() const
 	Actor* actor = GetActor();
 	if ( actor )
 	{
-		return actor->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
+		return actor->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
 	}
 
 	return Vec3( 1.f, 0.f, 0.f );
+}
+
+//-----------------------------------------------------------------------------------------------
+void AiController::DamagedBy( Actor* attacker )
+{
+
+}
+
+RaycastResult3D AiController::RaycastSearchForPlayer( const Vec3& start, const Vec3& direction, float distance, Actor* owner )
+{
+	Actor* actor = GetActor();
+	RaycastResult3D closestResult;
+	closestResult.m_impactDist = distance;
+
+	float sightRadius = actor->m_actorDef->m_sightRadius;
+
+	for ( int actorIndex = 0; actorIndex < (int)m_map->m_actorVector.size(); ++actorIndex )
+	{
+		Actor* otherActor = m_map->m_actorVector[actorIndex];
+		if ( !otherActor || otherActor == owner || otherActor->m_isDead )
+		{
+			continue;
+		}
+
+		Vec3 displacementToOther = otherActor->m_position - actor->m_position;
+		float distToOther = displacementToOther.GetLength();
+		if ( distToOther > sightRadius )
+		{
+			continue;
+		}
+
+		Vec3 forwardDir = direction.GetNormalized();
+		Vec3 otherActorEnd = otherActor->m_position;
+		otherActorEnd.z += otherActor->m_height;
+
+		RaycastResult3D currentActorHit = RaycastVsCylinder( start, forwardDir, sightRadius, otherActor->m_position, otherActorEnd, otherActor->m_radius );
+
+		if ( currentActorHit.m_didImpact && currentActorHit.m_impactDist < closestResult.m_impactDist )
+		{
+			closestResult = currentActorHit;
+			m_targetActorHandle = otherActor->m_actorHandle;
+		}
+	}
+	return closestResult;
+}
+
+void AiController::MoveToPlayer( float deltaSeconds )
+{
+	Actor* actor = GetActor();
+	if ( !actor )
+	{
+		return;
+	}
+	RaycastResult3D result;
+	Actor* targetActor = m_map->GetActorByHandle( m_targetActorHandle );
+	if ( !targetActor || targetActor->m_isDead )
+	{
+		m_targetActorHandle = ActorHandle();
+
+		Vec3 forward = actor->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
+		result = RaycastSearchForPlayer( actor->m_position + Vec3( 0.f, 0.f, 0.1f ), forward.GetNormalized(), 10.f, actor );
+		if ( result.m_didImpact )
+		{
+			Actor* hitActor = m_map->GetActorByHandle( m_targetActorHandle );
+			if ( hitActor && hitActor->m_controlledByPlayer )
+			{
+				m_targetActorHandle = hitActor->m_actorHandle;
+				targetActor = hitActor;
+			}
+		}
+	}
+
+	if ( m_targetActorHandle.IsValid() && targetActor && !targetActor->m_isDead )
+	{
+		Vec3 displacementToTarget = targetActor->m_position - actor->m_position;
+		float desiredYaw = Atan2Degrees( displacementToTarget.y, displacementToTarget.x );
+		float maxTurnDegrees = actor->m_actorDef->m_turnSpeed * deltaSeconds;
+		actor->m_orientation.m_yawDegrees = GetTurnedTowardDegrees( actor->m_orientation.m_yawDegrees, desiredYaw, maxTurnDegrees );
+		HandleMovement( deltaSeconds );
+	}
 }

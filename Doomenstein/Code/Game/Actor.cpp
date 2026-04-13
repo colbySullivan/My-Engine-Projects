@@ -63,17 +63,21 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
+
+	if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
+	{
+		return;
+	}
+
 	Mat44 modelToWorld = GetModelToWorldTransform();
-	g_engine->m_render->BindShader(nullptr);
-	g_engine->m_render->SetModelConstants( modelToWorld, m_color);
+	g_engine->m_render->BindShader( nullptr );
+	g_engine->m_render->SetModelConstants( modelToWorld, Rgba8( 255, 255, 255 ) );
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
 	g_engine->m_render->BindTexture( m_texture );
 	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
 
-	Rgba8 modelColor = Rgba8(255,0,0);
-
-	g_engine->m_render->SetModelConstants( modelToWorld, modelColor );
+	g_engine->m_render->SetModelConstants( modelToWorld, m_modelColor );
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
 }
@@ -163,7 +167,13 @@ void Actor::CreatePlayer()
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	m_height = m_actorDef->m_physicsHeight;
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+	m_modelColor = Rgba8( 0, 255, 0 );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32);
+
+	Vec3 forwardNormal = m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+	Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
+	Vec3 beakTip = beakBase + forwardNormal * 0.1f;
+	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.06f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -174,8 +184,13 @@ void Actor::CreateDemon()
 	m_radius = m_actorDef->m_physicsRadius;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	//Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+	m_modelColor = Rgba8( 255, 0, 0 );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+	
+	Vec3 forwardNormal = m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+	Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
+	Vec3 beakTip = beakBase + forwardNormal * 0.1f;
+	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.06f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -184,7 +199,7 @@ void Actor::CreateSpawnPoint()
 	m_actorDef =  ActorDefinition::GetByName( "SpawnPoint" );
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
-	m_color = Rgba8( 255, 255, 0);
+	m_modelColor = Rgba8( 255, 255, 0);
 	m_height = 1.f;
 	m_radius = 0.5;
 	//AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE, 32 );

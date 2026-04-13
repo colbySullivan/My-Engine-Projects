@@ -15,6 +15,7 @@ PlayerController::PlayerController( Map* map, Camera* camera )
 	, m_freeFlyCameraOrientation( 0.f, 0.f, 0.f )
 	, m_isFreeFlyMode( false )
 {
+	m_isCurrentlyPlayerControlled = true;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -27,11 +28,6 @@ void PlayerController::Update( float deltaSeconds )
 {
 	UpdateInput( deltaSeconds );
 	UpdateCamera( deltaSeconds );
-
-	if ( g_engine->m_input->WasKeyJustPressed( 'L' ) ) 
-	{
-		m_map->DebugPrintActors();
-	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -40,11 +36,12 @@ void PlayerController::UpdateInput( float deltaSeconds )
 	if ( g_engine->m_input->WasKeyJustPressed( 'F' ) )
 	{
 		ToggleCameraMode();
-		g_engine->m_console->AddLine( Rgba8( 255, 255, 0 ), Stringf( "Free Fly Mode: %s", m_isFreeFlyMode ? "TRUE" : "FALSE" ) );
+		m_isCurrentlyPlayerControlled = !m_isCurrentlyPlayerControlled;
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
 	{
+		m_isCurrentlyPlayerControlled = true;
 		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame
 		PossessNextActor();
 	}

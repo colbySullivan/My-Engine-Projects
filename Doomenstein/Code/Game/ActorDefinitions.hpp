@@ -38,6 +38,8 @@ public:
 	bool        m_flying = false;
 
 	bool        m_aiEnabled = false;
+	float		m_sightRadius = 0.f;
+	float		m_sightAngle = 0.f;
 
 	Vec2        m_visualSize = Vec2( 1.f, 1.f );
 	Vec2        m_visualPivot = Vec2( 0.5f, 0.f );

@@ -53,6 +53,7 @@ public:
 
 	EulerAngles m_angularVelocity;
 	Rgba8		m_color = Rgba8( 255, 255, 255 );
+	Rgba8		m_modelColor = Rgba8( 255, 255, 255 );
 	Texture*	m_texture = nullptr;
 	Game*		m_game = nullptr;
 	Vec3        m_start;

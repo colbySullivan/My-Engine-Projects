@@ -18,9 +18,12 @@ public:
 	void Unpossess();
 	Actor* GetActor() const;
 
-	ActorHandle GetActorHandle() const { return m_actorHandle; }
+	ActorHandle GetActorHandle() const;
+
+	bool IsPlayerControlled() const;
 
 protected:
 	ActorHandle m_actorHandle;
 	Map* m_map;
+	bool m_isCurrentlyPlayerControlled = false;
 };

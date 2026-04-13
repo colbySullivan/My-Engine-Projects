@@ -46,3 +46,15 @@ Actor* Controller::GetActor() const
 
 	return m_map->GetActorByHandle( m_actorHandle );
 }
+
+//-----------------------------------------------------------------------------------------------
+ActorHandle Controller::GetActorHandle() const
+{
+	return m_actorHandle;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Controller::IsPlayerControlled() const
+{
+	return m_isCurrentlyPlayerControlled;
+}

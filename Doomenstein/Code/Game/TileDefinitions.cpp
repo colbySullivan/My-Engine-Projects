@@ -12,7 +12,7 @@ std::map<std::string, TileDefinition> TileDefinition::s_definitions;
 static void LoadTileDefsFromFile( char const* filePath )
 {
 	XmlDocument doc;
-	XmlError eResult = doc.LoadFile( filePath );
+	doc.LoadFile( filePath );
 
 	XmlElement* rootElement = doc.RootElement();
 	if ( !rootElement )

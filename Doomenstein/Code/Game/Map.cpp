@@ -154,17 +154,6 @@ void Map::AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs )
 //------------------------------------------------------------------------------
 void Map::AddActors()
 {
-	//m_actorVector.push_back( new Actor( m_game, Vec3( 7.5f, 8.5f, 0.25f ), Vec3( 7.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	//m_actorVector.push_back( new Actor( m_game, Vec3( 8.5f, 8.5f, 0.125f ), Vec3( 8.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-	//m_actorVector.push_back( new Actor( m_game, Vec3( 9.5f, 8.5f, 0.0f ), Vec3( 9.5f, 8.5f, 0.75f ), 0.35f, 32 ) );
-
-	//Actor* projectile = new Actor( m_game, Vec3( 5.5f, 8.5f, 0.0f ), Vec3( 5.5f, 8.5f, 0.125f ), 0.0625f, 32 );
-	//projectile->m_controlledByPlayer = true;
-	//projectile->m_actorType = PROJECTILE;
-	//projectile->m_canBePushed = true;
-	//m_actorVector.push_back( projectile );
-
-
 	for ( SpawnInfo spawnInfo : m_definition->m_spawnInfos )
 	{
 		SpawnActor( spawnInfo );
@@ -744,7 +733,6 @@ void Map::CreateGeometry()
 
 	for ( int i = 0; i < ( int )m_tiles.size(); ++i )
 	{
-		//Tile const& tile = m_tiles[i];
 		Tile& tile = m_tiles[i];
 
 		if ( TileDefinition::s_definitions.count( tile.m_type ) == 0 )
@@ -776,24 +764,4 @@ void Map::CreateGeometry()
 		}
 	}
 	CreateBuffers();
-}
-
-//-----------------------------------------------------------------------------------------------
-void Map::DebugPrintActors()
-{
-	g_engine->m_console->AddLine( Rgba8( 120,120,0 ), "=== ACTORS IN MAP ===");
-	for ( int i = 0; i < ( int )m_actorVector.size(); ++i )
-	{
-		Actor* actor = m_actorVector[i];
-		if ( actor )
-		{
-			std::string canPossess = actor->m_actorDef->m_canBePossessed ? "YES" : "NO";
-			std::string isDead = actor->m_isDead ? "DEAD" : "ALIVE";
-			g_engine->m_console->AddLine( Rgba8( 120,120,0 ), Stringf( "[%d] %s - Possessable: %s, %s", (float) i, actor->m_actorDef->m_name.c_str(), canPossess.c_str(), isDead.c_str() ) );
-		}
-		else
-		{
-			g_engine->m_console->AddLine( Rgba8( 120,120,120 ), "[%d] (empty slot)", (float) i );
-		}
-	}
 }

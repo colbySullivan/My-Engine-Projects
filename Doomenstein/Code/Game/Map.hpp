@@ -33,7 +33,6 @@ public:
 
 	void CreateTiles();
 	void CreateGeometry();
-	void DebugPrintActors();
 	void AddGeometryForWall( const AABB3& bounds, const AABB2& UVs );
 	void AddGeometryForFloor( const AABB3& bounds, const AABB2& UVs );
 	void AddGeometryForCeiling( const AABB3& bounds, const AABB2& UVs );
@@ -71,6 +70,7 @@ public:
 	Vec3 m_sunDirection;
 	float m_sunIntensity;
 	float m_AmbientIntensity;
+	std::vector<Actor*> m_actorVector;
 
 protected:
 
@@ -84,7 +84,6 @@ protected:
 	VertexBuffer* m_vertexBuffer = nullptr;
 	IndexBuffer* m_indexBuffer = nullptr;
 
-	std::vector<Actor*> m_actorVector;
 	unsigned int m_nextActorUID = 0;
 
 	ConstantBuffer* m_lightingConstant;

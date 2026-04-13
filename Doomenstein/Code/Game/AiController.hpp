@@ -18,11 +18,17 @@ public:
 	void HandleMovement( float deltaSeconds );
 
 	Vec3 GetRaycastDirection() const;
+	void DamagedBy( Actor* attacker );
 
 private:
+	void MoveToPlayer( float deltaSeconds );
+	RaycastResult3D RaycastSearchForPlayer( const Vec3& start, const Vec3& direction, float distance, Actor* owner );
+
+
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
 	EulerAngles m_orientation;
+	ActorHandle m_targetActorHandle;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

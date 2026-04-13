@@ -5,7 +5,7 @@ const ActorHandle ActorHandle::INVALID(0x0000ffffu, 0x0000ffffu);
 
 ActorHandle::ActorHandle()
 {
-
+	m_data = INVALID.m_data;
 }
 
 ActorHandle::ActorHandle( unsigned int uid, unsigned int index )

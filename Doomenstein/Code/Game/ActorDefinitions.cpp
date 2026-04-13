@@ -59,6 +59,8 @@ static void LoadActorDefsFromFile( char const* filePath )
 		if ( aiElem )
 		{
 			def.m_aiEnabled = xml.ParseXmlAttribute( *aiElem, "aiEnabled", false );
+			def.m_sightRadius = xml.ParseXmlAttribute( *aiElem, "sightRadius", 0.f );
+			def.m_sightAngle = xml.ParseXmlAttribute( *aiElem, "sightAngle", 0.f );
 		}
 
 		XmlElement* inventoryElem = actorElem->FirstChildElement( "Inventory" );
