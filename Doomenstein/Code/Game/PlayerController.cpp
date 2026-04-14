@@ -46,14 +46,21 @@ void PlayerController::UpdateInput( float deltaSeconds )
 		PossessNextActor();
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
 	{
 		Actor* actor = GetActor();
 		if ( actor && m_map )
 		{
-			if ( m_weaponDef )
+			if ( m_weaponShootTimer == nullptr )
+			{
+				m_weaponShootTimer = new Timer( m_weaponDef->m_refireTime );
+				m_weaponShootTimer->Start();
+			}
+
+			if ( m_weaponDef && m_weaponShootTimer->DecrementPeriodIfElapsed() )
 			{
 				m_map->SpawnProjectileFromActor( actor, *m_weaponDef, GetRaycastDirection() );
+				m_weaponShootTimer->Start();
 			}
 		}
 	}
@@ -318,14 +325,27 @@ void PlayerController::ProcessWeaponChangeInput( float deltaSeconds )
 {
 	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
 	{
+		
+
 		Actor* actor = GetActor();
 		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[0];
 		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );
+		ChangeWeaponTimer( m_weaponDef->m_refireTime );
 	}
 	else if ( g_engine->m_input->WasKeyJustPressed( '2' ) )
 	{
 		Actor* actor = GetActor();
 		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[1];
 		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );
+		ChangeWeaponTimer( m_weaponDef->m_refireTime );
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void PlayerController::ChangeWeaponTimer( float delayTimer )
+{
+	delete m_weaponShootTimer;
+	m_weaponShootTimer = nullptr;
+	m_weaponShootTimer = new Timer( delayTimer );
+	m_weaponShootTimer->Start();
 }

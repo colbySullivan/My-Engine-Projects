@@ -5,6 +5,7 @@
 #include "Engine/Math/EulerAngles.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Core/Timer.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -33,13 +34,14 @@ private:
 	void ProcessLookInput( float deltaSeconds );
 	void ToggleCameraMode();
 	void PossessNextActor();
-
 	void ProcessWeaponChangeInput( float deltaSeconds );
+	void ChangeWeaponTimer( float delayTimer );
 private:
 	Camera*		m_camera;
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
 	const WeaponDefinition* m_weaponDef = WeaponDefinition::GetByName( "PlasmaRifle" );
+	Timer* m_weaponShootTimer = nullptr;
 
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
