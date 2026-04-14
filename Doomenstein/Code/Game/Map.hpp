@@ -45,6 +45,7 @@ public:
 
 	void Update();
 	void CollideActors();
+	void CollideActorAndProjectiles( Actor* actorA, Actor* actorB );
 	void CollideActors( Actor* actorA, Actor* actorB );
 	void CollideActorsWithMap();
 	void CollideActorWithMap( Actor* actor );

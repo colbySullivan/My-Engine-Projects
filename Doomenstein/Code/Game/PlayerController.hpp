@@ -14,6 +14,7 @@ public:
 	virtual ~PlayerController();
 
 	virtual void Update( float deltaSeconds ) override;
+	void Render( float deltaSeconds );
 
 	void UpdateInput( float deltaSeconds );
 	void UpdateCamera( float deltaSeconds );

@@ -10,6 +10,7 @@
 #include "Game/MapDefinition.hpp"
 #include "Controller.hpp"
 #include "WeaponDefinition.hpp"
+#include "Engine/Core/Timer.hpp"
 
 struct EulerAngles;
 class Game;
@@ -33,6 +34,8 @@ public:
 	void OnUnpossessed();
 	bool IsPossessed() const;
 	void MoveInDirection( const Vec3& direction, float speed );
+	bool IsDead() const;
+	void Attacked( float damage );
 
 public:
 	ActorHandle	m_actorHandle;
@@ -45,7 +48,7 @@ public:
 	Vec3		m_velocity;
 	Vec3		m_acceleration;
 	std::vector<Vertex> m_vertexes;
-	// Weapons 
+
 	Actor*		m_owner;
 	bool		m_isDead = false;
 	int			m_health;
@@ -63,6 +66,8 @@ public:
 	bool		m_controlledByPlayer = false;
 	bool		m_canBePushed = false;
 
+	Timer*		m_attackTimer = nullptr;
+
 private:
 	Controller* m_currentController = nullptr;
 	Controller* m_savedAIController = nullptr;
@@ -73,4 +78,5 @@ private:
 	void CreateSpawnPoint();
 	void CreateProjectile( std::string name );
 	void AddForce( const Vec3& force );
+	void CheckIfShouldDie();
 };

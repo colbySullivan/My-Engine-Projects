@@ -436,8 +436,13 @@ void Game::RenderUI() const
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	/*hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );*/
+	Actor* ownerActor = nullptr;
+	if ( m_playerController )
+	{
+		ownerActor = m_playerController->GetActor();
+	}
+	hudText = Stringf( "Health: %5.2f", ownerActor ? ownerActor->m_health : 0.f );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	/*hudText = Stringf( "Player Mode", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
 	Rgba8 playerControlColor = ( !m_controlPlayerMode ) ? Rgba8( 255, 255, 255 ) : Rgba8( 0, 0, 255 );

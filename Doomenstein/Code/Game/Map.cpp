@@ -160,6 +160,7 @@ void Map::AddActors()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Map::CreateBuffers()
 {
 	if ( m_vertexBuffer ) 
@@ -229,6 +230,7 @@ void Map::CollideActors()
 		{
 			Actor* otherActor = m_actorVector[otherActorIndex];
 			CollideActors( firstActor, otherActor );
+			CollideActorAndProjectiles( firstActor, otherActor );
 		}
 	}
 }
@@ -253,6 +255,33 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 	{
 		PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius,
 			actorB->m_position, actorBEnd, actorB->m_radius );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
+{
+	if ( actorB->m_actorDef->m_faction == "NEUTRAL" || actorA->m_actorDef->m_faction == "NEUTRAL" )
+	{
+		return;
+	}
+
+	Vec3 actorAEnd = actorA->m_position + Vec3( 0.f, 0.f, actorA->m_height );
+	Vec3 actorBEnd = actorB->m_position + Vec3( 0.f, 0.f, actorB->m_height );
+
+	if ( actorB->m_actorDef && actorB->m_actorDef->m_faction != actorA->m_actorDef->m_faction )
+	{
+		if ( DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
+		{
+			actorB->Attacked( 3.f );
+		}
+	}
+	else if ( actorA->m_actorDef && actorA->m_actorDef->m_faction != actorB->m_actorDef->m_faction )
+	{
+		if ( DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
+		{
+			actorA->Attacked( 3.f );
+		}
 	}
 }
 
@@ -712,6 +741,7 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 	return closestResult;
 }
 
+//-----------------------------------------------------------------------------------------------
 void Map::SetLighting() const
 {
 	LightingConstants lightingConstants = { };

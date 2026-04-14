@@ -27,8 +27,8 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	if ( spawnInfo.m_name == "Marine" )						CreatePlayer();
 	if ( spawnInfo.m_name == "Demon" )						CreateDemon();
 	if ( spawnInfo.m_name == "SpawnPoint" )					CreateSpawnPoint();
-	//if ( spawnInfo.m_name == "PlasmaProjectile" )			CreateProjectile();
-	else 													CreateProjectile( spawnInfo.m_name );
+	if ( spawnInfo.m_name == "PlasmaProjectile" )			CreateProjectile( spawnInfo.m_name );
+	//else 													CreateProjectile( spawnInfo.m_name );
 }
 
 Actor::Actor( ActorDefinition* ActorDef )
@@ -55,6 +55,7 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 
 	if ( m_actorDef && m_actorDef->m_simulated && !m_isDead )
 	{
+		CheckIfShouldDie();
 		UpdateMove();
 	}
 
@@ -163,6 +164,9 @@ void Actor::CreatePlayer()
 	m_actorDef = ActorDefinition::GetByName( "Marine" );
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
+	m_health = m_actorDef->m_health;
+	m_attackTimer = new Timer( 1.f );
+	m_attackTimer->Start();
 
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	m_height = m_actorDef->m_physicsHeight;
@@ -173,7 +177,7 @@ void Actor::CreatePlayer()
 	Vec3 forwardNormal = m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
 	Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
 	Vec3 beakTip = beakBase + forwardNormal * 0.1f;
-	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.06f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.1f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -182,15 +186,19 @@ void Actor::CreateDemon()
 	m_actorDef =  ActorDefinition::GetByName( "Demon");
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
+	m_health = m_actorDef->m_health;
+	m_attackTimer = new Timer( 1.f );
+	m_attackTimer->Start();
+
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
 	m_modelColor = Rgba8( 255, 0, 0 );
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 	
-	Vec3 forwardNormal = m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+	Vec3 forwardNormal = Vec3( 1.f, 0.f, 0.f );
 	Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
 	Vec3 beakTip = beakBase + forwardNormal * 0.1f;
-	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.06f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.1f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -202,7 +210,6 @@ void Actor::CreateSpawnPoint()
 	m_modelColor = Rgba8( 255, 255, 0);
 	m_height = 1.f;
 	m_radius = 0.5;
-	//AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -215,10 +222,36 @@ void Actor::MoveInDirection( const Vec3& direction, float speed )
 	AddForce( moveForce );
 }
 
+//-----------------------------------------------------------------------------------------------
+void Actor::CheckIfShouldDie()
+{
+	if ( m_health <= 0.f && m_actorDef->m_simulated )
+	{
+		m_isDead = true;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Actor::IsDead() const
+{
+	return m_isDead;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::Attacked( float damage )
+{
+	if ( m_attackTimer->DecrementPeriodIfElapsed() )
+	{
+		m_attackTimer->Start();
+		m_health -= damage;
+	}
+}
+
 //------------------------------------------------------------------------------
 void Actor::CreateProjectile( std::string name )
 {
 	m_actorDef = ActorDefinition::GetByName( name );
+	m_actorHandle = m_game->m_playerController->GetActorHandle();
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );

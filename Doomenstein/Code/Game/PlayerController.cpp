@@ -31,6 +31,12 @@ void PlayerController::Update( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
+void PlayerController::Render( float deltaSeconds )
+{
+	
+}
+
+//-----------------------------------------------------------------------------------------------
 void PlayerController::UpdateInput( float deltaSeconds )
 {
 	if ( g_engine->m_input->WasKeyJustPressed( 'F' ) )
