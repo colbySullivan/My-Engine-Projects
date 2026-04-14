@@ -127,7 +127,7 @@ void Game::Update()
 		}
 		m_roundTime += deltaSeconds;
 		m_currentMap->Update();
-		DebugInput();
+		//DebugInput();
 	}
 	UpdateKeyboardInput( controller );
 

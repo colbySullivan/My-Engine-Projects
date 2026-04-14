@@ -31,12 +31,6 @@ void PlayerController::Update( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void PlayerController::Render( float deltaSeconds )
-{
-	
-}
-
-//-----------------------------------------------------------------------------------------------
 void PlayerController::UpdateInput( float deltaSeconds )
 {
 	if ( g_engine->m_input->WasKeyJustPressed( 'F' ) )
@@ -52,15 +46,14 @@ void PlayerController::UpdateInput( float deltaSeconds )
 		PossessNextActor();
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( 'J' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
 		Actor* actor = GetActor();
 		if ( actor && m_map )
 		{
-			const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( "PlasmaRifle" );
-			if ( weaponDef )
+			if ( m_weaponDef )
 			{
-				m_map->SpawnProjectileFromActor( actor, *weaponDef, GetRaycastDirection() );
+				m_map->SpawnProjectileFromActor( actor, *m_weaponDef, GetRaycastDirection() );
 			}
 		}
 	}
@@ -84,6 +77,7 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 {
 	ProcessLookInput( deltaSeconds );
 	ProcessMovementInput( deltaSeconds );
+	ProcessWeaponChangeInput( deltaSeconds );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -316,5 +310,22 @@ void PlayerController::PossessNextActor()
 			m_freeFlyCameraOrientation.m_pitchDegrees = 0.f;
 			m_freeFlyCameraOrientation.m_rollDegrees = 0.f;
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void PlayerController::ProcessWeaponChangeInput( float deltaSeconds )
+{
+	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
+	{
+		Actor* actor = GetActor();
+		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[0];
+		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );
+	}
+	else if ( g_engine->m_input->WasKeyJustPressed( '2' ) )
+	{
+		Actor* actor = GetActor();
+		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[1];
+		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );
 	}
 }

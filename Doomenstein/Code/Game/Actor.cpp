@@ -24,11 +24,20 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	, m_position( spawnInfo.m_spawnLocation )
 	, m_orientation( spawnInfo.m_actorOrientation ) // #todo rest of the variables
 {
-	if ( spawnInfo.m_name == "Marine" )						CreatePlayer();
-	if ( spawnInfo.m_name == "Demon" )						CreateDemon();
-	if ( spawnInfo.m_name == "SpawnPoint" )					CreateSpawnPoint();
-	if ( spawnInfo.m_name == "PlasmaProjectile" )			CreateProjectile( spawnInfo.m_name );
-	//else 													CreateProjectile( spawnInfo.m_name );
+	if ( spawnInfo.m_name == "Marine" )						
+		CreatePlayer();
+
+	if ( spawnInfo.m_name == "Demon" )						
+		CreateDemon();
+
+	if ( spawnInfo.m_name == "SpawnPoint" )					
+		CreateSpawnPoint();
+
+	//if ( spawnInfo.m_name == "PlasmaProjectile" )			CreateProjectile( spawnInfo.m_name );
+	else if ( spawnInfo.m_name == "PlasmaProjectile" )
+	{
+		CreateProjectile( spawnInfo.m_name );
+	}
 }
 
 Actor::Actor( ActorDefinition* ActorDef )
@@ -254,6 +263,7 @@ void Actor::CreateProjectile( std::string name )
 	m_actorHandle = m_game->m_playerController->GetActorHandle();
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
+	m_health = 1.0f;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE,32 );

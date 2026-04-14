@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Controller.hpp"
+#include "Game/WeaponDefinition.hpp"
 #include "Engine/Math/EulerAngles.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/Camera.hpp"
@@ -14,7 +15,6 @@ public:
 	virtual ~PlayerController();
 
 	virtual void Update( float deltaSeconds ) override;
-	void Render( float deltaSeconds );
 
 	void UpdateInput( float deltaSeconds );
 	void UpdateCamera( float deltaSeconds );
@@ -34,10 +34,13 @@ private:
 	void ToggleCameraMode();
 	void PossessNextActor();
 
+	void ProcessWeaponChangeInput( float deltaSeconds );
 private:
 	Camera*		m_camera;
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
+	const WeaponDefinition* m_weaponDef = WeaponDefinition::GetByName( "PlasmaRifle" );
+
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;
