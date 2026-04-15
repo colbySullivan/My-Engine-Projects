@@ -197,6 +197,12 @@ void Map::CreateBuffers()
 }
 
 //-----------------------------------------------------------------------------------------------
+bool Map::IsPositionInBounds( const Vec3& position ) const
+{
+	return ( AreCoordsInBounds( position.x, position.y ) && ( position.z >= 0.f && position.z <= 1.f ) );
+}
+
+//-----------------------------------------------------------------------------------------------
 bool Map::AreCoordsInBounds( int x, int y ) const
 {
 	return ( x < m_dimensions.x && y < m_dimensions.y && x >= 0 && y >= 0 );
@@ -254,18 +260,15 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 
 	if ( actorA->m_canBePushed && !actorB->m_canBePushed )
 	{
-		PushCylinderOutOfFixedCylinder( actorA->m_position, actorAEnd, actorA->m_radius,
-			actorB->m_position, actorBEnd, actorB->m_radius );
+		PushCylinderOutOfFixedCylinder( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
 	}
 	else if ( !actorA->m_canBePushed && actorB->m_canBePushed )
 	{
-		PushCylinderOutOfFixedCylinder( actorB->m_position, actorBEnd, actorB->m_radius,
-			actorA->m_position, actorAEnd, actorA->m_radius );
+		PushCylinderOutOfFixedCylinder( actorB->m_position, actorBEnd, actorB->m_radius, actorA->m_position, actorAEnd, actorA->m_radius );
 	}
 	else
 	{
-		PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius,
-			actorB->m_position, actorBEnd, actorB->m_radius );
+		PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
 	}
 }
 
@@ -303,6 +306,12 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 	{
 		projectile = actorB;
 		target = actorA;
+	}
+
+	if ( !IsPositionInBounds(projectile->m_position) )
+	{
+		projectile->m_isDead = true;
+		return;
 	}
 
 	if ( ( !projectile || !target || !target->m_actorDef ) || ( target->m_actorDef->m_faction == "NEUTRAL" ) )
