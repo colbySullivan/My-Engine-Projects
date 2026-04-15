@@ -325,8 +325,6 @@ void PlayerController::ProcessWeaponChangeInput( float deltaSeconds )
 {
 	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
 	{
-		
-
 		Actor* actor = GetActor();
 		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[0];
 		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );

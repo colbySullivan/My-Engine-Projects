@@ -213,11 +213,15 @@ void Map::Update()
 	float deltaSeconds = (float) g_engine->m_systemClock->GetDeltaSeconds();
 	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
 	{
-		m_actorVector[actorIndex]->Update( deltaSeconds );
+		Actor* currActor = m_actorVector[actorIndex];
+		if ( currActor )
+		{
+			currActor->Update( deltaSeconds );
+		}
 	}
 	CollideActorsWithMap();
 	CollideActors();
-
+	HandleDeath();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -229,8 +233,12 @@ void Map::CollideActors()
 		for (int otherActorIndex = actorIndex + 1; otherActorIndex < m_actorVector.size() ; ++otherActorIndex)
 		{
 			Actor* otherActor = m_actorVector[otherActorIndex];
+			if ( firstActor && otherActor )
+			{
 			CollideActors( firstActor, otherActor );
 			CollideActorAndProjectiles( firstActor, otherActor );
+			}
+
 		}
 	}
 }
@@ -273,14 +281,14 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 	{
 		if ( DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
 		{
-			actorB->Attacked( 3.f );
+			actorB->Attacked( 30.f );
 		}
 	}
 	else if ( actorA->m_actorDef && actorA->m_actorDef->m_faction != actorB->m_actorDef->m_faction )
 	{
 		if ( DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
 		{
-			actorA->Attacked( 3.f );
+			actorA->Attacked( 30.f );
 		}
 	}
 }
@@ -507,7 +515,10 @@ void Map::Render() const
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* currActor = m_actorVector[actorIndex];
-		currActor->Render();
+		if ( currActor )
+		{
+			currActor->Render();
+		}
 	}
 }
 
@@ -739,6 +750,22 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 	}
 
 	return closestResult;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::HandleDeath()
+{
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
+	{
+		Actor* actor = m_actorVector[actorIndex];
+		if ( actor && actor->m_isDead )
+		{
+			//actor->OnUnpossessed();
+			delete actor;
+			m_actorVector[actorIndex] = nullptr;
+			SpawnPlayer( m_game->m_playerController );
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

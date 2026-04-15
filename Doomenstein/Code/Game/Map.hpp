@@ -44,6 +44,8 @@ public:
 	const Tile* GetTile( int x, int y ) const;
 
 	void Update();
+	void Render() const;
+
 	void CollideActors();
 	void CollideActorAndProjectiles( Actor* actorA, Actor* actorB );
 	void CollideActors( Actor* actorA, Actor* actorB );
@@ -55,9 +57,6 @@ public:
 	void PossessNextActor( Controller* controller );
 	void SpawnPlayer( Controller* playerController );
 
-
-	void Render() const;
-
 	Actor* SpawnActor( const SpawnInfo& spawnInfo );
 	Actor* GetActorByHandle( const ActorHandle handle ) const;
 
@@ -65,6 +64,8 @@ public:
 	RaycastResult3D RaycastWorldXY( const Vec3& start, const Vec3& direction, float distance ) const;
 	RaycastResult3D RaycastWorldZ( const Vec3& start, const Vec3& direction, float distance ) const;
 	RaycastResult3D RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
+
+	void HandleDeath();
 
 	Game* m_game = nullptr;
 
