@@ -35,7 +35,7 @@ public:
 	bool IsPossessed() const;
 	void MoveInDirection( const Vec3& direction, float speed );
 	bool IsDead() const;
-	void Attacked( float damage );
+	void Attacked( float damage, Vec3 impulse );
 	void AttackedBy( Actor* attacker, float damage );
 
 public:
@@ -79,5 +79,6 @@ private:
 	void CreateSpawnPoint();
 	void CreateProjectile( std::string name );
 	void AddForce( const Vec3& force );
+	void AddImpulse( const Vec3& impulse );
 	void CheckIfShouldDie();
 };

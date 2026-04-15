@@ -404,6 +404,7 @@ Actor* Map::SpawnProjectileFromActor( Actor* owner, const WeaponDefinition& weap
 	spawnInfo.m_spawnLocation = spawnPos;
 	spawnInfo.m_actorOrientation = owner->m_orientation;
 
+	//if ( spawnInfo.m_name != "" )
 	Actor* projectile = SpawnActor( spawnInfo );
 	if ( !projectile )
 	{

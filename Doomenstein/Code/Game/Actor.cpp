@@ -24,17 +24,27 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	, m_position( spawnInfo.m_spawnLocation )
 	, m_orientation( spawnInfo.m_actorOrientation ) // #todo rest of the variables
 {
-	if ( spawnInfo.m_name == "Marine" )						
+	if ( spawnInfo.m_name == "Marine" )
+	{
 		CreatePlayer();
+	}
 
-	if ( spawnInfo.m_name == "Demon" )						
+	if ( spawnInfo.m_name == "Demon" )
+	{
 		CreateDemon();
+	}
 
-	if ( spawnInfo.m_name == "SpawnPoint" )					
+	if ( spawnInfo.m_name == "SpawnPoint" )
+	{
 		CreateSpawnPoint();
+	}
 
-	//if ( spawnInfo.m_name == "PlasmaProjectile" )			CreateProjectile( spawnInfo.m_name );
-	else if ( spawnInfo.m_name == "PlasmaProjectile" )
+	if ( spawnInfo.m_name == "PlasmaProjectile" )
+	{
+		CreateProjectile( spawnInfo.m_name );
+	}
+
+	if ( spawnInfo.m_name == "PlasmaProjectile" )
 	{
 		CreateProjectile( spawnInfo.m_name );
 	}
@@ -247,13 +257,16 @@ bool Actor::IsDead() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::Attacked( float damage )
+void Actor::Attacked( float damage, Vec3 impulse )
 {
-	if ( m_attackTimer->DecrementPeriodIfElapsed() )
+	/*if ( m_attackTimer->DecrementPeriodIfElapsed() )
 	{
+		AddImpulse( impulse * 4.0f );
 		m_attackTimer->Start();
 		m_health -= damage;
-	}
+	}*/
+	AddImpulse( impulse * 4.0f );
+	m_health -= damage;
 }
 
 //------------------------------------------------------------------------------
@@ -275,10 +288,16 @@ void Actor::AddForce( const Vec3& force )
 	m_acceleration += force;
 }
 
+void Actor::AddImpulse( const Vec3& impulse )
+{
+	m_velocity += impulse;
+}
+
 //------------------------------------------------------------------------------
 void Actor::AttackedBy( Actor* attacker, float damage )
 {
-	Attacked( damage );
+	Vec3 impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+	Attacked( damage, impulse );
 
 	if ( m_currentController && attacker )
 	{
