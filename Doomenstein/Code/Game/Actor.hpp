@@ -37,6 +37,15 @@ public:
 	bool IsDead() const;
 	void Attacked( float damage, Vec3 impulse );
 	void AttackedBy( Actor* attacker, float damage );
+	
+	void EquipWeapon( int weaponIndex );
+	void EquipWeaponByName( const std::string& weaponName );
+	const WeaponDefinition* GetCurrentWeapon() const;
+	int GetCurrentWeaponIndex() const;
+	int GetWeaponCount() const;
+	bool CanFireWeapon() const;
+	void FireWeapon();
+	void ResetWeaponTimer();
 
 public:
 	ActorHandle	m_actorHandle;
@@ -72,6 +81,10 @@ public:
 private:
 	Controller* m_currentController = nullptr;
 	Controller* m_savedAIController = nullptr;
+	
+	std::vector<const WeaponDefinition*> m_weapons;
+	int m_currentWeaponIndex = 0;
+	Timer* m_weaponRefireTimer = nullptr;
 
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
 	void CreatePlayer();
@@ -81,4 +94,5 @@ private:
 	void AddForce( const Vec3& force );
 	void AddImpulse( const Vec3& impulse );
 	void CheckIfShouldDie();
+	void InitializeWeapons();
 };

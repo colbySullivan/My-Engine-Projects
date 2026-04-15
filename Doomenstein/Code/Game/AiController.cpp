@@ -2,6 +2,7 @@
 #include "Game/Actor.hpp"
 #include "Engine/Core/Engine.hpp"
 
+
 //-----------------------------------------------------------------------------------------------
 AiController::AiController( Map* map, Camera* /*camera*/ )
 	: Controller( map )
@@ -130,9 +131,28 @@ void AiController::MoveToPlayer( float deltaSeconds )
 	if ( m_targetActorHandle.IsValid() && targetActor && !targetActor->m_isDead )
 	{
 		Vec3 displacementToTarget = targetActor->m_position - actor->m_position;
+		float distanceToTarget = displacementToTarget.GetLength();
 		float desiredYaw = Atan2Degrees( displacementToTarget.y, displacementToTarget.x );
 		float maxTurnDegrees = actor->m_actorDef->m_turnSpeed * deltaSeconds;
 		actor->m_orientation.m_yawDegrees = GetTurnedTowardDegrees( actor->m_orientation.m_yawDegrees, desiredYaw, maxTurnDegrees );
-		HandleMovement( deltaSeconds );
+		
+		const WeaponDefinition* weapon = actor->GetCurrentWeapon();
+		if ( weapon && weapon->m_meleeCount > 0 )
+		{
+			if ( distanceToTarget <= weapon->m_meleeRange && actor->CanFireWeapon() )
+			{
+				//targetActor->AttackedBy( actor, g_rng.RollRandomFloatInRange( weapon->m_meleeDamage.m_min, weapon->m_meleeDamage.m_max ) );
+				targetActor->AttackedBy( actor,weapon->m_meleeDamage.m_min );
+				actor->FireWeapon();
+			}
+			else
+			{
+				HandleMovement( deltaSeconds );
+			}
+		}
+		else
+		{
+			HandleMovement( deltaSeconds );
+		}
 	}
 }

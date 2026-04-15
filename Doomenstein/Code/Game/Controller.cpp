@@ -55,6 +55,7 @@ ActorHandle Controller::GetActorHandle() const
 
 void Controller::DamagedBy( Actor* attacker, float damage )
 {
+
 }
 
 //-----------------------------------------------------------------------------------------------

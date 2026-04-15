@@ -49,18 +49,13 @@ void PlayerController::UpdateInput( float deltaSeconds )
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
 	{
 		Actor* actor = GetActor();
-		if ( actor && m_map )
+		if ( actor && m_map && actor->CanFireWeapon() )
 		{
-			if ( m_weaponShootTimer == nullptr )
+			const WeaponDefinition* weaponDef = actor->GetCurrentWeapon();
+			if ( weaponDef )
 			{
-				m_weaponShootTimer = new Timer( m_weaponDef->m_refireTime );
-				m_weaponShootTimer->Start();
-			}
-
-			if ( m_weaponDef && m_weaponShootTimer->DecrementPeriodIfElapsed() )
-			{
-				m_map->SpawnProjectileFromActor( actor, *m_weaponDef, GetRaycastDirection() );
-				m_weaponShootTimer->Start();
+				m_map->SpawnProjectileFromActor( actor, *weaponDef, GetRaycastDirection() );
+				actor->FireWeapon();
 			}
 		}
 	}
@@ -84,7 +79,7 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 {
 	ProcessLookInput( deltaSeconds );
 	ProcessMovementInput( deltaSeconds );
-	ProcessWeaponChangeInput( deltaSeconds );
+	ProcessWeaponChangeInput();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -321,29 +316,22 @@ void PlayerController::PossessNextActor()
 }
 
 //-----------------------------------------------------------------------------------------------
-void PlayerController::ProcessWeaponChangeInput( float deltaSeconds )
+void PlayerController::ProcessWeaponChangeInput()
 {
+	Actor* actor = GetActor();
+	if ( !actor )
+		return;
+
 	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
 	{
-		Actor* actor = GetActor();
-		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[0];
-		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );
-		ChangeWeaponTimer( m_weaponDef->m_refireTime );
+		actor->EquipWeapon( 0 );
 	}
 	else if ( g_engine->m_input->WasKeyJustPressed( '2' ) )
 	{
-		Actor* actor = GetActor();
-		std::string currentWeaponName = actor->m_actorDef->m_weaponNames[1];
-		m_weaponDef = WeaponDefinition::GetByName( currentWeaponName );
-		ChangeWeaponTimer( m_weaponDef->m_refireTime );
+		actor->EquipWeapon( 1 );
 	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void PlayerController::ChangeWeaponTimer( float delayTimer )
-{
-	delete m_weaponShootTimer;
-	m_weaponShootTimer = nullptr;
-	m_weaponShootTimer = new Timer( delayTimer );
-	m_weaponShootTimer->Start();
+	else if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
+	{
+		actor->EquipWeapon( 2 );
+	}
 }

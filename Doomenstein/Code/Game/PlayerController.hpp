@@ -34,15 +34,11 @@ private:
 	void ProcessLookInput( float deltaSeconds );
 	void ToggleCameraMode();
 	void PossessNextActor();
-	void ProcessWeaponChangeInput( float deltaSeconds );
-	void ChangeWeaponTimer( float delayTimer );
+	void ProcessWeaponChangeInput();
 private:
 	Camera*		m_camera;
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
-	const WeaponDefinition* m_weaponDef = WeaponDefinition::GetByName( "PlasmaRifle" );
-	Timer* m_weaponShootTimer = nullptr;
-
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

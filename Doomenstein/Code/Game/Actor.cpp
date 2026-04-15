@@ -22,7 +22,7 @@ Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
 Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	: m_game( owner )
 	, m_position( spawnInfo.m_spawnLocation )
-	, m_orientation( spawnInfo.m_actorOrientation ) // #todo rest of the variables
+	, m_orientation( spawnInfo.m_actorOrientation )
 {
 	if ( spawnInfo.m_name == "Marine" )
 	{
@@ -48,6 +48,9 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	{
 		CreateProjectile( spawnInfo.m_name );
 	}
+	
+	// Initialize weapons from ActorDefinition
+	InitializeWeapons();
 }
 
 Actor::Actor( ActorDefinition* ActorDef )
@@ -259,14 +262,8 @@ bool Actor::IsDead() const
 //-----------------------------------------------------------------------------------------------
 void Actor::Attacked( float damage, Vec3 impulse )
 {
-	/*if ( m_attackTimer->DecrementPeriodIfElapsed() )
-	{
-		AddImpulse( impulse * 4.0f );
-		m_attackTimer->Start();
-		m_health -= damage;
-	}*/
-	AddImpulse( impulse * 4.0f );
-	m_health -= damage;
+	AddImpulse( impulse );
+	m_health -= (int)damage;
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +273,7 @@ void Actor::CreateProjectile( std::string name )
 	m_actorHandle = m_game->m_playerController->GetActorHandle();
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
-	m_health = 1.0f;
+	m_health = 1;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE,32 );
@@ -288,6 +285,119 @@ void Actor::AddForce( const Vec3& force )
 	m_acceleration += force;
 }
 
+//-----------------------------------------------------------------------------------------------
+void Actor::InitializeWeapons()
+{
+	if ( !m_actorDef )
+	{
+		return;
+	}
+
+	m_weapons.clear();
+	
+	for ( const std::string& weaponName : m_actorDef->m_weaponNames )
+	{
+		const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( weaponName );
+		if ( weaponDef )
+		{
+			m_weapons.push_back( weaponDef );
+		}
+	}
+
+	if ( !m_weapons.empty() )
+	{
+		m_currentWeaponIndex = 0;
+		m_weaponDef = m_weapons[0];
+		
+		if ( m_weaponRefireTimer )
+		{
+			delete m_weaponRefireTimer;
+		}
+		m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
+		m_weaponRefireTimer->Start();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::EquipWeapon( int weaponIndex )
+{
+	if ( weaponIndex < 0 || weaponIndex >= (int)m_weapons.size() )
+		return;
+
+	m_currentWeaponIndex = weaponIndex;
+	m_weaponDef = m_weapons[weaponIndex];
+	
+	if ( m_weaponRefireTimer )
+	{
+		delete m_weaponRefireTimer;
+	}
+	m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
+	m_weaponRefireTimer->Start();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::EquipWeaponByName( const std::string& weaponName )
+{
+	for ( int i = 0; i < (int)m_weapons.size(); ++i )
+	{
+		if ( m_weapons[i]->m_name == weaponName )
+		{
+			EquipWeapon( i );
+			return;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+const WeaponDefinition* Actor::GetCurrentWeapon() const
+{
+	return m_weaponDef;
+}
+
+//-----------------------------------------------------------------------------------------------
+int Actor::GetCurrentWeaponIndex() const
+{
+	return m_currentWeaponIndex;
+}
+
+//-----------------------------------------------------------------------------------------------
+int Actor::GetWeaponCount() const
+{
+	return (int)m_weapons.size();
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Actor::CanFireWeapon() const
+{
+	if ( !m_weaponDef || !m_weaponRefireTimer || m_isDead )
+	{
+		return false;
+	}
+	
+	return m_weaponRefireTimer->HasPeriodElapsed();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::FireWeapon()
+{
+	if ( !CanFireWeapon() )
+	{
+		return;
+	}
+
+	m_weaponRefireTimer->Start();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::ResetWeaponTimer()
+{
+	if ( m_weaponRefireTimer )
+	{
+		m_weaponRefireTimer->Start();
+	}
+}
+
+//------------------------------------------------------------------------------
 void Actor::AddImpulse( const Vec3& impulse )
 {
 	m_velocity += impulse;
@@ -296,8 +406,13 @@ void Actor::AddImpulse( const Vec3& impulse )
 //------------------------------------------------------------------------------
 void Actor::AttackedBy( Actor* attacker, float damage )
 {
-	Vec3 impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
-	Attacked( damage, impulse );
+	const ActorDefinition* projectileActor = ActorDefinition::GetByName( attacker->GetCurrentWeapon()->m_projectileActorName );
+	if ( projectileActor )
+	{
+		Vec3 impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+		impulse *= projectileActor->m_impulseOnCollide;
+		Attacked( damage, impulse );
+	}
 
 	if ( m_currentController && attacker )
 	{
