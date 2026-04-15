@@ -19,7 +19,7 @@ public:
 	Actor* GetActor() const;
 
 	ActorHandle GetActorHandle() const;
-
+	virtual void DamagedBy( Actor* attacker, float damage );
 	bool IsPlayerControlled() const;
 
 protected:

@@ -38,7 +38,7 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_collidesWithActors = xml.ParseXmlAttribute( *collElem, "collidesWithActors", false );
 
 			// Projectile extras – present for PlasmaProjectile, default for others
-			def.m_damageOnCollide = xml.ParseXmlAttribute( *collElem, "damageOnCollide", FloatRange( 0.f, 0.f ) );
+			def.m_damageOnCollide = xml.ParseXmlAttribute( *collElem, "damageOnCollide", FloatRange( 0.f, 0.f ), '~' );
 			def.m_impulseOnCollide = xml.ParseXmlAttribute( *collElem, "impulseOnCollide", 0.f );
 			def.m_dieOnCollide = xml.ParseXmlAttribute( *collElem, "dieOnCollide", false );
 		}

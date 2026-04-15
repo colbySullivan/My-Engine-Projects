@@ -53,6 +53,10 @@ ActorHandle Controller::GetActorHandle() const
 	return m_actorHandle;
 }
 
+void Controller::DamagedBy( Actor* attacker, float damage )
+{
+}
+
 //-----------------------------------------------------------------------------------------------
 bool Controller::IsPlayerControlled() const
 {

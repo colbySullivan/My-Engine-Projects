@@ -274,3 +274,14 @@ void Actor::AddForce( const Vec3& force )
 {
 	m_acceleration += force;
 }
+
+//------------------------------------------------------------------------------
+void Actor::AttackedBy( Actor* attacker, float damage )
+{
+	Attacked( damage );
+
+	if ( m_currentController && attacker )
+	{
+		m_currentController->DamagedBy( attacker, damage );
+	}
+}

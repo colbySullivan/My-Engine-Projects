@@ -6,6 +6,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "AiController.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 
 struct LightingConstants
 {
@@ -14,6 +15,8 @@ struct LightingConstants
 	float AmbientIntensity;
 	Vec3  FakePad;
 };
+
+RandomNumberGenerator* g_rng;
 
 //-----------------------------------------------------------------------------------------------
 Map::Map( Game* game, const MapDefinition* definition )
@@ -266,10 +269,16 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
 void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 {
-	if ( actorB->m_actorDef->m_faction == "NEUTRAL" || actorA->m_actorDef->m_faction == "NEUTRAL" )
+	if ( !actorA || !actorB || !actorA->m_actorDef || !actorB->m_actorDef )
+	{
+		return;
+	}
+
+	bool aIsProjectile = ( actorA->m_actorDef->m_damageOnCollide.m_max > 0.f ) || actorA->m_actorDef->m_dieOnCollide;
+	bool bIsProjectile = ( actorB->m_actorDef->m_damageOnCollide.m_max > 0.f ) || actorB->m_actorDef->m_dieOnCollide;
+	if ( !aIsProjectile && !bIsProjectile )
 	{
 		return;
 	}
@@ -277,19 +286,58 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 	Vec3 actorAEnd = actorA->m_position + Vec3( 0.f, 0.f, actorA->m_height );
 	Vec3 actorBEnd = actorB->m_position + Vec3( 0.f, 0.f, actorB->m_height );
 
-	if ( actorB->m_actorDef && actorB->m_actorDef->m_faction != actorA->m_actorDef->m_faction )
+	if ( !DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
 	{
-		if ( DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
-		{
-			actorB->Attacked( 30.f );
-		}
+		return;
 	}
-	else if ( actorA->m_actorDef && actorA->m_actorDef->m_faction != actorB->m_actorDef->m_faction )
+
+	Actor* projectile = nullptr;
+	Actor* target = nullptr;
+
+	if ( aIsProjectile && !bIsProjectile )
 	{
-		if ( DoCylindersOverlap( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius ) )
-		{
-			actorA->Attacked( 30.f );
-		}
+		projectile = actorA;
+		target = actorB;
+	}
+	else if ( bIsProjectile && !aIsProjectile )
+	{
+		projectile = actorB;
+		target = actorA;
+	}
+
+	if ( ( !projectile || !target || !target->m_actorDef ) || ( target->m_actorDef->m_faction == "NEUTRAL" ) )
+	{
+		return;
+	}
+
+	if ( target->m_actorDef->m_faction == "NEUTRAL" )
+	{
+		return;
+	}
+
+	if ( projectile->m_actorDef && projectile->m_actorDef->m_faction == target->m_actorDef->m_faction )
+	{
+		return;
+	}
+
+	if ( projectile->m_owner && projectile->m_owner == target )
+	{
+		return;
+	}
+
+	const FloatRange& damageRange = projectile->m_actorDef->m_damageOnCollide;
+	float damage = g_rng->RollRandomFloatInRange( damageRange.m_min, damageRange.m_max );
+
+	if ( damage > 0.f )
+	{
+		Actor* attacker = projectile->m_owner ? projectile->m_owner : projectile;
+		target->AttackedBy( attacker, damage );
+	}
+
+	if ( projectile->m_actorDef->m_dieOnCollide )
+	{
+		projectile->m_health = 0;
+		projectile->m_isDead = true;
 	}
 }
 
@@ -755,15 +803,25 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 //-----------------------------------------------------------------------------------------------
 void Map::HandleDeath()
 {
-	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
+	for ( int actorIndex = 0; actorIndex < ( int )m_actorVector.size(); ++actorIndex )
 	{
 		Actor* actor = m_actorVector[actorIndex];
 		if ( actor && actor->m_isDead )
 		{
-			//actor->OnUnpossessed();
+			bool wasPlayer = false;
+
+			if ( actor->m_actorDef && actor->m_actorDef->m_name == "Marine" )
+			{
+				wasPlayer = true;
+			}
+
 			delete actor;
 			m_actorVector[actorIndex] = nullptr;
-			SpawnPlayer( m_game->m_playerController );
+
+			if ( wasPlayer )
+			{
+				SpawnPlayer( m_game->m_playerController );
+			}
 		}
 	}
 }

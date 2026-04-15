@@ -55,9 +55,12 @@ Vec3 AiController::GetRaycastDirection() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void AiController::DamagedBy( Actor* attacker )
+void AiController::DamagedBy( Actor* attacker, [[maybe_unused]] float damage )
 {
-
+	if ( attacker )
+	{
+		m_targetActorHandle = attacker->m_actorHandle;
+	}
 }
 
 RaycastResult3D AiController::RaycastSearchForPlayer( const Vec3& start, const Vec3& direction, float distance, Actor* owner )

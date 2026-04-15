@@ -18,7 +18,7 @@ public:
 	void HandleMovement( float deltaSeconds );
 
 	Vec3 GetRaycastDirection() const;
-	void DamagedBy( Actor* attacker );
+	virtual void DamagedBy( Actor* attacker, float damage ) override;
 
 private:
 	void MoveToPlayer( float deltaSeconds );

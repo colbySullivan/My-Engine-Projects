@@ -36,6 +36,7 @@ public:
 	void MoveInDirection( const Vec3& direction, float speed );
 	bool IsDead() const;
 	void Attacked( float damage );
+	void AttackedBy( Actor* attacker, float damage );
 
 public:
 	ActorHandle	m_actorHandle;
