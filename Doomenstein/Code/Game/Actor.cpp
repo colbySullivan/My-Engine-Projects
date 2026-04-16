@@ -406,13 +406,33 @@ void Actor::AddImpulse( const Vec3& impulse )
 //------------------------------------------------------------------------------
 void Actor::AttackedBy( Actor* attacker, float damage )
 {
-	const ActorDefinition* projectileActor = ActorDefinition::GetByName( attacker->GetCurrentWeapon()->m_projectileActorName );
-	if ( projectileActor )
+	Vec3 impulse = Vec3( 0.f, 0.f, 0.f );
+
+	const WeaponDefinition* attackerWeapon = attacker->GetCurrentWeapon();
+	if ( attackerWeapon )
 	{
-		Vec3 impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
-		impulse *= projectileActor->m_impulseOnCollide;
-		Attacked( damage, impulse );
+		if ( !attackerWeapon->m_projectileActorName.empty() )
+		{
+			const ActorDefinition* projectileActor = ActorDefinition::GetByName( attackerWeapon->m_projectileActorName );
+			if ( projectileActor )
+			{
+				impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+				impulse *= projectileActor->m_impulseOnCollide;
+			}
+		}
+		else if ( attackerWeapon->m_meleeCount > 0 )
+		{
+			impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+			impulse *= attackerWeapon->m_meleeImpulse;
+		}
+		else if ( attackerWeapon->m_rayCount > 0 )
+		{
+			impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+			impulse *= attackerWeapon->m_rayImpulse;
+		}
 	}
+
+	Attacked( damage, impulse );
 
 	if ( m_currentController && attacker )
 	{

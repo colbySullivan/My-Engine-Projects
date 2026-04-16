@@ -39,7 +39,7 @@ void WeaponDefinition::InitializeWeaponDefs()
 		def.m_meleeCount    = xml.ParseXmlAttribute( *weaponElem, "meleeCount",  0 );
 		def.m_meleeArcDegrees = xml.ParseXmlAttribute( *weaponElem, "meleeArc",   0.f );
 		def.m_meleeRange    = xml.ParseXmlAttribute( *weaponElem, "meleeRange",  0.f );
-		def.m_meleeDamage   = xml.ParseXmlAttribute( *weaponElem, "meleeDamage", FloatRange( 0.f, 1.f ) );
+		def.m_meleeDamage   = xml.ParseXmlAttribute( *weaponElem, "meleeDamage", FloatRange( 0.f, 1.f ), '~');
 		def.m_meleeImpulse  = xml.ParseXmlAttribute( *weaponElem, "meleeImpulse", 0.f );
 
 

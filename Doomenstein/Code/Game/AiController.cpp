@@ -1,6 +1,7 @@
 #include "Game/AiController.hpp"
 #include "Game/Actor.hpp"
 #include "Engine/Core/Engine.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -135,15 +136,17 @@ void AiController::MoveToPlayer( float deltaSeconds )
 		float desiredYaw = Atan2Degrees( displacementToTarget.y, displacementToTarget.x );
 		float maxTurnDegrees = actor->m_actorDef->m_turnSpeed * deltaSeconds;
 		actor->m_orientation.m_yawDegrees = GetTurnedTowardDegrees( actor->m_orientation.m_yawDegrees, desiredYaw, maxTurnDegrees );
-		
+
 		const WeaponDefinition* weapon = actor->GetCurrentWeapon();
 		if ( weapon && weapon->m_meleeCount > 0 )
 		{
-			if ( distanceToTarget <= weapon->m_meleeRange && actor->CanFireWeapon() )
+			if ( distanceToTarget <= weapon->m_meleeRange )
 			{
-				//targetActor->AttackedBy( actor, g_rng.RollRandomFloatInRange( weapon->m_meleeDamage.m_min, weapon->m_meleeDamage.m_max ) );
-				targetActor->AttackedBy( actor,weapon->m_meleeDamage.m_min );
-				actor->FireWeapon();
+				if ( actor->CanFireWeapon() )
+				{
+					targetActor->AttackedBy( actor, g_rng->RollRandomFloatInRange( weapon->m_meleeDamage.m_min, weapon->m_meleeDamage.m_max ) );
+					actor->FireWeapon();
+				}
 			}
 			else
 			{

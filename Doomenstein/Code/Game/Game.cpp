@@ -14,14 +14,13 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
-#include "Game/Player.hpp"
 #include <ThirdParty/stb/stb_image.h>
 #include "Game/TileDefinitions.hpp"
 #include "Game/ActorDefinitions.hpp"
 #include "Game/MapDefinition.hpp"
+#include "Game/Player.hpp"
 #include "Game/WeaponDefinition.hpp"
 
-RandomNumberGenerator g_rng;
 Game* g_game = nullptr;
 
 
@@ -522,9 +521,9 @@ void Game::RenderAttractMode() const
 	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };
-		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
-		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
-		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
+		int offsetColorR =  g_rng->RollRandomIntInRange(200, 255);
+		int offsetColorG =  g_rng->RollRandomIntInRange(200, 255);
+		int offsetColorB =  g_rng->RollRandomIntInRange(0, 255);
 		RenderText( singleChar, Vec2( 475.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( static_cast<unsigned char>(offsetColorR), static_cast<unsigned char>(offsetColorG), static_cast<unsigned char>(offsetColorB) ) );
 
 	}
@@ -532,9 +531,9 @@ void Game::RenderAttractMode() const
 	for ( int charIndex = 0; charIndex < 22; ++charIndex )
 	{
 		char singleChar[2] = { nameTitle[charIndex], '\0' };
-		int offsetColorR = g_rng.RollRandomIntInRange( 200, 255 );
-		int offsetColorG = g_rng.RollRandomIntInRange( 200, 255 );
-		int offsetColorB = g_rng.RollRandomIntInRange( 0, 255 );
+		int offsetColorR = g_rng->RollRandomIntInRange( 200, 255 );
+		int offsetColorG = g_rng->RollRandomIntInRange( 200, 255 );
+		int offsetColorB = g_rng->RollRandomIntInRange( 0, 255 );
 		RenderText( singleChar, Vec2( 390.f + charIndex * 40.f, 50.f ), 40.0f, Rgba8( static_cast< unsigned char >( offsetColorR ), static_cast< unsigned char >( offsetColorG ), static_cast< unsigned char >( offsetColorB ) ) );
 
 	}
@@ -555,7 +554,7 @@ void Game::UpdateBlackHole()
 	float holeRadii[NUM_BLACK_HOLE_SIDES] = {};
 	for ( int sideNum = 0; sideNum < NUM_BLACK_HOLE_SIDES; ++sideNum )
 	{
-		holeRadii[sideNum] = g_rng.RollRandomFloatInRange( 1.9f, 2.0f );
+		holeRadii[sideNum] = g_rng->RollRandomFloatInRange( 1.9f, 2.0f );
 	}
 
 	// Precompute 2D vertex offsets

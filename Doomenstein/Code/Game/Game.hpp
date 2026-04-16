@@ -13,7 +13,6 @@
 class App;
 class Actor;
 class InputSystem;
-class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
 class BitmapFont;
