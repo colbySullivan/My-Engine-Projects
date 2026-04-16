@@ -53,7 +53,7 @@ ActorHandle Controller::GetActorHandle() const
 	return m_actorHandle;
 }
 
-void Controller::DamagedBy( Actor* attacker, float damage )
+void Controller::DamagedBy( [[maybe_unused]] Actor* attacker, [[maybe_unused]] float damage )
 {
 
 }

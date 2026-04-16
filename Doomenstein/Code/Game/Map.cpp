@@ -802,7 +802,10 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* otherActor = m_actorVector[actorIndex];
-		if ( otherActor == owner ) continue;
+		if ( otherActor == owner || otherActor == nullptr )
+		{
+			 continue;
+		}
 
 		Vec3 otherActorEnd = otherActor->m_position;
 		otherActorEnd.z += otherActor->m_height;

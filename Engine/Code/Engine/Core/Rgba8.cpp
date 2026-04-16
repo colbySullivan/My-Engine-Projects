@@ -2,7 +2,12 @@
 #include "Engine/Core/StringUtils.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
-Rgba8 const WHITE(255, 255, 255, 255);
+const Rgba8 Rgba8::WHITE( 255, 255, 255, 255 );
+const Rgba8 Rgba8::BLACK( 0, 0, 0, 255 );
+const Rgba8 Rgba8::RED( 255, 0, 0, 255 );
+const Rgba8 Rgba8::GREEN( 0, 255, 0, 255 );
+const Rgba8 Rgba8::BLUE( 0, 0, 255, 255 );
+const Rgba8 Rgba8::YELLOW( 255, 255, 0, 255 );
 
 //-----------------------------------------------------------------------------------------------
 Rgba8::Rgba8(unsigned char redByte, unsigned char greenByte, unsigned char blueByte, unsigned char alphaByte)

@@ -6,6 +6,8 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 //-----------------------------------------------------------------------------------------------
 PlayerController::PlayerController( Map* map, Camera* camera )
@@ -54,7 +56,17 @@ void PlayerController::UpdateInput( float deltaSeconds )
 			const WeaponDefinition* weaponDef = actor->GetCurrentWeapon();
 			if ( weaponDef )
 			{
-				m_map->SpawnProjectileFromActor( actor, *weaponDef, GetRaycastDirection() );
+				Vec3 raycastDir = GetRaycastDirection();
+
+				if ( weaponDef->m_rayCount > 0 )
+				{
+					FireRaycastWeapon( actor, weaponDef, raycastDir );
+				}
+				else if ( weaponDef->m_projectileCount > 0 )
+				{
+					m_map->SpawnProjectileFromActor( actor, *weaponDef, raycastDir );
+				}
+
 				actor->FireWeapon();
 			}
 		}
@@ -269,6 +281,70 @@ Vec3 PlayerController::GetRaycastDirection() const
 {
 	Mat44 cameraMatrix = m_freeFlyCameraOrientation.GetAsMatrix_IFwd_JLeft_KUp();
 	return cameraMatrix.GetIBasis3D();
+}
+
+//------------------------------------------------------------------------------
+void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* weaponDef, const Vec3& direction )
+{
+	if ( !actor || !weaponDef || !m_map )
+		return;
+
+
+	Vec3 rayStart = actor->m_position;
+	if ( actor->m_actorDef )
+	{
+		rayStart.z += actor->m_actorDef->m_eyeHeight * 0.5f;
+	}
+
+	Vec3 rayDirection = direction.GetNormalized();
+	float rayRange = weaponDef->m_rayRange;
+
+	RaycastResult3D result = m_map->RaycastAll( rayStart, rayDirection, rayRange, actor );
+
+	DebugAddWorldCylinder( rayStart, result.m_impactPos, 0.02f, 1.0f, Rgba8::BLUE, Rgba8::BLUE, DebugRenderMode::X_RAY );
+
+	if ( result.m_didImpact )
+	{
+		RaycastResult3D actorHit = m_map->RaycastWorldActors( rayStart, rayDirection, result.m_impactDist + 0.01f, actor );
+
+		if ( actorHit.m_didImpact )
+		{
+			Actor* hitActor = FindActorAtPosition( result.m_impactPos );
+
+			if ( hitActor )
+			{
+				float damage = g_rng->RollRandomFloatInRange( weaponDef->m_rayDamage.m_min, weaponDef->m_rayDamage.m_max );
+				hitActor->AttackedBy( actor, damage );
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+Actor* PlayerController::FindActorAtPosition( const Vec3& position )
+{
+	if ( !m_map )
+	{
+		return nullptr;
+	}
+
+	for ( Actor* checkActor : m_map->m_actorVector )
+	{
+		if ( !checkActor || checkActor->m_isDead )
+			continue;
+
+		Vec3 actorEnd = checkActor->m_position + Vec3( 0.f, 0.f, checkActor->m_height );
+
+		Vec3 nearestPoint = GetNearestPointOnCylinder( position, checkActor->m_position, actorEnd, checkActor->m_radius );
+		float distanceToActor = GetDistance3D( position, nearestPoint );
+
+		if ( distanceToActor < 0.1f )
+		{
+			return checkActor;
+		}
+	}
+
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------

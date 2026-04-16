@@ -28,7 +28,7 @@ void WeaponDefinition::InitializeWeaponDefs()
 		def.m_rayCount   = xml.ParseXmlAttribute( *weaponElem, "rayCount",   0 );
 		def.m_rayCone    = xml.ParseXmlAttribute( *weaponElem, "rayCone",    0.f );
 		def.m_rayRange   = xml.ParseXmlAttribute( *weaponElem, "rayRange",   0.f );
-		def.m_rayDamage  = xml.ParseXmlAttribute( *weaponElem, "rayDamage",  FloatRange( 0.f, 1.f ) );
+		def.m_rayDamage  = xml.ParseXmlAttribute( *weaponElem, "rayDamage",  FloatRange( 0.f, 1.f ), '~' );
 		def.m_rayImpulse = xml.ParseXmlAttribute( *weaponElem, "rayImpulse", 0.f );
 
 		def.m_projectileCount       = xml.ParseXmlAttribute( *weaponElem, "projectileCount", 0 );

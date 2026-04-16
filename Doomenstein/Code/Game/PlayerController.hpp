@@ -19,7 +19,7 @@ public:
 
 	void UpdateInput( float deltaSeconds );
 	void UpdateCamera( float deltaSeconds );
-	
+
 	Camera* GetCamera() const;
 	Vec3 GetRaycastDirection() const;
 	Vec3 GetCameraPosition() const;
@@ -35,10 +35,14 @@ private:
 	void ToggleCameraMode();
 	void PossessNextActor();
 	void ProcessWeaponChangeInput();
+	void FireRaycastWeapon( Actor* actor, const WeaponDefinition* weaponDef, const Vec3& direction );
+	Actor* FindActorAtPosition( const Vec3& position );
+
 private:
-	Camera*		m_camera;
+	Camera* m_camera;
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
+	Actor*		m_hitActor;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

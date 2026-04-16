@@ -14,6 +14,12 @@ public:
 	void SetFromText( char const* text );
 
 	static const Rgba8 WHITE;
+	static const Rgba8 BLACK;
+	static const Rgba8 RED;
+	static const Rgba8 GREEN;
+	static const Rgba8 BLUE;
+	static const Rgba8 YELLOW;
+
 	void GetAsFloats( float* colorAsFloats ) const;
 
 	bool operator==(const Rgba8& other) const;

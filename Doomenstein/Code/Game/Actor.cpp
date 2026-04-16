@@ -354,6 +354,12 @@ const WeaponDefinition* Actor::GetCurrentWeapon() const
 	return m_weaponDef;
 }
 
+//------------------------------------------------------------------------------
+Controller* Actor::GetController() const
+{
+	return m_currentController;
+}
+
 //-----------------------------------------------------------------------------------------------
 int Actor::GetCurrentWeaponIndex() const
 {

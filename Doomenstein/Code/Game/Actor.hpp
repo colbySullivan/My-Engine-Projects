@@ -40,12 +40,14 @@ public:
 	
 	void EquipWeapon( int weaponIndex );
 	void EquipWeaponByName( const std::string& weaponName );
-	const WeaponDefinition* GetCurrentWeapon() const;
 	int GetCurrentWeaponIndex() const;
 	int GetWeaponCount() const;
 	bool CanFireWeapon() const;
 	void FireWeapon();
 	void ResetWeaponTimer();
+
+	const WeaponDefinition* GetCurrentWeapon() const;
+	Controller* GetController() const;
 
 public:
 	ActorHandle	m_actorHandle;
