@@ -383,11 +383,13 @@ void Map::CollideActorWithMap( Actor* actor )
 	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
 	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
 
-	if ( collidedWithSolidTile && actor->m_actorDef->m_dieOnCollide )
+	bool aboveBelowSolidTile = actor->m_position.z > 1.f || actor->m_position.z < 0.f;
+	if ( ( collidedWithSolidTile || aboveBelowSolidTile ) && actor->m_actorDef->m_dieOnCollide )
 	{
 		actor->m_health = 0;
 		actor->m_isDead = true;
 	}
+
 }
 
 //------------------------------------------------------------------------------
