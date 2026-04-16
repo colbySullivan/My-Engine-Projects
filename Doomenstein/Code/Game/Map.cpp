@@ -199,7 +199,7 @@ void Map::CreateBuffers()
 //-----------------------------------------------------------------------------------------------
 bool Map::IsPositionInBounds( const Vec3& position ) const
 {
-	return ( AreCoordsInBounds( position.x, position.y ) && ( position.z >= 0.f && position.z <= 1.f ) );
+	return ( AreCoordsInBounds( (int)position.x, (int)position.y ) && ( position.z >= 0.f && position.z <= 1.f ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -308,12 +308,6 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 		target = actorA;
 	}
 
-	if ( !IsPositionInBounds(projectile->m_position) )
-	{
-		projectile->m_isDead = true;
-		return;
-	}
-
 	if ( ( !projectile || !target || !target->m_actorDef ) || ( target->m_actorDef->m_faction == "NEUTRAL" ) )
 	{
 		return;
@@ -370,19 +364,30 @@ void Map::CollideActorsWithMap()
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActorWithMap( Actor* actor )
 {
+	if ( !actor || !actor->m_actorDef )
+	{
+		return;
+	}
 
 	Vec2 actorLocation = Vec2( actor->m_position.x, actor->m_position.y );
 	IntVec2 myTileCoords = GetTileCoordsForWorldPos( actorLocation );
 
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
+	bool collidedWithSolidTile = false;
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
 
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
-	PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
+	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+
+	if ( collidedWithSolidTile && actor->m_actorDef->m_dieOnCollide )
+	{
+		actor->m_health = 0;
+		actor->m_isDead = true;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -509,11 +514,11 @@ IntVec2 Map::GetTileCoordsForWorldPos( Vec2 const& worldPos ) const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::PushActorOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
+bool Map::PushActorOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
 {
 	if ( !IsTileSolidAtTileCoords( tileCoords ) )
 	{
-		return;
+		return false;
 	}
 
 	AABB2 tileBounds = GetTileBounds( tileCoords );
@@ -521,6 +526,8 @@ void Map::PushActorOutOfTileIfSolid( Actor& actor, IntVec2 const& tileCoords )
 	Vec2 nearestPointOnTile = tileBounds.GetNearestPoint( actorLocation );
 	PushDiscOutOfFixedPoint2D( actorLocation, actor.m_radius, nearestPointOnTile );
 	actor.SetPosXY( actorLocation.x, actorLocation.y );
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------
