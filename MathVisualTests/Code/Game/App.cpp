@@ -12,6 +12,7 @@
 #include "Game/GameRaycastVsLineSegments.hpp"
 #include "Game/GameRaycastVsAABB2.hpp"
 #include "Game/TestShapes3D.hpp"
+#include "Game/Game2DCurves.hpp"
 
 
 App* g_app = nullptr;
@@ -107,6 +108,7 @@ Game* App::CreateNewGameOfType( GameType type )
 	case GAMEMODE_RAYCAST_VS_LINE_SEGMENTS: newGame = new GameRaycastVsLineSegments( this ); break;
 	case GAMEMODE_RAYCAST_VS_AABB2: newGame = new GameRaycastVsAABB2( this ); break;
 	case GAMEMODE_TESTSHAPES_3D: newGame = new TestShapes3D( this ); break;
+	case GAMEMODE_2D_CURVES: newGame = new Game2DCurves( this ); break;
 	}
 	return newGame;
 }

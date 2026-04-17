@@ -88,6 +88,9 @@
     <ClCompile Include="TestShapeCylinder.cpp">
       <Filter>Shapes\3D</Filter>
     </ClCompile>
+    <ClCompile Include="Game2DCurves.cpp">
+      <Filter>GameModes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -155,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="TestShapeCylinder.hpp">
       <Filter>Shapes\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Game2DCurves.hpp">
+      <Filter>GameModes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
