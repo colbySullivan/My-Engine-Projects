@@ -22,7 +22,7 @@ class Actor
 public:
 	Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices );
 	Actor( Game* owner, SpawnInfo spawnInfo );
-	Actor( ActorDefinition*	ActorDef );
+	Actor( ActorDefinition* ActorDef );
 	virtual ~Actor();
 
 	virtual void Update( float deltaSeconds );
@@ -37,7 +37,7 @@ public:
 	bool IsDead() const;
 	void Attacked( float damage, Vec3 impulse );
 	void AttackedBy( Actor* attacker, float damage );
-	
+
 	void EquipWeapon( int weaponIndex );
 	void EquipWeaponByName( const std::string& weaponName );
 	int GetCurrentWeaponIndex() const;
@@ -48,20 +48,22 @@ public:
 
 	const WeaponDefinition* GetCurrentWeapon() const;
 	Controller* GetController() const;
+	Timer* m_corpseTimer = nullptr;
 
+	bool IsReadyToDestroy() const;
 public:
 	ActorHandle	m_actorHandle;
-	const ActorDefinition*	m_actorDef;
-	const WeaponDefinition*	m_weaponDef;
+	const ActorDefinition* m_actorDef;
+	const WeaponDefinition* m_weaponDef;
 
-	Map*		m_map;
+	Map* m_map;
 	Vec3        m_position;
 	EulerAngles	m_orientation = EulerAngles( 0.f, 0.f, 0.f );
 	Vec3		m_velocity;
 	Vec3		m_acceleration;
 	std::vector<Vertex> m_vertexes;
 
-	Actor*		m_owner;
+	Actor* m_owner;
 	bool		m_isDead = false;
 	int			m_health;
 
@@ -69,8 +71,8 @@ public:
 	EulerAngles m_angularVelocity;
 	Rgba8		m_color = Rgba8( 255, 255, 255 );
 	Rgba8		m_modelColor = Rgba8( 255, 255, 255 );
-	Texture*	m_texture = nullptr;
-	Game*		m_game = nullptr;
+	Texture* m_texture = nullptr;
+	Game* m_game = nullptr;
 	Vec3        m_start;
 	Vec3        m_end;
 	float		m_radius;
@@ -78,12 +80,12 @@ public:
 	bool		m_controlledByPlayer = false;
 	bool		m_canBePushed = false;
 
-	Timer*		m_attackTimer = nullptr;
+	Timer* m_attackTimer = nullptr;
 
 private:
 	Controller* m_currentController = nullptr;
 	Controller* m_savedAIController = nullptr;
-	
+
 	std::vector<const WeaponDefinition*> m_weapons;
 	int m_currentWeaponIndex = 0;
 	Timer* m_weaponRefireTimer = nullptr;
@@ -97,4 +99,5 @@ private:
 	void AddImpulse( const Vec3& impulse );
 	void CheckIfShouldDie();
 	void InitializeWeapons();
+	void UpdateDeathAnimation( float deltaSeconds );
 };

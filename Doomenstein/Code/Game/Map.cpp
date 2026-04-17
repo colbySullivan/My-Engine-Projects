@@ -223,7 +223,7 @@ void Map::Update()
 	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
 	{
 		Actor* currActor = m_actorVector[actorIndex];
-		if ( currActor )
+		if ( currActor && currActor->m_actorDef->m_simulated )
 		{
 			currActor->Update( deltaSeconds );
 		}
@@ -340,7 +340,7 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 	if ( projectile->m_actorDef->m_dieOnCollide )
 	{
 		projectile->m_health = 0;
-		projectile->m_isDead = true;
+		//projectile->m_isDead = true;
 	}
 }
 
@@ -827,7 +827,7 @@ void Map::HandleDeath()
 	for ( int actorIndex = 0; actorIndex < ( int )m_actorVector.size(); ++actorIndex )
 	{
 		Actor* actor = m_actorVector[actorIndex];
-		if ( actor && actor->m_isDead )
+		if ( actor && actor->IsReadyToDestroy() )
 		{
 			bool wasPlayer = false;
 

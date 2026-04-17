@@ -43,13 +43,7 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 	{
 		CreateProjectile( spawnInfo.m_name );
 	}
-
-	if ( spawnInfo.m_name == "PlasmaProjectile" )
-	{
-		CreateProjectile( spawnInfo.m_name );
-	}
 	
-	// Initialize weapons from ActorDefinition
 	InitializeWeapons();
 }
 
@@ -81,6 +75,10 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 		UpdateMove();
 	}
 
+	if ( m_isDead )
+	{
+		UpdateDeathAnimation( deltaSeconds );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -234,6 +232,20 @@ void Actor::CreateSpawnPoint()
 	m_radius = 0.5;
 }
 
+//------------------------------------------------------------------------------
+void Actor::CreateProjectile( std::string name )
+{
+	m_actorDef = ActorDefinition::GetByName( name );
+	m_actorHandle = m_game->m_playerController->GetActorHandle();
+	m_height = m_actorDef->m_physicsHeight;
+	m_radius = m_actorDef->m_physicsRadius;
+	m_health = 1;
+	m_modelColor = Rgba8::BLUE;
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+}
+
 //-----------------------------------------------------------------------------------------------
 void Actor::MoveInDirection( const Vec3& direction, float speed )
 {
@@ -250,6 +262,20 @@ void Actor::CheckIfShouldDie()
 	if ( m_health <= 0.f && m_actorDef->m_simulated )
 	{
 		m_isDead = true;
+
+		if ( !m_corpseTimer && m_actorDef->m_corpseLifetime > 0.f )
+		{
+			m_corpseTimer = new Timer( m_actorDef->m_corpseLifetime );
+			m_corpseTimer->Start();
+		}
+
+		m_velocity = Vec3( 0.f, 0.f, 0.f );
+		m_acceleration = Vec3( 0.f, 0.f, 0.f );
+
+		if ( m_currentController )
+		{
+			m_currentController->Unpossess();
+		}
 	}
 }
 
@@ -264,19 +290,6 @@ void Actor::Attacked( float damage, Vec3 impulse )
 {
 	AddImpulse( impulse );
 	m_health -= (int)damage;
-}
-
-//------------------------------------------------------------------------------
-void Actor::CreateProjectile( std::string name )
-{
-	m_actorDef = ActorDefinition::GetByName( name );
-	m_actorHandle = m_game->m_playerController->GetActorHandle();
-	m_height = m_actorDef->m_physicsHeight;
-	m_radius = m_actorDef->m_physicsRadius;
-	m_health = 1;
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_color, AABB2::ZERO_TO_ONE,32 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -315,6 +328,23 @@ void Actor::InitializeWeapons()
 		}
 		m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
 		m_weaponRefireTimer->Start();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::UpdateDeathAnimation( float deltaSeconds )
+{
+	if ( !m_corpseTimer || !m_actorDef )
+	{
+		return;
+	}
+
+	float elapsedFraction = m_corpseTimer->GetElapsedFraction();
+	unsigned char newAlpha = ( unsigned char )( 255.f * ( 1.f - elapsedFraction ) );
+	m_modelColor.a = newAlpha;
+	for ( Vertex& vertex : m_vertexes )
+	{
+		vertex.m_color.a = newAlpha;
 	}
 }
 
@@ -358,6 +388,26 @@ const WeaponDefinition* Actor::GetCurrentWeapon() const
 Controller* Actor::GetController() const
 {
 	return m_currentController;
+}
+
+bool Actor::IsReadyToDestroy() const
+{
+	if ( !m_isDead )
+	{
+		return false;
+	}
+
+	if ( !m_actorDef || m_actorDef->m_corpseLifetime <= 0.f )
+	{
+		return true;
+	}
+
+	if ( m_corpseTimer && m_corpseTimer->DecrementPeriodIfElapsed() )
+	{
+		return true;
+	}
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
