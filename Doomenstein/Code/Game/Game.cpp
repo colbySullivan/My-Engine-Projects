@@ -126,7 +126,7 @@ void Game::Update()
 		}
 		m_roundTime += deltaSeconds;
 		m_currentMap->Update();
-		//DebugInput();
+		DebugInput();
 	}
 	UpdateKeyboardInput( controller );
 
@@ -253,7 +253,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 //------------------------------------------------------------------------------
 void Game::DebugInput()
 {
-	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
+	/*if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
 	{
 		Mat44 toWorld = m_player->GetModelToWorldTransform();
 		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 20.f;
@@ -305,7 +305,7 @@ void Game::DebugInput()
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F1 ) )
 	{
 		m_controlPlayerMode = !m_controlPlayerMode;
-	}
+	}*/
 
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F2 ) )
@@ -374,7 +374,7 @@ void Game::DebugInput()
 		m_currentMap->Startup();
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	/*if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
 		float rayDist = 10.f;
 		Vec3 rayStart = GetRaycastOrigin();
@@ -420,7 +420,7 @@ void Game::DebugInput()
 			Vec3 arrowEndPos = result.m_impactPos + result.m_impactNormal * 0.3f;
 			DebugAddWorldArrow( result.m_impactPos, arrowEndPos, 0.03f, 10.f, Rgba8( 0, 0, 255 ), Rgba8( 0, 0, 255 ) );
 		}
-	}
+	}*/
 
 
 }
