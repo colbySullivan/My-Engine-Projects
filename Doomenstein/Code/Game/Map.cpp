@@ -255,6 +255,11 @@ void Map::CollideActors()
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActors( Actor* actorA, Actor* actorB )
 {
+	if ( !actorA || !actorB || actorA->m_isDead || actorB->m_isDead )
+	{
+		return;
+	}
+
 	Vec3 actorAEnd = actorA->m_position + Vec3( 0.f, 0.f, actorA->m_height );
 	Vec3 actorBEnd = actorB->m_position + Vec3( 0.f, 0.f, actorB->m_height );
 
@@ -274,7 +279,13 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 
 void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 {
+
 	if ( !actorA || !actorB || !actorA->m_actorDef || !actorB->m_actorDef )
+	{
+		return;
+	}
+
+	if ( actorA->m_isDead || actorB->m_isDead )
 	{
 		return;
 	}
@@ -340,7 +351,6 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 	if ( projectile->m_actorDef->m_dieOnCollide )
 	{
 		projectile->m_health = 0;
-		//projectile->m_isDead = true;
 	}
 }
 
@@ -373,23 +383,31 @@ void Map::CollideActorWithMap( Actor* actor )
 	IntVec2 myTileCoords = GetTileCoordsForWorldPos( actorLocation );
 
 	bool collidedWithSolidTile = false;
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
 
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
-	collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+	bool isDyingProjectile = actor->m_actorDef->m_dieOnCollide;
 
-	bool aboveBelowSolidTile = actor->m_position.z > 1.f || actor->m_position.z < 0.f;
+	if ( isDyingProjectile )
+	{
+		collidedWithSolidTile = IsTileSolidAtTileCoords( myTileCoords );
+	}
+	else
+	{
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NORTH );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SOUTH );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NE );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_NW );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SE );
+		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_SW );
+	}
+
+	bool aboveBelowSolidTile = actor->m_position.z > 1.f - actor->m_actorDef->m_physicsHeight || actor->m_position.z < 0.f;
+
 	if ( ( collidedWithSolidTile || aboveBelowSolidTile ) && actor->m_actorDef->m_dieOnCollide )
 	{
 		actor->m_health = 0;
-		actor->m_isDead = true;
 	}
-
 }
 
 //------------------------------------------------------------------------------
