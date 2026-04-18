@@ -45,7 +45,6 @@ Map::~Map()
 	delete m_indexBuffer;
 	m_indexBuffer = nullptr;
 
-	delete m_shader;
 	m_shader = nullptr;
 
 	delete m_lightingConstant;
@@ -64,8 +63,8 @@ void Map::Startup()
 //-----------------------------------------------------------------------------------------------
 void Map::Shutdown()
 {
-	m_game->m_playerController = nullptr;
 	delete m_game->m_playerController;
+	m_game->m_playerController = nullptr;
 
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{

@@ -795,6 +795,8 @@ void Renderer::DeleteReleaseAll()
 		m_loadedShaders[i] = nullptr;
 	}
 	m_loadedShaders.clear();
+	m_currentShader = nullptr;
+	m_defaultShader = nullptr;
 
 	for ( int i = 0; i < m_loadedTextures.size(); i++ )
 	{
@@ -802,6 +804,8 @@ void Renderer::DeleteReleaseAll()
 		m_loadedTextures[i] = nullptr;
 	}
 	m_loadedTextures.clear();
+	m_currentTexture = nullptr;
+	m_defaultTexture = nullptr;
 
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
