@@ -20,7 +20,7 @@
     </Sounds>
   </WeaponDefinition>
   <!-- Demon Melee -->
-  <WeaponDefinition name="DemonMelee" refireTime="2.0" meleeCount="1" meleeArc="180.0" meleeRange="0.75" meleeDamage="2.0~4.0" meleeImpulse="2.0">
+  <WeaponDefinition name="DemonMelee" refireTime="2.0" meleeCount="1" meleeArc="180.0" meleeRange="0.75" meleeDamage="20.0~40.0" meleeImpulse="2.0">
     <Sounds>
       <Sound sound="Fire" name="Data/Audio/DemonAttack.wav"/>
     </Sounds>

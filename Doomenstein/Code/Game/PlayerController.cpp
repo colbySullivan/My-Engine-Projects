@@ -89,6 +89,13 @@ void PlayerController::UpdateInput( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::HandleActorInput( float deltaSeconds )
 {
+	Actor* actor = GetActor();
+
+	if ( !actor || actor->m_isDead )
+	{
+		return;
+	}
+
 	ProcessLookInput( deltaSeconds );
 	ProcessMovementInput( deltaSeconds );
 	ProcessWeaponChangeInput();
@@ -255,13 +262,22 @@ void PlayerController::UpdateCamera( [[maybe_unused]] float deltaSeconds )
 	if ( actor && !m_isFreeFlyMode )
 	{
 		Vec3 cameraPos = actor->m_position;
-		cameraPos.z += actor->m_actorDef->m_eyeHeight;
-
-		m_camera->SetPositionAndOrientation( cameraPos, m_freeFlyCameraOrientation );
-
+		
 		if ( actor->m_isDead )
 		{
-			// #todo death camera behavior
+			cameraPos.z += actor->GetDeathCameraHeight();
+			
+			float deathPitch = -45.f;
+			float pitchT = GetClamped( actor->m_deathAnimationTime / 1.0f, 0.f, 1.f );
+			float currentPitch = Interpolate( m_freeFlyCameraOrientation.m_pitchDegrees, deathPitch, pitchT );
+			EulerAngles deathCameraOrientation = m_freeFlyCameraOrientation;
+			deathCameraOrientation.m_pitchDegrees = currentPitch;
+			m_camera->SetPositionAndOrientation( cameraPos, deathCameraOrientation );
+		}
+		else
+		{
+			cameraPos.z += actor->m_actorDef->m_eyeHeight;
+			m_camera->SetPositionAndOrientation( cameraPos, m_freeFlyCameraOrientation );
 		}
 	}
 	else

@@ -38,6 +38,7 @@ public:
 	void Attacked( float damage, Vec3 impulse );
 	void AttackedBy( Actor* attacker, float damage );
 
+	float GetDeathCameraHeight() const;
 	void EquipWeapon( int weaponIndex );
 	void EquipWeaponByName( const std::string& weaponName );
 	int GetCurrentWeaponIndex() const;
@@ -81,6 +82,8 @@ public:
 	bool		m_canBePushed = false;
 
 	Timer* m_attackTimer = nullptr;
+	float m_deathAnimationTime = 0.f;
+	float m_deathCameraStartHeight = 0.f;
 
 private:
 	Controller* m_currentController = nullptr;

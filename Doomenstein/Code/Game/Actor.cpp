@@ -256,12 +256,17 @@ void Actor::MoveInDirection( const Vec3& direction, float speed )
 	AddForce( moveForce );
 }
 
-//-----------------------------------------------------------------------------------------------
 void Actor::CheckIfShouldDie()
 {
 	if ( m_health <= 0.f && m_actorDef->m_simulated )
 	{
 		m_isDead = true;
+		m_deathAnimationTime = 0.f;
+
+		if ( m_actorDef->m_eyeHeight > 0.f )
+		{
+			m_deathCameraStartHeight = m_actorDef->m_eyeHeight;
+		}
 
 		if ( !m_corpseTimer && m_actorDef->m_corpseLifetime > 0.f )
 		{
@@ -271,11 +276,6 @@ void Actor::CheckIfShouldDie()
 
 		m_velocity = Vec3( 0.f, 0.f, 0.f );
 		m_acceleration = Vec3( 0.f, 0.f, 0.f );
-
-		if ( m_currentController )
-		{
-			m_currentController->Unpossess();
-		}
 	}
 }
 
@@ -338,6 +338,8 @@ void Actor::UpdateDeathAnimation( float deltaSeconds )
 	{
 		return;
 	}
+
+	m_deathAnimationTime += deltaSeconds;
 
 	float elapsedFraction = m_corpseTimer->GetElapsedFraction();
 	unsigned char newAlpha = ( unsigned char )( 255.f * ( 1.f - elapsedFraction ) );
@@ -494,4 +496,13 @@ void Actor::AttackedBy( Actor* attacker, float damage )
 	{
 		m_currentController->DamagedBy( attacker, damage );
 	}
+}
+
+//------------------------------------------------------------------------------
+float Actor::GetDeathCameraHeight() const
+{
+	float cameraFallTimer = 1.0f;
+	float t = GetClamped( m_deathAnimationTime / cameraFallTimer, 0.f, 1.f );
+	float currentHeight = Interpolate( m_deathCameraStartHeight, 0.1f, t );
+	return currentHeight;
 }
