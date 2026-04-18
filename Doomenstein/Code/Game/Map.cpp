@@ -113,7 +113,7 @@ void Map::AddGeometryForWall( const AABB3& bounds, const AABB2& UVs )
 	Vec3 br = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z );
 	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_maxs.z );
 	Vec3 tl = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_maxs.z );
-	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8(255, 255, 255, 255), UVs );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
 
 	bl = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_mins.z );
 	br = Vec3( bounds.m_mins.x, bounds.m_mins.y, bounds.m_mins.z );
@@ -141,7 +141,7 @@ void Map::AddGeometryForFloor( const AABB3& bounds, const AABB2& UVs )
 	Vec3 br = Vec3( bounds.m_maxs.x, bounds.m_mins.y, bounds.m_mins.z );
 	Vec3 tr = Vec3( bounds.m_maxs.x, bounds.m_maxs.y, bounds.m_mins.z );
 	Vec3 tl = Vec3( bounds.m_mins.x, bounds.m_maxs.y, bounds.m_mins.z );
-	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8(255, 255, 255, 255), UVs );
+	AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, Rgba8( 255, 255, 255, 255 ), UVs );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -166,12 +166,12 @@ void Map::AddActors()
 //-----------------------------------------------------------------------------------------------
 void Map::CreateBuffers()
 {
-	if ( m_vertexBuffer ) 
+	if ( m_vertexBuffer )
 	{
 		delete m_vertexBuffer;
 		m_vertexBuffer = nullptr;
 	}
-	if ( m_indexBuffer ) 
+	if ( m_indexBuffer )
 	{
 		delete m_indexBuffer;
 		m_indexBuffer = nullptr;
@@ -199,7 +199,7 @@ void Map::CreateBuffers()
 //-----------------------------------------------------------------------------------------------
 bool Map::IsPositionInBounds( const Vec3& position ) const
 {
-	return ( AreCoordsInBounds( (int)position.x, (int)position.y ) && ( position.z >= 0.f && position.z <= 1.f ) );
+	return ( AreCoordsInBounds( ( int )position.x, ( int )position.y ) && ( position.z >= 0.f && position.z <= 1.f ) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -211,16 +211,16 @@ bool Map::AreCoordsInBounds( int x, int y ) const
 //-----------------------------------------------------------------------------------------------
 const Tile* Map::GetTile( int x, int y ) const
 {
-	int tileIndex = (y * m_dimensions.x) + x;
+	int tileIndex = ( y * m_dimensions.x ) + x;
 	return &m_tiles[tileIndex];
-	
+
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::Update()
 {
-	float deltaSeconds = (float) g_engine->m_systemClock->GetDeltaSeconds();
-	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	float deltaSeconds = ( float )g_engine->m_systemClock->GetDeltaSeconds();
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* currActor = m_actorVector[actorIndex];
 		if ( currActor && currActor->m_actorDef->m_simulated )
@@ -236,16 +236,16 @@ void Map::Update()
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActors()
 {
-	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* firstActor = m_actorVector[actorIndex];
-		for (int otherActorIndex = actorIndex + 1; otherActorIndex < m_actorVector.size() ; ++otherActorIndex)
+		for ( int otherActorIndex = actorIndex + 1; otherActorIndex < m_actorVector.size(); ++otherActorIndex )
 		{
 			Actor* otherActor = m_actorVector[otherActorIndex];
 			if ( firstActor && otherActor )
 			{
-			CollideActors( firstActor, otherActor );
-			CollideActorAndProjectiles( firstActor, otherActor );
+				CollideActors( firstActor, otherActor );
+				CollideActorAndProjectiles( firstActor, otherActor );
 			}
 
 		}
@@ -357,7 +357,7 @@ void Map::CollideActorAndProjectiles( Actor* actorA, Actor* actorB )
 //-----------------------------------------------------------------------------------------------
 void Map::CollideActorsWithMap()
 {
-	for (int actorIndex = 0; actorIndex < m_actorVector.size() ; ++actorIndex)
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* actor = m_actorVector[actorIndex];
 		if ( !actor || !actor->m_actorDef )
@@ -589,9 +589,9 @@ void Map::Render() const
 	g_engine->m_render->BindTexture( m_texture );
 
 	SetLighting();
-	
+
 	g_engine->m_render->BindShader( m_shader );
-	g_engine->m_render->SetModelConstants( Mat44(), Rgba8(255, 255, 255, 255) );
+	g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 255, 255, 255, 255 ) );
 
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->DrawIndexBuffer( m_vertexBuffer, m_indexBuffer, indexCount );
@@ -660,7 +660,7 @@ Actor* Map::GetActorByHandle( const ActorHandle handle ) const
 		return nullptr;
 	}
 
-	if ( actor->m_actorHandle != handle ) 
+	if ( actor->m_actorHandle != handle )
 	{
 		return nullptr;
 	}
@@ -716,7 +716,7 @@ RaycastResult3D Map::RaycastWorldXY( const Vec3& start, const Vec3& direction, f
 
 	float fwdDistPerXCrossing = 1.0f / abs( directionNormal.x );
 	int tileStepDirectionX = 1;
-	Vec3 xImpactSurfaceNormal = Vec3( -1.f, 0.f, 0.f);
+	Vec3 xImpactSurfaceNormal = Vec3( -1.f, 0.f, 0.f );
 	if ( directionNormal.x < 0 )
 	{
 		tileStepDirectionX = -1;
@@ -732,14 +732,14 @@ RaycastResult3D Map::RaycastWorldXY( const Vec3& start, const Vec3& direction, f
 		yImpactSurfaceNormal = Vec3( 0.f, 1.f, 0.f );
 	}
 
-	float xAtFirstXCrossing = (float)tileX + (float)( tileStepDirectionX + 1 ) / 2;
-	float yAtFirstYCrossing = (float)tileY + (float)( tileStepDirectionY + 1 ) / 2;
+	float xAtFirstXCrossing = ( float )tileX + ( float )( tileStepDirectionX + 1 ) / 2;
+	float yAtFirstYCrossing = ( float )tileY + ( float )( tileStepDirectionY + 1 ) / 2;
 
 	float xDistToFirstXCrossing = xAtFirstXCrossing - start.x;
 	float yDistToFirstYCrossing = yAtFirstYCrossing - start.y;
 
-	float fwdDistAtNextXCrossing = fabsf(xDistToFirstXCrossing) * fwdDistPerXCrossing;
-	float fwdDistAtNextYCrossing = fabsf(yDistToFirstYCrossing) * fwdDistPerYCrossing;
+	float fwdDistAtNextXCrossing = fabsf( xDistToFirstXCrossing ) * fwdDistPerXCrossing;
+	float fwdDistAtNextYCrossing = fabsf( yDistToFirstYCrossing ) * fwdDistPerYCrossing;
 
 	while ( true )
 	{
@@ -822,9 +822,13 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 		Actor* otherActor = m_actorVector[actorIndex];
 		if ( otherActor == owner || otherActor == nullptr )
 		{
-			 continue;
+			continue;
 		}
 
+		if ( otherActor->m_isDead )
+		{
+			continue;
+		}
 		Vec3 otherActorEnd = otherActor->m_position;
 		otherActorEnd.z += otherActor->m_height;
 
@@ -870,8 +874,8 @@ void Map::SetLighting() const
 {
 	LightingConstants lightingConstants = { };
 	lightingConstants.AmbientIntensity = m_AmbientIntensity;
-	lightingConstants.SunDirection = Vec3(GetClamped(m_sunDirection.x, 0.f, 1.f), GetClamped(m_sunDirection.y, 0.f, 1.f), GetClamped(m_sunDirection.z, 0.f, 1.f) );
-	lightingConstants.SunIntensity = GetClamped(m_sunIntensity, 0.f, 1.f);
+	lightingConstants.SunDirection = Vec3( GetClamped( m_sunDirection.x, 0.f, 1.f ), GetClamped( m_sunDirection.y, 0.f, 1.f ), GetClamped( m_sunDirection.z, 0.f, 1.f ) );
+	lightingConstants.SunIntensity = GetClamped( m_sunIntensity, 0.f, 1.f );
 
 	g_engine->m_render->BindConstantBuffer( 1, m_lightingConstant );
 	g_engine->m_render->CopyCPUToGPU( &lightingConstants, sizeof( lightingConstants ), m_lightingConstant );

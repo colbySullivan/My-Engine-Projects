@@ -48,30 +48,6 @@ void PlayerController::UpdateInput( float deltaSeconds )
 		PossessNextActor();
 	}
 
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
-	{
-		Actor* actor = GetActor();
-		if ( actor && m_map && actor->CanFireWeapon() )
-		{
-			const WeaponDefinition* weaponDef = actor->GetCurrentWeapon();
-			if ( weaponDef )
-			{
-				Vec3 raycastDir = GetRaycastDirection();
-
-				if ( weaponDef->m_rayCount > 0 )
-				{
-					FireRaycastWeapon( actor, weaponDef, raycastDir );
-				}
-				else if ( weaponDef->m_projectileCount > 0 )
-				{
-					m_map->SpawnProjectileFromActor( actor, *weaponDef, raycastDir );
-				}
-
-				actor->FireWeapon();
-			}
-		}
-	}
-
 	if ( m_isFreeFlyMode )
 	{
 		HandleFreeFlyInput( deltaSeconds );
@@ -177,6 +153,30 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 		return;
 
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	float rightTrigger = controller.GetRightTrigger();
+
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) || rightTrigger > 0.1f )
+	{
+		if ( actor && m_map && actor->CanFireWeapon() )
+		{
+			const WeaponDefinition* weaponDef = actor->GetCurrentWeapon();
+			if ( weaponDef )
+			{
+				Vec3 raycastDir = GetRaycastDirection();
+
+				if ( weaponDef->m_rayCount > 0 )
+				{
+					FireRaycastWeapon( actor, weaponDef, raycastDir );
+				}
+				else if ( weaponDef->m_projectileCount > 0 )
+				{
+					m_map->SpawnProjectileFromActor( actor, *weaponDef, raycastDir );
+				}
+
+				actor->FireWeapon();
+			}
+		}
+	}
 
 	float moveSpeed = actor->m_actorDef->m_walkSpeed;
 
@@ -414,11 +414,13 @@ void PlayerController::ProcessWeaponChangeInput()
 	if ( !actor )
 		return;
 
-	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
+	XboxController const& controller = g_engine->m_input->GetController( 0 );
+
+	if ( g_engine->m_input->WasKeyJustPressed( '1' ) || controller.WasButtonJustPressed( XboxButtonID::X ) )
 	{
 		actor->EquipWeapon( 0 );
 	}
-	else if ( g_engine->m_input->WasKeyJustPressed( '2' ) )
+	else if ( g_engine->m_input->WasKeyJustPressed( '2' ) || controller.WasButtonJustPressed( XboxButtonID::Y ))
 	{
 		actor->EquipWeapon( 1 );
 	}

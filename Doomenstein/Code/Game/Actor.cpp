@@ -84,7 +84,6 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render() const
 {
-
 	if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
 	{
 		return;
@@ -92,13 +91,17 @@ void Actor::Render() const
 
 	Mat44 modelToWorld = GetModelToWorldTransform();
 	g_engine->m_render->BindShader( nullptr );
-	g_engine->m_render->SetModelConstants( modelToWorld, Rgba8( 255, 255, 255 ) );
+
+	Rgba8 tintColor = m_isDead ? Rgba8( 64, 64, 64, 255 ) : Rgba8( 255, 255, 255, 255 );
+	g_engine->m_render->SetModelConstants( modelToWorld, tintColor );
+
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
 	g_engine->m_render->BindTexture( m_texture );
 	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
 
-	g_engine->m_render->SetModelConstants( modelToWorld, m_modelColor );
+	Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
+	g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
 }
@@ -341,7 +344,7 @@ void Actor::UpdateDeathAnimation( float deltaSeconds )
 
 	m_deathAnimationTime += deltaSeconds;
 
-	float elapsedFraction = m_corpseTimer->GetElapsedFraction();
+	float elapsedFraction = (float)m_corpseTimer->GetElapsedFraction();
 	unsigned char newAlpha = ( unsigned char )( 255.f * ( 1.f - elapsedFraction ) );
 	m_modelColor.a = newAlpha;
 	for ( Vertex& vertex : m_vertexes )

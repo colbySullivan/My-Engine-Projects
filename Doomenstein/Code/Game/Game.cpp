@@ -161,6 +161,20 @@ void Game::Render() const
 		}
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
 
+		if ( m_playerController )
+		{
+			Actor* playerActor = m_playerController->GetActor();
+			if ( playerActor && playerActor->m_isDead )
+			{
+				std::vector<Vertex> overlayVerts;
+				AABB2 screenBounds( 0.f, 0.f, SCREEN_SIZE_X, SCREEN_SIZE_Y );
+				AddVertsForAABB2D( overlayVerts, screenBounds, Rgba8( 128, 128, 128, 128 ) );
+
+				g_engine->m_render->BindTexture( nullptr );
+				g_engine->m_render->DrawVertexArray( ( int )overlayVerts.size(), overlayVerts.data() );
+			}
+		}
+
 		/*Vec3 modelPosition = Vec3( 50.0f, 50.0f, -0.1f ); 
 		float modelScale = 0.1f;                       
 		float modelRotation = 90.f;       */             
@@ -622,21 +636,17 @@ void Game::SetUpCamera()
 void Game::PrintConsoleHelpCommands()
 {
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "=== CAMERA CONTROLS ===" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Mouse X / Right Stick X  : Yaw" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Mouse Y / Right Stick Y  : Pitch" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Q / Left Trigger         : Roll left" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "E / Right Trigger        : Roll right" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "W / Left Stick Up        : Move forward" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "S / Left Stick Down      : Move backward" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "A / Left Stick Left      : Move left" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "D / Left Stick Right     : Move right" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Z / Left Shoulder        : Move down" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "C / Right Shoulder       : Move up" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Shift / A-Button         : Sprint" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "H / Start                : Reset position and orientation" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "P                        : Pause / unpause game clock" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "O                        : Single-step one frame" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "T                        : Toggle slow-motion mode" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "W / Left Stick Up			: Move forward" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "S / Left Stick Down		: Move backward" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "A / Left Stick Left		: Move left" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "D / Left Stick Right		: Move right" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Left Mouse / Right Trigger : Shoot" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "C / Right Shoulder			: Move up" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Shift / A-Button			: Sprint" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "H / Start					: Reset position and orientation" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "P							: Pause / unpause game clock" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "1 / X                      : Weapon Slot 1" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "2 / Y                      : Weapon Slot 2" );
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "================================" );
 }
 
