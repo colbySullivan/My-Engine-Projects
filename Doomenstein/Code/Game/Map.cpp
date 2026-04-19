@@ -47,7 +47,6 @@ Map::~Map()
 
 	m_shader = nullptr;
 
-	delete m_lightingConstant;
 	m_lightingConstant = nullptr;
 
 	m_tiles.clear();

@@ -510,3 +510,21 @@ float Actor::GetDeathCameraHeight() const
 	float currentHeight = Interpolate( m_deathCameraStartHeight, 0.1f, t );
 	return currentHeight;
 }
+
+void Actor::EquipNextWeapon()
+{
+	if ( m_weapons.empty() )
+		return;
+
+	int nextIndex = ( m_currentWeaponIndex + 1 ) % m_weapons.size();
+	EquipWeapon( nextIndex );
+}
+
+void Actor::EquipPreviousWeapon()
+{
+	if ( m_weapons.empty() )
+		return;
+
+	int prevIndex = ( m_currentWeaponIndex - 1 + m_weapons.size() ) % m_weapons.size();
+	EquipWeapon( prevIndex );
+}

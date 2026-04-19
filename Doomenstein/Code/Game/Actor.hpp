@@ -39,6 +39,8 @@ public:
 	void AttackedBy( Actor* attacker, float damage );
 
 	float GetDeathCameraHeight() const;
+	void EquipNextWeapon();
+	void EquipPreviousWeapon();
 	void EquipWeapon( int weaponIndex );
 	void EquipWeaponByName( const std::string& weaponName );
 	int GetCurrentWeaponIndex() const;

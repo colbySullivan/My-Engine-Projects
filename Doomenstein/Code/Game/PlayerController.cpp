@@ -420,12 +420,22 @@ void PlayerController::ProcessWeaponChangeInput()
 	{
 		actor->EquipWeapon( 0 );
 	}
-	else if ( g_engine->m_input->WasKeyJustPressed( '2' ) || controller.WasButtonJustPressed( XboxButtonID::Y ))
+	if ( g_engine->m_input->WasKeyJustPressed( '2' ) || controller.WasButtonJustPressed( XboxButtonID::Y ))
 	{
 		actor->EquipWeapon( 1 );
 	}
-	else if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
 	{
 		actor->EquipWeapon( 2 );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFTARROW ) || controller.WasButtonJustPressed( XboxButtonID::DPAD_UP ) )
+	{
+		actor->EquipNextWeapon();
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '2' ) || controller.WasButtonJustPressed( XboxButtonID::DPAD_DOWN ) )
+	{
+		actor->EquipPreviousWeapon();
 	}
 }
