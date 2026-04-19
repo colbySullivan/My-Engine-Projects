@@ -525,6 +525,6 @@ void Actor::EquipPreviousWeapon()
 	if ( m_weapons.empty() )
 		return;
 
-	int prevIndex = ( m_currentWeaponIndex - 1 + m_weapons.size() ) % m_weapons.size();
+	int prevIndex = ( m_currentWeaponIndex - 1 + (int)m_weapons.size() ) % (int)m_weapons.size();
 	EquipWeapon( prevIndex );
 }
