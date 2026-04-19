@@ -131,6 +131,11 @@ Vec3    GetNearestPointOnSphere( Vec3 referencePos, Vec3 sphereCenter, float sph
 Vec3	GetNearestPointOnCylinder( Vec3 referencePos, Vec3 cylinderStart, Vec3 cylinderEnd, float radius );
 Vec3	GetNearestPointOnAABB3( Vec3 referencePos, Vec3 boxMins, Vec3 boxMaxs );
 
+//------------------------------------------------------------------------------
+// Bezier utilities
+float	ComputeCubicBezier1D( float A, float B, float C, float D, float t );
+float	ComputeQuinticBezier1D( float A, float B, float C, float D, float E, float F, float t );
+
 //-----------------------------------------------------------------------------------------------
 // Basic util functions
 float	GetFloatMax( float a, float b );

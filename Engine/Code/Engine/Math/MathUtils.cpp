@@ -1207,6 +1207,43 @@ Vec3 GetNearestPointOnAABB3( Vec3 referencePos, Vec3 boxMins, Vec3 boxMaxs )
 	return Vec3( x, y, z );
 }
 
+//------------------------------------------------------------------------------
+float ComputeCubicBezier1D( float A, float B, float C, float D, float t )
+{
+	float AB = Interpolate( A, B, t );
+	float BC = Interpolate( B, C, t );
+	float CD = Interpolate( C, D, t );
+
+	float ABC = Interpolate( AB, BC, t );
+	float BCD = Interpolate( BC, CD, t );
+
+	return Interpolate( ABC, BCD, t );
+}
+
+//------------------------------------------------------------------------------
+float ComputeQuinticBezier1D( float A, float B, float C, float D, float E, float F, float t )
+{
+	float AB = Interpolate( A, B, t );
+	float BC = Interpolate( B, C, t );
+	float CD = Interpolate( C, D, t );
+	float DE = Interpolate( D, E, t );
+	float EF = Interpolate( E, F, t );
+
+	float ABC = Interpolate( AB, BC, t );
+	float BCD = Interpolate( BC, CD, t );
+	float CDE = Interpolate( CD, DE, t );
+	float DEF = Interpolate( DE, EF, t );
+
+	float ABCD = Interpolate( ABC, BCD, t );
+	float BCDE = Interpolate( BCD, CDE, t );
+	float CDEF = Interpolate( CDE, DEF, t );
+
+	float ABCDE = Interpolate( ABCD, BCDE, t );
+	float BCDEF = Interpolate( BCDE, CDEF, t );
+
+	return Interpolate( ABCDE, BCDEF, t );
+}
+
 //-----------------------------------------------------------------------------------------------
 float GetFloatMax( float a, float b )
 {
