@@ -1309,6 +1309,36 @@ float SmoothStop6( float t )
 	return 1.f - ( inv * inv * inv * inv * inv * inv );
 }
 
+//------------------------------------------------------------------------------
+float SmoothStep3( float t )
+{
+	return Interpolate( SmoothStart2(t), SmoothStop2(t), t );
+}
+
+//------------------------------------------------------------------------------
+float SmoothStep5( float t )
+{
+	return ComputeQuinticBezier1D( 0, 0, 0, 1, 1, 1, t );
+}
+
+//------------------------------------------------------------------------------
+float Hesitate3( float t )
+{
+	return ComputeCubicBezier1D( 0, 1, 0, 1, t );
+}
+
+//------------------------------------------------------------------------------
+float Hesitate5( float t )
+{
+	return ComputeQuinticBezier1D( 0, 1, 0, 1, 0, 1, t );
+}
+
+//------------------------------------------------------------------------------
+float CustomFunkyEasingFunction( float t )
+{
+	return ComputeQuinticBezier1D( 0, 0, 1, 0, 1, 1, t ); // #todo make this something actually funky
+}
+
 //-----------------------------------------------------------------------------------------------
 float GetFloatMax( float a, float b )
 {

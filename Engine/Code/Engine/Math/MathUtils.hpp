@@ -148,6 +148,15 @@ float	SmoothStop3( float t );
 float	SmoothStop4( float t );
 float	SmoothStop5( float t );
 float	SmoothStop6( float t );
+
+//------------------------------------------------------------------------------
+// Extra easing functions
+float	SmoothStep3( float t );
+float	SmoothStep5( float t );
+float	Hesitate3( float t );
+float	Hesitate5( float t );
+float	CustomFunkyEasingFunction( float t );
+
 //-----------------------------------------------------------------------------------------------
 // Basic util functions
 float	GetFloatMax( float a, float b );
