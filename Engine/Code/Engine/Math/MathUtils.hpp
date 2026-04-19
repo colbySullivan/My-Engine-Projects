@@ -136,6 +136,18 @@ Vec3	GetNearestPointOnAABB3( Vec3 referencePos, Vec3 boxMins, Vec3 boxMaxs );
 float	ComputeCubicBezier1D( float A, float B, float C, float D, float t );
 float	ComputeQuinticBezier1D( float A, float B, float C, float D, float E, float F, float t );
 
+//------------------------------------------------------------------------------
+// Smooth start/stop easing functions
+float	SmoothStart2( float t );
+float	SmoothStart3( float t );
+float	SmoothStart4( float t );
+float	SmoothStart5( float t );
+float	SmoothStart6( float t );
+float	SmoothStop2( float t );
+float	SmoothStop3( float t );
+float	SmoothStop4( float t );
+float	SmoothStop5( float t );
+float	SmoothStop6( float t );
 //-----------------------------------------------------------------------------------------------
 // Basic util functions
 float	GetFloatMax( float a, float b );

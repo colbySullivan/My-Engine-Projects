@@ -1244,6 +1244,71 @@ float ComputeQuinticBezier1D( float A, float B, float C, float D, float E, float
 	return Interpolate( ABCDE, BCDEF, t );
 }
 
+//------------------------------------------------------------------------------
+float SmoothStart2( float t )
+{
+	return t * t;
+}
+
+//------------------------------------------------------------------------------
+float SmoothStart3( float t )
+{
+	return t * t * t;
+}
+
+//------------------------------------------------------------------------------
+float SmoothStart4( float t )
+{
+	return t * t * t * t;
+}
+
+//------------------------------------------------------------------------------
+float SmoothStart5( float t )
+{
+	return t * t * t * t * t;
+}
+
+//------------------------------------------------------------------------------
+float SmoothStart6( float t )
+{
+	return t * t * t * t * t * t;
+}
+
+//------------------------------------------------------------------------------
+float SmoothStop2( float t )
+{
+	float inv = 1.f - t;
+	return 1.f - ( inv * inv );
+}
+
+//------------------------------------------------------------------------------
+float SmoothStop3( float t )
+{
+	float inv = 1.f - t;
+	return 1.f - ( inv * inv * inv );
+}
+
+//------------------------------------------------------------------------------
+float SmoothStop4( float t )
+{
+	float inv = 1.f - t;
+	return 1.f - ( inv * inv * inv * inv );
+}
+
+//------------------------------------------------------------------------------
+float SmoothStop5( float t )
+{
+	float inv = 1.f - t;
+	return 1.f - ( inv * inv * inv * inv * inv );
+}
+
+//------------------------------------------------------------------------------
+float SmoothStop6( float t )
+{
+	float inv = 1.f - t;
+	return 1.f - ( inv * inv * inv * inv * inv * inv );
+}
+
 //-----------------------------------------------------------------------------------------------
 float GetFloatMax( float a, float b )
 {
