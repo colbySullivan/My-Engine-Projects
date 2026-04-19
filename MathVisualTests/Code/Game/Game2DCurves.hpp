@@ -16,6 +16,6 @@ public:
 	void Update( float deltaSeconds ) override;
 	void Render() const override;
 
+	void RenderEasingGraph( int numSamples ) const;
 private:
-
 };

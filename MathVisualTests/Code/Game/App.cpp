@@ -27,8 +27,8 @@ App::App()
 	DebugRenderConfig debugConfig;
 	DebugRenderSystemStartup( debugConfig );
 
-	g_gameMode = GAMEMODE_TESTSHAPES_3D;
-	m_game = new TestShapes3D( this ); // #TODO Revert this to GAMEMODE_NEAREST_POINT
+	g_gameMode = GAMEMODE_2D_CURVES;
+	m_game = new Game2DCurves( this );
 
 	m_game->Startup();
 }
