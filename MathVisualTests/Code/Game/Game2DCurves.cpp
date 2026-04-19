@@ -2,6 +2,50 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
+
+//------------------------------------------------------------------------------
+typedef float ( *EasingFuncPtr )( float t );
+
+//------------------------------------------------------------------------------
+static const EasingFuncPtr easingLookup[numEasingFunctions] =
+{
+	SmoothStart2,
+	SmoothStart3,
+	SmoothStart4,
+	SmoothStart5,
+	SmoothStart6,
+	SmoothStop2,
+	SmoothStop3,
+	SmoothStop4,
+	SmoothStop5,
+	SmoothStop6,
+	SmoothStep3,
+	SmoothStep5,
+	Hesitate3,
+	Hesitate5,
+	CustomFunkyEasingFunction
+};
+
+//------------------------------------------------------------------------------
+static const char* easingFunctionNames[numEasingFunctions] =
+{
+	"SmoothStart2",
+	"SmoothStart3",
+	"SmoothStart4",
+	"SmoothStart5",
+	"SmoothStart6",
+	"SmoothStop2",
+	"SmoothStop3",
+	"SmoothStop4",
+	"SmoothStop5",
+	"SmoothStop6",
+	"SmoothStep3",
+	"SmoothStep5",
+	"Hesitate3",
+	"Hesitate5",
+	"FunkyFresh"
+};
 
 //-----------------------------------------------------------------------------------------------
 Game2DCurves::Game2DCurves( App* app )
@@ -28,18 +72,35 @@ void Game2DCurves::Shutdown()
 void Game2DCurves::Update( float deltaSeconds )
 {
 	UpdateCameras( deltaSeconds );
+	UpdateKeyboardInput();
 	Game::UpdateKeyboardInput();
+}
+
+//------------------------------------------------------------------------------
+void Game2DCurves::UpdateKeyboardInput()
+{
+	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
+	{
+		m_currentEasingFunction = static_cast< EasingFunction >( ( m_currentEasingFunction + 1 ) % numEasingFunctions );
+	}
+	
+	if ( g_engine->m_input->WasKeyJustPressed( 'M' ) )
+	{
+		m_currentEasingFunction = static_cast< EasingFunction >( ( m_currentEasingFunction - 1 + numEasingFunctions ) % numEasingFunctions );
+	}
 }
 
 void Game2DCurves::Render() const
 {
-	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
+	g_engine->m_render->BindTexture( nullptr );
+
+	Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) );
 
 	g_engine->m_render->ClearScreen( backgroundColor );
 
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 
-	RenderEasingGraph( 64 );
+	RenderEasingGraph( 64, m_currentEasingFunction );
 
 	Game::RenderGameText( GAMEMODE_2D_CURVES );
 
@@ -47,7 +108,7 @@ void Game2DCurves::Render() const
 }
 
 //------------------------------------------------------------------------------
-void Game2DCurves::RenderEasingGraph( int numSamples ) const
+void Game2DCurves::RenderEasingGraph( int numSamples, EasingFunction method ) const
 {
 	float graphTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ), 1.f );
 
@@ -57,6 +118,14 @@ void Game2DCurves::RenderEasingGraph( int numSamples ) const
 	Vec2 graphMax = Vec2( padding + sideLength, 100.f - padding );
 	float graphWidth = graphMax.x - graphMin.x;
 	float graphHeight = graphMax.y - graphMin.y;
+
+	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
+	std::vector<Vertex> titleVerts;
+	std::string currentMethodName = easingFunctionNames[method];
+	g_testFont->AddVertsForTextInBox2D( titleVerts, currentMethodName, AABB2( Vec2( graphMin.x - 5.f, graphMin.y - 5.f ), Vec2( graphMax.x + 5.f, graphMin.y + 5.f ) ), 2.f, Rgba8::WHITE, 1.f, Vec2( 0.5f, 0.f ) );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( titleVerts.size() ), titleVerts.data() );
+
+	g_engine->m_render->BindTexture( nullptr );
 
 	std::vector<Vertex> axisVerts;
 	AddVertsForAABB2D( axisVerts, AABB2( graphMin, graphMax ), Rgba8( 120, 120, 120, 120 ) );
@@ -69,8 +138,8 @@ void Game2DCurves::RenderEasingGraph( int numSamples ) const
 		float t0 = static_cast< float >( i ) / static_cast< float >( numSamples - 1 );
 		float t1 = static_cast< float >( i + 1 ) / static_cast< float >( numSamples - 1 );
 
-		float easedValue0 = SmoothStep5( t0 );
-		float easedValue1 = SmoothStep5( t1 );
+		float easedValue0 = GetEasedValue( method, t0 );
+		float easedValue1 = GetEasedValue( method, t1 );
 
 		Vec2 point0 = Vec2( graphMin.x + t0 * graphWidth, graphMin.y + easedValue0 * graphHeight );
 		Vec2 point1 = Vec2( graphMin.x + t1 * graphWidth, graphMin.y + easedValue1 * graphHeight );
@@ -80,7 +149,7 @@ void Game2DCurves::RenderEasingGraph( int numSamples ) const
 
 	g_engine->m_render->DrawVertexArray( static_cast< int >( curveVerts.size() ), curveVerts.data() );
 
-	float easedValue = SmoothStep5( graphTime );
+	float easedValue = GetEasedValue( method, graphTime );
 	Vec2 currentPoint = Vec2( graphMin.x + graphTime * graphWidth, graphMin.y + easedValue * graphHeight );
 
 	std::vector<Vertex> pointVerts;
@@ -88,3 +157,8 @@ void Game2DCurves::RenderEasingGraph( int numSamples ) const
 	g_engine->m_render->DrawVertexArray( static_cast< int >( pointVerts.size() ), pointVerts.data() );
 }
 
+//------------------------------------------------------------------------------
+float Game2DCurves::GetEasedValue( EasingFunction method, float t ) const
+{
+	return easingLookup[method]( t );
+}

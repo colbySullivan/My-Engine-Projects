@@ -4,6 +4,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/BitmapFont.hpp"
 
 class App;
 class Entity;
@@ -32,7 +33,9 @@ public:
 	bool				m_pauseAfterNextUpdate = false;
 	bool				g_drawDebug = false;
 	Camera*				m_worldCamera = nullptr;
-	//Camera*				m_screenCamera = nullptr;
+	Camera*				m_screenCamera = nullptr;
+
+	BitmapFont*			g_testFont = nullptr;
 
 	void UpdateCameras( float deltaSeconds );
 	void UpdateKeyboardInput();

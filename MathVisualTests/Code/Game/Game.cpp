@@ -19,17 +19,17 @@ Game::Game([[maybe_unused]] App* m_app)
 	:m_app( g_theApp )
 {
 	m_worldCamera = new Camera;
-	//m_screenCamera = new Camera;
+	m_screenCamera = new Camera;
 }
 
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
 	delete m_worldCamera;
-	//delete m_screenCamera;
+	delete m_screenCamera;
 
 	m_worldCamera = nullptr;
-	//m_screenCamera = nullptr;
+	m_screenCamera = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -38,6 +38,7 @@ Game::~Game()
 void Game::Startup()
 {
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
+	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -91,6 +92,7 @@ void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) c
 void Game::UpdateCameras( [[maybe_unused]] float deltaSeconds )
 {
 	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
 	//m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 }
 
