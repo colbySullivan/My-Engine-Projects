@@ -50,6 +50,12 @@ void App::RunFrame()
 {
 	g_engine->BeginFrame();
 	
+	g_engine->m_systemClock->SetTimeScale(1.f);
+	if ( m_game->m_isSlowMo )
+	{
+		g_engine->m_systemClock->SetTimeScale(0.1f);
+	}
+
 	Update((float)g_engine->m_systemClock->GetDeltaSeconds());
 	Render();
 	if ( g_gameMode == GAMEMODE_TESTSHAPES_3D )
