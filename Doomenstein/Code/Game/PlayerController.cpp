@@ -434,7 +434,7 @@ void PlayerController::ProcessWeaponChangeInput()
 		actor->EquipNextWeapon();
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( '2' ) || controller.WasButtonJustPressed( XboxButtonID::DPAD_DOWN ) )
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_RIGHTARROW ) || controller.WasButtonJustPressed( XboxButtonID::DPAD_DOWN ) )
 	{
 		actor->EquipPreviousWeapon();
 	}
