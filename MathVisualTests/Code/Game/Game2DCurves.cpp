@@ -154,7 +154,6 @@ void Game2DCurves::RenderEasingGraph( int numSamples, EasingFunction method ) co
 
 	float easedValue = GetEasedValue( method, graphTime );
 	Vec2 currentPoint = Vec2( graphMin.x + graphTime * graphWidth, graphMin.y + easedValue * graphHeight );
-
 	std::vector<Vertex> pointVerts;
 	AddVertsForDisc2D( pointVerts, currentPoint, 0.5f, Rgba8::WHITE );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( pointVerts.size() ), pointVerts.data() );
@@ -202,9 +201,22 @@ void Game2DCurves::RenderBezierCurve( int numSamples /*= 64 */ ) const
 	AddVertsForDisc2D( controlPointVerts, m_guidePos2, 0.5f, Rgba8::BLUE );
 	AddVertsForDisc2D( controlPointVerts, m_endPos, 0.5f, Rgba8::BLUE );
 
+	float parametricTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ) * 0.5f, 1.f );
+	Vec2 parametricPoint = curve.EvaluateAtParametric( parametricTime );
+
+	float curveLength = curve.GetApproximateLength( numSamples );
+	float curveTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ), 2.f );
+	float currentDistance = ( curveTime / 2.f ) * curveLength;
+	Vec2 currentPoint = curve.EvaluateAtApproximateDistance( currentDistance, numSamples );
+
+	std::vector<Vertex> pointVerts;
+	AddVertsForDisc2D( pointVerts, currentPoint, 0.5f, Rgba8::WHITE );
+	AddVertsForDisc2D( pointVerts, parametricPoint, 0.5f, Rgba8::YELLOW );
+
 	g_engine->m_render->DrawVertexArray( static_cast< int >( guideLineVerts.size() ), guideLineVerts.data() );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( curveVerts.size() ), curveVerts.data() );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( controlPointVerts.size() ), controlPointVerts.data() );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( pointVerts.size() ), pointVerts.data() );
 }
 
 void Game2DCurves::UpdateBezierCurve( [[maybe_unused]] float deltaSeconds )
