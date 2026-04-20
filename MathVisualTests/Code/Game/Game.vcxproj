@@ -195,6 +195,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="CubicBezierCurve2D.cpp" />
+    <ClCompile Include="CubicHermiteCurve2D.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Game2DCurves.cpp" />
@@ -221,6 +222,7 @@
   <ItemGroup>
     <ClInclude Include="App.hpp" />
     <ClInclude Include="CubicBezierCurve2D.hpp" />
+    <ClInclude Include="CubicHermiteCurve2D.hpp" />
     <ClInclude Include="EngineBuildPreferences.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Game.hpp" />

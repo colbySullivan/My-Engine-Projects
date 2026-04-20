@@ -3,6 +3,7 @@
 #include "Engine/Math/MathUtils.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 //------------------------------------------------------------------------------
 typedef float ( *EasingFuncPtr )( float t );
@@ -50,8 +51,13 @@ static const char* easingFunctionNames[numEasingFunctions] =
 //-----------------------------------------------------------------------------------------------
 Game2DCurves::Game2DCurves( App* app )
 	: Game( app )
+	, m_bezierCurve(
+		Vec2( 130.f + g_rng->RollRandomFloatInRange( 20.f, 40.f ), 70.f + g_rng->RollRandomFloatInRange( 0.f, 20.f ) ),
+		Vec2( 140.f + g_rng->RollRandomFloatInRange( 20.f, 40.f ), 60.f + g_rng->RollRandomFloatInRange( 10.f, 30.f ) ),
+		Vec2( 160.f + g_rng->RollRandomFloatInRange( 20.f, 40.f ), 40.f + g_rng->RollRandomFloatInRange( 20.f, 40.f ) ),
+		Vec2( 150.f + g_rng->RollRandomFloatInRange( 20.f, 30.f ), 80.f + g_rng->RollRandomFloatInRange( 0.f, 20.f ) )
+	)
 {
-	CreateBezierCurve();
 }
 
 Game2DCurves::~Game2DCurves()
@@ -73,21 +79,30 @@ void Game2DCurves::Update( float deltaSeconds )
 {
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput();
-	UpdateBezierCurve( deltaSeconds );
 	Game::UpdateKeyboardInput();
 }
 
 //------------------------------------------------------------------------------
 void Game2DCurves::UpdateKeyboardInput()
 {
-	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'W' ) )
 	{
 		m_currentEasingFunction = static_cast< EasingFunction >( ( m_currentEasingFunction + 1 ) % numEasingFunctions );
 	}
 	
-	if ( g_engine->m_input->WasKeyJustPressed( 'M' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'E' ) )
 	{
 		m_currentEasingFunction = static_cast< EasingFunction >( ( m_currentEasingFunction - 1 + numEasingFunctions ) % numEasingFunctions );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
+	{
+		m_numSamples -= 8;
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( 'M' ) )
+	{
+		m_numSamples += 8;
 	}
 }
 
@@ -165,17 +180,9 @@ float Game2DCurves::GetEasedValue( EasingFunction method, float t ) const
 	return easingLookup[method]( t );
 }
 
-void Game2DCurves::CreateBezierCurve()
-{
-	m_startPos = Vec2( 130.f, 20.f );
-	m_guidePos1 = Vec2( 140.f, 60.f );
-	m_guidePos2 = Vec2( 160.f, 40.f );
-	m_endPos = Vec2( 170.f, 80.f );
-}
-
+//------------------------------------------------------------------------------
 void Game2DCurves::RenderBezierCurve( int numSamples /*= 64 */ ) const
 {
-	CubicBezierCurve2D curve( m_startPos, m_guidePos1, m_guidePos2, m_endPos );
 
 	std::vector<Vertex> curveVerts;
 
@@ -184,30 +191,30 @@ void Game2DCurves::RenderBezierCurve( int numSamples /*= 64 */ ) const
 		float t0 = static_cast< float >( i ) / static_cast< float >( numSamples );
 		float t1 = static_cast< float >( i + 1 ) / static_cast< float >( numSamples );
 
-		Vec2 point0 = curve.EvaluateAtParametric( t0 );
-		Vec2 point1 = curve.EvaluateAtParametric( t1 );
+		Vec2 point0 = m_bezierCurve.EvaluateAtParametric( t0 );
+		Vec2 point1 = m_bezierCurve.EvaluateAtParametric( t1 );
 
 		AddVertsForLineSegment2D( curveVerts, point0, point1,  Vec2( .25f, .25f ), Rgba8::GREEN );
 	}
 
 	std::vector<Vertex> guideLineVerts;
-	AddVertsForLineSegment2D( guideLineVerts, m_startPos, m_guidePos1,  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
-	AddVertsForLineSegment2D( guideLineVerts, m_guidePos2, m_endPos,  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
-	AddVertsForLineSegment2D( guideLineVerts, m_guidePos2, m_guidePos1,  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
+	AddVertsForLineSegment2D( guideLineVerts, m_bezierCurve.GetStartPos(), m_bezierCurve.GetGuidePos1(),  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
+	AddVertsForLineSegment2D( guideLineVerts, m_bezierCurve.GetGuidePos2(), m_bezierCurve.GetEndPos(),  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
+	AddVertsForLineSegment2D( guideLineVerts, m_bezierCurve.GetGuidePos2(), m_bezierCurve.GetGuidePos1(),  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
 
 	std::vector<Vertex> controlPointVerts;
-	AddVertsForDisc2D( controlPointVerts, m_startPos, 0.5f, Rgba8::BLUE );
-	AddVertsForDisc2D( controlPointVerts, m_guidePos1, 0.5f, Rgba8::BLUE );
-	AddVertsForDisc2D( controlPointVerts, m_guidePos2, 0.5f, Rgba8::BLUE );
-	AddVertsForDisc2D( controlPointVerts, m_endPos, 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts, m_bezierCurve.GetStartPos(), 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts, m_bezierCurve.GetGuidePos1(), 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts, m_bezierCurve.GetGuidePos2(), 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts,  m_bezierCurve.GetEndPos(), 0.5f, Rgba8::BLUE );
 
 	float parametricTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ) * 0.5f, 1.f );
-	Vec2 parametricPoint = curve.EvaluateAtParametric( parametricTime );
+	Vec2 parametricPoint = m_bezierCurve.EvaluateAtParametric( parametricTime );
 
-	float curveLength = curve.GetApproximateLength( numSamples );
+	float curveLength = m_bezierCurve.GetApproximateLength( numSamples );
 	float curveTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ), 2.f );
 	float currentDistance = ( curveTime / 2.f ) * curveLength;
-	Vec2 currentPoint = curve.EvaluateAtApproximateDistance( currentDistance, numSamples );
+	Vec2 currentPoint = m_bezierCurve.EvaluateAtApproximateDistance( currentDistance, numSamples );
 
 	std::vector<Vertex> pointVerts;
 	AddVertsForDisc2D( pointVerts, currentPoint, 0.5f, Rgba8::WHITE );
@@ -217,42 +224,4 @@ void Game2DCurves::RenderBezierCurve( int numSamples /*= 64 */ ) const
 	g_engine->m_render->DrawVertexArray( static_cast< int >( curveVerts.size() ), curveVerts.data() );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( controlPointVerts.size() ), controlPointVerts.data() );
 	g_engine->m_render->DrawVertexArray( static_cast< int >( pointVerts.size() ), pointVerts.data() );
-}
-
-void Game2DCurves::UpdateBezierCurve( [[maybe_unused]] float deltaSeconds )
-{
-	AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
-	Vec2 screenMouseUV = g_engine->m_window->GetNormalizedMouseUV();
-	Vec2 mousePos = screenSize.GetPointAtUV( screenMouseUV );
-
-	Vec2* points[] = {
-		&m_startPos,
-		&m_guidePos1,
-		&m_guidePos2,
-		&m_endPos
-	};
-
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
-	{
-		m_selectedPointIndex = -1;
-		for ( int i = 0; i < 4; ++i )
-		{
-			float distToPoint = GetDistance2D( mousePos, *points[i] );
-			if ( distToPoint <= m_controlPointRadius * 2.0f )
-			{
-				m_selectedPointIndex = i;
-				break;
-			}
-		}
-	}
-
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) && m_selectedPointIndex >= 0 )
-	{
-		*points[m_selectedPointIndex] = mousePos;
-	}
-
-	if ( g_engine->m_input->WasKeyJustReleased( KEYCODE_LEFT_MOUSE ) )
-	{
-		m_selectedPointIndex = -1;
-	}
 }

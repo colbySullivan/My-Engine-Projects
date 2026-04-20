@@ -94,6 +94,9 @@
     <ClCompile Include="CubicBezierCurve2D.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="CubicHermiteCurve2D.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -166,6 +169,9 @@
       <Filter>GameModes</Filter>
     </ClInclude>
     <ClInclude Include="CubicBezierCurve2D.hpp">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="CubicHermiteCurve2D.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>

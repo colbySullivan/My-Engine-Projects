@@ -89,8 +89,8 @@ void App::Update( float deltaSeconds )
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
 	{
 		m_game->Shutdown();
-		/*delete m_game;
-		m_game = CreateNewGameOfType( g_gameMode );*/
+		delete m_game;
+		m_game = CreateNewGameOfType( g_gameMode );
 		m_game->Startup();
 		return;
 	}
