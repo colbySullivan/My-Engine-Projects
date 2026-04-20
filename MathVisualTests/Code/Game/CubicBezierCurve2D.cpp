@@ -11,10 +11,13 @@ CubicBezierCurve2D::CubicBezierCurve2D( Vec2 startPos, Vec2 guidePos1, Vec2 guid
 	
 }
 //------------------------------------------------------------------------------
-//CubicBezierCurve2D::CubicBezierCurve2D( CubicHermiteCurve2D const& fromHermite )
-//{
-//
-//}
+CubicBezierCurve2D::CubicBezierCurve2D( CubicHermiteCurve2D const& fromHermite )
+{
+	m_startPos = fromHermite.GetStartPos();
+	m_guidePos1 = fromHermite.GetStartPos() + ( fromHermite.GetStartVelocity() * 0.33f );
+	m_guidePos2 = fromHermite.GetEndPos() - ( fromHermite.GetEndVelocity() * 0.33f );
+	m_endPos = fromHermite.GetEndPos();
+}
 
 //------------------------------------------------------------------------------
 Vec2 CubicBezierCurve2D::EvaluateAtParametric( float parametricZeroToOne ) const

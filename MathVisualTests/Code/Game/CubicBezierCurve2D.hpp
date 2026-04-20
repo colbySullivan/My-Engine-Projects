@@ -1,12 +1,13 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
+#include "Game/CubicHermiteCurve2D.hpp"
 
 //-----------------------------------------------------------------------------------------------
 class CubicBezierCurve2D
 {
 public:
 	CubicBezierCurve2D( Vec2 startPos, Vec2 guidePos1, Vec2 guidePos2, Vec2 endPos );
-	//explicit CubicBezierCurve2D( CubicHermiteCurve2D const& fromHermite );
+	explicit CubicBezierCurve2D( CubicHermiteCurve2D const& fromHermite );
 	Vec2 EvaluateAtParametric( float parametricZeroToOne ) const;
 	float GetApproximateLength( int numSubdivisions = 64 ) const;
 	Vec2 EvaluateAtApproximateDistance( float distanceAlongCurve, int numSubdivisions = 64 ) const;
