@@ -51,7 +51,7 @@ static const char* easingFunctionNames[numEasingFunctions] =
 Game2DCurves::Game2DCurves( App* app )
 	: Game( app )
 {
-
+	CreateBezierCurve();
 }
 
 Game2DCurves::~Game2DCurves()
@@ -73,6 +73,7 @@ void Game2DCurves::Update( float deltaSeconds )
 {
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput();
+	UpdateBezierCurve( deltaSeconds );
 	Game::UpdateKeyboardInput();
 }
 
@@ -100,7 +101,9 @@ void Game2DCurves::Render() const
 
 	g_engine->m_render->BeginCamera( *m_worldCamera );
 
-	RenderEasingGraph( 64, m_currentEasingFunction );
+	RenderEasingGraph( m_numSamples, m_currentEasingFunction );
+
+	RenderBezierCurve( m_numSamples );
 
 	Game::RenderGameText( GAMEMODE_2D_CURVES );
 
@@ -161,4 +164,83 @@ void Game2DCurves::RenderEasingGraph( int numSamples, EasingFunction method ) co
 float Game2DCurves::GetEasedValue( EasingFunction method, float t ) const
 {
 	return easingLookup[method]( t );
+}
+
+void Game2DCurves::CreateBezierCurve()
+{
+	m_startPos = Vec2( 130.f, 20.f );
+	m_guidePos1 = Vec2( 140.f, 60.f );
+	m_guidePos2 = Vec2( 160.f, 40.f );
+	m_endPos = Vec2( 170.f, 80.f );
+}
+
+void Game2DCurves::RenderBezierCurve( int numSamples /*= 64 */ ) const
+{
+	CubicBezierCurve2D curve( m_startPos, m_guidePos1, m_guidePos2, m_endPos );
+
+	std::vector<Vertex> curveVerts;
+
+	for ( int i = 0; i < numSamples; ++i )
+	{
+		float t0 = static_cast< float >( i ) / static_cast< float >( numSamples );
+		float t1 = static_cast< float >( i + 1 ) / static_cast< float >( numSamples );
+
+		Vec2 point0 = curve.EvaluateAtParametric( t0 );
+		Vec2 point1 = curve.EvaluateAtParametric( t1 );
+
+		AddVertsForLineSegment2D( curveVerts, point0, point1,  Vec2( .25f, .25f ), Rgba8::GREEN );
+	}
+
+	std::vector<Vertex> guideLineVerts;
+	AddVertsForLineSegment2D( guideLineVerts, m_startPos, m_guidePos1,  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
+	AddVertsForLineSegment2D( guideLineVerts, m_guidePos2, m_endPos,  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
+	AddVertsForLineSegment2D( guideLineVerts, m_guidePos2, m_guidePos1,  Vec2( .25f, .25f ), Rgba8( 128, 128, 128, 128 ) );
+
+	std::vector<Vertex> controlPointVerts;
+	AddVertsForDisc2D( controlPointVerts, m_startPos, 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts, m_guidePos1, 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts, m_guidePos2, 0.5f, Rgba8::BLUE );
+	AddVertsForDisc2D( controlPointVerts, m_endPos, 0.5f, Rgba8::BLUE );
+
+	g_engine->m_render->DrawVertexArray( static_cast< int >( guideLineVerts.size() ), guideLineVerts.data() );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( curveVerts.size() ), curveVerts.data() );
+	g_engine->m_render->DrawVertexArray( static_cast< int >( controlPointVerts.size() ), controlPointVerts.data() );
+}
+
+void Game2DCurves::UpdateBezierCurve( [[maybe_unused]] float deltaSeconds )
+{
+	AABB2 screenSize( m_worldCamera->GetOrthoBottomLeft(), m_worldCamera->GetOrthoTopRight() );
+	Vec2 screenMouseUV = g_engine->m_window->GetNormalizedMouseUV();
+	Vec2 mousePos = screenSize.GetPointAtUV( screenMouseUV );
+
+	Vec2* points[] = {
+		&m_startPos,
+		&m_guidePos1,
+		&m_guidePos2,
+		&m_endPos
+	};
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	{
+		m_selectedPointIndex = -1;
+		for ( int i = 0; i < 4; ++i )
+		{
+			float distToPoint = GetDistance2D( mousePos, *points[i] );
+			if ( distToPoint <= m_controlPointRadius * 2.0f )
+			{
+				m_selectedPointIndex = i;
+				break;
+			}
+		}
+	}
+
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) && m_selectedPointIndex >= 0 )
+	{
+		*points[m_selectedPointIndex] = mousePos;
+	}
+
+	if ( g_engine->m_input->WasKeyJustReleased( KEYCODE_LEFT_MOUSE ) )
+	{
+		m_selectedPointIndex = -1;
+	}
 }

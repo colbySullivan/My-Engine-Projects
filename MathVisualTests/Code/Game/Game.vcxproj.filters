@@ -91,6 +91,9 @@
     <ClCompile Include="Game2DCurves.cpp">
       <Filter>GameModes</Filter>
     </ClCompile>
+    <ClCompile Include="CubicBezierCurve2D.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -161,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="Game2DCurves.hpp">
       <Filter>GameModes</Filter>
+    </ClInclude>
+    <ClInclude Include="CubicBezierCurve2D.hpp">
+      <Filter>Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

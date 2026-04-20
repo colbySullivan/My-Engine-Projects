@@ -1,7 +1,6 @@
-#pragma once
-
 #include "Game/Game.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Game/CubicBezierCurve2D.hpp"
 
 class Window;
 
@@ -36,9 +35,20 @@ public:
 	void Shutdown() override;
 	void Update( float deltaSeconds ) override;
 	void UpdateKeyboardInput();
+	void UpdateBezierCurve( float deltaSeconds );
 	void Render() const override;
-	void RenderEasingGraph( int numSamples, EasingFunction method ) const;
-	float GetEasedValue(EasingFunction method, float t) const;
+	void RenderEasingGraph( int numSamples = 64, EasingFunction method = EASING_CustomFunkyEasingFunction ) const;
+	void RenderBezierCurve( int numSamples = 64 ) const;
+	float GetEasedValue( EasingFunction method, float t ) const;
+	void CreateBezierCurve();
+
 private:
 	EasingFunction m_currentEasingFunction = EASING_Hesitate5;
+	int m_numSamples = 64;
+	Vec2 m_startPos;
+	Vec2 m_guidePos1;
+	Vec2 m_guidePos2;
+	Vec2 m_endPos;
+	int m_selectedPointIndex = -1;
+	float m_controlPointRadius = 2.0f;
 };
