@@ -184,7 +184,6 @@ float Game2DCurves::GetEasedValue( EasingFunction method, float t ) const
 }
 
 //-----------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------
 void Game2DCurves::CreateHermiteCurve()
 {
 	std::vector<Vec2> points( m_hermiteCurvePoints );
@@ -194,21 +193,31 @@ void Game2DCurves::CreateHermiteCurve()
 		float yPos = g_rng->RollRandomFloatInRange( 10.f, 50.f );
 		points[i] = Vec2( xPos, yPos );
 	}
-	for ( int i = 0; i < m_hermiteCurvePoints; ++i )
+	for ( int i = 0; i < m_hermiteCurvePoints - 1; ++i )
 	{
 		Vec2 startPos = points[i];
-		Vec2 endPos = points[( i + 1 ) % m_hermiteCurvePoints];
-		Vec2 startVelocity = ( points[( i + 1 ) % m_hermiteCurvePoints] - points[( i - 1 + m_hermiteCurvePoints ) % m_hermiteCurvePoints] ) * 0.5f;
-		Vec2 endVelocity = ( points[( i + 2 ) % m_hermiteCurvePoints] - points[i] ) * 0.5f;
-		if ( ( i == 0 ) )
+		Vec2 endPos = points[i + 1];
+
+		Vec2 startVelocity;
+		if ( i == 0 )
 		{
-			startVelocity = Vec2( 0.f, 0.f );
+			startVelocity = ( points[i + 1] - points[i] ) * 0.5f;
 		}
-		if ( ( i == m_hermiteCurvePoints - 1 ) )
+		else
 		{
-			endVelocity = Vec2( 0.f, 0.f );
-			endPos = points[m_hermiteCurvePoints - 1];
+			startVelocity = ( points[i + 1] - points[i - 1] ) * 0.5f;
 		}
+
+		Vec2 endVelocity;
+		if ( i == m_hermiteCurvePoints - 2 )
+		{
+			endVelocity = ( points[i + 1] - points[i] ) * 0.5f;
+		}
+		else
+		{
+			endVelocity = ( points[i + 2] - points[i] ) * 0.5f;
+		}
+
 		m_hermiteCurves.push_back( CubicHermiteCurve2D( startPos, startVelocity, endPos, endVelocity ) );
 	}
 }
@@ -281,29 +290,30 @@ void Game2DCurves::RenderHermiteCurve( int numSamples /*= 64 */ ) const
 		if ( hermiteCurve.GetStartVelocity().GetLengthSquared() > 0.f && hermiteCurve.GetEndVelocity().GetLengthSquared() > 0.f )
 		{
 			Vec2 startVelocity = hermiteCurve.GetStartPos() + hermiteCurve.GetStartVelocity();
-			Vec2 endVelocity = hermiteCurve.GetEndPos() + hermiteCurve.GetEndVelocity();
 			AddVertsForArrow2D( arrowVerts, hermiteCurve.GetStartPos(), startVelocity, 1.f, 1.f, Rgba8::RED );
-			//AddVertsForArrow2D( arrowVerts, hermiteCurve.GetEndPos(), hermiteCurve.GetEndVelocity(), 1.f, 1.f, Rgba8::RED );
 		}
 
 		std::vector<Vertex> controlPointVerts;
 		AddVertsForDisc2D( controlPointVerts, hermiteCurve.GetStartPos(), 0.5f, Rgba8::BLUE );
 		AddVertsForDisc2D( controlPointVerts, hermiteCurve.GetEndPos(), 0.5f, Rgba8::BLUE );
 
-		//float parametricTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ) * 0.5f, 1.f );
-		//Vec2 parametricPoint = hermiteCurve.EvaluateAtParametric( parametricTime );
-		//float curveLength = hermiteCurve.GetApproximateLength( numSamples );
-		//float curveTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ), 2.f );
-		//float currentDistance = ( curveTime / 2.f ) * curveLength;
-		//Vec2 currentPoint = hermiteCurve.EvaluateAtApproximateDistance( currentDistance, numSamples );
-
-		//std::vector<Vertex> pointVerts;
-		//AddVertsForDisc2D( pointVerts, currentPoint, 0.5f, Rgba8::WHITE );
-		//AddVertsForDisc2D( pointVerts, parametricPoint, 0.5f, Rgba8::YELLOW );
-
 		g_engine->m_render->DrawVertexArray( static_cast< int >( arrowVerts.size() ), arrowVerts.data() );
 		g_engine->m_render->DrawVertexArray( static_cast< int >( curveVerts.size() ), curveVerts.data() );
 		g_engine->m_render->DrawVertexArray( static_cast< int >( controlPointVerts.size() ), controlPointVerts.data() );
-		//g_engine->m_render->DrawVertexArray( static_cast< int >( pointVerts.size() ), pointVerts.data() );
 	}
+
+	int currentHermiteCurveIndex = static_cast< int >( g_engine->m_systemClock->GetTotalSeconds() * 0.5f ) % static_cast< int >( m_hermiteCurves.size() );
+
+	float parametricTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ) * 0.5f, 1.f );
+	Vec2 parametricPoint = m_hermiteCurves[currentHermiteCurveIndex].EvaluateAtParametric( parametricTime );
+	float curveLength = m_hermiteCurves[currentHermiteCurveIndex].GetApproximateLength( numSamples );
+	float curveTime = fmodf( static_cast< float >( g_engine->m_systemClock->GetTotalSeconds() ), 2.f );
+	float currentDistance = ( curveTime / 2.f ) * curveLength;
+	Vec2 currentPoint = m_hermiteCurves[currentHermiteCurveIndex].EvaluateAtApproximateDistance( currentDistance, numSamples );
+
+	std::vector<Vertex> pointVerts;
+	AddVertsForDisc2D( pointVerts, currentPoint, 0.5f, Rgba8::WHITE );
+	AddVertsForDisc2D( pointVerts, parametricPoint, 0.5f, Rgba8::YELLOW );
+
+	g_engine->m_render->DrawVertexArray( static_cast< int >( pointVerts.size() ), pointVerts.data() );
 }
