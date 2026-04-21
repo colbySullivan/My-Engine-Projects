@@ -207,6 +207,7 @@ void Game2DCurves::CreateHermiteCurve()
 		if ( ( i == m_hermiteCurvePoints - 1 ) )
 		{
 			endVelocity = Vec2( 0.f, 0.f );
+			endPos = points[m_hermiteCurvePoints - 1];
 		}
 		m_hermiteCurves.push_back( CubicHermiteCurve2D( startPos, startVelocity, endPos, endVelocity ) );
 	}
@@ -279,8 +280,10 @@ void Game2DCurves::RenderHermiteCurve( int numSamples /*= 64 */ ) const
 		std::vector<Vertex> arrowVerts;
 		if ( hermiteCurve.GetStartVelocity().GetLengthSquared() > 0.f && hermiteCurve.GetEndVelocity().GetLengthSquared() > 0.f )
 		{
-			AddVertsForArrow2D( arrowVerts, hermiteCurve.GetStartPos(), hermiteCurve.GetStartVelocity(), 1.f, 1.f, Rgba8::RED );
-			AddVertsForArrow2D( arrowVerts, hermiteCurve.GetEndPos(), hermiteCurve.GetEndVelocity(), 1.f, 1.f, Rgba8::RED );
+			Vec2 startVelocity = hermiteCurve.GetStartPos() + hermiteCurve.GetStartVelocity();
+			Vec2 endVelocity = hermiteCurve.GetEndPos() + hermiteCurve.GetEndVelocity();
+			AddVertsForArrow2D( arrowVerts, hermiteCurve.GetStartPos(), startVelocity, 1.f, 1.f, Rgba8::RED );
+			//AddVertsForArrow2D( arrowVerts, hermiteCurve.GetEndPos(), hermiteCurve.GetEndVelocity(), 1.f, 1.f, Rgba8::RED );
 		}
 
 		std::vector<Vertex> controlPointVerts;
