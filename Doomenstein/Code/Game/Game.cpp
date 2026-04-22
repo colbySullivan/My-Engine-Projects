@@ -20,6 +20,7 @@
 #include "Game/MapDefinition.hpp"
 #include "Game/Player.hpp"
 #include "Game/WeaponDefinition.hpp"
+#include "Game/SpriteAnimationGroupDefinition.hpp"
 
 Game* g_game = nullptr;
 
@@ -43,6 +44,7 @@ Game::Game()
 	PrintConsoleHelpCommands();
 	TileDefinition::InitializeTileDefs();
 	ActorDefinition::InitializeActorDefs();
+	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
 	WeaponDefinition::InitializeWeaponDefs();
 	MapDefinition::InitializeMapDefs();
 }

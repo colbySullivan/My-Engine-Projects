@@ -88,6 +88,9 @@
     <ClCompile Include="WeaponDefinition.cpp">
       <Filter>GameDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteAnimationGroupDefinition.cpp">
+      <Filter>GameDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -136,6 +139,9 @@
       <Filter>Controllers</Filter>
     </ClInclude>
     <ClInclude Include="WeaponDefinition.hpp">
+      <Filter>GameDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteAnimationGroupDefinition.hpp">
       <Filter>GameDefinitions</Filter>
     </ClInclude>
   </ItemGroup>
