@@ -457,10 +457,6 @@ void Game::RenderUI() const
 	hudText = Stringf( "Health: %5.2f", ownerActor ? ownerActor->m_health : 0.f );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	/*hudText = Stringf( "Player Mode", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
-	Rgba8 playerControlColor = ( !m_controlPlayerMode ) ? Rgba8( 255, 255, 255 ) : Rgba8( 0, 0, 255 );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 55.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, playerControlColor, playerControlColor );*/
-
 	DebugRenderScreen( *m_screenCamera );
 }
 

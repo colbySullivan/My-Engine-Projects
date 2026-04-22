@@ -6,6 +6,7 @@
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/Timer.hpp"
+#include "Engine/Renderer/Texture.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -16,7 +17,7 @@ public:
 	virtual ~PlayerController();
 
 	virtual void Update( float deltaSeconds ) override;
-
+	virtual void RenderUI() const override;
 	void UpdateInput( float deltaSeconds );
 	void UpdateCamera( float deltaSeconds );
 
@@ -43,6 +44,8 @@ private:
 	Vec3		m_freeFlyCameraPosition;
 	EulerAngles m_freeFlyCameraOrientation;
 	Actor*		m_hitActor;
+	Texture* m_hudTexture = nullptr;
+	Texture* m_reticleTexture = nullptr;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

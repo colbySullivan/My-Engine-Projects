@@ -25,6 +25,12 @@ void AiController::Update( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
+void AiController::RenderUI() const
+{
+	return;
+}
+
+//-----------------------------------------------------------------------------------------------
 void AiController::HandleMovement( [[maybe_unused]] float deltaSeconds )
 {
 	Actor* actor = GetActor();

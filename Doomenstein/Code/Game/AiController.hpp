@@ -14,7 +14,7 @@ public:
 	virtual ~AiController();
 
 	virtual void Update( float deltaSeconds ) override;
-
+	virtual void RenderUI() const override;
 	void HandleMovement( float deltaSeconds );
 
 	Vec3 GetRaycastDirection() const;

@@ -602,6 +602,18 @@ void Map::Render() const
 			currActor->Render();
 		}
 	}
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
+	{
+		Actor* currActor = m_actorVector[actorIndex];
+		if ( currActor )
+		{
+			Controller* controller = currActor->GetController();
+			if ( controller && controller->IsPlayerControlled() )
+			{
+				controller->RenderUI();
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

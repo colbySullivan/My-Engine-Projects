@@ -8,6 +8,7 @@
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 PlayerController::PlayerController( Map* map, Camera* camera )
@@ -18,6 +19,8 @@ PlayerController::PlayerController( Map* map, Camera* camera )
 	, m_isFreeFlyMode( false )
 {
 	m_isCurrentlyPlayerControlled = true;
+	m_hudTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/Hud_Base.png" );
+	m_reticleTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/Reticle.png" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -30,6 +33,26 @@ void PlayerController::Update( float deltaSeconds )
 {
 	UpdateInput( deltaSeconds );
 	UpdateCamera( deltaSeconds );
+}
+
+//-----------------------------------------------------------------------------------------------
+void PlayerController::RenderUI() const
+{
+	g_engine->m_render->BeginCamera( *m_map->m_game->m_screenCamera );
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
+	std::vector<Vertex> hudVerts;
+	AddVertsForAABB2D( hudVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY * 0.15f ) ), Rgba8( 255, 255, 255 ) );
+	g_engine->m_render->BindTexture( m_hudTexture );
+	g_engine->m_render->DrawVertexArray( ( int )hudVerts.size(), hudVerts.data() );
+
+	std::vector<Vertex> reticleVerts;
+	AddVertsForAABB2D( reticleVerts, AABB2( Vec2( screenSizeX * 0.49f, screenSizeY * 0.49f ), Vec2( screenSizeX * 0.51f, screenSizeY * 0.51f ) ), Rgba8( 0, 255, 0 ) );
+	g_engine->m_render->BindTexture( m_reticleTexture );
+	g_engine->m_render->DrawVertexArray( ( int )reticleVerts.size(), reticleVerts.data() );
+
+	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->EndCamera( *m_map->m_game->m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------

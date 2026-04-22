@@ -84,6 +84,7 @@ public:
 	OBJModel* m_teemoModel = nullptr;
 	PlayerController* m_playerController = nullptr;
 	Camera* m_worldCamera = nullptr;
+	Camera* m_screenCamera = nullptr;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -103,7 +104,6 @@ private:
 	void PrintConsoleHelpCommands();
 
 	App*			m_app = nullptr;
-	Camera*			m_screenCamera = nullptr;
 	Texture*		m_testTexture = nullptr;
 	Shader*			m_riftShader = nullptr;
 

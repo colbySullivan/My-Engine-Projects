@@ -13,7 +13,7 @@ public:
 	virtual ~Controller();
 
 	virtual void Update( float deltaSeconds ) = 0;
-
+	virtual void RenderUI() const = 0;
 	void Possess( Actor* actor );
 	void Unpossess();
 	Actor* GetActor() const;

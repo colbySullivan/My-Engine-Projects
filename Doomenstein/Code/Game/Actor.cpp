@@ -240,7 +240,7 @@ void Actor::CreateSpawnPoint()
 void Actor::CreateProjectile( std::string name )
 {
 	m_actorDef = ActorDefinition::GetByName( name );
-	m_actorHandle = m_game->m_playerController->GetActorHandle();
+	//m_actorHandle = m_game->m_playerController->GetActorHandle();
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
 	m_health = 1;

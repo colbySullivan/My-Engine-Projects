@@ -6,6 +6,7 @@
 Controller::Controller( Map* map )
 	: m_actorHandle( ActorHandle::INVALID )
 	, m_map( map )
+	, m_isCurrentlyPlayerControlled( false )
 {
 }
 
