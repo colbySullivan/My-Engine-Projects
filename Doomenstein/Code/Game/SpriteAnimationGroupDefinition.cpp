@@ -29,7 +29,9 @@ static void LoadSpriteAnimationDefsFromFile( char const* filePath )
 			def.m_name = actorName;
 			def.m_spriteSheetPath = xml.ParseXmlAttribute( *visualsElem, "spriteSheet", "" );
 			def.m_cellCount = xml.ParseXmlAttribute( *visualsElem, "cellCount", IntVec2( 0, 0 ) );
-			
+			std::string billboardTypeStr = xml.ParseXmlAttribute( *visualsElem, "billboardType", "WorldUpFacing" );
+			def.m_billboardType = StringToBillboardType( billboardTypeStr );
+
 			XmlElement* animGroupElem = visualsElem->FirstChildElement( "AnimationGroup" );
 			while ( animGroupElem )
 			{
@@ -84,4 +86,15 @@ const SpriteAnimationDefinition* SpriteAnimationDefinition::GetByName( const std
 
 	const SpriteAnimationDefinition& foundDefinition = it->second;
 	return &foundDefinition;
+}
+
+//-----------------------------------------------------------------------------------------------
+BillboardType StringToBillboardType( const std::string& typeStr )
+{
+	auto it = s_billboardTypeMap.find( typeStr );
+	if ( it != s_billboardTypeMap.end() )
+	{
+		return it->second;
+	}
+	return BillboardType::FULL_FACING;
 }

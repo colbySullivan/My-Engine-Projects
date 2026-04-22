@@ -11,6 +11,9 @@
 #include "Controller.hpp"
 #include "WeaponDefinition.hpp"
 #include "Engine/Core/Timer.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
+#include "SpriteAnimationGroupDefinition.hpp"
 
 struct EulerAngles;
 class Game;
@@ -95,6 +98,13 @@ private:
 	int m_currentWeaponIndex = 0;
 	Timer* m_weaponRefireTimer = nullptr;
 
+	SpriteSheet* m_explosionSpriteSheet = nullptr;
+	SpriteAnimDefinition* m_explosionAnim = nullptr;
+	float m_frameTimeEntity = 0.f;
+	
+	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
+	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
+	
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
 	void CreatePlayer();
 	void CreateDemon();

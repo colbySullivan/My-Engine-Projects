@@ -3,6 +3,8 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Player.hpp"
+#include "Game/SpriteAnimationGroupDefinition.hpp"
+#include "Engine/Core/VertexUtils.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
@@ -79,6 +81,8 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		UpdateDeathAnimation( deltaSeconds );
 	}
+	
+	m_frameTimeEntity += deltaSeconds;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -89,21 +93,63 @@ void Actor::Render() const
 		return;
 	}
 
-	Mat44 modelToWorld = GetModelToWorldTransform();
-	g_engine->m_render->BindShader( nullptr );
+	if ( m_explosionAnim && m_explosionSpriteSheet )
+	{
+		Mat44 modelToWorld = GetModelToWorldTransform();
+		Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
+		g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
+		g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+		g_engine->m_render->BindTexture( m_texture );
+		g_engine->m_render->BindShader( nullptr );
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 
-	Rgba8 tintColor = m_isDead ? Rgba8( 64, 64, 64, 255 ) : Rgba8( 255, 255, 255, 255 );
-	g_engine->m_render->SetModelConstants( modelToWorld, tintColor );
+		const SpriteDefinition& explosionSprite = m_explosionAnim->GetSpriteDefAtTime( m_frameTimeEntity );
 
-	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
-	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
-	g_engine->m_render->BindTexture( m_texture );
-	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
+		std::vector<Vertex> billboardVerts;
 
-	Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
-	g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
-	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-	g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
+		Vec2 explosionMins, explosionMaxs;
+		explosionSprite.GetUVs( explosionMins, explosionMaxs );
+
+		float spriteHeight = m_actorDef ? m_actorDef->m_eyeHeight : m_height * 0.5f;
+		//Vec3 spriteCenter = Vec3( m_position.x, m_position.y, m_position.z + spriteHeight );
+		Vec3 spriteCenter = Vec3( 0.f, 0.f, 0.f + spriteHeight );
+
+		// Create billboard quad centered at origin (relative to sprite center)
+		Vec3 mins3D = Vec3( 0.f, -0.5f, -0.5f );
+		Vec3 maxs3D = Vec3( 0.f, 0.5f, 0.5f );
+		AABB3 billboardBox( mins3D, maxs3D );
+
+		AABB2 explosionUVs( explosionMins, explosionMaxs );
+		AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
+
+		// Apply billboard transformation using worldCamera (this handles rotation and positioning)
+		BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
+		Mat44 billboardMat = GetBillboardTransform( billboardType, m_game->m_worldCamera->GetCameraToWorldTransform(), spriteCenter );
+		TransformVertexArray3D( billboardVerts, billboardMat );
+
+		g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
+		g_engine->m_render->DrawVertexArray( billboardVerts );
+		g_engine->m_render->BindTexture( nullptr );
+	}
+	else
+	{
+		Mat44 modelToWorld = GetModelToWorldTransform();
+		g_engine->m_render->BindShader( nullptr );
+
+		Rgba8 tintColor = m_isDead ? Rgba8( 64, 64, 64, 255 ) : Rgba8( 255, 255, 255, 255 );
+		g_engine->m_render->SetModelConstants( modelToWorld, tintColor );
+
+		g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
+		g_engine->m_render->BindTexture( m_texture );
+		g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
+		g_engine->m_render->BindShader( nullptr );
+
+		Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
+		g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+		g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -212,6 +258,17 @@ void Actor::CreateDemon()
 	m_health = m_actorDef->m_health;
 	m_attackTimer = new Timer( 1.f );
 	m_attackTimer->Start();
+
+	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Demon" );
+	if ( spriteAnimDef )
+	{
+		m_spriteAnimationDef = spriteAnimDef;
+		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+		m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+		m_explosionAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 3, 0.05f, SpriteAnimPlaybackType::LOOP );
+	}
 
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );

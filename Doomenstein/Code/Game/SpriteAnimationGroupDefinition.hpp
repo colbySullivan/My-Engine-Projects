@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "Engine/Math/MathUtils.hpp"
 
 enum SpriteAnimPlaybackMode
 {
@@ -29,6 +30,16 @@ struct SpriteAnimationGroupDefinition
 	std::vector<DirectionalAnimInfo> m_directionalAnims;
 };
 
+static std::map<std::string, BillboardType> s_billboardTypeMap =
+{
+	{ "FullFacing", BillboardType::FULL_FACING },
+	{ "FullOpposing", BillboardType::FULL_OPPOSING },
+	{ "WorldUpFacing", BillboardType::WORLD_UP_FACING },
+	{ "WorldUpOpposing", BillboardType::WORLD_UP_OPPOSING }
+};
+
+BillboardType StringToBillboardType( const std::string& typeStr );
+
 class SpriteAnimationDefinition
 {
 public:
@@ -41,4 +52,5 @@ public:
 	std::string m_spriteSheetPath;
 	IntVec2 m_cellCount;
 	std::vector<SpriteAnimationGroupDefinition> m_animationGroups;
+	BillboardType m_billboardType;
 };
