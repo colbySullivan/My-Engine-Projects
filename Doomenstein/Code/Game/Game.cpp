@@ -454,8 +454,6 @@ void Game::RenderUI() const
 	{
 		ownerActor = m_playerController->GetActor();
 	}
-	hudText = Stringf( "Health: %5.2f", ownerActor ? ownerActor->m_health : 0.f );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
 }

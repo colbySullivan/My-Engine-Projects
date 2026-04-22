@@ -38,6 +38,11 @@ void PlayerController::Update( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void PlayerController::RenderUI() const
 {
+	if ( m_isFreeFlyMode )
+	{
+		return;
+	}
+
 	g_engine->m_render->BeginCamera( *m_map->m_game->m_screenCamera );
 	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
 	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
@@ -50,6 +55,11 @@ void PlayerController::RenderUI() const
 	AddVertsForAABB2D( reticleVerts, AABB2( Vec2( screenSizeX * 0.49f, screenSizeY * 0.49f ), Vec2( screenSizeX * 0.51f, screenSizeY * 0.51f ) ), Rgba8( 0, 255, 0 ) );
 	g_engine->m_render->BindTexture( m_reticleTexture );
 	g_engine->m_render->DrawVertexArray( ( int )reticleVerts.size(), reticleVerts.data() );
+
+	Actor* ownerActor = GetActor();
+	std::string hudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_health : 0.f );
+	//DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	DebugAddScreenText( hudText, AABB2( Vec2( screenSizeX * 0.2f, 10.f ), Vec2( screenSizeX * 0.2f + 500.f, 50.f ) ), 100.f, Vec2( 0.f, 0.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->EndCamera( *m_map->m_game->m_screenCamera );
