@@ -272,7 +272,7 @@ void Actor::CreateDemon()
 
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	m_modelColor = Rgba8( 255, 0, 0 );
+	m_modelColor = Rgba8::WHITE;
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 	
 	Vec3 forwardNormal = Vec3( 1.f, 0.f, 0.f );
@@ -298,10 +298,22 @@ void Actor::CreateProjectile( std::string name )
 {
 	m_actorDef = ActorDefinition::GetByName( name );
 	//m_actorHandle = m_game->m_playerController->GetActorHandle();
+
+	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "PlasmaProjectile" );
+	if ( spriteAnimDef )
+	{
+		m_spriteAnimationDef = spriteAnimDef;
+		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+		m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+		m_explosionAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 3, 0.05f, SpriteAnimPlaybackType::LOOP );
+	}
+
 	m_height = m_actorDef->m_physicsHeight;
 	m_radius = m_actorDef->m_physicsRadius;
 	m_health = 1;
-	m_modelColor = Rgba8::BLUE;
+	m_modelColor = Rgba8::WHITE;
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
 	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );

@@ -73,6 +73,7 @@ static void LoadSpriteAnimationDefsFromFile( char const* filePath )
 void SpriteAnimationDefinition::InitializeSpriteAnimationDefs()
 {
 	LoadSpriteAnimationDefsFromFile( "Data/Definitions/ActorDefinitions.xml" );
+	LoadSpriteAnimationDefsFromFile( "Data/Definitions/ProjectileActorDefinitions.xml" );
 }
 
 //-----------------------------------------------------------------------------------------------
