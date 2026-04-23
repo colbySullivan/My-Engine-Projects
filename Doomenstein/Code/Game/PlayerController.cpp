@@ -43,7 +43,11 @@ void PlayerController::RenderUI() const
 		return;
 	}
 
+
 	g_engine->m_render->BeginCamera( *m_map->m_game->m_screenCamera );
+
+	RenderWeaponUI();
+
 	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
 	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
 	std::vector<Vertex> hudVerts;
@@ -355,7 +359,7 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 
 	RaycastResult3D result = m_map->RaycastAll( rayStart, rayDirection, rayRange, actor );
 
-	DebugAddWorldCylinder( rayStart, result.m_impactPos, 0.02f, 1.0f, Rgba8::BLUE, Rgba8::BLUE, DebugRenderMode::X_RAY );
+	//DebugAddWorldCylinder( rayStart, result.m_impactPos, 0.02f, 1.0f, Rgba8::BLUE, Rgba8::BLUE, DebugRenderMode::X_RAY ); 
 
 	if ( result.m_didImpact )
 	{
@@ -399,6 +403,48 @@ Actor* PlayerController::FindActorAtPosition( const Vec3& position )
 	}
 
 	return nullptr;
+}
+
+void PlayerController::RenderWeaponUI() const
+{
+	Actor* ownerActor = GetActor();
+	if ( !ownerActor )
+	{
+		return;
+	}
+
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
+
+	const WeaponDefinition* weapon = ownerActor->GetCurrentWeapon();
+	if ( !weapon || !ownerActor->m_weaponSpriteSheet || !ownerActor->m_currentWeaponAnim )
+	{
+		return;
+	}
+
+	g_engine->m_render->SetBlendMode( BlendMode::ALPHA );
+	g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
+	g_engine->m_render->BindShader( nullptr );
+
+	const SpriteDefinition& weaponSprite = ownerActor->m_currentWeaponAnim->GetSpriteDefAtTime( ( float )g_engine->m_systemClock->GetTotalSeconds() );
+
+	Vec2 uvMins, uvMaxs;
+	weaponSprite.GetUVs( uvMins, uvMaxs );
+
+	const WeaponHUDDefinition& hud = weapon->m_hud;
+	Vec2 weaponSize = hud.m_spriteSize;
+	Vec2 pivot = hud.m_spritePivot;
+
+	float weaponX = screenSizeX * 0.5f - weaponSize.x * ( pivot.x );
+	float weaponY = 100.f + weaponSize.y * pivot.y;
+
+	AABB2 weaponBounds( Vec2( weaponX, weaponY ), Vec2( weaponX + weaponSize.x, weaponY + weaponSize.y ) );
+
+	std::vector<Vertex> weaponVerts;
+	AddVertsForAABB2D( weaponVerts, weaponBounds, Rgba8::WHITE, uvMins, uvMaxs );
+
+	g_engine->m_render->BindTexture( &ownerActor->m_weaponSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( ( int )weaponVerts.size(), weaponVerts.data() );
 }
 
 //------------------------------------------------------------------------------

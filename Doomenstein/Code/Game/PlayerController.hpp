@@ -39,6 +39,7 @@ private:
 	void FireRaycastWeapon( Actor* actor, const WeaponDefinition* weaponDef, const Vec3& direction );
 	Actor* FindActorAtPosition( const Vec3& position );
 
+	void RenderWeaponUI() const;
 private:
 	Camera* m_camera;
 	Vec3		m_freeFlyCameraPosition;

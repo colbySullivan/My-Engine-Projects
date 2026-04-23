@@ -90,6 +90,10 @@ public:
 	float m_deathAnimationTime = 0.f;
 	float m_deathCameraStartHeight = 0.f;
 
+	SpriteSheet* m_weaponSpriteSheet = nullptr;
+	const SpriteAnimDefinition* m_currentWeaponAnim = nullptr;
+	bool m_isAttacking = false;
+
 private:
 	Controller* m_currentController = nullptr;
 	Controller* m_savedAIController = nullptr;
@@ -97,6 +101,7 @@ private:
 	std::vector<const WeaponDefinition*> m_weapons;
 	int m_currentWeaponIndex = 0;
 	Timer* m_weaponRefireTimer = nullptr;
+	Timer* m_weaponAnimTimer = nullptr;
 
 	SpriteSheet* m_currentSpriteSheet = nullptr;
 
@@ -114,5 +119,6 @@ private:
 	void InitializeWeapons();
 	void UpdateDeathAnimation( float deltaSeconds );
 	void RenderAnimSprite() const;
+	void UpdateWeaponAnimation();
 	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup ) const;
 };

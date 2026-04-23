@@ -83,6 +83,12 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		UpdateDeathAnimation( deltaSeconds );
 	}
+
+	if ( m_isAttacking && m_weaponAnimTimer && m_weaponAnimTimer->HasPeriodElapsed() )
+	{
+		m_isAttacking = false;
+		UpdateWeaponAnimation();
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -542,6 +548,30 @@ bool Actor::CanFireWeapon() const
 //-----------------------------------------------------------------------------------------------
 void Actor::FireWeapon()
 {
+	if ( !m_weaponDef )
+	{
+		return;
+	}
+
+	m_isAttacking = true;
+	UpdateWeaponAnimation();
+
+	const WeaponAnimationDefinition* attackAnim = m_weaponDef->GetAnimationByName( "Attack" );
+	if ( attackAnim )
+	{
+		float animDuration = ( attackAnim->m_endFrame - attackAnim->m_startFrame + 1 ) * attackAnim->m_secondsPerFrame;
+		if ( !m_weaponAnimTimer )
+		{
+			m_weaponAnimTimer = new Timer( animDuration );
+		}
+		else
+		{
+			delete m_weaponAnimTimer;
+			m_weaponAnimTimer = new Timer( animDuration );
+		}
+		m_weaponAnimTimer->Start();
+	}
+
 	if ( !CanFireWeapon() )
 	{
 		return;
@@ -665,4 +695,48 @@ const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnima
 	}
 
 	return bestMatch;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::UpdateWeaponAnimation()
+{
+    if ( !m_weaponDef )
+    {
+        return;
+    }
+
+    const WeaponAnimationDefinition* targetAnim = nullptr;
+    
+    if ( m_isAttacking )
+    {
+        targetAnim = m_weaponDef->GetAnimationByName( "Attack" );
+    }
+    else
+    {
+        targetAnim = m_weaponDef->GetAnimationByName( "Idle" );
+    }
+    
+    if ( !targetAnim )
+    {
+        return;
+    }
+
+    if ( !m_weaponSpriteSheet || m_weaponSpriteSheet->GetTexture().GetImageFilePath() != targetAnim->m_spriteSheet )
+    {
+        Texture* weaponTexture = g_engine->m_render->CreateOrGetTextureFromFile( targetAnim->m_spriteSheet.c_str() );
+        if ( m_weaponSpriteSheet )
+        {
+            delete m_weaponSpriteSheet;
+        }
+        m_weaponSpriteSheet = new SpriteSheet( *weaponTexture, targetAnim->m_cellCount );
+    }
+
+    SpriteAnimPlaybackType playbackType = m_isAttacking ? SpriteAnimPlaybackType::ONCE : SpriteAnimPlaybackType::LOOP;
+    
+    if ( m_currentWeaponAnim )
+    {
+        delete m_currentWeaponAnim;
+    }
+    
+    m_currentWeaponAnim = new SpriteAnimDefinition( *m_weaponSpriteSheet, targetAnim->m_startFrame, targetAnim->m_endFrame, targetAnim->m_secondsPerFrame, playbackType );
 }

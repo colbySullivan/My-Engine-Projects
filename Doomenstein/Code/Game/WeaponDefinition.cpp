@@ -1,4 +1,6 @@
 #include "Game/WeaponDefinition.hpp"
+#include "Engine/Core/XmlUtils.hpp"
+#include "Engine/Math/IntVec2.hpp"
 
 //-----------------------------------------------------------------------------------------------
 std::map<std::string, WeaponDefinition> WeaponDefinition::s_definitions;
@@ -42,6 +44,47 @@ void WeaponDefinition::InitializeWeaponDefs()
 		def.m_meleeDamage   = xml.ParseXmlAttribute( *weaponElem, "meleeDamage", FloatRange( 0.f, 1.f ), '~');
 		def.m_meleeImpulse  = xml.ParseXmlAttribute( *weaponElem, "meleeImpulse", 0.f );
 
+		XmlElement* hudElem = weaponElem->FirstChildElement( "HUD" );
+		if ( hudElem )
+		{
+			def.m_hud.m_shader = xml.ParseXmlAttribute( *hudElem, "shader", std::string( "Default" ) );
+			def.m_hud.m_baseTexture = xml.ParseXmlAttribute( *hudElem, "baseTexture", std::string( "" ) );
+			def.m_hud.m_reticleTexture = xml.ParseXmlAttribute( *hudElem, "reticleTexture", std::string( "" ) );
+			def.m_hud.m_reticleSize = xml.ParseXmlAttribute( *hudElem, "reticleSize", Vec2( 0.f, 0.f ) );
+			def.m_hud.m_spriteSize = xml.ParseXmlAttribute( *hudElem, "spriteSize", Vec2( 0.f, 0.f ) );
+			def.m_hud.m_spritePivot = xml.ParseXmlAttribute( *hudElem, "spritePivot", Vec2( 0.5f, 0.5f ) );
+
+			XmlElement* animElem = hudElem->FirstChildElement( "Animation" );
+			while ( animElem )
+			{
+				WeaponAnimationDefinition animDef;
+				animDef.m_name = xml.ParseXmlAttribute( *animElem, "name", std::string( "Unnamed" ) );
+				animDef.m_shader = xml.ParseXmlAttribute( *animElem, "shader", std::string( "Default" ) );
+				animDef.m_spriteSheet = xml.ParseXmlAttribute( *animElem, "spriteSheet", std::string( "" ) );
+				animDef.m_cellCount = xml.ParseXmlAttribute( *animElem, "cellCount", IntVec2( 1, 1 ) );
+				animDef.m_secondsPerFrame = xml.ParseXmlAttribute( *animElem, "secondsPerFrame", 0.1f );
+				animDef.m_startFrame = xml.ParseXmlAttribute( *animElem, "startFrame", 0 );
+				animDef.m_endFrame = xml.ParseXmlAttribute( *animElem, "endFrame", 0 );
+
+				def.m_hud.m_animations.push_back( animDef );
+				animElem = animElem->NextSiblingElement( "Animation" );
+			}
+		}
+
+		XmlElement* soundsElem = weaponElem->FirstChildElement( "Sounds" );
+		if ( soundsElem )
+		{
+			XmlElement* soundElem = soundsElem->FirstChildElement( "Sound" );
+			while ( soundElem )
+			{
+				WeaponSoundDefinition soundDef;
+				soundDef.m_soundName = xml.ParseXmlAttribute( *soundElem, "sound", std::string( "" ) );
+				soundDef.m_filePath = xml.ParseXmlAttribute( *soundElem, "name", std::string( "" ) );
+
+				def.m_sounds.push_back( soundDef );
+				soundElem = soundElem->NextSiblingElement( "Sound" );
+			}
+		}
 
 		s_definitions[def.m_name] = def;
 
@@ -60,4 +103,17 @@ const WeaponDefinition* WeaponDefinition::GetByName( const std::string& name )
 
 	const WeaponDefinition& foundDefinition = it->second;
 	return &foundDefinition;
+}
+
+//-----------------------------------------------------------------------------------------------
+const WeaponAnimationDefinition* WeaponDefinition::GetAnimationByName( const std::string& name ) const
+{
+	for ( const WeaponAnimationDefinition& anim : m_hud.m_animations )
+	{
+		if ( anim.m_name == name )
+		{
+			return &anim;
+		}
+	}
+	return nullptr;
 }
