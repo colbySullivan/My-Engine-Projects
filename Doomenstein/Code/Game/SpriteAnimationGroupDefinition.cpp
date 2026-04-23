@@ -31,6 +31,8 @@ static void LoadSpriteAnimationDefsFromFile( char const* filePath )
 			def.m_cellCount = xml.ParseXmlAttribute( *visualsElem, "cellCount", IntVec2( 0, 0 ) );
 			std::string billboardTypeStr = xml.ParseXmlAttribute( *visualsElem, "billboardType", "WorldUpFacing" );
 			def.m_billboardType = StringToBillboardType( billboardTypeStr );
+			def.m_size = xml.ParseXmlAttribute( *visualsElem, "size", Vec2( 1.0f, 1.0f ) );
+			def.m_pivot = xml.ParseXmlAttribute( *visualsElem, "pivot", Vec2( 0.5f, 0.5f ) );
 
 			XmlElement* animGroupElem = visualsElem->FirstChildElement( "AnimationGroup" );
 			while ( animGroupElem )

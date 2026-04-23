@@ -98,9 +98,8 @@ private:
 	int m_currentWeaponIndex = 0;
 	Timer* m_weaponRefireTimer = nullptr;
 
-	SpriteSheet* m_explosionSpriteSheet = nullptr;
-	SpriteAnimDefinition* m_explosionAnim = nullptr;
-	
+	SpriteSheet* m_currentSpriteSheet = nullptr;
+
 	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
 	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
 	
@@ -114,4 +113,6 @@ private:
 	void CheckIfShouldDie();
 	void InitializeWeapons();
 	void UpdateDeathAnimation( float deltaSeconds );
+	void RenderAnimSprite() const;
+	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup ) const;
 };

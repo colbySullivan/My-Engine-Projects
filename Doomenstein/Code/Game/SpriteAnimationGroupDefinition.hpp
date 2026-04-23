@@ -53,4 +53,6 @@ public:
 	IntVec2 m_cellCount;
 	std::vector<SpriteAnimationGroupDefinition> m_animationGroups;
 	BillboardType m_billboardType;
+	Vec2 m_size;
+	Vec2 m_pivot;
 };

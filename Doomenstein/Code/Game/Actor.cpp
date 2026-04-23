@@ -6,6 +6,7 @@
 #include "Game/SpriteAnimationGroupDefinition.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
@@ -92,41 +93,9 @@ void Actor::Render() const
 		return;
 	}
 
-	if ( m_explosionAnim && m_explosionSpriteSheet )
+	if ( m_currentSpriteSheet )
 	{
-		Mat44 modelToWorld = GetModelToWorldTransform();
-		Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
-		g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
-		g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
-		g_engine->m_render->BindTexture( m_texture );
-		g_engine->m_render->BindShader( nullptr );
-		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-
-		const SpriteDefinition& actorSprite = m_explosionAnim->GetSpriteDefAtTime( ( float )g_engine->m_systemClock->GetTotalSeconds() );
-
-		std::vector<Vertex> billboardVerts;
-
-		Vec2 actorUVsMin, actorUVsMax;
-		actorSprite.GetUVs( actorUVsMin, actorUVsMax );
-
-		float spriteHeight = m_actorDef ? m_actorDef->m_eyeHeight : m_height * 0.5f;
-		Vec3 spriteCenter = Vec3( m_position.x, m_position.y, m_position.z + spriteHeight );
-
-		Vec3 mins3D = Vec3( 0.f, -0.5f, -0.5f );
-		Vec3 maxs3D = Vec3( 0.f, 0.5f, 0.5f );
-		AABB3 billboardBox( mins3D, maxs3D );
-
-		AABB2 explosionUVs( actorUVsMin, actorUVsMax );
-		AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
-
-		BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
-
-		Mat44 billboardMat = GetBillboardTransform( BillboardType::WORLD_UP_FACING, m_map->m_game->m_worldCamera->GetCameraToWorldTransform(), spriteCenter );
-		//TransformVertexArray3D( billboardVerts, billboardMat );
-		g_engine->m_render->SetModelConstants(billboardMat, Rgba8::WHITE);
-		g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
-		g_engine->m_render->DrawVertexArray( billboardVerts );
-		g_engine->m_render->BindTexture( nullptr );
+		RenderAnimSprite();
 	}
 	else
 	{
@@ -234,6 +203,16 @@ void Actor::CreatePlayer()
 	m_attackTimer = new Timer( 1.f );
 	m_attackTimer->Start();
 
+	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Marine" );
+	if ( spriteAnimDef )
+	{
+		m_spriteAnimationDef = spriteAnimDef;
+		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+	}
+
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
 	m_height = m_actorDef->m_physicsHeight;
 	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
@@ -263,8 +242,7 @@ void Actor::CreateDemon()
 		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
 		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
 		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
-		m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
-		m_explosionAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 3, 0.05f, SpriteAnimPlaybackType::LOOP );
+		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
 	}
 
 	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
@@ -303,8 +281,7 @@ void Actor::CreateProjectile( std::string name )
 		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
 		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
 		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
-		m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
-		m_explosionAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 3, 0.05f, SpriteAnimPlaybackType::LOOP );
+		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
 	}
 
 	m_height = m_actorDef->m_physicsHeight;
@@ -417,6 +394,63 @@ void Actor::UpdateDeathAnimation( float deltaSeconds )
 	for ( Vertex& vertex : m_vertexes )
 	{
 		vertex.m_color.a = newAlpha;
+	}
+}
+
+void Actor::RenderAnimSprite() const
+{
+	if ( !m_spriteAnimationDef || !m_currentAnimGroup )
+	{
+		return;
+	}
+
+	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup );
+
+	if ( dirAnim )
+	{
+		int startFrame = dirAnim->startFrame;
+		int endFrame = dirAnim->endFrame;
+		float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
+
+		Mat44 modelToWorld = GetModelToWorldTransform();
+		Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
+		g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
+		g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+		g_engine->m_render->BindTexture( m_texture );
+		g_engine->m_render->BindShader( nullptr );
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+		const SpriteAnimDefinition* currentAnim = new SpriteAnimDefinition( *m_currentSpriteSheet, startFrame, endFrame, secondsPerFrame, SpriteAnimPlaybackType::LOOP );
+		const SpriteDefinition& actorSprite = currentAnim->GetSpriteDefAtTime( ( float )g_engine->m_systemClock->GetTotalSeconds() );
+
+		std::vector<Vertex> billboardVerts;
+
+		Vec2 actorUVsMin, actorUVsMax;
+		actorSprite.GetUVs( actorUVsMin, actorUVsMax );
+
+		Vec2 size = m_spriteAnimationDef->m_size;
+		Vec2 pivot = m_spriteAnimationDef->m_pivot;
+
+		float spriteBottomZ = m_position.z;
+		float spriteCenterZ = spriteBottomZ + ( size.y * pivot.y );
+		Vec3 spriteCenter = Vec3( m_position.x, m_position.y, spriteCenterZ );
+
+		float halfWidth = size.x * 0.5f;
+		float halfHeight = size.y * 0.5f;
+
+		float verticalOffset = ( 0.5f - pivot.y ) * size.y;
+		Vec3 mins3D = Vec3( 0.f, -halfWidth, -halfHeight + verticalOffset );
+		Vec3 maxs3D = Vec3( 0.f, halfWidth, halfHeight + verticalOffset );
+		AABB3 billboardBox( mins3D, maxs3D );
+
+		AABB2 explosionUVs( actorUVsMin, actorUVsMax );
+		AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
+
+		BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
+		Mat44 billboardMat = GetBillboardTransform( billboardType, m_map->m_game->m_worldCamera->GetCameraToWorldTransform(), spriteCenter );
+		g_engine->m_render->SetModelConstants( billboardMat, Rgba8::WHITE );
+		g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
+		g_engine->m_render->DrawVertexArray( billboardVerts );
+		g_engine->m_render->BindTexture( nullptr );
 	}
 }
 
@@ -593,4 +627,42 @@ void Actor::EquipPreviousWeapon()
 
 	int prevIndex = ( m_currentWeaponIndex - 1 + (int)m_weapons.size() ) % (int)m_weapons.size();
 	EquipWeapon( prevIndex );
+}
+
+const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup ) const
+{
+	if ( !animGroup || animGroup->m_directionalAnims.empty() || !m_map || !m_map->m_game->m_worldCamera )
+	{
+		return nullptr;
+	}
+
+	Mat44 cameraToWorld = m_map->m_game->m_worldCamera->GetCameraToWorldTransform();
+	Vec3 cameraForward = cameraToWorld.GetIBasis3D();
+
+	Vec3 cameraPos = m_map->m_game->m_worldCamera->GetPosition();
+	Vec3 cameraToActor = m_position - cameraPos;
+	cameraToActor.z = 0.f;
+	cameraToActor = cameraToActor.GetNormalized();
+
+	Mat44 actorToWorld = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+	Mat44 worldToActor = actorToWorld.GetOrthonormalInverse();
+	Vec3 localViewDir = worldToActor.TransformVectorQuantity3D( cameraToActor );
+
+	const DirectionalAnimInfo* bestMatch = nullptr;
+	float bestDot = -9999999.0f;
+
+	for ( const DirectionalAnimInfo& dirAnim : animGroup->m_directionalAnims )
+	{
+		Vec3 animDir = dirAnim.direction;
+		animDir = animDir.GetNormalized();
+
+		float dot = DotProduct3D( localViewDir, animDir );
+		if ( dot > bestDot )
+		{
+			bestDot = dot;
+			bestMatch = &dirAnim;
+		}
+	}
+
+	return bestMatch;
 }
