@@ -33,6 +33,11 @@ void Camera::SetPosition( const Vec3& position )
 	m_position = position;
 }
 
+Vec3 Camera::GetPosition() const
+{
+	return m_position;
+}
+
 //-----------------------------------------------------------------------------------------------
 void Camera::SetOrientation( const EulerAngles& orientation )
 {

@@ -100,7 +100,6 @@ private:
 
 	SpriteSheet* m_explosionSpriteSheet = nullptr;
 	SpriteAnimDefinition* m_explosionAnim = nullptr;
-	float m_frameTimeEntity = 0.f;
 	
 	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
 	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;

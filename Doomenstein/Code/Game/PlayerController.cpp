@@ -61,6 +61,11 @@ void PlayerController::RenderUI() const
 	//DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 	DebugAddScreenText( hudText, AABB2( Vec2( screenSizeX * 0.2f, 10.f ), Vec2( screenSizeX * 0.2f + 500.f, 50.f ) ), 100.f, Vec2( 0.f, 0.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
+	//EulerAngles cameraOrientation = m_map->m_game->m_worldCamera->GetOrientation();
+	//std::string cameraHudText = Stringf( "Camera %5.0f, %5.0f, %5.0f", cameraOrientation.m_pitchDegrees, cameraOrientation.m_yawDegrees, cameraOrientation.m_rollDegrees );
+	//DebugAddMessage( cameraHudText, 0.01f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+
+
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->EndCamera( *m_map->m_game->m_screenCamera );
 }

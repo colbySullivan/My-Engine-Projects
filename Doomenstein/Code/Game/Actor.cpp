@@ -5,6 +5,7 @@
 #include "Game/Player.hpp"
 #include "Game/SpriteAnimationGroupDefinition.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Renderer/Camera.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
@@ -81,8 +82,6 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		UpdateDeathAnimation( deltaSeconds );
 	}
-	
-	m_frameTimeEntity += deltaSeconds;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -103,30 +102,28 @@ void Actor::Render() const
 		g_engine->m_render->BindShader( nullptr );
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 
-		const SpriteDefinition& explosionSprite = m_explosionAnim->GetSpriteDefAtTime( m_frameTimeEntity );
+		const SpriteDefinition& actorSprite = m_explosionAnim->GetSpriteDefAtTime( ( float )g_engine->m_systemClock->GetTotalSeconds() );
 
 		std::vector<Vertex> billboardVerts;
 
-		Vec2 explosionMins, explosionMaxs;
-		explosionSprite.GetUVs( explosionMins, explosionMaxs );
+		Vec2 actorUVsMin, actorUVsMax;
+		actorSprite.GetUVs( actorUVsMin, actorUVsMax );
 
 		float spriteHeight = m_actorDef ? m_actorDef->m_eyeHeight : m_height * 0.5f;
-		//Vec3 spriteCenter = Vec3( m_position.x, m_position.y, m_position.z + spriteHeight );
-		Vec3 spriteCenter = Vec3( 0.f, 0.f, 0.f + spriteHeight );
+		Vec3 spriteCenter = Vec3( m_position.x, m_position.y, m_position.z + spriteHeight );
 
-		// Create billboard quad centered at origin (relative to sprite center)
 		Vec3 mins3D = Vec3( 0.f, -0.5f, -0.5f );
 		Vec3 maxs3D = Vec3( 0.f, 0.5f, 0.5f );
 		AABB3 billboardBox( mins3D, maxs3D );
 
-		AABB2 explosionUVs( explosionMins, explosionMaxs );
+		AABB2 explosionUVs( actorUVsMin, actorUVsMax );
 		AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
 
-		// Apply billboard transformation using worldCamera (this handles rotation and positioning)
 		BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
-		Mat44 billboardMat = GetBillboardTransform( billboardType, m_game->m_worldCamera->GetCameraToWorldTransform(), spriteCenter );
-		TransformVertexArray3D( billboardVerts, billboardMat );
 
+		Mat44 billboardMat = GetBillboardTransform( BillboardType::WORLD_UP_FACING, m_map->m_game->m_worldCamera->GetCameraToWorldTransform(), spriteCenter );
+		//TransformVertexArray3D( billboardVerts, billboardMat );
+		g_engine->m_render->SetModelConstants(billboardMat, Rgba8::WHITE);
 		g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
 		g_engine->m_render->DrawVertexArray( billboardVerts );
 		g_engine->m_render->BindTexture( nullptr );
