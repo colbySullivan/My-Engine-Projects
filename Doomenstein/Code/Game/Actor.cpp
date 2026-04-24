@@ -466,6 +466,7 @@ void Actor::EquipWeapon( int weaponIndex )
 	if ( weaponIndex < 0 || weaponIndex >= (int)m_weapons.size() )
 		return;
 
+	UpdateWeaponAnimation();
 	m_currentWeaponIndex = weaponIndex;
 	m_weaponDef = m_weapons[weaponIndex];
 	
@@ -646,6 +647,7 @@ void Actor::EquipNextWeapon()
 	if ( m_weapons.empty() )
 		return;
 
+	UpdateWeaponAnimation();
 	int nextIndex = ( m_currentWeaponIndex + 1 ) % m_weapons.size();
 	EquipWeapon( nextIndex );
 }
@@ -655,6 +657,7 @@ void Actor::EquipPreviousWeapon()
 	if ( m_weapons.empty() )
 		return;
 
+	UpdateWeaponAnimation();
 	int prevIndex = ( m_currentWeaponIndex - 1 + (int)m_weapons.size() ) % (int)m_weapons.size();
 	EquipWeapon( prevIndex );
 }
