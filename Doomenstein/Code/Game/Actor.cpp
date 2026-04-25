@@ -90,10 +90,16 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 	{
 		m_isAttacking = false;
 		UpdateWeaponAnimation();
+		SetCurrentAnimGroup( "Walk" );
 	}
 
 	if ( m_animTimer && m_animTimer->DecrementPeriodIfElapsed() )
 	{
+		if ( m_isAttacking && !m_weaponAnimTimer )
+		{
+			m_isAttacking = false;
+		}
+
 		if ( !m_isAttacking && !m_isDead )
 		{
 			SetCurrentAnimGroup( "Walk" );
@@ -321,7 +327,7 @@ void Actor::MoveInDirection( const Vec3& direction, float speed )
 
 void Actor::CheckIfShouldDie()
 {
-	if ( m_health <= 0.f && m_actorDef->m_simulated )
+	if ( m_health <= 0.f && m_actorDef->m_simulated && !m_isDead )
 	{
 		m_isDead = true;
 		m_deathAnimationTime = 0.f;
@@ -339,6 +345,14 @@ void Actor::CheckIfShouldDie()
 
 		m_velocity = Vec3( 0.f, 0.f, 0.f );
 		m_acceleration = Vec3( 0.f, 0.f, 0.f );
+
+		if ( m_animTimer )
+		{
+			delete m_animTimer;
+			m_animTimer = nullptr;
+		}
+
+		SetCurrentAnimGroup( "Death" );
 	}
 }
 
@@ -354,10 +368,15 @@ void Actor::Attacked( float damage, Vec3 impulse )
 	AddImpulse( impulse );
 	m_health -= (int)damage;
 	
-	//if ( !m_isDead )
-	//{
-	//	SetCurrentAnimGroup( "Hurt" );
-	//}
+	if ( m_health <= 0 )
+	{
+		return;
+	}
+	
+	if ( !m_isDead )
+	{
+		SetCurrentAnimGroup( "Hurt" );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -448,7 +467,6 @@ void Actor::RenderAnimSprite() const
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 		const SpriteAnimDefinition* currentAnim = new SpriteAnimDefinition( *m_currentSpriteSheet, startFrame, endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
 
-		// Calculate time since this animation started
 		float animElapsedTime = ( float )( g_engine->m_systemClock->GetTotalSeconds() - m_currentAnimStartTime );
 		const SpriteDefinition& actorSprite = currentAnim->GetSpriteDefAtTime( animElapsedTime );
 
@@ -606,7 +624,7 @@ void Actor::FireWeapon()
 
 	m_weaponRefireTimer->Start();
 
-	if ( !m_isDead && ( !m_currentAnimGroup || m_currentAnimGroup->m_name != "Hurt" ) )
+	if ( !m_isDead )
 	{
 		SetCurrentAnimGroup( "Attack" );
 	}
@@ -699,6 +717,11 @@ const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnima
 		return nullptr;
 	}
 
+	if ( animGroup->m_directionalAnims.size() == 1 )
+	{
+		return &animGroup->m_directionalAnims[0];
+	}
+
 	Mat44 cameraToWorld = m_map->m_game->m_worldCamera->GetCameraToWorldTransform();
 	Vec3 cameraForward = cameraToWorld.GetIBasis3D();
 
@@ -782,7 +805,7 @@ void Actor::SetCurrentAnimGroup( const std::string& groupName )
 		return;
 	}
 
-	for ( size_t i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
+	for ( int i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
 	{
 		if ( m_spriteAnimationDef->m_animationGroups[i].m_name == groupName )
 		{
@@ -797,7 +820,6 @@ void Actor::SetCurrentAnimGroup( const std::string& groupName )
 //-----------------------------------------------------------------------------------------------
 void Actor::GetCurrentAnimTimer()
 {
-
 	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup );
 
 	if ( dirAnim )
