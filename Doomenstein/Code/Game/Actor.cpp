@@ -66,6 +66,7 @@ Actor::~Actor()
 }
 
 //-----------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 void Actor::Update( [[maybe_unused]] float deltaSeconds )
 {
 	if ( m_currentController )
@@ -82,12 +83,21 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 	if ( m_isDead )
 	{
 		UpdateDeathAnimation( deltaSeconds );
+		return;
 	}
 
 	if ( m_isAttacking && m_weaponAnimTimer && m_weaponAnimTimer->HasPeriodElapsed() )
 	{
 		m_isAttacking = false;
 		UpdateWeaponAnimation();
+	}
+
+	if ( m_animTimer && m_animTimer->DecrementPeriodIfElapsed() )
+	{
+		if ( !m_isAttacking && !m_isDead )
+		{
+			SetCurrentAnimGroup( "Walk" );
+		}
 	}
 }
 
@@ -343,6 +353,11 @@ void Actor::Attacked( float damage, Vec3 impulse )
 {
 	AddImpulse( impulse );
 	m_health -= (int)damage;
+	
+	//if ( !m_isDead )
+	//{
+	//	SetCurrentAnimGroup( "Hurt" );
+	//}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -392,6 +407,11 @@ void Actor::UpdateDeathAnimation( float deltaSeconds )
 		return;
 	}
 
+	if ( !m_currentAnimGroup || m_currentAnimGroup->m_name != "Death" )
+	{
+		SetCurrentAnimGroup( "Death" );
+	}
+
 	m_deathAnimationTime += deltaSeconds;
 
 	float elapsedFraction = (float)m_corpseTimer->GetElapsedFraction();
@@ -403,6 +423,7 @@ void Actor::UpdateDeathAnimation( float deltaSeconds )
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void Actor::RenderAnimSprite() const
 {
 	if ( !m_spriteAnimationDef || !m_currentAnimGroup )
@@ -425,8 +446,11 @@ void Actor::RenderAnimSprite() const
 		g_engine->m_render->BindTexture( m_texture );
 		g_engine->m_render->BindShader( nullptr );
 		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-		const SpriteAnimDefinition* currentAnim = new SpriteAnimDefinition( *m_currentSpriteSheet, startFrame, endFrame, secondsPerFrame, SpriteAnimPlaybackType::LOOP );
-		const SpriteDefinition& actorSprite = currentAnim->GetSpriteDefAtTime( ( float )g_engine->m_systemClock->GetTotalSeconds() );
+		const SpriteAnimDefinition* currentAnim = new SpriteAnimDefinition( *m_currentSpriteSheet, startFrame, endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
+
+		// Calculate time since this animation started
+		float animElapsedTime = ( float )( g_engine->m_systemClock->GetTotalSeconds() - m_currentAnimStartTime );
+		const SpriteDefinition& actorSprite = currentAnim->GetSpriteDefAtTime( animElapsedTime );
 
 		std::vector<Vertex> billboardVerts;
 
@@ -457,6 +481,8 @@ void Actor::RenderAnimSprite() const
 		g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
 		g_engine->m_render->DrawVertexArray( billboardVerts );
 		g_engine->m_render->BindTexture( nullptr );
+
+		delete currentAnim;
 	}
 }
 
@@ -579,6 +605,11 @@ void Actor::FireWeapon()
 	}
 
 	m_weaponRefireTimer->Start();
+
+	if ( !m_isDead && ( !m_currentAnimGroup || m_currentAnimGroup->m_name != "Hurt" ) )
+	{
+		SetCurrentAnimGroup( "Attack" );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -656,7 +687,6 @@ void Actor::EquipPreviousWeapon()
 {
 	if ( m_weapons.empty() )
 		return;
-
 	UpdateWeaponAnimation();
 	int prevIndex = ( m_currentWeaponIndex - 1 + (int)m_weapons.size() ) % (int)m_weapons.size();
 	EquipWeapon( prevIndex );
@@ -742,4 +772,49 @@ void Actor::UpdateWeaponAnimation()
     }
     
     m_currentWeaponAnim = new SpriteAnimDefinition( *m_weaponSpriteSheet, targetAnim->m_startFrame, targetAnim->m_endFrame, targetAnim->m_secondsPerFrame, playbackType );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::SetCurrentAnimGroup( const std::string& groupName )
+{
+	if ( !m_spriteAnimationDef )
+	{
+		return;
+	}
+
+	for ( size_t i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
+	{
+		if ( m_spriteAnimationDef->m_animationGroups[i].m_name == groupName )
+		{
+			m_currentAnimGroup = &m_spriteAnimationDef->m_animationGroups[i];
+			m_currentAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
+			GetCurrentAnimTimer();
+			return;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::GetCurrentAnimTimer()
+{
+
+	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup );
+
+	if ( dirAnim )
+	{
+		int startFrame = dirAnim->startFrame;
+		int endFrame = dirAnim->endFrame;
+		float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
+		float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
+		if ( !m_animTimer )
+		{
+			m_animTimer = new Timer( animDuration );
+		}
+		else
+		{
+			delete m_animTimer;
+			m_animTimer = new Timer( animDuration );
+		}
+		m_animTimer->Start();
+	}
 }

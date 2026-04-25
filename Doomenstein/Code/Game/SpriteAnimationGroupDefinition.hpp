@@ -2,17 +2,11 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/Vec3.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include <map>
 #include <string>
 #include <vector>
-#include "Engine/Math/MathUtils.hpp"
-
-enum SpriteAnimPlaybackMode
-{
-	LOOP,
-	ONCE,
-	numOfPlaybackModes
-};
 
 struct DirectionalAnimInfo
 {
@@ -26,7 +20,7 @@ struct SpriteAnimationGroupDefinition
 	std::string m_name;
 	float m_secondsPerFrame;
 	bool m_scaleBySpeed;
-	SpriteAnimPlaybackMode m_playbackMode;
+	SpriteAnimPlaybackType m_playbackMode;
 	std::vector<DirectionalAnimInfo> m_directionalAnims;
 };
 

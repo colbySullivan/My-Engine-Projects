@@ -87,6 +87,7 @@ public:
 	bool		m_canBePushed = false;
 
 	Timer* m_attackTimer = nullptr;
+	Timer* m_animTimer = nullptr;
 	float m_deathAnimationTime = 0.f;
 	float m_deathCameraStartHeight = 0.f;
 
@@ -107,6 +108,7 @@ private:
 
 	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
 	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
+	double m_currentAnimStartTime = 0.0;
 	
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
 	void CreatePlayer();
@@ -120,5 +122,7 @@ private:
 	void UpdateDeathAnimation( float deltaSeconds );
 	void RenderAnimSprite() const;
 	void UpdateWeaponAnimation();
+	void SetCurrentAnimGroup( const std::string& groupName );
+	void GetCurrentAnimTimer();
 	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup ) const;
 };

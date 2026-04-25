@@ -42,7 +42,7 @@ static void LoadSpriteAnimationDefsFromFile( char const* filePath )
 				animGroup.m_secondsPerFrame = xml.ParseXmlAttribute( *animGroupElem, "secondsPerFrame", 0.1f );
 				animGroup.m_scaleBySpeed = xml.ParseXmlAttribute( *animGroupElem, "scaleBySpeed", false );
 				std::string playbackMode = xml.ParseXmlAttribute( *animGroupElem, "playbackMode", "Loop" );
-				animGroup.m_playbackMode = ( playbackMode == "Once" ) ? SpriteAnimPlaybackMode::ONCE : SpriteAnimPlaybackMode::LOOP;
+				animGroup.m_playbackMode = ( playbackMode == "Once" ) ? SpriteAnimPlaybackType::ONCE : SpriteAnimPlaybackType::LOOP;
 				
 				XmlElement* directionElem = animGroupElem->FirstChildElement( "Direction" );
 				while ( directionElem )
