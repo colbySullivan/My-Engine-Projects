@@ -33,17 +33,17 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
 		CreatePlayer();
 	}
 
-	if ( spawnInfo.m_name == "Demon" )
+	else if ( spawnInfo.m_name == "Demon" )
 	{
 		CreateDemon();
 	}
 
-	if ( spawnInfo.m_name == "SpawnPoint" )
+	else if ( spawnInfo.m_name == "SpawnPoint" )
 	{
 		CreateSpawnPoint();
 	}
 
-	if ( spawnInfo.m_name == "PlasmaProjectile" )
+	else
 	{
 		CreateProjectile( spawnInfo.m_name );
 	}
@@ -293,10 +293,10 @@ void Actor::CreateSpawnPoint()
 //------------------------------------------------------------------------------
 void Actor::CreateProjectile( std::string name )
 {
-	m_actorDef = ActorDefinition::GetByName( name );
+	m_actorDef = ActorDefinition::GetByName( name );	
 	//m_actorHandle = m_game->m_playerController->GetActorHandle();
 
-	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "PlasmaProjectile" );
+	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( name );
 	if ( spriteAnimDef )
 	{
 		m_spriteAnimationDef = spriteAnimDef;
@@ -327,7 +327,7 @@ void Actor::MoveInDirection( const Vec3& direction, float speed )
 
 void Actor::CheckIfShouldDie()
 {
-	if ( m_health <= 0.f && m_actorDef->m_simulated && !m_isDead )
+	if ( m_health <= 0.f && !m_isDead )
 	{
 		m_isDead = true;
 		m_deathAnimationTime = 0.f;

@@ -351,7 +351,7 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 	Vec3 rayStart = actor->m_position;
 	if ( actor->m_actorDef )
 	{
-		rayStart.z += actor->m_actorDef->m_eyeHeight * 0.5f;
+		rayStart.z += actor->m_actorDef->m_eyeHeight;
 	}
 
 	Vec3 rayDirection = direction.GetNormalized();
@@ -363,11 +363,18 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 
 	if ( result.m_didImpact )
 	{
-		RaycastResult3D actorHit = m_map->RaycastWorldActors( rayStart, rayDirection, result.m_impactDist + 0.01f, actor );
+		RaycastResult3D worldHit = m_map->RaycastAll( rayStart, rayDirection, result.m_impactDist + 0.01f, actor );
 
-		if ( actorHit.m_didImpact )
+		if ( worldHit.m_didImpact )
 		{
-			Actor* hitActor = FindActorAtPosition( result.m_impactPos );
+			Actor* hitActor = m_map->FindActorAtPosition( result.m_impactPos );
+
+			SpawnInfo spawnInfo;
+			spawnInfo.m_name = hitActor ? "BloodSplatter" : weaponDef->m_projectileActorName;
+			spawnInfo.m_spawnLocation = worldHit.m_impactPos;
+			spawnInfo.m_actorOrientation = actor->m_orientation;
+
+			Actor* projectile = m_map->SpawnActor( spawnInfo );
 
 			if ( hitActor )
 			{
@@ -376,33 +383,6 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 			}
 		}
 	}
-}
-
-//------------------------------------------------------------------------------
-Actor* PlayerController::FindActorAtPosition( const Vec3& position )
-{
-	if ( !m_map )
-	{
-		return nullptr;
-	}
-
-	for ( Actor* checkActor : m_map->m_actorVector )
-	{
-		if ( !checkActor || checkActor->m_isDead )
-			continue;
-
-		Vec3 actorEnd = checkActor->m_position + Vec3( 0.f, 0.f, checkActor->m_height );
-
-		Vec3 nearestPoint = GetNearestPointOnCylinder( position, checkActor->m_position, actorEnd, checkActor->m_radius );
-		float distanceToActor = GetDistance3D( position, nearestPoint );
-
-		if ( distanceToActor < 0.1f )
-		{
-			return checkActor;
-		}
-	}
-
-	return nullptr;
 }
 
 void PlayerController::RenderWeaponUI() const

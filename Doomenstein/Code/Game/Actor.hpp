@@ -51,6 +51,7 @@ public:
 	bool CanFireWeapon() const;
 	void FireWeapon();
 	void ResetWeaponTimer();
+	void CheckIfShouldDie();
 
 	const WeaponDefinition* GetCurrentWeapon() const;
 	Controller* GetController() const;
@@ -117,7 +118,6 @@ private:
 	void CreateProjectile( std::string name );
 	void AddForce( const Vec3& force );
 	void AddImpulse( const Vec3& impulse );
-	void CheckIfShouldDie();
 	void InitializeWeapons();
 	void UpdateDeathAnimation( float deltaSeconds );
 	void RenderAnimSprite() const;

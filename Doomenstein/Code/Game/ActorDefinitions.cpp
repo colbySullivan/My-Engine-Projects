@@ -28,6 +28,7 @@ static void LoadActorDefsFromFile( char const* filePath )
 		def.m_corpseLifetime = xml.ParseXmlAttribute( *actorElem, "corpseLifetime", 0.f );
 		def.m_faction = xml.ParseXmlAttribute( *actorElem, "faction", "NEUTRAL" );
 		def.m_canBePossessed = xml.ParseXmlAttribute( *actorElem, "canBePossessed", false );
+		def.m_dieOnSpawn = xml.ParseXmlAttribute( *actorElem, "dieOnSpawn", false );
 
 		XmlElement* collElem = actorElem->FirstChildElement( "Collision" );
 		if ( collElem )
@@ -37,7 +38,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_collidesWithWorld = xml.ParseXmlAttribute( *collElem, "collidesWithWorld", false );
 			def.m_collidesWithActors = xml.ParseXmlAttribute( *collElem, "collidesWithActors", false );
 
-			// Projectile extras – present for PlasmaProjectile, default for others
 			def.m_damageOnCollide = xml.ParseXmlAttribute( *collElem, "damageOnCollide", FloatRange( 0.f, 0.f ), '~' );
 			def.m_impulseOnCollide = xml.ParseXmlAttribute( *collElem, "impulseOnCollide", 0.f );
 			def.m_dieOnCollide = xml.ParseXmlAttribute( *collElem, "dieOnCollide", false );
@@ -54,7 +54,6 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_flying = xml.ParseXmlAttribute( *physElem, "flying", false );
 		}
 
-		// AI
 		XmlElement* aiElem = actorElem->FirstChildElement( "AI" );
 		if ( aiElem )
 		{

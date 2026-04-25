@@ -59,6 +59,7 @@ public:
 
 	Actor* SpawnActor( const SpawnInfo& spawnInfo );
 	Actor* GetActorByHandle( const ActorHandle handle ) const;
+	Actor* FindActorAtPosition( const Vec3& position ) const;
 
 	RaycastResult3D RaycastAll( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
 	RaycastResult3D RaycastWorldXY( const Vec3& start, const Vec3& direction, float distance ) const;

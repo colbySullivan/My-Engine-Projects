@@ -221,7 +221,7 @@ void Map::Update()
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* currActor = m_actorVector[actorIndex];
-		if ( currActor && currActor->m_actorDef->m_simulated )
+		if ( currActor )
 		{
 			currActor->Update( deltaSeconds );
 		}
@@ -426,7 +426,7 @@ Actor* Map::SpawnProjectileFromActor( Actor* owner, const WeaponDefinition& weap
 	Vec3 spawnPos = owner->m_position;
 	if ( owner->m_actorDef )
 	{
-		spawnPos.z += owner->m_actorDef->m_eyeHeight;
+		spawnPos.z += owner->m_actorDef->m_eyeHeight * 0.5f;
 	}
 
 	spawnPos += forwardNormal * 0.5f;
@@ -647,6 +647,13 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 	newActor->m_map = this;
 	newActor->m_actorHandle = ActorHandle( m_nextActorUID++, freeIndex );
 	m_actorVector[freeIndex] = newActor;
+
+	if ( newActor->m_actorDef && newActor->m_actorDef->m_dieOnSpawn )
+	{
+		newActor->m_health = 0;
+		newActor->CheckIfShouldDie();
+	}
+
 	if ( spawnInfo.m_name == "Demon" )
 	{
 		AiController* aiController = new AiController( this, m_game->m_worldCamera );
@@ -844,7 +851,13 @@ RaycastResult3D Map::RaycastWorldActors( const Vec3& start, const Vec3& directio
 
 		RaycastResult3D currentActorHit = RaycastVsCylinder( start, direction.GetNormalized(), distance, otherActor->m_position, otherActorEnd, otherActor->m_radius );
 
-		if ( currentActorHit.m_didImpact && currentActorHit.m_impactDist < closestResult.m_impactDist )
+		Actor* hitActor = FindActorAtPosition( currentActorHit.m_impactPos );
+		if ( hitActor && !hitActor->m_actorDef->m_simulated )
+		{
+			currentActorHit.m_didImpact = false;
+		}
+
+		if ( currentActorHit.m_didImpact && currentActorHit.m_impactDist < closestResult.m_impactDist)
 		{
 			closestResult = currentActorHit;
 		}
@@ -932,4 +945,26 @@ void Map::CreateGeometry()
 		}
 	}
 	CreateBuffers();
+}
+
+//------------------------------------------------------------------------------
+Actor* Map::FindActorAtPosition( const Vec3& position ) const
+{
+	for ( Actor* checkActor : m_actorVector )
+	{
+		if ( !checkActor || checkActor->m_isDead )
+			continue;
+
+		Vec3 actorEnd = checkActor->m_position + Vec3( 0.f, 0.f, checkActor->m_height );
+
+		Vec3 nearestPoint = GetNearestPointOnCylinder( position, checkActor->m_position, actorEnd, checkActor->m_radius );
+		float distanceToActor = GetDistance3D( position, nearestPoint );
+
+		if ( distanceToActor < 0.1f )
+		{
+			return checkActor;
+		}
+	}
+
+	return nullptr;
 }
