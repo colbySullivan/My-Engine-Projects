@@ -406,7 +406,8 @@ void PlayerController::RenderWeaponUI() const
 	g_engine->m_render->SetDepthMode( DepthMode::DISABLED );
 	g_engine->m_render->BindShader( nullptr );
 
-	const SpriteDefinition& weaponSprite = ownerActor->m_currentWeaponAnim->GetSpriteDefAtTime( ( float )g_engine->m_systemClock->GetTotalSeconds() );
+	float elapsedTime = ( float )( g_engine->m_systemClock->GetTotalSeconds() - ownerActor->m_weaponAnimStartTime );
+	const SpriteDefinition& weaponSprite = ownerActor->m_currentWeaponAnim->GetSpriteDefAtTime( elapsedTime );
 
 	Vec2 uvMins, uvMaxs;
 	weaponSprite.GetUVs( uvMins, uvMaxs );

@@ -25,4 +25,14 @@
       <Sound sound="Fire" name="Data/Audio/DemonAttack.wav"/>
     </Sounds>
   </WeaponDefinition>
+	<!-- Sniper -->
+	<WeaponDefinition name="Sniper" refireTime="1.5" projectileActor="BulletHit" rayCount="1" rayCone="0.0" rayRange="100.0" rayDamage="2000.0~3000.0" rayImpulse="8.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Rifles.png" cellCount="7,7" secondsPerFrame="0.1" startFrame="0" endFrame="7" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Rifles.png" cellCount="7,7" secondsPerFrame="0.05" startFrame="18" endFrame="44"/>
+		</HUD>
+		<Sounds>
+			<Sound sound="Fire" name="Data/Audio/PistolFire.wav"/>
+		</Sounds>
+	</WeaponDefinition>
 </Definitions>

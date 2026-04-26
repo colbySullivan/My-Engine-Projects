@@ -95,6 +95,7 @@ public:
 	SpriteSheet* m_weaponSpriteSheet = nullptr;
 	const SpriteAnimDefinition* m_currentWeaponAnim = nullptr;
 	bool m_isAttacking = false;
+	double m_weaponAnimStartTime = 0.0;
 
 private:
 	Controller* m_currentController = nullptr;

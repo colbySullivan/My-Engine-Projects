@@ -795,6 +795,7 @@ void Actor::UpdateWeaponAnimation()
     }
     
     m_currentWeaponAnim = new SpriteAnimDefinition( *m_weaponSpriteSheet, targetAnim->m_startFrame, targetAnim->m_endFrame, targetAnim->m_secondsPerFrame, playbackType );
+	m_weaponAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
 }
 
 //-----------------------------------------------------------------------------------------------
