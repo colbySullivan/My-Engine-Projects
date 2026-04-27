@@ -89,4 +89,7 @@ protected:
 
 	// Max delta time. Useful for preventing large time steps when stepping in a debugger.
 	double m_maxDeltaSeconds = 0.1;
+	
+	// Default to 200 fps
+	double m_minDeltaSeconds = 0.005; 
 };

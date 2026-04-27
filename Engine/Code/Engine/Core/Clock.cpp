@@ -1,5 +1,6 @@
 #include "Engine/Core/Clock.hpp"
 #include "Engine/Core/Time.hpp"
+#include <thread>
 
 static Clock* g_systemClock = new Clock();
 
@@ -154,6 +155,13 @@ void Clock::Tick()
 	if ( deltaSeconds > m_maxDeltaSeconds )
 	{
 		deltaSeconds = m_maxDeltaSeconds;
+	}
+
+	while ( deltaSeconds < m_minDeltaSeconds )
+	{
+		std::this_thread::yield();
+		currentTimeInSeconds = GetCurrentTimeSeconds();
+		deltaSeconds = currentTimeInSeconds - m_lastUpdateTimeInSeconds;
 	}
 
 	m_lastUpdateTimeInSeconds = currentTimeInSeconds;
