@@ -251,6 +251,18 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 	{
 		localMoveDir.y -= 1.f;
 	}
+	if ( g_engine->m_input->IsKeyDown( 'E' ) )
+	{
+		m_freeFlyCameraOrientation.m_rollDegrees = 15.f;
+	}
+	else if ( g_engine->m_input->IsKeyDown( 'Q' ) )
+	{
+		m_freeFlyCameraOrientation.m_rollDegrees = -15.f;
+	}
+	else
+	{
+		m_freeFlyCameraOrientation.m_rollDegrees = 0.f;
+	}
 
 	if ( localMoveDir.GetLength() > 0.f )
 	{
