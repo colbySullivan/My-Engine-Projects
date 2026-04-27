@@ -45,9 +45,18 @@ Map::~Map()
 	delete m_indexBuffer;
 	m_indexBuffer = nullptr;
 
-	m_shader = nullptr;
-
+	delete m_lightingConstant;
 	m_lightingConstant = nullptr;
+
+	m_shader = nullptr;
+	m_texture = nullptr;
+
+	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
+	{
+		delete m_actorVector[actorIndex];
+		m_actorVector[actorIndex] = nullptr;
+	}
+	m_actorVector.clear();
 
 	m_tiles.clear();
 }
@@ -55,16 +64,20 @@ Map::~Map()
 //-----------------------------------------------------------------------------------------------
 void Map::Startup()
 {
-	m_game->m_playerController = new PlayerController( m_game->m_currentMap, m_game->m_worldCamera );
-	SpawnPlayer( m_game->m_playerController );
+	if ( m_game->m_playerController1 )
+	{
+		SpawnPlayer( m_game->m_playerController1 );
+	}
+
+	if ( m_game->m_playerController2 && m_game->m_numActivePlayers == 2 )
+	{
+		SpawnPlayer( m_game->m_playerController2 );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::Shutdown()
 {
-	delete m_game->m_playerController;
-	m_game->m_playerController = nullptr;
-
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		delete m_actorVector[actorIndex];
@@ -579,7 +592,7 @@ bool Map::IsTileSolidAtTileCoords( IntVec2 tileCoords ) const
 	return m_tiles[GetTileIndexForTileCoords( tileCoords )].IsSolid();
 }
 
-void Map::Render() const
+void Map::Render( Camera* playerCamera ) const
 {
 	if ( m_vertexBuffer == nullptr || m_indexBuffer == nullptr )
 		return;
@@ -599,10 +612,10 @@ void Map::Render() const
 		Actor* currActor = m_actorVector[actorIndex];
 		if ( currActor )
 		{
-			currActor->Render();
+			currActor->Render( playerCamera);
 		}
 	}
-	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
+	/*for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* currActor = m_actorVector[actorIndex];
 		if ( currActor )
@@ -613,7 +626,7 @@ void Map::Render() const
 				controller->RenderUI();
 			}
 		}
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -656,7 +669,7 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 
 	if ( spawnInfo.m_name == "Demon" )
 	{
-		AiController* aiController = new AiController( this, m_game->m_worldCamera );
+		AiController* aiController = new AiController( this );
 		aiController->Possess( newActor );
 	}
 	return newActor;
@@ -666,7 +679,7 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 Actor* Map::GetActorByHandle( const ActorHandle handle ) const
 {
 	unsigned int index = handle.GetIndex();
-	if ( index >= m_actorVector.size() )
+	if ( m_actorVector.empty() || index >= m_actorVector.size() )
 	{
 		return nullptr;
 	}
@@ -881,13 +894,13 @@ void Map::HandleDeath()
 				wasPlayer = true;
 			}
 
-			delete actor;
-			m_actorVector[actorIndex] = nullptr;
-
 			if ( wasPlayer )
 			{
-				SpawnPlayer( m_game->m_playerController );
+				SpawnPlayer( actor->GetController() );
 			}
+
+			delete actor;
+			m_actorVector[actorIndex] = nullptr;
 		}
 	}
 }

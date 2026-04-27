@@ -118,3 +118,15 @@ Mat44 Camera::GetProjectionMatrix() const
 	}
 	return GetPerspectiveMatrix();
 }
+
+//------------------------------------------------------------------------------
+void Camera::SetViewport( AABB2 const& viewport )
+{
+	m_viewport = viewport;
+}
+
+//------------------------------------------------------------------------------
+AABB2 Camera::GetViewport() const
+{
+	return m_viewport;
+}

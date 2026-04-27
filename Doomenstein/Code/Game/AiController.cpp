@@ -5,7 +5,7 @@
 
 
 //-----------------------------------------------------------------------------------------------
-AiController::AiController( Map* map, Camera* /*camera*/ )
+AiController::AiController( Map* map )
 	: Controller( map )
 	, m_freeFlyCameraPosition( 0.f, 0.f, 0.f )
 	, m_freeFlyCameraOrientation( 0.f, 0.f, 0.f )

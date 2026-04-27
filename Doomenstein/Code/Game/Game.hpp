@@ -82,9 +82,16 @@ public:
 	int m_currentMapNumber = 0;
 	Texture* m_teemoTexture = nullptr;
 	OBJModel* m_teemoModel = nullptr;
-	PlayerController* m_playerController = nullptr;
-	Camera* m_worldCamera = nullptr;
+	//PlayerController* m_playerController = nullptr;
+	//Camera* m_worldCamera = nullptr;
 	Camera* m_screenCamera = nullptr;
+
+	// Multiplayer
+	PlayerController* m_playerController1 = nullptr;
+	PlayerController* m_playerController2 = nullptr;
+	Camera* m_worldCamera1 = nullptr;
+	Camera* m_worldCamera2 = nullptr;
+	int m_numActivePlayers = 1;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -103,7 +110,10 @@ private:
 	void SetUpCamera();
 	void PrintConsoleHelpCommands();
 
-	App*			m_app = nullptr;
+	void SetUpMultiplayer();
+	void SetUpSinglePlayer();
+
+	App* m_app = nullptr;
 	Texture*		m_testTexture = nullptr;
 	Shader*			m_riftShader = nullptr;
 
@@ -114,8 +124,10 @@ private:
 	int				m_roundBlackHoleAmount = 2;
 	void CreateMapsFromDef();
 
-	Vec3 GetRaycastOrigin() const;
+	Vec3 GetRaycastOrigin( PlayerController* playerController ) const;
 	Vec3 GetRaycastDirection() const;
 	Mat44 GetRaycastTransform() const;
 
+	void RenderSplitScreen() const;
+	void RenderSinglePlayer() const;
 };

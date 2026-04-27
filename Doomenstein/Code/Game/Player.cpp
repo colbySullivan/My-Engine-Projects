@@ -27,7 +27,7 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
-	bool isInActorMode = m_game->m_playerController && !m_game->m_playerController->m_isFreeFlyMode;
+	bool isInActorMode = m_game->m_playerController1 && !m_game->m_playerController1->m_isFreeFlyMode;
 
 	if ( !isInActorMode )
 	{

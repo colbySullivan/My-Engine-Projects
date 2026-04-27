@@ -10,7 +10,7 @@
 class AiController : public Controller
 {
 public:
-	AiController( Map* map, Camera* camera );
+	AiController( Map* map );
 	virtual ~AiController();
 
 	virtual void Update( float deltaSeconds ) override;

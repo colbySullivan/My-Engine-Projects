@@ -29,7 +29,7 @@ public:
 	virtual ~Actor();
 
 	virtual void Update( float deltaSeconds );
-	virtual void Render() const;
+	virtual void Render( Camera* playerCamera ) const;
 	void UpdateMove();
 	void SetPosXY( float x, float y );
 	virtual Mat44 GetModelToWorldTransform() const;
@@ -120,10 +120,10 @@ private:
 	void AddForce( const Vec3& force );
 	void AddImpulse( const Vec3& impulse );
 	void InitializeWeapons();
-	void UpdateDeathAnimation( float deltaSeconds );
-	void RenderAnimSprite() const;
+	void UpdateDeathAnimation( float deltaSeconds  );
+	void RenderAnimSprite( Camera* playerCamera ) const;
 	void UpdateWeaponAnimation();
-	void SetCurrentAnimGroup( const std::string& groupName );
-	void GetCurrentAnimTimer();
-	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup ) const;
+	void SetCurrentAnimGroup( const std::string& groupName);
+	void GetCurrentAnimTimer( Camera* playerCamera );
+	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup, Camera* playerCamera ) const;
 };

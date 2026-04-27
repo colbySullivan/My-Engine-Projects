@@ -43,35 +43,38 @@ void PlayerController::RenderUI() const
 		return;
 	}
 
+	AABB2 worldViewport = m_camera->GetViewport();
 
-	g_engine->m_render->BeginCamera( *m_map->m_game->m_screenCamera );
+	Camera uiCamera;
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 1600.f );
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 900.f );
 
-	RenderWeaponUI();
+	float viewportWidth = ( worldViewport.m_maxs.x - worldViewport.m_mins.x ) * screenSizeX;
+	float viewportHeight = ( worldViewport.m_maxs.y - worldViewport.m_mins.y ) * screenSizeY;
 
-	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
-	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
+	uiCamera.SetOrthographicView( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight ) );
+	uiCamera.SetViewport( worldViewport );
+
+	g_engine->m_render->BeginCamera( uiCamera );
+
+	RenderWeaponUI( viewportWidth, viewportHeight );
+
 	std::vector<Vertex> hudVerts;
-	AddVertsForAABB2D( hudVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY * 0.15f ) ), Rgba8( 255, 255, 255 ) );
+	AddVertsForAABB2D( hudVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight * 0.15f ) ), Rgba8( 255, 255, 255 ) );
 	g_engine->m_render->BindTexture( m_hudTexture );
 	g_engine->m_render->DrawVertexArray( ( int )hudVerts.size(), hudVerts.data() );
 
 	std::vector<Vertex> reticleVerts;
-	AddVertsForAABB2D( reticleVerts, AABB2( Vec2( screenSizeX * 0.49f, screenSizeY * 0.49f ), Vec2( screenSizeX * 0.51f, screenSizeY * 0.51f ) ), Rgba8( 0, 255, 0 ) );
+	AddVertsForAABB2D( reticleVerts, AABB2( Vec2( viewportWidth * 0.49f, viewportHeight * 0.49f ), Vec2( viewportWidth * 0.51f, viewportHeight * 0.51f ) ), Rgba8( 0, 255, 0 ) );
 	g_engine->m_render->BindTexture( m_reticleTexture );
 	g_engine->m_render->DrawVertexArray( ( int )reticleVerts.size(), reticleVerts.data() );
 
 	Actor* ownerActor = GetActor();
 	std::string hudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_health : 0.f );
-	//DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-	DebugAddScreenText( hudText, AABB2( Vec2( screenSizeX * 0.2f, 10.f ), Vec2( screenSizeX * 0.2f + 500.f, 50.f ) ), 100.f, Vec2( 0.f, 0.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-
-	//EulerAngles cameraOrientation = m_map->m_game->m_worldCamera->GetOrientation();
-	//std::string cameraHudText = Stringf( "Camera %5.0f, %5.0f, %5.0f", cameraOrientation.m_pitchDegrees, cameraOrientation.m_yawDegrees, cameraOrientation.m_rollDegrees );
-	//DebugAddMessage( cameraHudText, 0.01f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
-
+	DebugAddScreenText( hudText, AABB2( Vec2( viewportWidth * 0.2f, 10.f ), Vec2( viewportWidth * 0.5f, 50.f ) ), viewportHeight * 0.1f, Vec2( 0.f, 0.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->EndCamera( *m_map->m_game->m_screenCamera );
+	g_engine->m_render->EndCamera( uiCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -81,6 +84,7 @@ void PlayerController::UpdateInput( float deltaSeconds )
 	{
 		ToggleCameraMode();
 		m_isCurrentlyPlayerControlled = !m_isCurrentlyPlayerControlled;
+		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
@@ -128,7 +132,7 @@ void PlayerController::HandleFreeFlyInput( float deltaSeconds )
 		return;
 	}
 
-	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	XboxController const& controller = g_engine->m_input->GetController(m_controllerIndex);
 	ProcessLookInput( deltaSeconds );
 
 	float moveSpeed = FREE_FLY_SPEED;
@@ -194,7 +198,7 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 	if ( !actor )
 		return;
 
-	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	XboxController const& controller = g_engine->m_input->GetController(m_controllerIndex);
 	float rightTrigger = controller.GetRightTrigger();
 
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) || rightTrigger > 0.1f )
@@ -267,7 +271,7 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 //-----------------------------------------------------------------------------------------------
 void PlayerController::ProcessLookInput( [[maybe_unused]] float deltaSeconds )
 {
-	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	XboxController const& controller = g_engine->m_input->GetController(m_controllerIndex);
 
 	Vec2 mouseDelta = g_engine->m_input->GetCursorClientDelta();
 	Vec2 lookInput = Vec2( static_cast< float >( mouseDelta.x ), static_cast< float >( mouseDelta.y ) );
@@ -385,16 +389,14 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 	}
 }
 
-void PlayerController::RenderWeaponUI() const
+//------------------------------------------------------------------------------
+void PlayerController::RenderWeaponUI( float viewportWidth, float viewportHeight ) const
 {
 	Actor* ownerActor = GetActor();
 	if ( !ownerActor )
 	{
 		return;
 	}
-
-	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
-	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
 
 	const WeaponDefinition* weapon = ownerActor->GetCurrentWeapon();
 	if ( !weapon || !ownerActor->m_weaponSpriteSheet || !ownerActor->m_currentWeaponAnim )
@@ -416,10 +418,12 @@ void PlayerController::RenderWeaponUI() const
 	Vec2 weaponSize = hud.m_spriteSize;
 	Vec2 pivot = hud.m_spritePivot;
 
-	float weaponX = screenSizeX * 0.5f - weaponSize.x * ( pivot.x );
-	float weaponY = 100.f + weaponSize.y * pivot.y;
+	Vec2 scaledWeaponSize = m_map->m_game->m_numActivePlayers == 2 ? weaponSize * 0.5f : weaponSize;
 
-	AABB2 weaponBounds( Vec2( weaponX, weaponY ), Vec2( weaponX + weaponSize.x, weaponY + weaponSize.y ) );
+	float weaponX = ( viewportWidth * 0.5f ) - ( scaledWeaponSize.x * pivot.x );
+	float weaponY = ( viewportHeight * 0.15f ) + ( scaledWeaponSize.y * pivot.y );
+
+	AABB2 weaponBounds( Vec2( weaponX, weaponY ), Vec2( weaponX + scaledWeaponSize.x, weaponY + scaledWeaponSize.y ) );
 
 	std::vector<Vertex> weaponVerts;
 	AddVertsForAABB2D( weaponVerts, weaponBounds, Rgba8::WHITE, uvMins, uvMaxs );
@@ -432,6 +436,24 @@ void PlayerController::RenderWeaponUI() const
 Vec3 PlayerController::GetCameraPosition() const
 {
 	return m_freeFlyCameraPosition;
+}
+
+//------------------------------------------------------------------------------
+void PlayerController::SetControllerIndex( int index )
+{
+	m_controllerIndex = index;
+}
+
+//------------------------------------------------------------------------------
+int PlayerController::GetControllerIndex() const
+{
+	return m_controllerIndex;
+}
+
+//------------------------------------------------------------------------------
+Camera* PlayerController::GetPlayerCamera() const
+{
+	return m_camera;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -479,7 +501,7 @@ void PlayerController::ProcessWeaponChangeInput()
 	if ( !actor )
 		return;
 
-	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	XboxController const& controller = g_engine->m_input->GetController(m_controllerIndex);
 
 	if ( g_engine->m_input->WasKeyJustPressed( '1' ) || controller.WasButtonJustPressed( XboxButtonID::X ) )
 	{

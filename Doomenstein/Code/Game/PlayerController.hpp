@@ -25,6 +25,10 @@ public:
 	Vec3 GetRaycastDirection() const;
 	Vec3 GetCameraPosition() const;
 
+	void SetControllerIndex( int index );
+	int GetControllerIndex() const;
+	Camera* GetPlayerCamera() const;
+
 	bool		m_isFreeFlyMode;
 	bool		m_canProcessPossessInput = true;
 
@@ -37,9 +41,8 @@ private:
 	void PossessNextActor();
 	void ProcessWeaponChangeInput();
 	void FireRaycastWeapon( Actor* actor, const WeaponDefinition* weaponDef, const Vec3& direction );
-	Actor* FindActorAtPosition( const Vec3& position );
+	void RenderWeaponUI( float viewportWidth, float viewportHeight ) const;
 
-	void RenderWeaponUI() const;
 private:
 	Camera* m_camera;
 	Vec3		m_freeFlyCameraPosition;
@@ -47,6 +50,7 @@ private:
 	Actor*		m_hitActor;
 	Texture* m_hudTexture = nullptr;
 	Texture* m_reticleTexture = nullptr;
+	int m_controllerIndex = 0;
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

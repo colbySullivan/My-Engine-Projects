@@ -44,7 +44,7 @@ public:
 	const Tile* GetTile( int x, int y ) const;
 
 	void Update();
-	void Render() const;
+	void Render( Camera* playerCamera ) const;
 
 	void CollideActors();
 	void CollideActorAndProjectiles( Actor* actorA, Actor* actorB );

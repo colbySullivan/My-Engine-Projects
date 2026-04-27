@@ -116,9 +116,23 @@ void Renderer::ClearScreen( Rgba8 const& clearColor )
 //------------------------------------------------------------------------------
 void Renderer::BeginCamera( Camera const& camera )
 {
+	AABB2 cameraViewport = camera.GetViewport();
+
+	IntVec2 screenDimensions = g_engine->m_window->GetClientDimensions();
+	float screenWidth = ( float )screenDimensions.x;
+	float screenHeight = ( float )screenDimensions.y;
+
+	float viewportX = cameraViewport.m_mins.x * screenWidth;
+	float viewportY = cameraViewport.m_mins.y * screenHeight;
+	float viewportWidth = ( cameraViewport.m_maxs.x - cameraViewport.m_mins.x ) * screenWidth;
+	float viewportHeight = ( cameraViewport.m_maxs.y - cameraViewport.m_mins.y ) * screenHeight;
+
 	D3D11_VIEWPORT viewport = { };
-	viewport.Width = ( float )g_engine->m_window->GetClientDimensions().x;
-	viewport.Height = ( float )g_engine->m_window->GetClientDimensions().y;
+	viewport.TopLeftX = viewportX;
+	viewport.TopLeftY = viewportY;
+	viewport.Width = viewportWidth;
+	viewport.Height = viewportHeight;
+	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	m_deviceContext->RSSetViewports( 1, &viewport );
 
@@ -379,7 +393,9 @@ Shader* Renderer::CreateOrGetShader( const char* shaderName, VertexType vertexTy
 			return m_loadedShaders[i];
 		}
 	}
-	return CreateShader( shaderName, vertexType );
+	Shader* newShader = CreateShader( shaderName, vertexType );
+	m_loadedShaders.push_back( newShader );
+	return newShader;
 }
 
 //------------------------------------------------------------------------------
@@ -784,11 +800,6 @@ BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoEx
 //------------------------------------------------------------------------------
 void Renderer::DeleteReleaseAll()
 {
-	DX_SAFE_RELEASE( m_renderTargetView );
-	DX_SAFE_RELEASE( m_swapChain );
-	DX_SAFE_RELEASE( m_deviceContext );
-	DX_SAFE_RELEASE( m_device );
-
 	for ( int i = 0; i < m_loadedShaders.size(); i++ )
 	{
 		delete m_loadedShaders[i];
@@ -807,6 +818,13 @@ void Renderer::DeleteReleaseAll()
 	m_currentTexture = nullptr;
 	m_defaultTexture = nullptr;
 
+	for ( int i = 0; i < m_loadedFonts.size(); i++ )
+	{
+		delete m_loadedFonts[i];
+		m_loadedFonts[i] = nullptr;
+	}
+	m_loadedFonts.clear();
+
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;
 
@@ -818,6 +836,11 @@ void Renderer::DeleteReleaseAll()
 
 	delete m_modelCBO;
 	m_modelCBO = nullptr;
+
+	m_blendState = nullptr;
+	m_samplerState = nullptr;
+	m_rasterizerState = nullptr;
+	m_depthStencilState = nullptr;
 
 	for ( int i = 0; i < ( int )BlendMode::COUNT; ++i )
 	{
@@ -841,6 +864,11 @@ void Renderer::DeleteReleaseAll()
 
 	DX_SAFE_RELEASE( m_depthStencilTexture );
 	DX_SAFE_RELEASE( m_depthStencilDSV );
+	DX_SAFE_RELEASE( m_renderTargetView );
+	DX_SAFE_RELEASE( m_swapChain );
+
+	DX_SAFE_RELEASE( m_deviceContext );
+	DX_SAFE_RELEASE( m_device );
 }
 
 //------------------------------------------------------------------------------

@@ -62,7 +62,34 @@ Actor::Actor( ActorDefinition* ActorDef )
 //-----------------------------------------------------------------------------------------------
 Actor::~Actor()
 {
+	delete m_attackTimer;
+	m_attackTimer = nullptr;
 
+	delete m_animTimer;
+	m_animTimer = nullptr;
+
+	delete m_weaponRefireTimer;
+	m_weaponRefireTimer = nullptr;
+
+	delete m_weaponAnimTimer;
+	m_weaponAnimTimer = nullptr;
+
+	delete m_corpseTimer;
+	m_corpseTimer = nullptr;
+
+	delete m_currentSpriteSheet;
+	m_currentSpriteSheet = nullptr;
+
+	delete m_weaponSpriteSheet;
+	m_weaponSpriteSheet = nullptr;
+
+	delete m_currentWeaponAnim;
+	m_currentWeaponAnim = nullptr;
+
+	m_currentController = nullptr;
+	m_savedAIController = nullptr;
+
+	m_texture = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -108,16 +135,16 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::Render() const
+void Actor::Render( Camera* playerCamera ) const
 {
-	if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
-	{
-		return;
-	}
+	//if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
+	//{
+	//	return; //#TODO: this is a temporary hack to render both players
+	//}
 
 	if ( m_currentSpriteSheet )
 	{
-		RenderAnimSprite();
+		RenderAnimSprite( playerCamera );
 	}
 	else
 	{
@@ -415,6 +442,7 @@ void Actor::InitializeWeapons()
 		}
 		m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
 		m_weaponRefireTimer->Start();
+		UpdateWeaponAnimation();
 	}
 }
 
@@ -443,14 +471,14 @@ void Actor::UpdateDeathAnimation( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::RenderAnimSprite() const
+void Actor::RenderAnimSprite( Camera* playerCamera ) const
 {
 	if ( !m_spriteAnimationDef || !m_currentAnimGroup )
 	{
 		return;
 	}
 
-	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup );
+	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup, playerCamera );
 
 	if ( dirAnim )
 	{
@@ -494,7 +522,7 @@ void Actor::RenderAnimSprite() const
 		AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
 
 		BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
-		Mat44 billboardMat = GetBillboardTransform( billboardType, m_map->m_game->m_worldCamera->GetCameraToWorldTransform(), spriteCenter );
+		Mat44 billboardMat = GetBillboardTransform( billboardType, playerCamera->GetCameraToWorldTransform(), spriteCenter );
 		g_engine->m_render->SetModelConstants( billboardMat, Rgba8::WHITE );
 		g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
 		g_engine->m_render->DrawVertexArray( billboardVerts );
@@ -509,6 +537,14 @@ void Actor::EquipWeapon( int weaponIndex )
 {
 	if ( weaponIndex < 0 || weaponIndex >= (int)m_weapons.size() )
 		return;
+	
+	m_isAttacking = false;
+
+	if ( m_weaponAnimTimer )
+	{
+		delete m_weaponAnimTimer;
+		m_weaponAnimTimer = nullptr;
+	}
 
 	UpdateWeaponAnimation();
 	m_currentWeaponIndex = weaponIndex;
@@ -710,9 +746,9 @@ void Actor::EquipPreviousWeapon()
 	EquipWeapon( prevIndex );
 }
 
-const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup ) const
+const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup, Camera* playerCamera ) const
 {
-	if ( !animGroup || animGroup->m_directionalAnims.empty() || !m_map || !m_map->m_game->m_worldCamera )
+	if ( !animGroup || animGroup->m_directionalAnims.empty() || !m_map || !playerCamera )
 	{
 		return nullptr;
 	}
@@ -722,10 +758,7 @@ const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnima
 		return &animGroup->m_directionalAnims[0];
 	}
 
-	Mat44 cameraToWorld = m_map->m_game->m_worldCamera->GetCameraToWorldTransform();
-	Vec3 cameraForward = cameraToWorld.GetIBasis3D();
-
-	Vec3 cameraPos = m_map->m_game->m_worldCamera->GetPosition();
+	Vec3 cameraPos = playerCamera->GetPosition();
 	Vec3 cameraToActor = m_position - cameraPos;
 	cameraToActor.z = 0.f;
 	cameraToActor = cameraToActor.GetNormalized();
@@ -812,22 +845,40 @@ void Actor::SetCurrentAnimGroup( const std::string& groupName )
 		{
 			m_currentAnimGroup = &m_spriteAnimationDef->m_animationGroups[i];
 			m_currentAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
-			GetCurrentAnimTimer();
+
+			if ( !m_currentAnimGroup->m_directionalAnims.empty() )
+			{
+				const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
+				int startFrame = dirAnim.startFrame;
+				int endFrame = dirAnim.endFrame;
+				float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
+
+				if ( !m_animTimer )
+				{
+					m_animTimer = new Timer( animDuration );
+				}
+				else
+				{
+					delete m_animTimer;
+					m_animTimer = new Timer( animDuration );
+				}
+				m_animTimer->Start();
+			}
+
 			return;
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::GetCurrentAnimTimer()
+void Actor::GetCurrentAnimTimer( Camera* playerCamera )
 {
-	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup );
+	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup, playerCamera );
 
 	if ( dirAnim )
 	{
 		int startFrame = dirAnim->startFrame;
 		int endFrame = dirAnim->endFrame;
-		float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
 		float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
 		if ( !m_animTimer )
 		{

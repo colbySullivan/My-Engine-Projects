@@ -40,6 +40,9 @@ public:
 	Mat44 GetPerspectiveMatrix() const;
 	Mat44 GetProjectionMatrix() const;
 
+	void SetViewport( AABB2 const& viewport );
+	AABB2 GetViewport() const;
+
 	// Legacy support
 	void SetOrthoView( Vec2 const& bottomLeft, Vec2 const& topRight ) { SetOrthographicView( bottomLeft, topRight ); }
 	Vec2 GetOrthoBottomLeft() const { return GetOrthographicBottomLeft(); }
@@ -62,4 +65,5 @@ protected:
 	float m_perspectiveFar;
 
 	Mat44 m_cameraToRenderTransform;
+	AABB2 m_viewport = AABB2( 0.f, 0.f, 1.f, 1.f );
 };

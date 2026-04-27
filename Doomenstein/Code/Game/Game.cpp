@@ -64,8 +64,16 @@ Game::~Game()
 	delete m_screenCamera;
 	g_engine = nullptr;
 	m_screenCamera = nullptr;
-	delete m_worldCamera;
-	m_worldCamera = nullptr;
+	delete m_worldCamera1;
+	m_worldCamera1 = nullptr;
+	delete m_worldCamera2;
+	m_worldCamera2 = nullptr;
+	delete m_playerController1;
+	m_playerController1 = nullptr;
+	delete m_playerController2;
+	m_playerController2 = nullptr;
+	delete m_gameClock;
+	m_gameClock = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -76,19 +84,27 @@ void Game::Startup()
 	CreateMapsFromDef();
 	m_isPaused = false;
 	CreateProps();
+
 	if ( m_maps.size() > 0 )
 	{
 		m_currentMapNumber = 1;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
 
-	if ( m_currentMap )
+	bool wantMultiplayer = false;
+	if ( wantMultiplayer )
 	{
-		/*m_playerController = new PlayerController( m_currentMap, m_worldCamera );
-		m_currentMap->SpawnPlayer( m_playerController );*/
-		m_currentMap->Startup();
+		SetUpMultiplayer();
+	}
+	else
+	{
+		SetUpSinglePlayer();
 	}
 
+	if ( m_currentMap )
+	{
+		m_currentMap->Startup();
+	}
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/summoner_rift.obj", g_engine->m_render ); // The world is not ready for summoners rift obj
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Veigar.obj", g_engine->m_render );
 	//m_teemoModel = LoadOBJFromFile( "Data/Textures/Summoner's Rift.obj", g_engine->m_render );
@@ -127,7 +143,20 @@ void Game::Update()
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
 		}
 		m_roundTime += deltaSeconds;
-		m_currentMap->Update();
+		if ( m_currentMap )
+		{
+			m_currentMap->Update();
+
+			if ( m_playerController1 )
+			{
+				m_playerController1->Update( deltaSeconds );
+			}
+
+			if ( m_playerController2 && m_numActivePlayers == 2 )
+			{
+				m_playerController2->Update( deltaSeconds );
+			}
+		}
 		DebugInput();
 	}
 	UpdateKeyboardInput( controller );
@@ -137,63 +166,33 @@ void Game::Update()
 //-----------------------------------------------------------------------------------------------
 void Game::Render() const
 {
-	g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->BeginCamera( *m_worldCamera );
-	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
-		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
+		g_engine->m_render->BindTexture( nullptr );
+		g_engine->m_render->BeginCamera( *m_worldCamera1 );
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+
+		Rgba8 backgroundColor = Rgba8( 0, 255, 0, 255 );
 		g_engine->m_render->ClearScreen( backgroundColor );
 		RenderAttractMode();
-	}
 
-	if ( m_currentGameState == GAMESTATE_ATTRACT )
-	{
+		g_engine->m_render->EndCamera( *m_worldCamera1 );
 		return;
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
-		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
+		Rgba8 backgroundColor = Rgba8( 0, 0, 0, 0 );
 		g_engine->m_render->ClearScreen( backgroundColor );
-		if ( m_currentMap != nullptr )
+
+		if ( m_numActivePlayers == 2 )
 		{
-			m_currentMap->Render();
+			RenderSplitScreen();
 		}
-		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
-
-		if ( m_playerController )
+		else
 		{
-			Actor* playerActor = m_playerController->GetActor();
-			if ( playerActor && playerActor->m_isDead )
-			{
-				std::vector<Vertex> overlayVerts;
-				AABB2 screenBounds( 0.f, 0.f, SCREEN_SIZE_X, SCREEN_SIZE_Y );
-				AddVertsForAABB2D( overlayVerts, screenBounds, Rgba8( 128, 128, 128, 128 ) );
-
-				g_engine->m_render->BindTexture( nullptr );
-				g_engine->m_render->DrawVertexArray( ( int )overlayVerts.size(), overlayVerts.data() );
-			}
+			RenderSinglePlayer();
 		}
-
-		/*Vec3 modelPosition = Vec3( 50.0f, 50.0f, -0.1f ); 
-		float modelScale = 0.1f;                       
-		float modelRotation = 90.f;       */             
-
-		//g_engine->m_render->BindShader( m_riftShader );
-		//Mat44 modelMatrix;
-		//modelMatrix.SetTranslation3D( modelPosition );
-		//modelMatrix.AppendScaleUniform3D( modelScale );
-		//modelMatrix.AppendXRotation( modelRotation );
-		//g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 120, 120, 120, 255 ) );
-		//g_engine->m_render->BindTexture( m_testTexture );
-		//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
-
-		g_engine->m_render->EndCamera( *m_worldCamera );
-		RenderUI();
-		DebugRenderWorld( *m_worldCamera );
-		
 	}
 
 	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
@@ -451,11 +450,11 @@ void Game::RenderUI() const
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	Actor* ownerActor = nullptr;
-	if ( m_playerController )
-	{
-		ownerActor = m_playerController->GetActor();
-	}
+	//Actor* ownerActor = nullptr;
+	//if ( m_playerController )
+	//{
+	//	ownerActor = m_playerController->GetActor();
+	//}
 
 	DebugRenderScreen( *m_screenCamera );
 }
@@ -620,12 +619,12 @@ void Game::CreateProps()
 void Game::SetUpCamera()
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( g_gameConfig->GetValue( "screenSizeX", 0.f ), g_gameConfig->GetValue( "screenSizeY", 0.f ) ) );
-	m_worldCamera = new Camera;
+	m_worldCamera1 = new Camera;
 	float aspect = ( ( float )g_engine->m_window->GetClientDimensions().x / ( float )g_engine->m_window->GetClientDimensions().y );
-	m_worldCamera->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
+	m_worldCamera1->SetPerspectiveView( aspect, 60.f, 0.1f, 100.f );
 	Mat44 cameraToRenderMatrix;
 	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
-	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
+	m_worldCamera1->SetCameraToRenderTransform( cameraToRenderMatrix );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -646,6 +645,64 @@ void Game::PrintConsoleHelpCommands()
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "================================" );
 }
 
+//------------------------------------------------------------------------------
+void Game::SetUpMultiplayer()
+{
+	m_numActivePlayers = 2;
+
+	float screenWidth = g_gameConfig->GetValue( "screenSizeX", 1600.f );
+	float screenHeight = g_gameConfig->GetValue( "screenSizeY", 900.f );
+	float halfHeight = screenHeight * 0.5f;
+	float aspectRatio = screenWidth / halfHeight;
+
+	Mat44 cameraToRenderMatrix;
+	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
+
+	//m_worldCamera1 = new Camera();
+	m_worldCamera1->SetViewport( AABB2( 0.0f, 0.5f, 1.0f, 1.0f ) );
+	m_worldCamera1->SetPerspectiveView( aspectRatio, 60.0f, 0.1f, 100.0f );
+	m_worldCamera1->SetCameraToRenderTransform( cameraToRenderMatrix );
+
+	m_worldCamera2 = new Camera();
+	m_worldCamera2->SetCameraToRenderTransform( cameraToRenderMatrix );
+	m_worldCamera2->SetViewport( AABB2( 0.0f, 0.0f, 1.0f, 0.5f ) );
+	m_worldCamera2->SetPerspectiveView( aspectRatio, 60.0f, 0.1f, 100.0f );
+	m_worldCamera2->SetCameraToRenderTransform( cameraToRenderMatrix );
+
+	m_playerController1 = new PlayerController( m_currentMap, m_worldCamera1 );
+	m_playerController1->SetControllerIndex( 0 );
+
+	m_playerController2 = new PlayerController( m_currentMap, m_worldCamera2 );
+	m_playerController2->SetControllerIndex( 1 );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::SetUpSinglePlayer()
+{
+	m_numActivePlayers = 1;
+
+	//m_worldCamera1 = new Camera();
+	m_worldCamera1->SetViewport( AABB2( 0.0f, 0.0f, 1.0f, 1.0f ) );
+
+	float screenWidth = g_gameConfig->GetValue( "screenSizeX", 1600.f );
+	float screenHeight = g_gameConfig->GetValue( "screenSizeY", 900.f );
+	float aspectRatio = screenWidth / screenHeight;
+
+	m_worldCamera1->SetPerspectiveView( aspectRatio, 60.0f, 0.1f, 100.0f );
+
+	Mat44 cameraToRenderMatrix;
+	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
+	m_worldCamera1->SetCameraToRenderTransform( cameraToRenderMatrix );
+
+	m_playerController1 = new PlayerController( m_currentMap, m_worldCamera1 );
+	m_playerController1->SetControllerIndex( 0 );
+
+	if ( m_currentMap )
+	{
+		m_currentMap->SpawnPlayer( m_playerController1 );
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 void Game::CreateMapsFromDef()
 {
@@ -656,22 +713,21 @@ void Game::CreateMapsFromDef()
 	}
 }
 //-----------------------------------------------------------------------------------------------
-Vec3 Game::GetRaycastOrigin() const
+Vec3 Game::GetRaycastOrigin( PlayerController* playerController ) const
 {
-	if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+	if ( playerController && !playerController->m_isFreeFlyMode )
 	{
-		Actor* actor = m_playerController->GetActor();
+		Actor* actor = playerController->GetActor();
 		if ( actor && actor->m_actorDef )
 		{
-			// Raycast from camera height (eye height), not from ground
 			Vec3 rayOrigin = actor->m_position;
 			rayOrigin.z += actor->m_actorDef->m_eyeHeight;
 			return rayOrigin;
 		}
 	}
-	else if ( m_playerController )
+	else if ( playerController )
 	{
-		return m_playerController->GetCameraPosition();
+		return playerController->GetCameraPosition();
 	}
 	return m_player ? m_player->m_position : Vec3( 0, 0, 0 );
 }
@@ -679,17 +735,17 @@ Vec3 Game::GetRaycastOrigin() const
 //-----------------------------------------------------------------------------------------------
 Vec3 Game::GetRaycastDirection() const
 {
-	if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+	if ( m_playerController1 && !m_playerController1->m_isFreeFlyMode )
 	{
-		Actor* actor = m_playerController->GetActor();
+		Actor* actor = m_playerController1->GetActor();
 		if ( actor )
 		{
-			return m_playerController->GetRaycastDirection();
+			return m_playerController1->GetRaycastDirection();
 		}
 	}
-	else if ( m_playerController )
+	else if ( m_playerController1 )
 	{
-		return m_playerController->GetRaycastDirection();
+		return m_playerController1->GetRaycastDirection();
 	}
 	return Vec3( 1.f, 0.f, 0.f );
 }
@@ -697,13 +753,112 @@ Vec3 Game::GetRaycastDirection() const
 //-----------------------------------------------------------------------------------------------
 Mat44 Game::GetRaycastTransform() const
 {
-	if ( m_playerController && !m_playerController->m_isFreeFlyMode )
+	if ( m_playerController1 && !m_playerController1->m_isFreeFlyMode )
 	{
-		Actor* actor = m_playerController->GetActor();
+		Actor* actor = m_playerController1->GetActor();
 		if ( actor )
 		{
 			return actor->GetModelToWorldTransform();
 		}
 	}
 	return Mat44();
+}
+
+//------------------------------------------------------------------------------
+void Game::RenderSplitScreen() const
+{
+	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+
+	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->BeginCamera( *m_worldCamera1 );
+
+	if ( m_currentMap )
+	{
+		m_currentMap->Render( m_worldCamera1 );
+	}
+
+	g_engine->m_render->EndCamera( *m_worldCamera1 );
+	DebugRenderWorld( *m_worldCamera1 );
+
+	if ( m_playerController1 )
+	{
+		m_playerController1->RenderUI();
+	}
+
+	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
+	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
+	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
+
+	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->BeginCamera( *m_worldCamera2 );
+
+	if ( m_currentMap )
+	{
+		m_currentMap->Render( m_worldCamera2 );
+	}
+
+	g_engine->m_render->EndCamera( *m_worldCamera2 );
+	DebugRenderWorld( *m_worldCamera2 );
+
+	if ( m_playerController2 )
+	{
+		m_playerController2->RenderUI();
+	}
+}
+
+//------------------------------------------------------------------------------
+void Game::RenderSinglePlayer() const
+{
+	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->BeginCamera( *m_worldCamera1 );
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+
+	if ( m_currentMap )
+	{
+		m_currentMap->Render( m_worldCamera1 );
+	}
+
+	g_engine->m_render->EndCamera( *m_worldCamera1 );
+	DebugRenderWorld( *m_worldCamera1 );
+
+	if ( m_playerController1 )
+	{
+		m_playerController1->RenderUI();
+	}
+
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
+
+	if ( m_playerController1 )
+	{
+		Actor* playerActor = m_playerController1->GetActor();
+		if ( playerActor && playerActor->m_isDead )
+		{
+			std::vector<Vertex> overlayVerts;
+			AABB2 screenBounds( 0.f, 0.f, SCREEN_SIZE_X, SCREEN_SIZE_Y );
+			AddVertsForAABB2D( overlayVerts, screenBounds, Rgba8( 128, 128, 128, 128 ) );
+
+			g_engine->m_render->BindTexture( nullptr );
+			g_engine->m_render->DrawVertexArray( ( int )overlayVerts.size(), overlayVerts.data() );
+		}
+	}
+
+	g_engine->m_render->EndCamera( *m_worldCamera1 );
+
+	DebugRenderWorld( *m_worldCamera1 );
+	RenderUI();
+
+	/*Vec3 modelPosition = Vec3( 50.0f, 50.0f, -0.1f );
+	float modelScale = 0.1f;
+	float modelRotation = 90.f;       */
+
+	//g_engine->m_render->BindShader( m_riftShader );
+	//Mat44 modelMatrix;
+	//modelMatrix.SetTranslation3D( modelPosition );
+	//modelMatrix.AppendScaleUniform3D( modelScale );
+	//modelMatrix.AppendXRotation( modelRotation );
+	//g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 120, 120, 120, 255 ) );
+	//g_engine->m_render->BindTexture( m_testTexture );
+	//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
 }
