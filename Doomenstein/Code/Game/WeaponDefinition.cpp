@@ -117,3 +117,17 @@ const WeaponAnimationDefinition* WeaponDefinition::GetAnimationByName( const std
 	}
 	return nullptr;
 }
+
+//------------------------------------------------------------------------------
+std::string WeaponDefinition::GetSoundByName( const std::string& name ) const
+{
+	for ( const WeaponSoundDefinition& soundDef : m_sounds )
+	{
+		if ( soundDef.m_soundName == name )
+		{
+			return soundDef.m_filePath;
+		}
+	}
+
+	return "";
+}

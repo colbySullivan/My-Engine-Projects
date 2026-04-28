@@ -427,8 +427,6 @@ void Actor::Attacked( float damage, Vec3 impulse )
     
     if ( !m_isDead )
     {
-		//std::string soundPath = m_actorDef->m_sounds[0].m_filePath;
-		//TryToPlaySound( g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D ) );
         TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName("Hurt"), FMOD_3D ) );
 		SetCurrentAnimGroup( "Hurt" );
     }
@@ -691,9 +689,8 @@ void Actor::FireWeapon()
 
     if ( !m_isDead )
     {
-		std::string soundPath = m_actorDef->m_sounds[m_currentWeaponIndex].m_filePath;
+		std::string soundPath = m_weaponDef->GetSoundByName("Fire");
 		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D ) );
-		//TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName( "Attack" ), FMOD_3D ) );
         SetCurrentAnimGroup( "Attack" );
     }
 }
@@ -819,18 +816,20 @@ const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnima
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::TryToPlaySound( SoundPlaybackID sound )
+void Actor::TryToPlaySound( SoundID sound )
 {
     if ( sound == MISSING_SOUND_ID )
     {
         return;
     }
+    // #Todo this is not working properly so I left a temp fix
+	//bool soundPlaying = g_engine->m_audio->IsPlaying( sound );
+ //   if ( !soundPlaying )
+ //   {
+	//	g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ) );
+	//}
+	g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ) );
 
-	bool soundPlaying = g_engine->m_audio->IsPlaying( sound );
-	if ( !soundPlaying )
-	{
-        g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ) );
-    }
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -129,5 +129,5 @@ private:
 	void SetCurrentAnimGroup( const std::string& groupName);
 	void GetCurrentAnimTimer( Camera* playerCamera );
 	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup, Camera* playerCamera ) const;
-	void TryToPlaySound( SoundPlaybackID m_hurtSound );
+	void TryToPlaySound( SoundID sound );
 };
