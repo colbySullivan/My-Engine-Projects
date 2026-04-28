@@ -10,780 +10,827 @@
 
 //-----------------------------------------------------------------------------------------------
 Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
-	: m_radius( radius )
-	, m_game( owner )
-	, m_position( start )
-	, m_start( start )
-	, m_end( end )
+    : m_radius( radius )
+    , m_game( owner )
+    , m_position( start )
+    , m_start( start )
+    , m_end( end )
 {
-	m_height = m_end.z - m_start.z;
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, radius, m_color, AABB2::ZERO_TO_ONE, numSlices );
+    m_height = m_end.z - m_start.z;
+    Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+    Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+    AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, radius, m_color, AABB2::ZERO_TO_ONE, numSlices );
 }
 
 //-----------------------------------------------------------------------------------------------
 Actor::Actor( Game* owner, SpawnInfo spawnInfo )
-	: m_game( owner )
-	, m_position( spawnInfo.m_spawnLocation )
-	, m_orientation( spawnInfo.m_actorOrientation )
+    : m_game( owner )
+    , m_position( spawnInfo.m_spawnLocation )
+    , m_orientation( spawnInfo.m_actorOrientation )
 {
-	if ( spawnInfo.m_name == "Marine" )
-	{
-		CreatePlayer();
-	}
+    if ( spawnInfo.m_name == "Marine" )
+    {
+        CreatePlayer();
+    }
 
-	else if ( spawnInfo.m_name == "Demon" )
-	{
-		CreateDemon();
-	}
+    else if ( spawnInfo.m_name == "Demon" )
+    {
+        CreateDemon();
+    }
 
-	else if ( spawnInfo.m_name == "SpawnPoint" )
-	{
-		CreateSpawnPoint();
-	}
+    else if ( spawnInfo.m_name == "SpawnPoint" )
+    {
+        CreateSpawnPoint();
+    }
 
-	else
-	{
-		CreateProjectile( spawnInfo.m_name );
-	}
-	
-	InitializeWeapons();
+    else
+    {
+        CreateProjectile( spawnInfo.m_name );
+    }
+    
+    InitializeWeapons();
 }
 
 Actor::Actor( ActorDefinition* ActorDef )
-	: m_actorDef( ActorDef )
+    : m_actorDef( ActorDef )
 {
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
+    Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+    Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
+    AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, m_color, AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
 Actor::~Actor()
 {
-	delete m_attackTimer;
-	m_attackTimer = nullptr;
+    delete m_attackTimer;
+    m_attackTimer = nullptr;
 
-	delete m_animTimer;
-	m_animTimer = nullptr;
+    delete m_animTimer;
+    m_animTimer = nullptr;
 
-	delete m_weaponRefireTimer;
-	m_weaponRefireTimer = nullptr;
+    delete m_weaponRefireTimer;
+    m_weaponRefireTimer = nullptr;
 
-	delete m_weaponAnimTimer;
-	m_weaponAnimTimer = nullptr;
+    delete m_weaponAnimTimer;
+    m_weaponAnimTimer = nullptr;
 
-	delete m_corpseTimer;
-	m_corpseTimer = nullptr;
+    delete m_corpseTimer;
+    m_corpseTimer = nullptr;
 
-	delete m_currentSpriteSheet;
-	m_currentSpriteSheet = nullptr;
+    delete m_currentSpriteSheet;
+    m_currentSpriteSheet = nullptr;
 
-	delete m_weaponSpriteSheet;
-	m_weaponSpriteSheet = nullptr;
+    delete m_weaponSpriteSheet;
+    m_weaponSpriteSheet = nullptr;
 
-	delete m_currentWeaponAnim;
-	m_currentWeaponAnim = nullptr;
+    delete m_currentWeaponAnim;
+    m_currentWeaponAnim = nullptr;
 
-	m_currentController = nullptr;
-	m_savedAIController = nullptr;
+    m_currentController = nullptr;
+    m_savedAIController = nullptr;
 
-	m_texture = nullptr;
+    m_texture = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( [[maybe_unused]] float deltaSeconds )
 {
-	if ( m_currentController )
-	{
-		m_currentController->Update( deltaSeconds );
-	}
+    if ( m_currentController )
+    {
+        m_currentController->Update( deltaSeconds );
+    }
 
-	if ( m_actorDef && m_actorDef->m_simulated && !m_isDead )
-	{
-		CheckIfShouldDie();
-		UpdateMove();
-	}
+    if ( m_actorDef && m_actorDef->m_simulated && !m_isDead )
+    {
+        CheckIfShouldDie();
+        UpdateMove();
+    }
 
-	if ( m_isDead )
-	{
-		UpdateDeathAnimation( deltaSeconds );
-		return;
-	}
+    if ( m_isDead )
+    {
+        UpdateDeathAnimation( deltaSeconds );
+        return;
+    }
 
-	if ( m_isAttacking && m_weaponAnimTimer && m_weaponAnimTimer->HasPeriodElapsed() )
-	{
-		m_isAttacking = false;
-		UpdateWeaponAnimation();
-		SetCurrentAnimGroup( "Walk" );
-	}
+    if ( m_isAttacking && m_weaponAnimTimer && m_weaponAnimTimer->HasPeriodElapsed() )
+    {
+        m_isAttacking = false;
+        UpdateWeaponAnimation();
+        SetCurrentAnimGroup( "Walk" );
+    }
 
-	if ( m_animTimer && m_animTimer->DecrementPeriodIfElapsed() )
-	{
-		if ( m_isAttacking && !m_weaponAnimTimer )
-		{
-			m_isAttacking = false;
-		}
+    if ( m_animTimer && m_animTimer->DecrementPeriodIfElapsed() )
+    {
+        if ( m_isAttacking && !m_weaponAnimTimer )
+        {
+            m_isAttacking = false;
+        }
 
-		if ( !m_isAttacking && !m_isDead )
-		{
-			SetCurrentAnimGroup( "Walk" );
-		}
-	}
+        if ( !m_isAttacking && !m_isDead )
+        {
+            SetCurrentAnimGroup( "Walk" );
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::Render( Camera* playerCamera ) const
 {
-	//if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
-	//{
-	//	return; //#TODO: this is a temporary hack to render both players
-	//}
+    //if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
+    //{
+    //	return; //#TODO: this is a temporary hack to render both players
+    //}
 
-	if ( m_currentSpriteSheet )
-	{
-		RenderAnimSprite( playerCamera );
-	}
-	else
-	{
-		Mat44 modelToWorld = GetModelToWorldTransform();
-		g_engine->m_render->BindShader( nullptr );
+    if ( m_currentSpriteSheet )
+    {
+        RenderAnimSprite( playerCamera );
+    }
+    else
+    {
+        Mat44 modelToWorld = GetModelToWorldTransform();
+        g_engine->m_render->BindShader( nullptr );
 
-		Rgba8 tintColor = m_isDead ? Rgba8( 64, 64, 64, 255 ) : Rgba8( 255, 255, 255, 255 );
-		g_engine->m_render->SetModelConstants( modelToWorld, tintColor );
+        Rgba8 tintColor = m_isDead ? Rgba8( 64, 64, 64, 255 ) : Rgba8( 255, 255, 255, 255 );
+        g_engine->m_render->SetModelConstants( modelToWorld, tintColor );
 
-		g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
-		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
-		g_engine->m_render->BindTexture( m_texture );
-		g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
-		g_engine->m_render->BindShader( nullptr );
+        g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+        g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::WIREFRAME_CULL_BACK;
+        g_engine->m_render->BindTexture( m_texture );
+        g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
+        g_engine->m_render->BindShader( nullptr );
 
-		Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
-		g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
-		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-		g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
-	}
+        Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
+        g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
+        g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+        g_engine->m_render->DrawVertexArray( ( int )m_vertexes.size(), m_vertexes.data() );
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateMove()
 {
-	float deltaSeconds =  (float) g_engine->m_systemClock->GetDeltaSeconds();
-	Vec3 dragForce = -m_velocity * m_actorDef->m_drag;
-	m_acceleration += dragForce;
-	m_velocity += m_acceleration * deltaSeconds;
-	m_position += m_velocity * deltaSeconds;
-	m_acceleration = Vec3( 0.f, 0.f, 0.f );
+    float deltaSeconds =  (float) g_engine->m_systemClock->GetDeltaSeconds();
+    Vec3 dragForce = -m_velocity * m_actorDef->m_drag;
+    m_acceleration += dragForce;
+    m_velocity += m_acceleration * deltaSeconds;
+    m_position += m_velocity * deltaSeconds;
+    m_acceleration = Vec3( 0.f, 0.f, 0.f );
 }
 
 //------------------------------------------------------------------------------
 void Actor::SetPosXY( float x, float y )
 {
-	m_position.x = x;
-	m_position.y = y;
+    m_position.x = x;
+    m_position.y = y;
 }
 
 //------------------------------------------------------------------------------
 Mat44 Actor::GetModelToWorldTransform() const
 {
-	Mat44 model = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
-	model.SetTranslation3D( m_position );
-	return model;
+    Mat44 model = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+    model.SetTranslation3D( m_position );
+    return model;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::OnPossessed( Controller* newController )
 {
-	if ( m_currentController && m_currentController != newController )
-	{
-		m_savedAIController = m_currentController;
-	}
+    if ( m_currentController && m_currentController != newController )
+    {
+        m_savedAIController = m_currentController;
+    }
 
-	m_currentController = newController;
+    m_currentController = newController;
 }
 
 //------------------------------------------------------------------------------
 void Actor::OnUnpossessed()
 {
-	m_currentController = nullptr;
+    m_currentController = nullptr;
 
-	if ( m_savedAIController )
-	{
-		m_currentController = m_savedAIController;
-		m_savedAIController = nullptr;
-	}
+    if ( m_savedAIController )
+    {
+        m_currentController = m_savedAIController;
+        m_savedAIController = nullptr;
+    }
 }
 
+//-----------------------------------------------------------------------------------------------
 bool Actor::IsPossessed() const
 {
-	return m_currentController != nullptr;
+    return m_currentController != nullptr;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::LoadActorSounds()
+{
+    std::string soundPath = m_actorDef->m_sounds[0].m_filePath;
+    g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D );
+    soundPath = m_actorDef->m_sounds[1].m_filePath;
+    g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D ); 
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::LoadWeaponSounds()
+{
+    for ( const WeaponDefinition* weapon : m_weapons )
+    {
+        for ( const WeaponSoundDefinition& soundDef : weapon->m_sounds )
+        {
+            g_engine->m_audio->CreateOrGetSound( soundDef.m_filePath, FMOD_3D );
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
 void Actor::ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds )
 {
-	if ( localMoveDir == Vec3( 0.f, 0.f, 0.f ) )
-	{
-		return;
-	}
+    if ( localMoveDir == Vec3( 0.f, 0.f, 0.f ) )
+    {
+        return;
+    }
 
-	Mat44 rotationMatrix = m_game->m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+    Mat44 rotationMatrix = m_game->m_player->m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
 
-	Vec3 forward = rotationMatrix.GetIBasis3D();
-	forward.z = 0.f;
-	Vec3 left = rotationMatrix.GetJBasis3D();
-	Vec3 up = rotationMatrix.GetKBasis3D();
+    Vec3 forward = rotationMatrix.GetIBasis3D();
+    forward.z = 0.f;
+    Vec3 left = rotationMatrix.GetJBasis3D();
+    Vec3 up = rotationMatrix.GetKBasis3D();
 
-	Vec3 worldDir = forward * localMoveDir.x + left * localMoveDir.y + up * localMoveDir.z;
-	worldDir = worldDir.GetNormalized();
+    Vec3 worldDir = forward * localMoveDir.x + left * localMoveDir.y + up * localMoveDir.z;
+    worldDir = worldDir.GetNormalized();
 
-	m_position += worldDir * speed * deltaSeconds;
+    m_position += worldDir * speed * deltaSeconds;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::CreatePlayer()
 {
-	m_actorDef = ActorDefinition::GetByName( "Marine" );
-	m_height = m_actorDef->m_physicsHeight;
-	m_radius = m_actorDef->m_physicsRadius;
-	m_health = m_actorDef->m_health;
-	m_attackTimer = new Timer( 1.f );
-	m_attackTimer->Start();
+    m_actorDef = ActorDefinition::GetByName( "Marine" );
+    m_height = m_actorDef->m_physicsHeight;
+    m_radius = m_actorDef->m_physicsRadius;
+    m_health = m_actorDef->m_health;
+    m_attackTimer = new Timer( 1.f );
+    m_attackTimer->Start();
+    LoadActorSounds();
 
-	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Marine" );
-	if ( spriteAnimDef )
-	{
-		m_spriteAnimationDef = spriteAnimDef;
-		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
-		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
-		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
-		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
-	}
+    const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Marine" );
+    if ( spriteAnimDef )
+    {
+        m_spriteAnimationDef = spriteAnimDef;
+        m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+        const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+        Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+        m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+    }
 
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	m_height = m_actorDef->m_physicsHeight;
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
-	m_modelColor = Rgba8( 0, 255, 0 );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32);
+    Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+    m_height = m_actorDef->m_physicsHeight;
+    Vec3 endZeroed = Vec3( 0.f, 0.f, m_actorDef->m_physicsHeight );
+    m_modelColor = Rgba8( 0, 255, 0 );
+    AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32);
 
-	Vec3 forwardNormal = m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
-	Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
-	Vec3 beakTip = beakBase + forwardNormal * 0.1f;
-	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.1f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+    Vec3 forwardNormal = m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+    Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
+    Vec3 beakTip = beakBase + forwardNormal * 0.1f;
+    AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.1f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::CreateDemon()
 {
-	m_actorDef =  ActorDefinition::GetByName( "Demon");
-	m_height = m_actorDef->m_physicsHeight;
-	m_radius = m_actorDef->m_physicsRadius;
-	m_health = m_actorDef->m_health;
-	m_attackTimer = new Timer( 1.f );
-	m_attackTimer->Start();
+    m_actorDef =  ActorDefinition::GetByName( "Demon");
+    m_height = m_actorDef->m_physicsHeight;
+    m_radius = m_actorDef->m_physicsRadius;
+    m_health = m_actorDef->m_health;
+    m_attackTimer = new Timer( 1.f );
+    m_attackTimer->Start();
+    LoadActorSounds();
 
-	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Demon" );
-	if ( spriteAnimDef )
-	{
-		m_spriteAnimationDef = spriteAnimDef;
-		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
-		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
-		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
-		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
-	}
+    const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Demon" );
+    if ( spriteAnimDef )
+    {
+        m_spriteAnimationDef = spriteAnimDef;
+        m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+        const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+        Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+        m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+    }
 
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	m_modelColor = Rgba8::WHITE;
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
-	
-	Vec3 forwardNormal = Vec3( 1.f, 0.f, 0.f );
-	Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
-	Vec3 beakTip = beakBase + forwardNormal * 0.1f;
-	AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.1f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+    Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+    Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+    m_modelColor = Rgba8::WHITE;
+    AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_actorDef->m_physicsRadius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+    
+    Vec3 forwardNormal = Vec3( 1.f, 0.f, 0.f );
+    Vec3 beakBase = Vec3( forwardNormal.x * m_actorDef->m_physicsRadius, forwardNormal.y * m_actorDef->m_physicsRadius, m_actorDef->m_eyeHeight );
+    Vec3 beakTip = beakBase + forwardNormal * 0.1f;
+    AddVertsForCone3D( m_vertexes, beakBase, beakTip, 0.1f, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::CreateSpawnPoint()
 {
-	m_actorDef = ActorDefinition::GetByName( "SpawnPoint" );
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
-	m_modelColor = Rgba8( 255, 255, 0 );
-	m_height = 0.f;           
-	m_radius = 0.f;           
-	m_canBePushed = false;    
+    m_actorDef = ActorDefinition::GetByName( "SpawnPoint" );
+    Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+    Vec3 endZeroed = Vec3( 0.f, 0.f, 1.0f );
+    m_modelColor = Rgba8( 255, 255, 0 );
+    m_height = 0.f;           
+    m_radius = 0.f;           
+    m_canBePushed = false;    
 }
 
 //------------------------------------------------------------------------------
 void Actor::CreateProjectile( std::string name )
 {
-	m_actorDef = ActorDefinition::GetByName( name );	
-	//m_actorHandle = m_game->m_playerController->GetActorHandle();
+    m_actorDef = ActorDefinition::GetByName( name );	
+    //m_actorHandle = m_game->m_playerController->GetActorHandle();
 
-	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( name );
-	if ( spriteAnimDef )
-	{
-		m_spriteAnimationDef = spriteAnimDef;
-		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
-		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
-		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
-		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
-	}
+    const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( name );
+    if ( spriteAnimDef )
+    {
+        m_spriteAnimationDef = spriteAnimDef;
+        m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+        const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+        Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+        m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+    }
 
-	m_height = m_actorDef->m_physicsHeight;
-	m_radius = m_actorDef->m_physicsRadius;
-	m_health = 1;
-	m_modelColor = Rgba8::WHITE;
-	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
-	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
-	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+    m_height = m_actorDef->m_physicsHeight;
+    m_radius = m_actorDef->m_physicsRadius;
+    m_health = 1;
+    m_modelColor = Rgba8::WHITE;
+    Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+    Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+    AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::MoveInDirection( const Vec3& direction, float speed )
 {
-	if ( m_isDead || !m_actorDef )
-		return;
+    if ( m_isDead || !m_actorDef )
+        return;
 
-	Vec3 moveForce = direction * speed * m_actorDef->m_drag;
-	AddForce( moveForce );
+    Vec3 moveForce = direction * speed * m_actorDef->m_drag;
+    AddForce( moveForce );
 }
 
 void Actor::CheckIfShouldDie()
 {
-	if ( m_health <= 0.f && !m_isDead )
-	{
-		m_isDead = true;
-		m_deathAnimationTime = 0.f;
+    if ( m_health <= 0.f && !m_isDead )
+    {
+        m_isDead = true;
+        m_deathAnimationTime = 0.f;
 
-		if ( m_actorDef->m_eyeHeight > 0.f )
-		{
-			m_deathCameraStartHeight = m_actorDef->m_eyeHeight;
-		}
+        if ( m_actorDef->m_eyeHeight > 0.f )
+        {
+            m_deathCameraStartHeight = m_actorDef->m_eyeHeight;
+        }
 
-		if ( !m_corpseTimer && m_actorDef->m_corpseLifetime > 0.f )
-		{
-			m_corpseTimer = new Timer( m_actorDef->m_corpseLifetime );
-			m_corpseTimer->Start();
-		}
+        if ( !m_corpseTimer && m_actorDef->m_corpseLifetime > 0.f )
+        {
+            m_corpseTimer = new Timer( m_actorDef->m_corpseLifetime );
+            m_corpseTimer->Start();
+        }
 
-		m_velocity = Vec3( 0.f, 0.f, 0.f );
-		m_acceleration = Vec3( 0.f, 0.f, 0.f );
+        m_velocity = Vec3( 0.f, 0.f, 0.f );
+        m_acceleration = Vec3( 0.f, 0.f, 0.f );
 
-		if ( m_animTimer )
-		{
-			delete m_animTimer;
-			m_animTimer = nullptr;
-		}
+        if ( m_animTimer )
+        {
+            delete m_animTimer;
+            m_animTimer = nullptr;
+        }
 
-		SetCurrentAnimGroup( "Death" );
-	}
+		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName("Death"), FMOD_3D ) );
+        SetCurrentAnimGroup( "Death" );
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 bool Actor::IsDead() const
 {
-	return m_isDead;
+    return m_isDead;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::Attacked( float damage, Vec3 impulse )
 {
-	AddImpulse( impulse );
-	m_health -= (int)damage;
-	
-	if ( m_health <= 0 )
-	{
-		return;
-	}
-	
-	if ( !m_isDead )
-	{
+    AddImpulse( impulse );
+    m_health -= (int)damage;
+    
+    if ( m_health <= 0 )
+    {
+        return;
+    }
+    
+    if ( !m_isDead )
+    {
+		//std::string soundPath = m_actorDef->m_sounds[0].m_filePath;
+		//TryToPlaySound( g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D ) );
+        TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName("Hurt"), FMOD_3D ) );
 		SetCurrentAnimGroup( "Hurt" );
-	}
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::AddForce( const Vec3& force )
 {
-	m_acceleration += force;
+    m_acceleration += force;
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::InitializeWeapons()
 {
-	if ( !m_actorDef )
-	{
-		return;
-	}
+    if ( !m_actorDef )
+    {
+        return;
+    }
 
-	m_weapons.clear();
-	
-	for ( const std::string& weaponName : m_actorDef->m_weaponNames )
-	{
-		const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( weaponName );
-		if ( weaponDef )
-		{
-			m_weapons.push_back( weaponDef );
-		}
-	}
+    m_weapons.clear();
+    
+    for ( const std::string& weaponName : m_actorDef->m_weaponNames )
+    {
+        const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( weaponName );
+        if ( weaponDef )
+        {
+            m_weapons.push_back( weaponDef );
+        }
+    }
 
-	if ( !m_weapons.empty() )
-	{
-		m_currentWeaponIndex = 0;
-		m_weaponDef = m_weapons[0];
-		
-		if ( m_weaponRefireTimer )
-		{
-			delete m_weaponRefireTimer;
-		}
-		m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
-		m_weaponRefireTimer->Start();
-		UpdateWeaponAnimation();
-	}
+    if ( !m_weapons.empty() )
+    {
+		LoadWeaponSounds();
+        m_currentWeaponIndex = 0;
+        m_weaponDef = m_weapons[0];
+        
+        if ( m_weaponRefireTimer )
+        {
+            delete m_weaponRefireTimer;
+        }
+        m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
+        m_weaponRefireTimer->Start();
+        UpdateWeaponAnimation();
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateDeathAnimation( float deltaSeconds )
 {
-	if ( !m_corpseTimer || !m_actorDef )
-	{
-		return;
-	}
+    if ( !m_corpseTimer || !m_actorDef )
+    {
+        return;
+    }
 
-	if ( !m_currentAnimGroup || m_currentAnimGroup->m_name != "Death" )
-	{
-		SetCurrentAnimGroup( "Death" );
-	}
+    if ( !m_currentAnimGroup || m_currentAnimGroup->m_name != "Death" )
+    {
+        SetCurrentAnimGroup( "Death" );
+    }
 
-	m_deathAnimationTime += deltaSeconds;
+    m_deathAnimationTime += deltaSeconds;
 
-	float elapsedFraction = (float)m_corpseTimer->GetElapsedFraction();
-	unsigned char newAlpha = ( unsigned char )( 255.f * ( 1.f - elapsedFraction ) );
-	m_modelColor.a = newAlpha;
-	for ( Vertex& vertex : m_vertexes )
-	{
-		vertex.m_color.a = newAlpha;
-	}
+    float elapsedFraction = (float)m_corpseTimer->GetElapsedFraction();
+    unsigned char newAlpha = ( unsigned char )( 255.f * ( 1.f - elapsedFraction ) );
+    m_modelColor.a = newAlpha;
+    for ( Vertex& vertex : m_vertexes )
+    {
+        vertex.m_color.a = newAlpha;
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::RenderAnimSprite( Camera* playerCamera ) const
 {
-	if ( !m_spriteAnimationDef || !m_currentAnimGroup )
-	{
-		return;
-	}
+    if ( !m_spriteAnimationDef || !m_currentAnimGroup )
+    {
+        return;
+    }
 
-	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup, playerCamera );
+    const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup, playerCamera );
 
-	if ( dirAnim )
-	{
-		int startFrame = dirAnim->startFrame;
-		int endFrame = dirAnim->endFrame;
-		float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
+    if ( dirAnim )
+    {
+        int startFrame = dirAnim->startFrame;
+        int endFrame = dirAnim->endFrame;
+        float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
 
-		Mat44 modelToWorld = GetModelToWorldTransform();
-		Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
-		g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
-		g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
-		g_engine->m_render->BindTexture( m_texture );
-		g_engine->m_render->BindShader( nullptr );
-		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-		const SpriteAnimDefinition* currentAnim = new SpriteAnimDefinition( *m_currentSpriteSheet, startFrame, endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
+        Mat44 modelToWorld = GetModelToWorldTransform();
+        Rgba8 solidColor = m_isDead ? Rgba8( m_modelColor.r / 4, m_modelColor.g / 4, m_modelColor.b / 4, 255 ) : m_modelColor;
+        g_engine->m_render->SetModelConstants( modelToWorld, solidColor );
+        g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+        g_engine->m_render->BindTexture( m_texture );
+        g_engine->m_render->BindShader( nullptr );
+        g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+        const SpriteAnimDefinition* currentAnim = new SpriteAnimDefinition( *m_currentSpriteSheet, startFrame, endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
 
-		float animElapsedTime = ( float )( g_engine->m_systemClock->GetTotalSeconds() - m_currentAnimStartTime );
-		const SpriteDefinition& actorSprite = currentAnim->GetSpriteDefAtTime( animElapsedTime );
+        float animElapsedTime = ( float )( g_engine->m_systemClock->GetTotalSeconds() - m_currentAnimStartTime );
+        const SpriteDefinition& actorSprite = currentAnim->GetSpriteDefAtTime( animElapsedTime );
 
-		std::vector<Vertex> billboardVerts;
+        std::vector<Vertex> billboardVerts;
 
-		Vec2 actorUVsMin, actorUVsMax;
-		actorSprite.GetUVs( actorUVsMin, actorUVsMax );
+        Vec2 actorUVsMin, actorUVsMax;
+        actorSprite.GetUVs( actorUVsMin, actorUVsMax );
 
-		Vec2 size = m_spriteAnimationDef->m_size;
-		Vec2 pivot = m_spriteAnimationDef->m_pivot;
+        Vec2 size = m_spriteAnimationDef->m_size;
+        Vec2 pivot = m_spriteAnimationDef->m_pivot;
 
-		float spriteBottomZ = m_position.z;
-		float spriteCenterZ = spriteBottomZ + ( size.y * pivot.y );
-		Vec3 spriteCenter = Vec3( m_position.x, m_position.y, spriteCenterZ );
+        float spriteBottomZ = m_position.z;
+        float spriteCenterZ = spriteBottomZ + ( size.y * pivot.y );
+        Vec3 spriteCenter = Vec3( m_position.x, m_position.y, spriteCenterZ );
 
-		float halfWidth = size.x * 0.5f;
-		float halfHeight = size.y * 0.5f;
+        float halfWidth = size.x * 0.5f;
+        float halfHeight = size.y * 0.5f;
 
-		float verticalOffset = ( 0.5f - pivot.y ) * size.y;
-		Vec3 mins3D = Vec3( 0.f, -halfWidth, -halfHeight + verticalOffset );
-		Vec3 maxs3D = Vec3( 0.f, halfWidth, halfHeight + verticalOffset );
-		AABB3 billboardBox( mins3D, maxs3D );
+        float verticalOffset = ( 0.5f - pivot.y ) * size.y;
+        Vec3 mins3D = Vec3( 0.f, -halfWidth, -halfHeight + verticalOffset );
+        Vec3 maxs3D = Vec3( 0.f, halfWidth, halfHeight + verticalOffset );
+        AABB3 billboardBox( mins3D, maxs3D );
 
-		AABB2 explosionUVs( actorUVsMin, actorUVsMax );
-		AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
+        AABB2 explosionUVs( actorUVsMin, actorUVsMax );
+        AddVertsForAABB3D( billboardVerts, billboardBox, Rgba8( 255, 255, 255 ), explosionUVs );
 
-		BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
-		Mat44 billboardMat = GetBillboardTransform( billboardType, playerCamera->GetCameraToWorldTransform(), spriteCenter );
-		g_engine->m_render->SetModelConstants( billboardMat, Rgba8::WHITE );
-		g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
-		g_engine->m_render->DrawVertexArray( billboardVerts );
-		g_engine->m_render->BindTexture( nullptr );
+        BillboardType billboardType = m_spriteAnimationDef->m_billboardType;
+        Mat44 billboardMat = GetBillboardTransform( billboardType, playerCamera->GetCameraToWorldTransform(), spriteCenter );
+        g_engine->m_render->SetModelConstants( billboardMat, Rgba8::WHITE );
+        g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
+        g_engine->m_render->DrawVertexArray( billboardVerts );
+        g_engine->m_render->BindTexture( nullptr );
 
-		delete currentAnim;
-	}
+        delete currentAnim;
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::EquipWeapon( int weaponIndex )
 {
-	if ( weaponIndex < 0 || weaponIndex >= (int)m_weapons.size() )
-		return;
-	
-	m_isAttacking = false;
+    if ( weaponIndex < 0 || weaponIndex >= (int)m_weapons.size() )
+        return;
+    
+    m_isAttacking = false;
 
-	if ( m_weaponAnimTimer )
-	{
-		delete m_weaponAnimTimer;
-		m_weaponAnimTimer = nullptr;
-	}
+    if ( m_weaponAnimTimer )
+    {
+        delete m_weaponAnimTimer;
+        m_weaponAnimTimer = nullptr;
+    }
 
-	UpdateWeaponAnimation();
-	m_currentWeaponIndex = weaponIndex;
-	m_weaponDef = m_weapons[weaponIndex];
-	
-	if ( m_weaponRefireTimer )
-	{
-		delete m_weaponRefireTimer;
-	}
-	m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
-	m_weaponRefireTimer->Start();
+    UpdateWeaponAnimation();
+    m_currentWeaponIndex = weaponIndex;
+    m_weaponDef = m_weapons[weaponIndex];
+    
+    if ( m_weaponRefireTimer )
+    {
+        delete m_weaponRefireTimer;
+    }
+    m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
+    m_weaponRefireTimer->Start();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::EquipWeaponByName( const std::string& weaponName )
 {
-	for ( int i = 0; i < (int)m_weapons.size(); ++i )
-	{
-		if ( m_weapons[i]->m_name == weaponName )
-		{
-			EquipWeapon( i );
-			return;
-		}
-	}
+    for ( int i = 0; i < (int)m_weapons.size(); ++i )
+    {
+        if ( m_weapons[i]->m_name == weaponName )
+        {
+            EquipWeapon( i );
+            return;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 const WeaponDefinition* Actor::GetCurrentWeapon() const
 {
-	return m_weaponDef;
+    return m_weaponDef;
 }
 
 //------------------------------------------------------------------------------
 Controller* Actor::GetController() const
 {
-	return m_currentController;
+    return m_currentController;
 }
 
 bool Actor::IsReadyToDestroy() const
 {
-	if ( !m_isDead )
-	{
-		return false;
-	}
+    if ( !m_isDead )
+    {
+        return false;
+    }
 
-	if ( !m_actorDef || m_actorDef->m_corpseLifetime <= 0.f )
-	{
-		return true;
-	}
+    if ( !m_actorDef || m_actorDef->m_corpseLifetime <= 0.f )
+    {
+        return true;
+    }
 
-	if ( m_corpseTimer && m_corpseTimer->DecrementPeriodIfElapsed() )
-	{
-		return true;
-	}
+    if ( m_corpseTimer && m_corpseTimer->DecrementPeriodIfElapsed() )
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 //-----------------------------------------------------------------------------------------------
 int Actor::GetCurrentWeaponIndex() const
 {
-	return m_currentWeaponIndex;
+    return m_currentWeaponIndex;
 }
 
 //-----------------------------------------------------------------------------------------------
 int Actor::GetWeaponCount() const
 {
-	return (int)m_weapons.size();
+    return (int)m_weapons.size();
 }
 
 //-----------------------------------------------------------------------------------------------
 bool Actor::CanFireWeapon() const
 {
-	if ( !m_weaponDef || !m_weaponRefireTimer || m_isDead )
-	{
-		return false;
-	}
-	
-	return m_weaponRefireTimer->HasPeriodElapsed();
+    if ( !m_weaponDef || !m_weaponRefireTimer || m_isDead )
+    {
+        return false;
+    }
+    
+    return m_weaponRefireTimer->HasPeriodElapsed();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::FireWeapon()
 {
-	if ( !m_weaponDef )
-	{
-		return;
-	}
+    if ( !m_weaponDef )
+    {
+        return;
+    }
 
-	m_isAttacking = true;
-	UpdateWeaponAnimation();
+    m_isAttacking = true;
+    UpdateWeaponAnimation();
 
-	const WeaponAnimationDefinition* attackAnim = m_weaponDef->GetAnimationByName( "Attack" );
-	if ( attackAnim )
-	{
-		float animDuration = ( attackAnim->m_endFrame - attackAnim->m_startFrame + 1 ) * attackAnim->m_secondsPerFrame;
-		if ( !m_weaponAnimTimer )
-		{
-			m_weaponAnimTimer = new Timer( animDuration );
-		}
-		else
-		{
-			delete m_weaponAnimTimer;
-			m_weaponAnimTimer = new Timer( animDuration );
-		}
-		m_weaponAnimTimer->Start();
-	}
+    const WeaponAnimationDefinition* attackAnim = m_weaponDef->GetAnimationByName( "Attack" );
+    if ( attackAnim )
+    {
+        float animDuration = ( attackAnim->m_endFrame - attackAnim->m_startFrame + 1 ) * attackAnim->m_secondsPerFrame;
+        if ( !m_weaponAnimTimer )
+        {
+            m_weaponAnimTimer = new Timer( animDuration );
+        }
+        else
+        {
+            delete m_weaponAnimTimer;
+            m_weaponAnimTimer = new Timer( animDuration );
+        }
+        m_weaponAnimTimer->Start();
+    }
 
-	if ( !CanFireWeapon() )
-	{
-		return;
-	}
+    if ( !CanFireWeapon() )
+    {
+        return;
+    }
 
-	m_weaponRefireTimer->Start();
+    m_weaponRefireTimer->Start();
 
-	if ( !m_isDead )
-	{
-		SetCurrentAnimGroup( "Attack" );
-	}
+    if ( !m_isDead )
+    {
+		std::string soundPath = m_actorDef->m_sounds[m_currentWeaponIndex].m_filePath;
+		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D ) );
+		//TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName( "Attack" ), FMOD_3D ) );
+        SetCurrentAnimGroup( "Attack" );
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::ResetWeaponTimer()
 {
-	if ( m_weaponRefireTimer )
-	{
-		m_weaponRefireTimer->Start();
-	}
+    if ( m_weaponRefireTimer )
+    {
+        m_weaponRefireTimer->Start();
+    }
 }
 
 //------------------------------------------------------------------------------
 void Actor::AddImpulse( const Vec3& impulse )
 {
-	m_velocity += impulse;
+    m_velocity += impulse;
 }
 
 //------------------------------------------------------------------------------
 void Actor::AttackedBy( Actor* attacker, float damage )
 {
-	Vec3 impulse = Vec3( 0.f, 0.f, 0.f );
+    Vec3 impulse = Vec3( 0.f, 0.f, 0.f );
 
-	const WeaponDefinition* attackerWeapon = attacker->GetCurrentWeapon();
-	if ( attackerWeapon )
-	{
-		if ( !attackerWeapon->m_projectileActorName.empty() )
-		{
-			const ActorDefinition* projectileActor = ActorDefinition::GetByName( attackerWeapon->m_projectileActorName );
-			if ( projectileActor )
-			{
-				impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
-				impulse *= projectileActor->m_impulseOnCollide;
-			}
-		}
-		else if ( attackerWeapon->m_meleeCount > 0 )
-		{
-			impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
-			impulse *= attackerWeapon->m_meleeImpulse;
-		}
-		else if ( attackerWeapon->m_rayCount > 0 )
-		{
-			impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
-			impulse *= attackerWeapon->m_rayImpulse;
-		}
-	}
+    const WeaponDefinition* attackerWeapon = attacker->GetCurrentWeapon();
+    if ( attackerWeapon )
+    {
+        if ( !attackerWeapon->m_projectileActorName.empty() )
+        {
+            const ActorDefinition* projectileActor = ActorDefinition::GetByName( attackerWeapon->m_projectileActorName );
+            if ( projectileActor )
+            {
+                impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+                impulse *= projectileActor->m_impulseOnCollide;
+            }
+        }
+        else if ( attackerWeapon->m_meleeCount > 0 )
+        {
+            impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+            impulse *= attackerWeapon->m_meleeImpulse;
+        }
+        else if ( attackerWeapon->m_rayCount > 0 )
+        {
+            impulse = attacker->m_orientation.GetForwardDir_IFwd_JLeft_KUp().GetNormalized();
+            impulse *= attackerWeapon->m_rayImpulse;
+        }
+    }
 
-	Attacked( damage, impulse );
+    Attacked( damage, impulse );
 
-	if ( m_currentController && attacker )
-	{
-		m_currentController->DamagedBy( attacker, damage );
-	}
+    if ( m_currentController && attacker )
+    {
+        m_currentController->DamagedBy( attacker, damage );
+    }
 }
 
 //------------------------------------------------------------------------------
 float Actor::GetDeathCameraHeight() const
 {
-	float cameraFallTimer = 1.0f;
-	float t = GetClamped( m_deathAnimationTime / cameraFallTimer, 0.f, 1.f );
-	float currentHeight = Interpolate( m_deathCameraStartHeight, 0.1f, t );
-	return currentHeight;
+    float cameraFallTimer = 1.0f;
+    float t = GetClamped( m_deathAnimationTime / cameraFallTimer, 0.f, 1.f );
+    float currentHeight = Interpolate( m_deathCameraStartHeight, 0.1f, t );
+    return currentHeight;
 }
 
 void Actor::EquipNextWeapon()
 {
-	if ( m_weapons.empty() )
-		return;
+    if ( m_weapons.empty() )
+        return;
 
-	UpdateWeaponAnimation();
-	int nextIndex = ( m_currentWeaponIndex + 1 ) % m_weapons.size();
-	EquipWeapon( nextIndex );
+    UpdateWeaponAnimation();
+    int nextIndex = ( m_currentWeaponIndex + 1 ) % m_weapons.size();
+    EquipWeapon( nextIndex );
 }
 
 void Actor::EquipPreviousWeapon()
 {
-	if ( m_weapons.empty() )
-		return;
-	UpdateWeaponAnimation();
-	int prevIndex = ( m_currentWeaponIndex - 1 + (int)m_weapons.size() ) % (int)m_weapons.size();
-	EquipWeapon( prevIndex );
+    if ( m_weapons.empty() )
+        return;
+    UpdateWeaponAnimation();
+    int prevIndex = ( m_currentWeaponIndex - 1 + (int)m_weapons.size() ) % (int)m_weapons.size();
+    EquipWeapon( prevIndex );
 }
 
 const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup, Camera* playerCamera ) const
 {
-	if ( !animGroup || animGroup->m_directionalAnims.empty() || !m_map || !playerCamera )
+    if ( !animGroup || animGroup->m_directionalAnims.empty() || !m_map || !playerCamera )
+    {
+        return nullptr;
+    }
+
+    if ( animGroup->m_directionalAnims.size() == 1 )
+    {
+        return &animGroup->m_directionalAnims[0];
+    }
+
+    Vec3 cameraPos = playerCamera->GetPosition();
+    Vec3 cameraToActor = m_position - cameraPos;
+    cameraToActor.z = 0.f;
+    cameraToActor = cameraToActor.GetNormalized();
+
+    Mat44 actorToWorld = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
+    Mat44 worldToActor = actorToWorld.GetOrthonormalInverse();
+    Vec3 localViewDir = worldToActor.TransformVectorQuantity3D( cameraToActor );
+
+    const DirectionalAnimInfo* bestMatchAnim = nullptr;
+    float bestDot = -9999999.0f;
+
+    for ( const DirectionalAnimInfo& dirAnim : animGroup->m_directionalAnims )
+    {
+        Vec3 animDir = dirAnim.direction;
+        animDir = animDir.GetNormalized();
+
+        float dot = DotProduct3D( localViewDir, animDir );
+        if ( dot > bestDot )
+        {
+            bestDot = dot;
+            bestMatchAnim = &dirAnim;
+        }
+    }
+
+    return bestMatchAnim;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::TryToPlaySound( SoundPlaybackID sound )
+{
+    if ( sound == MISSING_SOUND_ID )
+    {
+        return;
+    }
+
+	bool soundPlaying = g_engine->m_audio->IsPlaying( sound );
+	if ( !soundPlaying )
 	{
-		return nullptr;
-	}
-
-	if ( animGroup->m_directionalAnims.size() == 1 )
-	{
-		return &animGroup->m_directionalAnims[0];
-	}
-
-	Vec3 cameraPos = playerCamera->GetPosition();
-	Vec3 cameraToActor = m_position - cameraPos;
-	cameraToActor.z = 0.f;
-	cameraToActor = cameraToActor.GetNormalized();
-
-	Mat44 actorToWorld = m_orientation.GetAsMatrix_IFwd_JLeft_KUp();
-	Mat44 worldToActor = actorToWorld.GetOrthonormalInverse();
-	Vec3 localViewDir = worldToActor.TransformVectorQuantity3D( cameraToActor );
-
-	const DirectionalAnimInfo* bestMatch = nullptr;
-	float bestDot = -9999999.0f;
-
-	for ( const DirectionalAnimInfo& dirAnim : animGroup->m_directionalAnims )
-	{
-		Vec3 animDir = dirAnim.direction;
-		animDir = animDir.GetNormalized();
-
-		float dot = DotProduct3D( localViewDir, animDir );
-		if ( dot > bestDot )
-		{
-			bestDot = dot;
-			bestMatch = &dirAnim;
-		}
-	}
-
-	return bestMatch;
+        g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ) );
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -828,67 +875,67 @@ void Actor::UpdateWeaponAnimation()
     }
     
     m_currentWeaponAnim = new SpriteAnimDefinition( *m_weaponSpriteSheet, targetAnim->m_startFrame, targetAnim->m_endFrame, targetAnim->m_secondsPerFrame, playbackType );
-	m_weaponAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
+    m_weaponAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::SetCurrentAnimGroup( const std::string& groupName )
 {
-	if ( !m_spriteAnimationDef )
-	{
-		return;
-	}
+    if ( !m_spriteAnimationDef )
+    {
+        return;
+    }
 
-	for ( int i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
-	{
-		if ( m_spriteAnimationDef->m_animationGroups[i].m_name == groupName )
-		{
-			m_currentAnimGroup = &m_spriteAnimationDef->m_animationGroups[i];
-			m_currentAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
+    for ( int i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
+    {
+        if ( m_spriteAnimationDef->m_animationGroups[i].m_name == groupName )
+        {
+            m_currentAnimGroup = &m_spriteAnimationDef->m_animationGroups[i];
+            m_currentAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
 
-			if ( !m_currentAnimGroup->m_directionalAnims.empty() )
-			{
-				const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
-				int startFrame = dirAnim.startFrame;
-				int endFrame = dirAnim.endFrame;
-				float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
+            if ( !m_currentAnimGroup->m_directionalAnims.empty() )
+            {
+                const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
+                int startFrame = dirAnim.startFrame;
+                int endFrame = dirAnim.endFrame;
+                float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
 
-				if ( !m_animTimer )
-				{
-					m_animTimer = new Timer( animDuration );
-				}
-				else
-				{
-					delete m_animTimer;
-					m_animTimer = new Timer( animDuration );
-				}
-				m_animTimer->Start();
-			}
+                if ( !m_animTimer )
+                {
+                    m_animTimer = new Timer( animDuration );
+                }
+                else
+                {
+                    delete m_animTimer;
+                    m_animTimer = new Timer( animDuration );
+                }
+                m_animTimer->Start();
+            }
 
-			return;
-		}
-	}
+            return;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
 void Actor::GetCurrentAnimTimer( Camera* playerCamera )
 {
-	const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup, playerCamera );
+    const DirectionalAnimInfo* dirAnim = GetDirectionalAnimForCamera( m_currentAnimGroup, playerCamera );
 
-	if ( dirAnim )
-	{
-		int startFrame = dirAnim->startFrame;
-		int endFrame = dirAnim->endFrame;
-		float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
-		if ( !m_animTimer )
-		{
-			m_animTimer = new Timer( animDuration );
-		}
-		else
-		{
-			delete m_animTimer;
-			m_animTimer = new Timer( animDuration );
-		}
-		m_animTimer->Start();
-	}
+    if ( dirAnim )
+    {
+        int startFrame = dirAnim->startFrame;
+        int endFrame = dirAnim->endFrame;
+        float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
+        if ( !m_animTimer )
+        {
+            m_animTimer = new Timer( animDuration );
+        }
+        else
+        {
+            delete m_animTimer;
+            m_animTimer = new Timer( animDuration );
+        }
+        m_animTimer->Start();
+    }
 }

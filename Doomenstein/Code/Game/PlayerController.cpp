@@ -33,6 +33,12 @@ void PlayerController::Update( float deltaSeconds )
 {
 	UpdateInput( deltaSeconds );
 	UpdateCamera( deltaSeconds );
+	g_engine->m_audio->UpdateListener( 
+		m_controllerIndex, 
+		WorldToFMOD( m_camera->GetPosition() ), 
+		WorldToFMOD( m_camera->GetOrientation().GetForwardDir_IFwd_JLeft_KUp() ), 
+		WorldToFMOD( Vec3::Z_AXIS ) 
+	);
 }
 
 //-----------------------------------------------------------------------------------------------

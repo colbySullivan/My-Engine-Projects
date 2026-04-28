@@ -57,7 +57,7 @@ void AudioSystem::Startup()
 	result = FMOD::System_Create( &m_fmodSystem );
 	ValidateResult( result );
 
-	result = m_fmodSystem->init( 512, FMOD_INIT_NORMAL, nullptr );
+	result = m_fmodSystem->init( 512, FMOD_INIT_3D_RIGHTHANDED, nullptr ); // #todd FMOD_INIT_NORMAL was used before
 	ValidateResult( result );
 }
 
@@ -86,7 +86,7 @@ void AudioSystem::EndFrame()
 
 
 //-----------------------------------------------------------------------------------------------
-SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
+SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath, FMOD_MODE mode )
 {
 	std::map< std::string, SoundID >::iterator found = m_registeredSoundIDs.find( soundFilePath );
 	if ( found != m_registeredSoundIDs.end() )
@@ -96,7 +96,7 @@ SoundID AudioSystem::CreateOrGetSound( const std::string& soundFilePath )
 	else
 	{
 		FMOD::Sound* newSound = nullptr;
-		m_fmodSystem->createSound( soundFilePath.c_str(), FMOD_DEFAULT, nullptr, &newSound );
+		m_fmodSystem->createSound( soundFilePath.c_str(), mode, nullptr, &newSound );
 		if ( newSound )
 		{
 			SoundID newSoundID = m_registeredSounds.size();
@@ -220,6 +220,87 @@ void AudioSystem::ValidateResult( FMOD_RESULT result )
 	{
 		ERROR_RECOVERABLE( Stringf( "Engine/Audio SYSTEM ERROR: Got error result code %i - error codes listed in fmod_common.h\n", ( int )result ) );
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void AudioSystem::SetNumListeners( int numListeners )
+{
+	m_fmodSystem->set3DNumListeners( numListeners );
+}
+
+//-----------------------------------------------------------------------------------------------
+void AudioSystem::UpdateListener( int listenerIndex, const Vec3& listenerPosition, const Vec3& listenerForward, const Vec3& listenerUp )
+{
+	FMOD_VECTOR position = { listenerPosition.x, listenerPosition.y, listenerPosition.z };
+	FMOD_VECTOR forward = { listenerForward.x, listenerForward.y, listenerForward.z };
+	FMOD_VECTOR up = { listenerUp.x, listenerUp.y, listenerUp.z };
+	m_fmodSystem->set3DListenerAttributes( listenerIndex, &position, nullptr, &forward, &up );
+}
+
+//-----------------------------------------------------------------------------------------------
+SoundPlaybackID AudioSystem::StartSoundAt( SoundID soundID, const Vec3& soundPosition, bool isLooped /*= false*/, float volume /*= 1.0f*/, float balance /*= 0.0f*/, float speed /*= 1.0f*/, bool isPaused /*= false */ )
+{
+	size_t numSounds = m_registeredSounds.size();
+	if ( soundID < 0 || soundID >= numSounds )
+		return MISSING_SOUND_ID;
+
+	FMOD::Sound* sound = m_registeredSounds[soundID];
+	if ( !sound )
+		return MISSING_SOUND_ID;
+
+	FMOD::Channel* channelAssignedToSound = nullptr;
+	m_fmodSystem->playSound( sound, nullptr, true, &channelAssignedToSound );
+	if ( channelAssignedToSound )
+	{
+		int loopCount = isLooped ? -1 : 0;
+		unsigned int playbackMode = isLooped ? FMOD_3D : FMOD_LOOP_OFF;
+		float frequency;
+		channelAssignedToSound->setMode( playbackMode );
+		channelAssignedToSound->getFrequency( &frequency );
+		channelAssignedToSound->setFrequency( frequency * speed );
+		channelAssignedToSound->setVolume( volume );
+		channelAssignedToSound->setPan( balance );
+		channelAssignedToSound->setLoopCount( loopCount );
+		channelAssignedToSound->setPaused( isPaused );
+		FMOD_VECTOR position = { soundPosition.x, soundPosition.y, soundPosition.z };
+		FMOD_VECTOR velocity = { 0.f, 0.f, 0.f };
+		channelAssignedToSound->set3DAttributes( &position, &velocity );
+	}
+
+	return ( SoundPlaybackID )channelAssignedToSound;
+}
+//-----------------------------------------------------------------------------------------------
+void AudioSystem::SetSoundPosition( SoundPlaybackID soundPlaybackID, const Vec3& soundPosition )
+{
+	FMOD::Channel* channelAssignedToSound = ( FMOD::Channel* )soundPlaybackID;
+	if ( !channelAssignedToSound )
+		return;
+
+	FMOD_VECTOR position = { soundPosition.x, soundPosition.y, soundPosition.z };
+	FMOD_VECTOR velocity = { 0.f, 0.f, 0.f };
+	channelAssignedToSound->set3DAttributes( &position, &velocity );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool AudioSystem::IsPlaying( SoundPlaybackID soundPlaybackID )
+{
+	if ( soundPlaybackID == MISSING_SOUND_ID )
+	{
+		return false;
+	}
+
+	FMOD::Channel* channelAssignedToSound = ( FMOD::Channel* )soundPlaybackID;
+	if ( !channelAssignedToSound )
+		return false;
+
+	bool isPlaying = false;
+	FMOD_RESULT result = channelAssignedToSound->isPlaying( &isPlaying );
+	if ( result != FMOD_OK )
+	{
+		return false;
+	}
+
+	return isPlaying;
 }
 
 

@@ -90,13 +90,27 @@ static void LoadActorDefsFromFile( char const* filePath )
 			def.m_cellCount = xml.ParseXmlAttribute( *visualsElem, "cellCount", IntVec2( 1, 1 ) );
 		}
 
+		XmlElement* soundsElem = actorElem->FirstChildElement( "Sounds" );
+		if ( soundsElem )
+		{
+			XmlElement* soundElem = soundsElem->FirstChildElement( "Sound" );
+			while ( soundElem )
+			{
+				ActorSoundDefinition soundDef;
+				soundDef.m_soundName = xml.ParseXmlAttribute( *soundElem, "sound", std::string( "" ) );
+				soundDef.m_filePath = xml.ParseXmlAttribute( *soundElem, "name", std::string( "" ) );
+
+				def.m_sounds.push_back( soundDef );
+				soundElem = soundElem->NextSiblingElement( "Sound" );
+			}
+		}
+
 		XmlElement* cameraElem = actorElem->FirstChildElement( "Camera" );
 		if ( cameraElem )
 		{
 			def.m_eyeHeight = xml.ParseXmlAttribute( *cameraElem, "eyeHeight", 0.f );
 			def.m_cameraFOV = xml.ParseXmlAttribute( *cameraElem, "cameraFOV", 60.f );
 		}
-
 		ActorDefinition::s_definitions[def.m_name] = def;
 		actorElem = actorElem->NextSiblingElement( "ActorDefinition" );
 	}
@@ -106,7 +120,7 @@ static void LoadActorDefsFromFile( char const* filePath )
 void ActorDefinition::InitializeActorDefs()
 {
 	LoadActorDefsFromFile( "Data/Definitions/ActorDefinitions.xml" );
-	LoadActorDefsFromFile( "Data/Definitions/ProjectileActorDefinitions.xml" );
+ 	LoadActorDefsFromFile( "Data/Definitions/ProjectileActorDefinitions.xml" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -120,4 +134,18 @@ const ActorDefinition* ActorDefinition::GetByName( const std::string& name )
 
 	const ActorDefinition& foundDefinition = it->second;
 	return &foundDefinition;
+}
+
+//-----------------------------------------------------------------------------------------------
+std::string ActorDefinition::GetSoundByName( const std::string& name ) const
+{
+	for ( const ActorSoundDefinition& soundDef : m_sounds )
+	{
+		if ( soundDef.m_soundName == name )
+		{
+			return soundDef.m_filePath;
+		}
+	}
+
+	return "";
 }

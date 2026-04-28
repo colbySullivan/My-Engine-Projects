@@ -7,13 +7,20 @@
 #include <string>
 #include <vector>
 
+struct ActorSoundDefinition
+{
+	std::string m_soundName;
+	std::string m_filePath;
+};
+
 class ActorDefinition
 {
 public:
 	ActorDefinition() = default;
 	static void InitializeActorDefs();
 	static const ActorDefinition* GetByName( const std::string& name );
-
+	std::string GetSoundByName( const std::string& name ) const;
+	
 	std::string m_name;
 	std::string m_faction = "NEUTRAL";
 	int         m_health = 1;
@@ -55,6 +62,7 @@ public:
 	float       m_cameraFOV = 60.f;
 
 	std::vector<std::string> m_weaponNames;
+	std::vector<ActorSoundDefinition> m_sounds;
 
 	static std::map<std::string, ActorDefinition> s_definitions;
 };

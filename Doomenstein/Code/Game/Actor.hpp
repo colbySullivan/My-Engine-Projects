@@ -112,6 +112,9 @@ private:
 	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
 	double m_currentAnimStartTime = 0.0;
 	
+	void LoadActorSounds();
+	void LoadWeaponSounds();
+
 	void ApplyMovement( Vec3 localMoveDir, float speed, float deltaSeconds );
 	void CreatePlayer();
 	void CreateDemon();
@@ -126,4 +129,5 @@ private:
 	void SetCurrentAnimGroup( const std::string& groupName);
 	void GetCurrentAnimTimer( Camera* playerCamera );
 	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup, Camera* playerCamera ) const;
+	void TryToPlaySound( SoundPlaybackID m_hurtSound );
 };

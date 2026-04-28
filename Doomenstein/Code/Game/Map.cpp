@@ -684,7 +684,7 @@ Actor* Map::GetActorByHandle( const ActorHandle handle ) const
 		return nullptr;
 	}
 
-	Actor* actor = m_actorVector[index];
+	Actor* actor = m_actorVector[index]; // #TODO - this is a potential crash if the handle is invalid, need to add some error checking
 	if ( actor == nullptr )
 	{
 		return nullptr;

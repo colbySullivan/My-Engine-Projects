@@ -1406,3 +1406,14 @@ Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTra
 	return result;
 }
 
+//-----------------------------------------------------------------------------------------------
+Vec3 WorldToFMOD( const Vec3 worldPos )
+{
+	Vec3 fmodPos;
+	fmodPos.x = -worldPos.y;
+	fmodPos.y = worldPos.z;
+	fmodPos.z = -worldPos.x;
+	
+	return fmodPos;
+}
+

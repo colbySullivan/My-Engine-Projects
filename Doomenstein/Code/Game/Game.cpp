@@ -81,6 +81,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
+	g_engine->m_audio->SetNumListeners( 2 );
 	CreateMapsFromDef();
 	m_isPaused = false;
 	CreateProps();
