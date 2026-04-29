@@ -27,9 +27,18 @@ struct MapSpawnInfo;
 enum Game_State
 {
 	GAMESTATE_ATTRACT,
+	GAMESTATE_PLAYER_CONNECT,
 	GAMESTATE_PLAY,
 	GAMESTATE_INVALID,
 	NUM_GAMESTATES
+};
+
+//-----------------------------------------------------------------------------------------------
+enum Entered_Button
+{
+	SPACE,
+	START,
+	num
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -92,6 +101,8 @@ public:
 	Camera* m_worldCamera1 = nullptr;
 	Camera* m_worldCamera2 = nullptr;
 	int m_numActivePlayers = 1;
+	bool m_wantMultiplayer = false;
+	Entered_Button m_usedButtonMethod = num;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -102,6 +113,9 @@ private:
 
 	void UpdateAttractMode( float deltaSeconds );
 	void RenderAttractMode( ) const;
+
+	void UpdatePlayerConnectMode( float deltaSeconds );
+	void RenderPlayerConnecMode() const;
 
 	void UpdateBlackHole();
 

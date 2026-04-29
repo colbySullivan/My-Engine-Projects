@@ -92,8 +92,13 @@ void Game::Startup()
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
 
-	bool wantMultiplayer = false;
-	if ( wantMultiplayer )
+	//XboxController const& controller = g_engine->m_input->GetController( 1 );
+	//bool wantMultiplayer = false;
+	//if ( controller.GetControllerID() )
+	//{
+	//	wantMultiplayer = true;
+	//}
+	if ( m_wantMultiplayer )
 	{
 		SetUpMultiplayer();
 	}
@@ -130,6 +135,11 @@ void Game::Update()
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		UpdateAttractMode( deltaSeconds );
+	}
+
+	if ( m_currentGameState == GAMESTATE_PLAYER_CONNECT )
+	{
+		UpdatePlayerConnectMode( deltaSeconds );
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
@@ -178,6 +188,20 @@ void Game::Render() const
 		RenderAttractMode();
 
 		g_engine->m_render->EndCamera( *m_worldCamera1 );
+		return;
+	}
+
+	if ( m_currentGameState == GAMESTATE_PLAYER_CONNECT )
+	{
+		g_engine->m_render->BindTexture( nullptr );
+		//g_engine->m_render->BeginCamera( *m_worldCamera1 );
+		g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+
+		Rgba8 backgroundColor = Rgba8( 120, 120, 120, 255 );
+		g_engine->m_render->ClearScreen( backgroundColor );
+		RenderPlayerConnecMode();
+
+		//g_engine->m_render->EndCamera( *m_worldCamera1 );
 		return;
 	}
 
@@ -244,18 +268,19 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
-	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) || g_engine->m_input->WasKeyJustPressed( ' ' )  )
 	{
-		if ( m_currentGameState != GAMESTATE_PLAY )
+		if ( m_currentGameState == GAMESTATE_ATTRACT )
+		{
+			m_usedButtonMethod = controller.WasButtonJustPressed( XboxButtonID::START ) ? START : SPACE;
+			m_nextGameState = GAMESTATE_PLAYER_CONNECT;
+		}
+
+		else if ( m_currentGameState == GAMESTATE_PLAYER_CONNECT && ( m_usedButtonMethod == SPACE ? controller.WasButtonJustPressed( XboxButtonID::START ) : g_engine->m_input->WasKeyJustPressed( ' ' ) ) )
 		{
 			m_nextGameState = GAMESTATE_PLAY;
 			Startup();
 		}
-	}
-
-	if (g_engine->m_input->WasKeyJustPressed('I'))
-	{
-
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
@@ -450,13 +475,6 @@ void Game::RenderUI() const
 	float scale = (float)g_engine->m_systemClock->GetTimeScale();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", m_roundTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-
-	//Actor* ownerActor = nullptr;
-	//if ( m_playerController )
-	//{
-	//	ownerActor = m_playerController->GetActor();
-	//}
-
 	DebugRenderScreen( *m_screenCamera );
 }
 
@@ -553,6 +571,47 @@ void Game::RenderAttractMode() const
 	AddVertsForAABB2D( testTextureVerts, texturedAABB2, Rgba8( 255, 255, 255, 255 ) );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdatePlayerConnectMode( float deltaSeconds )
+{
+	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	
+	if ( g_engine->m_input->WasKeyJustPressed( 'L' )  || controller.WasButtonJustPressed( XboxButtonID::START ) )
+	{
+		m_wantMultiplayer = true;
+	}
+
+	if ( controller.WasButtonJustPressed( XboxButtonID::BACK ) )
+	{
+		m_wantMultiplayer = false;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderPlayerConnecMode() const
+{
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
+
+	std::string playerText = Stringf( "Player 1" );
+	DebugAddScreenText( playerText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 30.f, Vec2( 0.5f, m_wantMultiplayer ? 0.8f : 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	std::string connectionInfoText = Stringf( "Press SPACE to start game \nPress ESCAPE to leave game \nPress START to join player" );
+	DebugAddScreenText( connectionInfoText, AABB2( Vec2( 0.f, -100.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.5f, m_wantMultiplayer ? 0.7f : 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	if ( m_wantMultiplayer )
+	{
+		playerText = Stringf( "Player 2" );
+		DebugAddScreenText( playerText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 30.f, Vec2( 0.5f, 0.3f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+		connectionInfoText = Stringf( "Press START to start game \nPress BACK to leave game" );
+		DebugAddScreenText( connectionInfoText, AABB2( Vec2( 0.f, -50.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.5f, 0.3f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	}
+
+	DebugRenderScreen( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
