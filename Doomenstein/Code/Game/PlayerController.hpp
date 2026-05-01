@@ -31,6 +31,8 @@ public:
 
 	bool		m_isFreeFlyMode;
 	bool		m_canProcessPossessInput = true;
+	int			m_killCount = 0;
+	int			m_deathCount = 0;
 
 private:
 	void HandleActorInput( float deltaSeconds );

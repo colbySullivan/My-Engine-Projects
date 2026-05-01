@@ -23,9 +23,11 @@ public:
 	ActorHandle GetActorHandle() const;
 	virtual void DamagedBy( Actor* attacker, float damage );
 	bool IsPlayerControlled() const;
+	ActorHandle GetTargetActorHandle() const;
 
 protected:
 	ActorHandle m_actorHandle;
 	Map* m_map;
 	bool m_isCurrentlyPlayerControlled = false;
+	ActorHandle m_targetActorHandle;
 };

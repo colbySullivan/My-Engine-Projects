@@ -403,6 +403,15 @@ void Actor::CheckIfShouldDie()
             m_animTimer = nullptr;
         }
 
+        if ( m_currentController && m_currentController->IsPlayerControlled() )
+        {
+			static_cast< PlayerController* >( m_currentController )->m_deathCount++;
+        }
+        if ( m_lastAttacker && m_lastAttacker->m_currentController && m_lastAttacker->m_currentController->IsPlayerControlled() )
+		{
+			static_cast< PlayerController* >( m_lastAttacker->m_currentController )->m_killCount++;
+        }
+
 		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName("Death"), FMOD_3D ) );
         SetCurrentAnimGroup( "Death" );
     }
@@ -738,6 +747,7 @@ void Actor::AttackedBy( Actor* attacker, float damage )
             impulse *= attackerWeapon->m_rayImpulse;
         }
     }
+    m_lastAttacker = attacker;
 
     Attacked( damage, impulse );
 

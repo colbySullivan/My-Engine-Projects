@@ -83,11 +83,11 @@ void PlayerController::RenderUI() const
 	float textX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.2f ) : ( viewportWidth * 0.25f );
 	AddVertsForTextTriangles2D( textVerts, healthHudText, Vec2( textX, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
-	std::string killCountHudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_killCount : 0.f );
+	std::string killCountHudText = Stringf( "%5.0f", ownerActor ? m_killCount : 0.f );
 	float killCountX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.01f ) : ( viewportWidth * 0.015f );
 	AddVertsForTextTriangles2D( textVerts, killCountHudText, Vec2( 0.f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
-	std::string deathCountHudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_deathCount : 0.f );
+	std::string deathCountHudText = Stringf( "%5.0f", ownerActor ? m_deathCount : 0.f );
 	float deathCountX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.01f ) : ( viewportWidth * 0.015f );
 	AddVertsForTextTriangles2D( textVerts, deathCountHudText, Vec2( viewportWidth * 0.85f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 

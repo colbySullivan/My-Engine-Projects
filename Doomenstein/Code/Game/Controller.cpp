@@ -70,3 +70,13 @@ bool Controller::IsPlayerControlled() const
 {
 	return m_isCurrentlyPlayerControlled;
 }
+
+//------------------------------------------------------------------------------
+ActorHandle Controller::GetTargetActorHandle() const
+{
+	if ( m_targetActorHandle.IsValid() )
+	{
+		return m_targetActorHandle;
+	}
+	return ActorHandle::INVALID;
+}

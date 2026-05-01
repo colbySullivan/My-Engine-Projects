@@ -96,8 +96,6 @@ public:
 	const SpriteAnimDefinition* m_currentWeaponAnim = nullptr;
 	bool m_isAttacking = false;
 	double m_weaponAnimStartTime = 0.0;
-	int m_killCount = 0;
-	int m_deathCount = 0;
 
 private:
 	Controller* m_currentController = nullptr;
@@ -107,6 +105,7 @@ private:
 	int m_currentWeaponIndex = 0;
 	Timer* m_weaponRefireTimer = nullptr;
 	Timer* m_weaponAnimTimer = nullptr;
+	Actor* m_lastAttacker = nullptr;
 
 	SpriteSheet* m_currentSpriteSheet = nullptr;
 
