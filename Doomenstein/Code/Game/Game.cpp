@@ -799,10 +799,10 @@ void Game::SetUpMultiplayer()
 	m_worldCamera2->SetCameraToRenderTransform( cameraToRenderMatrix );
 
 	m_playerController1 = new PlayerController( m_currentMap, m_worldCamera1 );
-	m_playerController1->SetControllerIndex( 0 );
+	m_playerController1->SetControllerIndex( 1 );
 
 	m_playerController2 = new PlayerController( m_currentMap, m_worldCamera2 );
-	m_playerController2->SetControllerIndex( 1 );
+	m_playerController2->SetControllerIndex( 0 );
 }
 
 //-----------------------------------------------------------------------------------------------

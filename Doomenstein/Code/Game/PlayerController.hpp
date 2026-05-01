@@ -33,6 +33,7 @@ public:
 	bool		m_canProcessPossessInput = true;
 	int			m_killCount = 0;
 	int			m_deathCount = 0;
+	bool		m_isPlayerOne = false;
 
 private:
 	void HandleActorInput( float deltaSeconds );

@@ -100,14 +100,14 @@ void PlayerController::RenderUI() const
 //-----------------------------------------------------------------------------------------------
 void PlayerController::UpdateInput( float deltaSeconds )
 {
-	if ( g_engine->m_input->WasKeyJustPressed( 'F' ) )
+	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( 'F' ) )
 	{
 		ToggleCameraMode();
 		m_isCurrentlyPlayerControlled = !m_isCurrentlyPlayerControlled;
 		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) )
+	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( 'N' ) )
 	{
 		m_isCurrentlyPlayerControlled = true;
 		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame
@@ -221,7 +221,7 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 	XboxController const& controller = g_engine->m_input->GetController(m_controllerIndex);
 	float rightTrigger = controller.GetRightTrigger();
 
-	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) || rightTrigger > 0.1f )
+	if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) ) || rightTrigger > 0.1f )
 	{
 		if ( actor && m_map && actor->CanFireWeapon() )
 		{
@@ -255,27 +255,27 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 	float leftThreshold = controller.GetLeftStick().GetInnerDeadZoneFraction();
 
 	Vec3 localMoveDir = Vec3( 0.f, 0.f, 0.f );
-	if ( g_engine->m_input->IsKeyDown( 'W' ) || leftStickPos.y > leftThreshold )
+	if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( 'W' ) ) || leftStickPos.y > leftThreshold )
 	{
 		localMoveDir.x += 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'S' ) || leftStickPos.y < -leftThreshold )
+	if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( 'S' ) ) || leftStickPos.y < -leftThreshold )
 	{
 		localMoveDir.x -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'A' ) || leftStickPos.x < -leftThreshold )
+	if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( 'A' ) ) || leftStickPos.x < -leftThreshold )
 	{
 		localMoveDir.y += 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'D' ) || leftStickPos.x > leftThreshold )
+	if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( 'D' ) ) || leftStickPos.x > leftThreshold )
 	{
 		localMoveDir.y -= 1.f;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'E' ) )
+	if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( 'E' ) ) || controller.IsButtonDown( XboxButtonID::LEFT_BUMPER ) )
 	{
 		m_freeFlyCameraOrientation.m_rollDegrees = 15.f;
 	}
-	else if ( g_engine->m_input->IsKeyDown( 'Q' ) )
+	else if ( ( m_isPlayerOne && g_engine->m_input->IsKeyDown( 'Q' ) ) || controller.IsButtonDown( XboxButtonID::RIGHT_BUMPER ) )
 	{
 		m_freeFlyCameraOrientation.m_rollDegrees = -15.f;
 	}
@@ -305,13 +305,16 @@ void PlayerController::ProcessLookInput( [[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController(m_controllerIndex);
 
-	Vec2 mouseDelta = g_engine->m_input->GetCursorClientDelta();
-	Vec2 lookInput = Vec2( static_cast< float >( mouseDelta.x ), static_cast< float >( mouseDelta.y ) );
+	if ( m_isPlayerOne )
+	{
+		Vec2 mouseDelta = g_engine->m_input->GetCursorClientDelta();
+		Vec2 lookInput = Vec2( static_cast< float >( mouseDelta.x ), static_cast< float >( mouseDelta.y ) );
+		m_freeFlyCameraOrientation.m_yawDegrees -= lookInput.x * MOUSE_SENSITIVITY;
+		m_freeFlyCameraOrientation.m_pitchDegrees += lookInput.y * MOUSE_SENSITIVITY;
+	}
+
 	Vec2 rightStickPos = controller.GetRightStick().GetPosition();
 	float rightThreshold = controller.GetRightStick().GetInnerDeadZoneFraction();
-
-	m_freeFlyCameraOrientation.m_yawDegrees -= lookInput.x * MOUSE_SENSITIVITY;
-	m_freeFlyCameraOrientation.m_pitchDegrees += lookInput.y * MOUSE_SENSITIVITY;
 
 	if ( rightStickPos.y > rightThreshold || rightStickPos.y < -rightThreshold )
 	{
@@ -474,6 +477,7 @@ Vec3 PlayerController::GetCameraPosition() const
 void PlayerController::SetControllerIndex( int index )
 {
 	m_controllerIndex = index;
+	m_isPlayerOne = ( m_controllerIndex == 0 );
 }
 
 //------------------------------------------------------------------------------
