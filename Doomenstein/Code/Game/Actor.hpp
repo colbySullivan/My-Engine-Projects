@@ -96,6 +96,8 @@ public:
 	const SpriteAnimDefinition* m_currentWeaponAnim = nullptr;
 	bool m_isAttacking = false;
 	double m_weaponAnimStartTime = 0.0;
+	int m_killCount = 0;
+	int m_deathCount = 0;
 
 private:
 	Controller* m_currentController = nullptr;

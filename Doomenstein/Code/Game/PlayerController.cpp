@@ -9,6 +9,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Renderer/SimpleTriangleFont.hpp"
 
 //-----------------------------------------------------------------------------------------------
 PlayerController::PlayerController( Map* map, Camera* camera )
@@ -76,10 +77,23 @@ void PlayerController::RenderUI() const
 	g_engine->m_render->DrawVertexArray( ( int )reticleVerts.size(), reticleVerts.data() );
 
 	Actor* ownerActor = GetActor();
-	std::string hudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_health : 0.f );
-	DebugAddScreenText( hudText, AABB2( Vec2( viewportWidth * 0.2f, 10.f ), Vec2( viewportWidth * 0.5f, 50.f ) ), viewportHeight * 0.1f, Vec2( 0.f, 0.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	std::string healthHudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_health : 0.f );
+	std::vector<Vertex> textVerts;
+	float textX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.2f ) : ( viewportWidth * 0.25f );
+	AddVertsForTextTriangles2D( textVerts, healthHudText, Vec2( textX, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
+
+	std::string killCountHudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_killCount : 0.f );
+	float killCountX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.01f ) : ( viewportWidth * 0.015f );
+	AddVertsForTextTriangles2D( textVerts, killCountHudText, Vec2( 0.f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
+
+	std::string deathCountHudText = Stringf( "%5.0f", ownerActor ? ownerActor->m_deathCount : 0.f );
+	float deathCountX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.01f ) : ( viewportWidth * 0.015f );
+	AddVertsForTextTriangles2D( textVerts, deathCountHudText, Vec2( viewportWidth * 0.85f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
 	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
+
 	g_engine->m_render->EndCamera( uiCamera );
 }
 

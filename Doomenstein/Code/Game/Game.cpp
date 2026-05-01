@@ -54,12 +54,24 @@ Game::~Game()
 {
 	delete m_teemoModel;
 	m_teemoModel = nullptr;
-	for ( int i = 0; i < m_maps.size(); ++i ) 
+
+	for ( int i = 0; i < m_maps.size(); ++i )
 	{
 		delete m_maps[i];
 		m_maps[i] = nullptr;
 	}
 	m_maps.clear();
+
+	if ( m_playerController1 )
+	{
+		delete m_playerController1;
+		m_playerController1 = nullptr;
+	}
+	if ( m_playerController2 )
+	{
+		delete m_playerController2;
+		m_playerController2 = nullptr;
+	}
 	delete g_engine;
 	delete m_screenCamera;
 	g_engine = nullptr;
@@ -68,10 +80,6 @@ Game::~Game()
 	m_worldCamera1 = nullptr;
 	delete m_worldCamera2;
 	m_worldCamera2 = nullptr;
-	delete m_playerController1;
-	m_playerController1 = nullptr;
-	delete m_playerController2;
-	m_playerController2 = nullptr;
 	delete m_gameClock;
 	m_gameClock = nullptr;
 }
@@ -81,7 +89,7 @@ Game::~Game()
 //-----------------------------------------------------------------------------------------------
 void Game::Startup()
 {
-	g_engine->m_audio->SetNumListeners( 2 );
+	g_engine->m_audio->SetNumListeners( m_numActivePlayers );
 	CreateMapsFromDef();
 	m_isPaused = false;
 	CreateProps();
@@ -251,7 +259,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		}
 	}
 
-	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT )
+	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT && m_currentGameState != GAMESTATE_PLAYER_CONNECT )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
 		Shutdown();
@@ -276,11 +284,11 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 			m_nextGameState = GAMESTATE_PLAYER_CONNECT;
 		}
 
-		else if ( m_currentGameState == GAMESTATE_PLAYER_CONNECT && ( m_usedButtonMethod == SPACE ? controller.WasButtonJustPressed( XboxButtonID::START ) : g_engine->m_input->WasKeyJustPressed( ' ' ) ) )
-		{
-			m_nextGameState = GAMESTATE_PLAY;
-			Startup();
-		}
+		//else if ( m_currentGameState == GAMESTATE_PLAYER_CONNECT && ( m_usedButtonMethod == SPACE ? controller.WasButtonJustPressed( XboxButtonID::START ) : g_engine->m_input->WasKeyJustPressed( ' ' ) ) )
+		//{
+		//	m_nextGameState = GAMESTATE_PLAY;
+		//	Startup();
+		//}
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
@@ -493,6 +501,8 @@ void Game::UpdateAttractMode(float deltaSeconds)
 {
 	m_roundTime = 0.f;
 
+	m_wantMultiplayer = false;
+
 	m_shipAnimationTimer += deltaSeconds;
 
 	if ( m_shipAnimationTimer > SHIP_ANIMATION_DURATION )
@@ -577,16 +587,62 @@ void Game::RenderAttractMode() const
 void Game::UpdatePlayerConnectMode( float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
-	
-	if ( g_engine->m_input->WasKeyJustPressed( 'L' )  || controller.WasButtonJustPressed( XboxButtonID::START ) )
+
+	bool startBtn = controller.WasButtonJustPressed( XboxButtonID::START );
+	bool backBtn = controller.WasButtonJustPressed( XboxButtonID::BACK );
+	bool spaceKey = g_engine->m_input->WasKeyJustPressed( ' ' );
+	bool escKey = g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC );
+
+	bool p1Start = spaceKey;
+	bool p1Back = escKey;
+	bool p2Start = startBtn;
+	bool p2Back = backBtn;
+
+	if ( m_usedButtonMethod == START )
 	{
-		m_wantMultiplayer = true;
+		p1Start = startBtn;
+		p1Back = backBtn;
+
+		p2Start = spaceKey;
+		p2Back = escKey;
 	}
 
-	if ( controller.WasButtonJustPressed( XboxButtonID::BACK ) )
+	if ( !m_wantMultiplayer )
 	{
-		m_wantMultiplayer = false;
+		if ( p2Start )
+		{
+			m_wantMultiplayer = true;
+			return;
+		}
+		else if ( p1Start )
+		{
+			m_nextGameState = GAMESTATE_PLAY;
+			Startup();
+		}
+		else if ( p1Back )
+		{
+			m_nextGameState = GAMESTATE_ATTRACT;
+		}
 	}
+	else
+	{
+		if ( p1Start )
+		{ 
+			m_nextGameState = GAMESTATE_PLAY;
+			Startup();
+		}
+		else if ( p2Back )
+		{
+			m_wantMultiplayer = false;
+		}
+		else if ( p1Back )
+		{
+			m_usedButtonMethod = ( m_usedButtonMethod == START ) ? SPACE : START;
+			m_wantMultiplayer = false;
+		}
+	}
+	g_engine->m_input->EndFrame();
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -595,20 +651,33 @@ void Game::RenderPlayerConnecMode() const
 	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
 	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
 
-	std::string playerText = Stringf( "Player 1" );
-	DebugAddScreenText( playerText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 30.f, Vec2( 0.5f, m_wantMultiplayer ? 0.8f : 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	std::string p1StartBtn = ( m_usedButtonMethod == START ) ? "START" : "SPACE";
+	std::string p1BackBtn = ( m_usedButtonMethod == START ) ? "BACK" : "ESCAPE";
 
-	std::string connectionInfoText = Stringf( "Press SPACE to start game \nPress ESCAPE to leave game \nPress START to join player" );
+	std::string p2StartBtn = ( m_usedButtonMethod == START ) ? "SPACE" : "START";
+	std::string p2BackBtn = ( m_usedButtonMethod == START ) ? "ESCAPE" : "BACK";
+
+	std::string playerText = Stringf( "Player 1 (Joined)" );
+	DebugAddScreenText( playerText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 30.f, Vec2( 0.5f, m_wantMultiplayer ? 0.8f : 0.5f ), 0.f, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ) );
+
+	std::string connectionInfoText;
+	if ( !m_wantMultiplayer )
+	{
+		connectionInfoText = Stringf( "Press %s to CONFIRM AND START game\nPress %s to leave game\nPress %s to join player 2", p1StartBtn.c_str(), p1BackBtn.c_str(), p2StartBtn.c_str() );
+	}
+	else
+	{
+		connectionInfoText = Stringf( "Press %s to CONFIRM AND START game\nPress %s to leave game", p1StartBtn.c_str(), p1BackBtn.c_str() );
+	}
 	DebugAddScreenText( connectionInfoText, AABB2( Vec2( 0.f, -100.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.5f, m_wantMultiplayer ? 0.7f : 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	if ( m_wantMultiplayer )
 	{
-		playerText = Stringf( "Player 2" );
-		DebugAddScreenText( playerText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 30.f, Vec2( 0.5f, 0.3f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+		playerText = Stringf( "Player 2 (Joined)" );
+		DebugAddScreenText( playerText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 30.f, Vec2( 0.5f, 0.3f ), 0.f, Rgba8( 0, 255, 0 ), Rgba8( 0, 255, 0 ) );
 
-		connectionInfoText = Stringf( "Press START to start game \nPress BACK to leave game" );
+		connectionInfoText = Stringf( "Press %s to CONFIRM AND START game\nPress %s to leave game", p2StartBtn.c_str(), p2BackBtn.c_str() );
 		DebugAddScreenText( connectionInfoText, AABB2( Vec2( 0.f, -50.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.5f, 0.3f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-
 	}
 
 	DebugRenderScreen( *m_screenCamera );

@@ -31,6 +31,12 @@ void Controller::Possess( Actor* actor )
 //-----------------------------------------------------------------------------------------------
 void Controller::Unpossess()
 {
+	if ( !m_map )
+	{
+		m_actorHandle = ActorHandle::INVALID;
+		return;
+	}
+
 	Actor* currentActor = GetActor();
 	if ( currentActor )
 	{
