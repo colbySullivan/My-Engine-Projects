@@ -151,7 +151,7 @@ void Game::Update()
 		}
 		if ( !g_engine->m_audio->IsPlaying( m_mainMenuMusicPlaybackID ) )
 		{
-			m_mainMenuMusicPlaybackID = g_engine->m_audio->StartSound( ( m_mainMenuMusicID ), true, 0.1f ); // #TODO get the main menu volume from XML
+			m_mainMenuMusicPlaybackID = g_engine->m_audio->StartSound( ( m_mainMenuMusicID ), true, 0.1f );
 		}
 		UpdateAttractMode( deltaSeconds );
 	}
@@ -804,6 +804,17 @@ void Game::SetUpMultiplayer()
 {
 	m_numActivePlayers = 2;
 
+	XboxController const& controller1 = g_engine->m_input->GetController( 0 );
+	XboxController const& controller2 = g_engine->m_input->GetController( 1 );
+	if ( controller1.IsConnected() && controller2.IsConnected() )
+	{
+		m_numOfControllers = 2;
+	}
+	else if ( controller1.IsConnected() || controller2.IsConnected() )
+	{
+		m_numOfControllers = 1;
+	}
+
 	float screenWidth = g_gameConfig->GetValue( "screenSizeX", 1600.f );
 	float screenHeight = g_gameConfig->GetValue( "screenSizeY", 900.f );
 	float halfHeight = screenHeight * 0.5f;
@@ -824,16 +835,25 @@ void Game::SetUpMultiplayer()
 	m_worldCamera2->SetCameraToRenderTransform( cameraToRenderMatrix );
 
 	m_playerController1 = new PlayerController( m_currentMap, m_worldCamera1 );
-	m_playerController1->SetControllerIndex( 1 );
+	m_playerController1->SetControllerIndex( 1, m_numOfControllers );
 
 	m_playerController2 = new PlayerController( m_currentMap, m_worldCamera2 );
-	m_playerController2->SetControllerIndex( 0 );
+	m_playerController2->SetControllerIndex( 0, m_numOfControllers );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Game::SetUpSinglePlayer()
 {
 	m_numActivePlayers = 1;
+	XboxController const& controller1 = g_engine->m_input->GetController( 0 );
+	if ( controller1.IsConnected() )
+	{
+		m_numOfControllers = 1;
+	}
+	else
+	{
+		m_numOfControllers = 0;
+	}
 
 	//m_worldCamera1 = new Camera();
 	m_worldCamera1->SetViewport( AABB2( 0.0f, 0.0f, 1.0f, 1.0f ) );
@@ -849,7 +869,7 @@ void Game::SetUpSinglePlayer()
 	m_worldCamera1->SetCameraToRenderTransform( cameraToRenderMatrix );
 
 	m_playerController1 = new PlayerController( m_currentMap, m_worldCamera1 );
-	m_playerController1->SetControllerIndex( 0 );
+	m_playerController1->SetControllerIndex( 0, -1 ); // -1 insures player gets controller input
 
 	if ( m_currentMap )
 	{

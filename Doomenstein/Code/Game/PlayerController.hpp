@@ -25,7 +25,7 @@ public:
 	Vec3 GetRaycastDirection() const;
 	Vec3 GetCameraPosition() const;
 
-	void SetControllerIndex( int index );
+	void SetControllerIndex( int index, int numOfPlayers );
 	int GetControllerIndex() const;
 	Camera* GetPlayerCamera() const;
 
@@ -34,6 +34,7 @@ public:
 	int			m_killCount = 0;
 	int			m_deathCount = 0;
 	bool		m_isPlayerOne = false;
+	int			m_numOfPlayers = 1;
 
 private:
 	void HandleActorInput( float deltaSeconds );

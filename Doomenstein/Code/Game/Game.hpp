@@ -144,6 +144,7 @@ private:
 
 	void RenderSplitScreen() const;
 	void RenderSinglePlayer() const;
+	int m_numOfControllers = 0;
 
 	void GetAndStartSoundsFromConfig( char const* filePath );
 	SoundID m_mainMenuMusicID;
