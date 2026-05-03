@@ -151,4 +151,5 @@ private:
 	SoundID m_buttonClickSoundID;
 	SoundPlaybackID m_mainMenuMusicPlaybackID;
 	SoundPlaybackID m_gameMusicPlaybackID;
+	float m_musicVolume;
 };

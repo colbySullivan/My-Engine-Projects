@@ -96,7 +96,7 @@ void Game::Startup()
 	CreateProps();
 	g_engine->m_audio->StopSound( m_mainMenuMusicPlaybackID );
 	g_engine->m_audio->StartSound( m_buttonClickSoundID );
-	m_gameMusicPlaybackID = g_engine->m_audio->StartSound( m_gameMusicID );
+	m_gameMusicPlaybackID = g_engine->m_audio->StartSound( m_gameMusicID, true, m_musicVolume );
 	if ( m_maps.size() > 0 )
 	{
 		m_currentMapNumber = 1;
@@ -1038,13 +1038,14 @@ void Game::GetAndStartSoundsFromConfig( char const* filePath )
 		std::string mainMenuMusicPath = xml.ParseXmlAttribute( *gameElem, "mainMenuMusic", "" );
 		std::string gameMusicPath = xml.ParseXmlAttribute( *gameElem, "gameMusic", "" );
 		std::string buttonClickSoundPath = xml.ParseXmlAttribute( *gameElem, "buttonClickSound", "" );
+		m_musicVolume = xml.ParseXmlAttribute( *gameElem, "musicVolume", 1.f );
 
 		m_mainMenuMusicID = g_engine->m_audio->CreateOrGetSound( mainMenuMusicPath );
-			m_gameMusicID = g_engine->m_audio->CreateOrGetSound( gameMusicPath );
+		m_gameMusicID = g_engine->m_audio->CreateOrGetSound( gameMusicPath );
 		m_buttonClickSoundID = g_engine->m_audio->CreateOrGetSound( buttonClickSoundPath );
 
 		gameElem = gameElem->NextSiblingElement( "GameConfig" );
 	}
 
-	m_mainMenuMusicPlaybackID = g_engine->m_audio->StartSound( ( m_mainMenuMusicID ), true, 0.1f ); // #TODO get the main menu volume from XML
+	m_mainMenuMusicPlaybackID = g_engine->m_audio->StartSound( ( m_mainMenuMusicID ), true, m_musicVolume );
 }
