@@ -47,6 +47,7 @@ Game::Game()
 	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
 	WeaponDefinition::InitializeWeaponDefs();
 	MapDefinition::InitializeMapDefs();
+	GetAndStartSoundsFromConfig( "Data/GameConfig.xml" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -93,7 +94,9 @@ void Game::Startup()
 	CreateMapsFromDef();
 	m_isPaused = false;
 	CreateProps();
-
+	g_engine->m_audio->StopSound( m_mainMenuMusicPlaybackID );
+	g_engine->m_audio->StartSound( m_buttonClickSoundID );
+	m_gameMusicPlaybackID = g_engine->m_audio->StartSound( m_gameMusicID );
 	if ( m_maps.size() > 0 )
 	{
 		m_currentMapNumber = 1;
@@ -142,6 +145,14 @@ void Game::Update()
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
+		if ( g_engine->m_audio->IsPlaying( m_gameMusicPlaybackID ) )
+		{
+			g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
+		}
+		if ( !g_engine->m_audio->IsPlaying( m_mainMenuMusicPlaybackID ) )
+		{
+			m_mainMenuMusicPlaybackID = g_engine->m_audio->StartSound( ( m_mainMenuMusicID ), true, 0.1f ); // #TODO get the main menu volume from XML
+		}
 		UpdateAttractMode( deltaSeconds );
 	}
 
@@ -152,6 +163,10 @@ void Game::Update()
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
+		if ( g_engine->m_audio->IsPlaying( m_mainMenuMusicPlaybackID ) )
+		{
+			g_engine->m_audio->StopSound( m_mainMenuMusicPlaybackID );
+		}
 		if ( m_isSlowMo ) // T pressed
 		{
 			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
@@ -250,8 +265,10 @@ void Game::Shutdown()
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateKeyboardInput( XboxController const& controller )
 {
+	bool buttonPressed = false;
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
 	{
+		buttonPressed = true;
 		if ( m_currentGameState == GAMESTATE_ATTRACT )
 		{
 			m_isQuitting = true;
@@ -261,6 +278,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT && m_currentGameState != GAMESTATE_PLAYER_CONNECT )
 	{
+		buttonPressed = true;
 		m_nextGameState = GAMESTATE_ATTRACT;
 		Shutdown();
 	}
@@ -273,11 +291,13 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	}
 	if (g_engine->m_input->WasKeyJustPressed('O')) // Runs a single unpaused Update (simulation step) and then pauses.
 	{
+		buttonPressed = true;
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
 	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) || g_engine->m_input->WasKeyJustPressed( ' ' )  )
 	{
+		buttonPressed = true;
 		if ( m_currentGameState == GAMESTATE_ATTRACT )
 		{
 			m_usedButtonMethod = controller.WasButtonJustPressed( XboxButtonID::START ) ? START : SPACE;
@@ -294,6 +314,11 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
 		g_drawDebug = !g_drawDebug;
+	}
+
+	if ( buttonPressed )
+	{
+		g_engine->m_audio->StartSound( m_buttonClickSoundID );
 	}
 
 	g_engine->m_input->EndFrame();
@@ -990,4 +1015,36 @@ void Game::RenderSinglePlayer() const
 	//g_engine->m_render->SetModelConstants( modelMatrix, Rgba8( 120, 120, 120, 255 ) );
 	//g_engine->m_render->BindTexture( m_testTexture );
 	//g_engine->m_render->DrawIndexBuffer( m_teemoModel->m_vbo, m_teemoModel->m_ibo, m_teemoModel->m_indexCount );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::GetAndStartSoundsFromConfig( char const* filePath )
+{
+	XmlDocument doc;
+	doc.LoadFile( filePath );
+
+	XmlElement* root = doc.RootElement();
+	if ( !root )
+	{
+		return;
+	}
+
+	//XmlElement* gameElem = root->FirstChildElement( "GameConfig" );
+	XmlElement* gameElem = root;
+	XmlUtils xml;
+
+	while ( gameElem )
+	{
+		std::string mainMenuMusicPath = xml.ParseXmlAttribute( *gameElem, "mainMenuMusic", "" );
+		std::string gameMusicPath = xml.ParseXmlAttribute( *gameElem, "gameMusic", "" );
+		std::string buttonClickSoundPath = xml.ParseXmlAttribute( *gameElem, "buttonClickSound", "" );
+
+		m_mainMenuMusicID = g_engine->m_audio->CreateOrGetSound( mainMenuMusicPath );
+			m_gameMusicID = g_engine->m_audio->CreateOrGetSound( gameMusicPath );
+		m_buttonClickSoundID = g_engine->m_audio->CreateOrGetSound( buttonClickSoundPath );
+
+		gameElem = gameElem->NextSiblingElement( "GameConfig" );
+	}
+
+	m_mainMenuMusicPlaybackID = g_engine->m_audio->StartSound( ( m_mainMenuMusicID ), true, 0.1f ); // #TODO get the main menu volume from XML
 }

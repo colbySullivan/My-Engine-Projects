@@ -144,4 +144,11 @@ private:
 
 	void RenderSplitScreen() const;
 	void RenderSinglePlayer() const;
+
+	void GetAndStartSoundsFromConfig( char const* filePath );
+	SoundID m_mainMenuMusicID;
+	SoundID m_gameMusicID;
+	SoundID m_buttonClickSoundID;
+	SoundPlaybackID m_mainMenuMusicPlaybackID;
+	SoundPlaybackID m_gameMusicPlaybackID;
 };
