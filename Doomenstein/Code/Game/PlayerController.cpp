@@ -92,6 +92,16 @@ void PlayerController::RenderUI() const
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 
+	Actor* actor = GetActor();
+	if ( actor && actor->m_isDead )
+	{
+		AABB2 greyScreen = AABB2( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight ) );
+		std::vector<Vertex> greyScreenVerts;
+		AddVertsForAABB2D( greyScreenVerts, greyScreen, Rgba8( 128, 128, 128, 128 ) );
+		g_engine->m_render->BindTexture( nullptr );
+		g_engine->m_render->DrawVertexArray( ( int )greyScreenVerts.size(), greyScreenVerts.data() );
+	}
+
 	g_engine->m_render->EndCamera( uiCamera );
 }
 
