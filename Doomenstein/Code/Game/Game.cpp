@@ -609,7 +609,7 @@ void Game::RenderAttractMode() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::UpdatePlayerConnectMode( float deltaSeconds )
+void Game::UpdatePlayerConnectMode( [[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 

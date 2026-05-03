@@ -84,11 +84,9 @@ void PlayerController::RenderUI() const
 	AddVertsForTextTriangles2D( textVerts, healthHudText, Vec2( textX, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
 	std::string killCountHudText = Stringf( "%5.0f", ownerActor ? m_killCount : 0.f );
-	float killCountX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.01f ) : ( viewportWidth * 0.015f );
 	AddVertsForTextTriangles2D( textVerts, killCountHudText, Vec2( 0.f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
 	std::string deathCountHudText = Stringf( "%5.0f", ownerActor ? m_deathCount : 0.f );
-	float deathCountX = ( viewportHeight == screenSizeY ) ? ( viewportWidth * 0.01f ) : ( viewportWidth * 0.015f );
 	AddVertsForTextTriangles2D( textVerts, deathCountHudText, Vec2( viewportWidth * 0.85f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
 	g_engine->m_render->BindTexture( nullptr );
@@ -413,7 +411,7 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 			spawnInfo.m_spawnLocation = worldHit.m_impactPos;
 			spawnInfo.m_actorOrientation = actor->m_orientation;
 
-			Actor* projectile = m_map->SpawnActor( spawnInfo );
+			//Actor* projectile = m_map->SpawnActor( spawnInfo );
 
 			if ( hitActor )
 			{
