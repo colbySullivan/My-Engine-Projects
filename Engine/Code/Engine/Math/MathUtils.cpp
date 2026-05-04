@@ -506,6 +506,21 @@ bool PushCylindersOutOfEachOther( Vec3& aStart, Vec3& aEnd, float aRadius, Vec3&
 }
 
 //-----------------------------------------------------------------------------------------------
+bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobileDiscRadius, float mobileElasticity, Vec2 const& fixedDiscCenter, Vec2& fixedDiscVel, float fixedDiscRadius, float fixedElasticity )
+{
+	if ( !DoDiscsOverlap( fixedDiscCenter, fixedDiscRadius, mobileDiscCenter, mobileDiscRadius ) )
+	{
+		return false;
+	}
+	PushDiscOutOfFixedDisc2D( mobileDiscCenter, mobileDiscRadius, fixedDiscCenter, fixedDiscRadius );
+	Vec2 normalReflect = mobileDiscCenter - fixedDiscCenter;
+	normalReflect = normalReflect.GetNormalized();
+	mobileDiscVel.GetReflected( normalReflect );
+	float totalElasticity = mobileElasticity * fixedElasticity;
+	mobileDiscVel *= totalElasticity;
+}
+
+//-----------------------------------------------------------------------------------------------
 void TransformPosition2D(Vec2& posToTransform, float uniformScale, float rotationDegrees, Vec2 const& translation)
 {
     posToTransform *= uniformScale;

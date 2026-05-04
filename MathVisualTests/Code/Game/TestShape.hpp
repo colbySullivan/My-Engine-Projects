@@ -16,6 +16,8 @@ public:
 	virtual void AddVertsForMe( std::vector<Vertex>& verts ) const = 0;
 	virtual void ChangeColor( Rgba8 newColor ) = 0;
 
+	bool m_isPhysicsSimulated = false;
+
 public:
 	std::vector<Vertex> m_pointVerts;
 	Vec2 m_closestPoint;
