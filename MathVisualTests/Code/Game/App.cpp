@@ -13,6 +13,7 @@
 #include "Game/GameRaycastVsAABB2.hpp"
 #include "Game/TestShapes3D.hpp"
 #include "Game/Game2DCurves.hpp"
+#include "Game/Game2DPachinkoMachine.hpp"
 
 
 App* g_app = nullptr;
@@ -27,8 +28,8 @@ App::App()
 	DebugRenderConfig debugConfig;
 	DebugRenderSystemStartup( debugConfig );
 
-	g_gameMode = GAMEMODE_2D_CURVES;
-	m_game = new Game2DCurves( this );
+	g_gameMode = GAMEMODE_2D_PACHINKO;
+	m_game = new Game2DPachinkoMachine( this );
 
 	m_game->Startup();
 }
@@ -115,6 +116,7 @@ Game* App::CreateNewGameOfType( GameType type )
 	case GAMEMODE_RAYCAST_VS_AABB2: newGame = new GameRaycastVsAABB2( this ); break;
 	case GAMEMODE_TESTSHAPES_3D: newGame = new TestShapes3D( this ); break;
 	case GAMEMODE_2D_CURVES: newGame = new Game2DCurves( this ); break;
+	case GAMEMODE_2D_PACHINKO: newGame = new Game2DPachinkoMachine( this ); break;
 	}
 	return newGame;
 }

@@ -97,6 +97,9 @@
     <ClCompile Include="CubicHermiteCurve2D.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="Game2DPachinkoMachine.cpp">
+      <Filter>GameModes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -173,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="CubicHermiteCurve2D.hpp">
       <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Game2DPachinkoMachine.hpp">
+      <Filter>GameModes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
