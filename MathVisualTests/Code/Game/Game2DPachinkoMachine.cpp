@@ -273,6 +273,7 @@ void Game2DPachinkoMachine::UpdateBallsWalls()
 		// Top
 		if ( disc->m_center.y + disc->m_discRadius > worldBounds.m_maxs.y )
 		{
+			PushDiscOutOfFixedAABB2D( disc->m_center, disc->m_discRadius, AABB2( Vec2( 0.f, worldBounds.m_maxs.y ), Vec2( worldBounds.m_maxs.x, worldBounds.m_maxs.y ) ) );
 			normal = Vec2( 0.f, -1.f );
 		}
 
@@ -286,14 +287,15 @@ void Game2DPachinkoMachine::UpdateBallsWalls()
 		// Left
 		if ( disc->m_center.x - disc->m_discRadius < worldBounds.m_mins.x )
 		{
+			PushDiscOutOfFixedAABB2D( disc->m_center, disc->m_discRadius, AABB2( Vec2( 0.f, 0.f ), Vec2( 0.f, worldBounds.m_maxs.y ) ) );
 			normal = Vec2( 1.f, 0.f );
 		}
 
 		// Right
 		if ( disc->m_center.x + disc->m_discRadius > worldBounds.m_maxs.x )
 		{
+			PushDiscOutOfFixedAABB2D( disc->m_center, disc->m_discRadius, AABB2( Vec2( worldBounds.m_maxs.x, worldBounds.m_mins.y ), Vec2( worldBounds.m_maxs.x, worldBounds.m_maxs.y ) ) );
 			normal = Vec2( -1.f, 0.f );
-
 		}
 
 		Vec2 VelOnNormal = DotProduct2D( disc->m_velocity, normal ) * normal;
@@ -307,15 +309,11 @@ void Game2DPachinkoMachine::UpdateBallsWalls()
 //-----------------------------------------------------------------------------------------------
 void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 {
-	/*for ( int i = 0; i < static_cast< int >( m_testShapes.size() ); ++i )
+	for ( int i = 0; i < static_cast< int >( m_balls.size() ); ++i )
 	{
-		TestShapeDisc* discA = dynamic_cast< TestShapeDisc* >( m_testShapes[i] );
-		if ( discA == nullptr )
-		{
-			continue;
-		}
+		TestShapeDisc* discA = m_balls[i];
 
-		for ( int j = i + 1; j < static_cast< int >( m_testShapes.size() ); ++j )
+		for ( int j = 0; j < static_cast< int >( m_testShapes.size() ); ++j )
 		{
 			TestShapeDisc* discB = dynamic_cast< TestShapeDisc* >( m_testShapes[j] );
 			if ( discB != nullptr )
@@ -333,7 +331,7 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 				continue;
 			}
 		}
-	}*/
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

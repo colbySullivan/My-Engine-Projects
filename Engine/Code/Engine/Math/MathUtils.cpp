@@ -513,9 +513,10 @@ bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobil
 		return false;
 	}
 	PushDiscOutOfFixedDisc2D( mobileDiscCenter, mobileDiscRadius, fixedDiscCenter, fixedDiscRadius );
+
 	Vec2 normalReflect = mobileDiscCenter - fixedDiscCenter;
 	normalReflect = normalReflect.GetNormalized();
-	mobileDiscVel.GetReflected( normalReflect );
+	mobileDiscVel = mobileDiscVel.GetReflected( normalReflect );
 	float totalElasticity = mobileElasticity * fixedElasticity;
 	mobileDiscVel *= totalElasticity;
 }
