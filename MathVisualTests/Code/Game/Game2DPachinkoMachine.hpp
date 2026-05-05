@@ -24,16 +24,27 @@ private:
 	Vec2					m_tipPos;
 
 	void AddShapes();
+	void ClearShapes();
 
 	void RenderShapes() const;
 	void RenderMouseOutline() const;
 	void RenderVelocityLine() const;
+	void RenderInstructionText() const;
 
 	void UpdateMousePosition();
+	void UpdateGameModeKeyboardInput();
+
+	// Physics
 	void UpdateSpawnBalls();
 	void UpdateBounceBallsEachOther();
 	void UpdateGravity( float deltaSeconds );
 	void UpdateVelocityPoints();
 	void UpdateBallsWalls();
 	void UpdateBounceBallsBumpers();
+	void UpdatePhysics( float deltaSeconds );
+	bool	m_isFixedTimeStep = false;
+	float	m_timeOwed;
+	float	m_fixedTimeStep = 0.005f;
+	int		m_ballsSpawned = 0;
+	bool	m_isBottomWarp = false;
 };

@@ -40,9 +40,10 @@ public:
 	void UpdateCameras( float deltaSeconds );
 	void UpdateKeyboardInput();
 	void RenderGameText( GameType g_gameMode ) const;
+	void RenderText( const char text[], Vec2 pos, float height, Rgba8 color ) const;
+
 private:
 	
-	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	App* m_app = nullptr;
 	std::vector<Vertex> m_lineVerts;
 };
