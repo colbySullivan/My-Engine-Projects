@@ -1,0 +1,5 @@
+<GameConfig
+	numberBumpers="10"
+	wallElasticity="0.9"
+	ballElasticity="0.9"
+/>

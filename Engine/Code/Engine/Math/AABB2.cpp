@@ -1,5 +1,6 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include <cmath>
 
 const AABB2 AABB2::ZERO_TO_ONE = AABB2( Vec2( 0.f, 0.f ), Vec2( 1.f, 1.f ) );
 
@@ -66,6 +67,32 @@ Vec2 const AABB2::GetNearestPoint(Vec2 const& referencePosition) const
 		yNearest = m_maxs.y;
 	
 	return Vec2(xNearest, yNearest);
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec2 const AABB2::GetNearestPointNotInside( Vec2 const& referencePosition ) const
+{
+	float xNearest = referencePosition.x;
+	float yNearest = referencePosition.y;
+
+	if ( xNearest < fabsf( referencePosition.x - m_mins.x ) )
+	{
+		xNearest = m_mins.x;
+	}
+	if ( xNearest < fabsf( referencePosition.x - m_maxs.x ) )
+	{
+		xNearest = m_maxs.x;
+	}
+	if ( yNearest < fabsf( referencePosition.y - m_mins.y ) )
+	{
+		yNearest = m_mins.y;
+	}
+	if ( yNearest < fabsf( referencePosition.y - m_maxs.y ) )
+	{
+		yNearest = m_maxs.y;
+	}
+
+	return Vec2( xNearest, yNearest );
 }
 
 //-----------------------------------------------------------------------------------------------

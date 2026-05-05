@@ -6,6 +6,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameNearestPoint.hpp"
 #include "Game/GameRaycastVsDiscs.hpp"
@@ -27,6 +28,8 @@ App::App()
 
 	DebugRenderConfig debugConfig;
 	DebugRenderSystemStartup( debugConfig );
+
+	LoadXmlMap();
 
 	g_gameMode = GAMEMODE_2D_PACHINKO;
 	m_game = new Game2DPachinkoMachine( this );
@@ -154,5 +157,18 @@ void App::UpdateCursorMode()
 	else
 	{
 		g_engine->m_input->SetCursorMode( CursorMode::FPS );
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void App::LoadXmlMap()
+{
+	g_gameConfig = new NamedStrings();
+	XmlDocument config;
+	XmlError configeResult = config.LoadFile( "Data/GameConfig.xml" );
+	if ( configeResult == 0 )
+	{
+		XmlElement* rootElement = config.RootElement();
+		g_gameConfig->PopulateFromXmlElementAttributes( *rootElement );
 	}
 }

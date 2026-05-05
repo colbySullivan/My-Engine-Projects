@@ -248,6 +248,9 @@
     <ClInclude Include="TestShapeSphere.hpp" />
     <ClInclude Include="TestShapeTriangle.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Run\Data\GameConfig.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

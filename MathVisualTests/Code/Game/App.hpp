@@ -23,6 +23,7 @@ public:
 	void Update(float deltaSeconds);
 	Game* CreateNewGameOfType( GameType type );
 	void Render() const;
+	void LoadXmlMap();
 
 	void SetIsQuitting();
 	bool IsQuitting() const;

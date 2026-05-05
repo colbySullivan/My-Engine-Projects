@@ -31,7 +31,6 @@ private:
 	void RenderVelocityLine() const;
 	void RenderInstructionText() const;
 
-	void PushBallOutOfAllBumpers( TestShapeDisc* ball );
 	void UpdateMousePosition();
 	void UpdateGameModeKeyboardInput();
 
@@ -48,4 +47,5 @@ private:
 	float	m_fixedTimeStep = 0.005f;
 	int		m_ballsSpawned = 0;
 	bool	m_isBottomWarp = false;
+	int		m_bumpers = 10;
 };

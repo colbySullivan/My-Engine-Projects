@@ -6,6 +6,7 @@
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 
 RandomNumberGenerator* g_rng;
@@ -28,6 +29,9 @@ void Game2DPachinkoMachine::Startup()
 {
 	Game::Startup();
 	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X, WORLD_SIZE_Y ) );
+	m_wallElasticity = g_gameConfig->GetValue("wallElasticity", 0.9f);
+	m_elasticity = g_gameConfig->GetValue("ballElasticity", 0.9f);
+	m_bumpers = g_gameConfig->GetValue("numberBumpers", 10);
 	AddShapes();
 }
 
@@ -86,7 +90,7 @@ void Game2DPachinkoMachine::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game2DPachinkoMachine::AddShapes()
 {
-	int numOfShapesEach = 10;
+	int numOfShapesEach = m_bumpers;
 
 	// Capsules
 	for (int Index = 0; Index < numOfShapesEach ; ++Index)
@@ -243,12 +247,14 @@ void Game2DPachinkoMachine::UpdateBounceBallsEachOther()
 			{
 				return;
 			}
-			DiscBounceOffDisc(
+
+			DiscBounceOffEachOther(
 				discA->m_center,
 				discA->m_velocity,
 				discA->m_discRadius,
 				m_elasticity,
 				discB->m_center,
+				discB->m_velocity,
 				discB->m_discRadius,
 				m_elasticity
 			);
@@ -387,7 +393,12 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 
 				Vec2 closestPoint = GetNearestPointOnOBB2D( discA->m_center, *shapeOBB2->m_orientedBox );
 				float smallRadius = 0.1f;
-				PushBallOutOfAllBumpers( discA );
+				if ( shapeOBB2->IsPointInsideMe( discA->m_center ) )
+				{
+					//PushDiscOutOfOBB2D( discA->m_center, discA->m_discRadius, *shapeOBB2->m_orientedBox );
+					PushDiscOutOfFixedDisc2D( discA->m_center, discA->m_discRadius, shapeOBB2->m_center, boundingRadius );
+				}
+
 				DiscBounceOffDisc(
 					discA->m_center,
 					discA->m_velocity,
@@ -413,7 +424,11 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 
 				Vec2 closestPoint = GetNearestPointOnCapsule2D( discA->m_center, capsule->m_boneStart, capsule->m_boneEnd, capsule->m_radius );
 				float smallRadius = 0.1f;
-				PushBallOutOfAllBumpers( discA );
+				if ( capsule->IsPointInsideMe( discA->m_center ) )
+				{
+					PushDiscOutOfFixedDisc2D( discA->m_center, discA->m_discRadius, capsuleCenter, boundingRadius );
+				}
+
 				DiscBounceOffDisc(
 					discA->m_center,
 					discA->m_velocity,
@@ -444,8 +459,8 @@ void Game2DPachinkoMachine::UpdateGameModeKeyboardInput()
 {
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_F8 ) )
 	{
-		ClearShapes();
-		AddShapes();
+		Shutdown();
+		Startup();
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( 'B' ) )
@@ -467,11 +482,11 @@ void Game2DPachinkoMachine::UpdateGameModeKeyboardInput()
 		m_elasticity = GetClamped( m_elasticity + 0.05f, 0.f, 1.0f );
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( '[' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'Q' ) )
 	{
 		m_fixedTimeStep /= 1.1f;
 	}
-	if ( g_engine->m_input->WasKeyJustPressed( ']' ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'E' ) )
 	{
 		m_fixedTimeStep *= 1.1f;
 	}
@@ -501,7 +516,7 @@ void Game2DPachinkoMachine::RenderInstructionText() const
 {
 	std::vector<Vertex> textVerts;
 	float deltaSecondsMs =  (float)g_engine->m_systemClock->GetDeltaSeconds() * 1000.f;
-	std::string instructionText = Stringf( "Space/N=ball(%i) | e=%0.2f(G/H) | B=warp(%s) | P=fixed(%s) | timestep=%0.2fms([/]) | T=slow | dt=%0.2fms",
+	std::string instructionText = Stringf( "Space/N=ball(%i) | e=%0.2f(G/H) | B=warp(%s) | P=fixed(%s) | timestep=%0.2fms(Q/E) | T=slow | dt=%0.2fms",
 		m_ballsSpawned,
 		m_elasticity,
 		m_isBottomWarp ? "ON" : "OFF",
@@ -512,51 +527,4 @@ void Game2DPachinkoMachine::RenderInstructionText() const
 
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
-}
-
-//-----------------------------------------------------------------------------------------------
-void Game2DPachinkoMachine::PushBallOutOfAllBumpers( TestShapeDisc* ball )
-{
-	for ( int j = 0; j < static_cast< int >( m_testShapes.size() ); ++j )
-	{
-		TestShapeOBB2* shapeOBB2 = dynamic_cast< TestShapeOBB2* >( m_testShapes[j] );
-		if ( shapeOBB2 != nullptr )
-		{
-			Vec2 closestPoint = GetNearestPointOnOBB2D( ball->m_center, *shapeOBB2->m_orientedBox );
-			float distToClosest = ( closestPoint - ball->m_center ).GetLength();
-
-			if ( distToClosest < ball->m_discRadius )
-			{
-				Vec2 centerToClosest = closestPoint - ball->m_center;
-				if ( centerToClosest.GetLengthSquared() <= 0.f )
-				{
-					centerToClosest = Vec2( 1.0f, 0.0f );
-				}
-				Vec2 normal = centerToClosest.GetNormalized();
-				float overlap = ball->m_discRadius - distToClosest;
-				ball->m_center -= normal * overlap;
-			}
-			continue;
-		}
-
-		TestShapeCapsule* capsule = dynamic_cast< TestShapeCapsule* >( m_testShapes[j] );
-		if ( capsule != nullptr )
-		{
-			Vec2 closestPoint = GetNearestPointOnCapsule2D( ball->m_center, capsule->m_boneStart, capsule->m_boneEnd, capsule->m_radius );
-			float distToClosest = ( closestPoint - ball->m_center ).GetLength();
-
-			if ( distToClosest < ball->m_discRadius )
-			{
-				Vec2 centerToClosest = closestPoint - ball->m_center;
-				if ( centerToClosest.GetLengthSquared() <= 0.f )
-				{
-					centerToClosest = Vec2( 1.0f, 0.0f );
-				}
-				Vec2 normal = centerToClosest.GetNormalized();
-				float overlap = ball->m_discRadius - distToClosest;
-				ball->m_center -= normal * overlap;
-			}
-			continue;
-		}
-	}
 }

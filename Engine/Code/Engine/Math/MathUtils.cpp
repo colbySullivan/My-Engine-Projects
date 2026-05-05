@@ -453,6 +453,25 @@ bool PushDiscOutOfFixedAABB2D( Vec2& mobileDiscCenter, float discRadius, AABB2 c
 	return PushDiscOutOfFixedPoint2D( mobileDiscCenter, discRadius, nearestPoint );
 }
 
+//-----------------------------------------------------------------------------------------------
+void PushDiscOutOfOBB2D( Vec2& discCenter, float discRadius, OBB2 const& obb )
+{
+	// #TODO This is super broke do not use yet
+	Vec2 localDiscCenter = obb.GetLocalPosForWorldPos( discCenter );
+	AABB2 localAABB( -obb.m_halfDimensions, obb.m_halfDimensions );
+	Vec2 localClosestPoint = localAABB.GetNearestPointNotInside( localDiscCenter );
+	Vec2 localDisplacement = localDiscCenter - localClosestPoint;
+	float distToClosest = localDisplacement.GetLength();
+
+	if ( distToClosest < discRadius )
+	{
+		Vec2 localPushDir = localDisplacement.GetNormalized();
+		float overlap = discRadius - distToClosest;
+		Vec2 localNewCenter = localDiscCenter + ( localPushDir * overlap );
+		discCenter = obb.GetWorldPosForLocalPos( localNewCenter );
+	}
+}
+
 //------------------------------------------------------------------------------
 bool PushCylinderOutOfFixedCylinder( Vec3& mobileStart, Vec3& mobileEnd, float mobileRadius, const Vec3& fixedStart, const Vec3& fixedEnd, float fixedRadius )
 {
@@ -519,6 +538,37 @@ bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobil
 	mobileDiscVel = mobileDiscVel.GetReflected( normalReflect );
 	float totalElasticity = mobileElasticity * fixedElasticity;
 	mobileDiscVel *= totalElasticity;
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool DiscBounceOffEachOther( Vec2& firstDiscCenter, Vec2& firstDiscVel, float firstDiscRadius, float firstElasticity, Vec2& otherDiscCenter, Vec2& otherDiscVel, float otherDiscRadius, float otherElasticity )
+{
+	if ( !DoDiscsOverlap( firstDiscCenter, firstDiscRadius, otherDiscCenter, otherDiscRadius ) )
+	{
+		return false;
+	}
+
+	PushDiscsOutOfEachOther2D( firstDiscCenter, firstDiscRadius, otherDiscCenter, otherDiscRadius );
+
+	if ( DotProduct2D( firstDiscVel, otherDiscVel ) < 0.f )
+	{
+		return false;
+	}
+
+	Vec2 normalReflect = firstDiscCenter - otherDiscCenter;
+	normalReflect = normalReflect.GetNormalized();
+
+	Vec2 firstVelOnNormal = DotProduct2D( firstDiscVel, normalReflect ) * normalReflect;
+	Vec2 firstVelOnTangent = firstDiscVel - firstVelOnNormal;
+
+	Vec2 otherVelOnNormal = DotProduct2D( otherDiscVel, normalReflect ) * normalReflect;
+	Vec2 otherVelOnTangent = otherDiscVel - otherVelOnNormal;
+
+	float totalElasticity = firstElasticity * otherElasticity;
+	firstDiscVel = firstVelOnTangent + ( otherVelOnNormal * totalElasticity );
+	otherDiscVel = otherVelOnTangent + ( firstVelOnNormal * totalElasticity );
+
 	return true;
 }
 
@@ -1353,7 +1403,7 @@ float Hesitate5( float t )
 //------------------------------------------------------------------------------
 float CustomFunkyEasingFunction( float t )
 {
-	return ComputeQuinticBezier1D( 0, 0, 1, 0, 1, 1, t ); // #todo make this something actually funky
+	return ComputeQuinticBezier1D( 0, 0, 1, 0, 1, 1, t );
 }
 
 //-----------------------------------------------------------------------------------------------

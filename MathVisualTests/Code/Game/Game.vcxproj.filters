@@ -20,6 +20,9 @@
     <Filter Include="Shapes\3D">
       <UniqueIdentifier>{c3cc856e-f09b-403e-b1cc-b1bcc13d7145}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{f329886a-74b1-4194-a4d7-6748e9c5aa5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -180,5 +183,10 @@
     <ClInclude Include="Game2DPachinkoMachine.hpp">
       <Filter>GameModes</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Run\Data\GameConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
