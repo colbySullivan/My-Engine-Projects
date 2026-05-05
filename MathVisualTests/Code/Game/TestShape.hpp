@@ -17,6 +17,7 @@ public:
 	virtual void ChangeColor( Rgba8 newColor ) = 0;
 
 	bool m_isPhysicsSimulated = false;
+	float m_elasticity = 0.9f;
 
 public:
 	std::vector<Vertex> m_pointVerts;

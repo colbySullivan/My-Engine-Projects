@@ -99,7 +99,7 @@ bool	PushDiscsOutOfEachOther2D( Vec2& aCenter, float aRadius, Vec2& bCenter, flo
 bool	PushDiscOutOfFixedAABB2D( Vec2& mobileDiscCenter, float discRadius, AABB2 const& fixedBox );
 bool	PushCylinderOutOfFixedCylinder( Vec3& mobileStart, Vec3& mobileEnd, float mobileRadius, const Vec3& fixedStart, const Vec3& fixedEnd, float fixedRadius );
 bool	PushCylindersOutOfEachOther( Vec3& aStart, Vec3& aEnd, float aRadius, Vec3& bStart, Vec3& bEnd, float bRadius );	
-bool	DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobileDiscRadius, float mobileElasticity, Vec2 const& fixedDiscCenter, Vec2& fixedDiscVel, float fixedDiscRadius, float fixedElasticity );
+bool	DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobileDiscRadius, float mobileElasticity, Vec2 const& fixedDiscCenter, float fixedDiscRadius, float fixedElasticity );
 
 //-----------------------------------------------------------------------------------
 // Transform utilities

@@ -70,7 +70,7 @@ void Game2DPachinkoMachine::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game2DPachinkoMachine::AddShapes()
 {
-	int numOfShapesEach = 1;
+	int numOfShapesEach = 10;
 
 	// Capsules
 	for (int Index = 0; Index < numOfShapesEach ; ++Index)
@@ -78,12 +78,14 @@ void Game2DPachinkoMachine::AddShapes()
 		Vec2 randomPos = g_rng->GetRandom2DPosition( 10.f, m_worldCamera->GetOrthoTopRight().x - 10.f, 10.f, m_worldCamera->GetOrthoTopRight().y - 10.f );
 		Vec2 randomPosOffset = Vec2( randomPos.x + g_rng->RollRandomIntInRange(-3, 3), randomPos.y + g_rng->RollRandomIntInRange(-3, 3));
 		float randomRadius = g_rng->RollRandomFloatInRange( 2.f, 3.f );
+		float randomElasticity = g_rng->RollRandomFloatInRange( 0.01f, 0.9f );
 		TestShape* capsule = new TestShapeCapsule(
 			randomPos,
 			randomPosOffset,
 			randomRadius,
-			Rgba8( 0, 255, 0, 255 )
+			Rgba8( (unsigned char)(255 - ( randomElasticity * 255.f )), (unsigned char)(randomElasticity * 255.f), 0)
 		);
+		capsule->m_elasticity = randomElasticity;
 		m_testShapes.push_back( capsule );
 	}
 
@@ -91,12 +93,14 @@ void Game2DPachinkoMachine::AddShapes()
 	for ( int Index = 0; Index < numOfShapesEach; ++Index )
 	{
 		Vec2 randomPos = g_rng->GetRandom2DPosition( 10.f, m_worldCamera->GetOrthoTopRight().x - 10.f, 10.f, m_worldCamera->GetOrthoTopRight().y - 10.f );
+		float randomElasticity = g_rng->RollRandomFloatInRange( 0.01f, 0.99f );
 		float randomRadius = g_rng->RollRandomFloatInRange( 2.f, 3.f );
 		TestShape* disc = new TestShapeDisc(
 			randomPos,
 			randomRadius,
-			Rgba8( 255, 255, 255, 255 )
+			Rgba8( ( unsigned char )( 255 - ( randomElasticity * 255.f ) ), ( unsigned char )( randomElasticity * 255.f ), 0 )
 		);
+		disc->m_elasticity = randomElasticity;
 		m_testShapes.push_back( disc );
 	}
 
@@ -104,6 +108,7 @@ void Game2DPachinkoMachine::AddShapes()
 	for ( int Index = 0; Index < numOfShapesEach; ++Index )
 	{
 		Vec2 iBasis = Vec2( 1.f, 1.f );
+		float randomElasticity = g_rng->RollRandomFloatInRange( 0.01f, 0.99f );
 		iBasis.Normalize();
 		Vec2 randomPosCenter = g_rng->GetRandom2DPosition( 10.f, m_worldCamera->GetOrthoTopRight().x - 10.f, 10.f, m_worldCamera->GetOrthoTopRight().y - 10.f );
 		Vec2 halfDimensions = Vec2(
@@ -114,8 +119,9 @@ void Game2DPachinkoMachine::AddShapes()
 			randomPosCenter,
 			iBasis,
 			halfDimensions,
-			Rgba8( 255, 255, 255, 255 )
+			Rgba8( ( unsigned char )( 255 - ( randomElasticity * 255.f ) ), ( unsigned char )( randomElasticity * 255.f ), 0 )
 		);
+		obb2->m_elasticity = randomElasticity;
 		m_testShapes.push_back( obb2 );
 	}
 }
@@ -159,7 +165,7 @@ void Game2DPachinkoMachine::UpdateSpawnBalls()
 		TestShapeDisc* disc = new TestShapeDisc(
 			m_tailPos,
 			randomRadius,
-			Rgba8( 0, 0, 125 * randomRadius, 255 )
+			Rgba8( ( unsigned char )(255 * randomRadius), ( unsigned char )(255 * randomRadius), ( unsigned char )(200 + ( 25 * randomRadius ) ) )
 		);
 		disc->m_isPhysicsSimulated = true;
 		TestShapeDisc* discB = dynamic_cast< TestShapeDisc* >( disc );
@@ -175,7 +181,7 @@ void Game2DPachinkoMachine::UpdateSpawnBalls()
 		TestShapeDisc* disc = new TestShapeDisc(
 			m_tailPos,
 			randomRadius,
-			Rgba8( 0, 0, 125 * randomRadius, 255 )
+			Rgba8( ( unsigned char )(255 * randomRadius), ( unsigned char )(255 * randomRadius), ( unsigned char )(200 + ( 25 * randomRadius ) ) )
 		);
 		disc->m_isPhysicsSimulated = true;
 		TestShapeDisc* discB = dynamic_cast< TestShapeDisc* >( disc );
@@ -209,7 +215,6 @@ void Game2DPachinkoMachine::UpdateBounceBallsEachOther()
 				discA->m_discRadius,
 				m_elasticity,
 				discB->m_center,
-				discB->m_velocity,
 				discB->m_discRadius,
 				m_elasticity
 			);
@@ -324,9 +329,8 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 					discA->m_discRadius,
 					m_elasticity,
 					discB->m_center,
-					discB->m_velocity,
 					discB->m_discRadius,
-					m_elasticity
+					discB->m_elasticity
 				);
 				continue;
 			}

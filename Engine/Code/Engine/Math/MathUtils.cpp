@@ -506,7 +506,7 @@ bool PushCylindersOutOfEachOther( Vec3& aStart, Vec3& aEnd, float aRadius, Vec3&
 }
 
 //-----------------------------------------------------------------------------------------------
-bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobileDiscRadius, float mobileElasticity, Vec2 const& fixedDiscCenter, Vec2& fixedDiscVel, float fixedDiscRadius, float fixedElasticity )
+bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobileDiscRadius, float mobileElasticity, Vec2 const& fixedDiscCenter, float fixedDiscRadius, float fixedElasticity )
 {
 	if ( !DoDiscsOverlap( fixedDiscCenter, fixedDiscRadius, mobileDiscCenter, mobileDiscRadius ) )
 	{
@@ -519,6 +519,7 @@ bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobil
 	mobileDiscVel = mobileDiscVel.GetReflected( normalReflect );
 	float totalElasticity = mobileElasticity * fixedElasticity;
 	mobileDiscVel *= totalElasticity;
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------
