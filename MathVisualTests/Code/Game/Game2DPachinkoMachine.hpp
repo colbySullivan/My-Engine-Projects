@@ -31,6 +31,7 @@ private:
 	void RenderVelocityLine() const;
 	void RenderInstructionText() const;
 
+	void PushBallOutOfAllBumpers( TestShapeDisc* ball );
 	void UpdateMousePosition();
 	void UpdateGameModeKeyboardInput();
 

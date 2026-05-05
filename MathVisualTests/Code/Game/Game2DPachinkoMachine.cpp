@@ -94,7 +94,7 @@ void Game2DPachinkoMachine::AddShapes()
 		Vec2 randomPos = g_rng->GetRandom2DPosition( 10.f, m_worldCamera->GetOrthoTopRight().x - 10.f, 10.f, m_worldCamera->GetOrthoTopRight().y - 10.f );
 		Vec2 randomPosOffset = Vec2( randomPos.x + g_rng->RollRandomIntInRange(-3, 3), randomPos.y + g_rng->RollRandomIntInRange(-3, 3));
 		float randomRadius = g_rng->RollRandomFloatInRange( 2.f, 3.f );
-		float randomElasticity = g_rng->RollRandomFloatInRange( 0.01f, 0.9f );
+		float randomElasticity = g_rng->RollRandomFloatInRange( 0.1f, 0.9f );
 		TestShape* capsule = new TestShapeCapsule(
 			randomPos,
 			randomPosOffset,
@@ -109,7 +109,7 @@ void Game2DPachinkoMachine::AddShapes()
 	for ( int Index = 0; Index < numOfShapesEach; ++Index )
 	{
 		Vec2 randomPos = g_rng->GetRandom2DPosition( 10.f, m_worldCamera->GetOrthoTopRight().x - 10.f, 10.f, m_worldCamera->GetOrthoTopRight().y - 10.f );
-		float randomElasticity = g_rng->RollRandomFloatInRange( 0.01f, 0.99f );
+		float randomElasticity = g_rng->RollRandomFloatInRange( 0.1f, 0.99f );
 		float randomRadius = g_rng->RollRandomFloatInRange( 2.f, 3.f );
 		TestShape* disc = new TestShapeDisc(
 			randomPos,
@@ -124,7 +124,7 @@ void Game2DPachinkoMachine::AddShapes()
 	for ( int Index = 0; Index < numOfShapesEach; ++Index )
 	{
 		Vec2 iBasis = Vec2( 1.f, 1.f );
-		float randomElasticity = g_rng->RollRandomFloatInRange( 0.01f, 0.99f );
+		float randomElasticity = g_rng->RollRandomFloatInRange( 0.1f, 0.99f );
 		iBasis.Normalize();
 		Vec2 randomPosCenter = g_rng->GetRandom2DPosition( 10.f, m_worldCamera->GetOrthoTopRight().x - 10.f, 10.f, m_worldCamera->GetOrthoTopRight().y - 10.f );
 		Vec2 halfDimensions = Vec2(
@@ -386,8 +386,8 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 				}
 
 				Vec2 closestPoint = GetNearestPointOnOBB2D( discA->m_center, *shapeOBB2->m_orientedBox );
-
 				float smallRadius = 0.1f;
+				PushBallOutOfAllBumpers( discA );
 				DiscBounceOffDisc(
 					discA->m_center,
 					discA->m_velocity,
@@ -412,8 +412,8 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 				}
 
 				Vec2 closestPoint = GetNearestPointOnCapsule2D( discA->m_center, capsule->m_boneStart, capsule->m_boneEnd, capsule->m_radius );
-
 				float smallRadius = 0.1f;
+				PushBallOutOfAllBumpers( discA );
 				DiscBounceOffDisc(
 					discA->m_center,
 					discA->m_velocity,
@@ -508,8 +508,55 @@ void Game2DPachinkoMachine::RenderInstructionText() const
 		m_isFixedTimeStep ? "ON" : "OFF",
 		m_fixedTimeStep * 1000.f,
 		deltaSecondsMs );
-	AddVertsForTextTriangles2D( textVerts, instructionText, Vec2( 1.f, 8590.f ), 2.f, Rgba8( 255, 255, 255 ) );
+	AddVertsForTextTriangles2D( textVerts, instructionText, Vec2( 1.f, 90.f ), 2.f, Rgba8( 255, 255, 255 ) );
 
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game2DPachinkoMachine::PushBallOutOfAllBumpers( TestShapeDisc* ball )
+{
+	for ( int j = 0; j < static_cast< int >( m_testShapes.size() ); ++j )
+	{
+		TestShapeOBB2* shapeOBB2 = dynamic_cast< TestShapeOBB2* >( m_testShapes[j] );
+		if ( shapeOBB2 != nullptr )
+		{
+			Vec2 closestPoint = GetNearestPointOnOBB2D( ball->m_center, *shapeOBB2->m_orientedBox );
+			float distToClosest = ( closestPoint - ball->m_center ).GetLength();
+
+			if ( distToClosest < ball->m_discRadius )
+			{
+				Vec2 centerToClosest = closestPoint - ball->m_center;
+				if ( centerToClosest.GetLengthSquared() <= 0.f )
+				{
+					centerToClosest = Vec2( 1.0f, 0.0f );
+				}
+				Vec2 normal = centerToClosest.GetNormalized();
+				float overlap = ball->m_discRadius - distToClosest;
+				ball->m_center -= normal * overlap;
+			}
+			continue;
+		}
+
+		TestShapeCapsule* capsule = dynamic_cast< TestShapeCapsule* >( m_testShapes[j] );
+		if ( capsule != nullptr )
+		{
+			Vec2 closestPoint = GetNearestPointOnCapsule2D( ball->m_center, capsule->m_boneStart, capsule->m_boneEnd, capsule->m_radius );
+			float distToClosest = ( closestPoint - ball->m_center ).GetLength();
+
+			if ( distToClosest < ball->m_discRadius )
+			{
+				Vec2 centerToClosest = closestPoint - ball->m_center;
+				if ( centerToClosest.GetLengthSquared() <= 0.f )
+				{
+					centerToClosest = Vec2( 1.0f, 0.0f );
+				}
+				Vec2 normal = centerToClosest.GetNormalized();
+				float overlap = ball->m_discRadius - distToClosest;
+				ball->m_center -= normal * overlap;
+			}
+			continue;
+		}
+	}
 }
