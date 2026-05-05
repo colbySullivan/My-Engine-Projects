@@ -234,6 +234,7 @@
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\ProjectileActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies.xml" />
     <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml" />
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
   </ItemGroup>
@@ -254,6 +255,7 @@
     <Image Include="..\..\Run\Data\Maps\MPMap.png" />
     <Image Include="..\..\Run\Data\Maps\PortalMap.png" />
     <Image Include="..\..\Run\Data\Maps\TestMap.png" />
+    <Image Include="..\..\Run\Data\Maps\TownZombies.png" />
     <Image Include="..\..\Run\Data\Textures\PlayerTankBase.png" />
     <Image Include="..\..\Run\Data\Textures\PlayerTankTop.png" />
     <Image Include="..\..\Run\Data\Textures\teemo_texture.png" />

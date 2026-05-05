@@ -108,14 +108,14 @@ void PlayerController::RenderUI() const
 //-----------------------------------------------------------------------------------------------
 void PlayerController::UpdateInput( float deltaSeconds )
 {
-	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( 'F' ) && m_numOfPlayers == 1 )
+	if ( g_engine->m_input->WasKeyJustPressed( 'F' ) && ( m_numOfPlayers == 1 || m_numOfPlayers == -1 ) )
 	{
 		ToggleCameraMode();
 		m_isCurrentlyPlayerControlled = !m_isCurrentlyPlayerControlled;
 		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame
 	}
 
-	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( 'N' ) && m_numOfPlayers == 1 )
+	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( 'N' ) && ( m_numOfPlayers == 1 || m_numOfPlayers == -1 ) )
 	{
 		m_isCurrentlyPlayerControlled = true;
 		g_engine->m_input->EndFrame(); // Fixes issue multiple switches are called in a single frame

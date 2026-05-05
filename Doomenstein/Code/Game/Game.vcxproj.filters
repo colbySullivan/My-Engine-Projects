@@ -167,6 +167,9 @@
     <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml">
       <Filter>Data\Definitions</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Run\Data\Maps\MPMap.png">
@@ -231,6 +234,9 @@
     </Image>
     <Image Include="..\..\Run\Data\Textures\TestUV.png">
       <Filter>Data\Textures</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Maps\TownZombies.png">
+      <Filter>Data\Maps</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

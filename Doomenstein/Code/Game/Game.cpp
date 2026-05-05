@@ -99,7 +99,7 @@ void Game::Startup()
 	m_gameMusicPlaybackID = g_engine->m_audio->StartSound( m_gameMusicID, true, m_musicVolume );
 	if ( m_maps.size() > 0 )
 	{
-		m_currentMapNumber = 1;
+		m_currentMapNumber = 2;
 		m_currentMap = m_maps[m_currentMapNumber];
 	}
 

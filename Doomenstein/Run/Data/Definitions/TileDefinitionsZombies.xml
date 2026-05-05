@@ -1,0 +1,6 @@
+<Definitions>
+	<TileDefinition name="Lava" isSolid="false" mapImagePixelColor="255,0,0" floorSpriteCoords="6,7"/>
+	<TileDefinition name="OpenDirt" isSolid="false" mapImagePixelColor="127,51,0" floorSpriteCoords="5,2"/>
+	<TileDefinition name="StoneFloor" isSolid="false" mapImagePixelColor="0,0,0" floorSpriteCoords="3,6"/>
+	<TileDefinition name="BrickWall" isSolid="true" mapImagePixelColor="0,0,255" wallSpriteCoords="0,5"/>
+</Definitions>

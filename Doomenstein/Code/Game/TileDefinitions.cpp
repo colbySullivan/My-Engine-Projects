@@ -46,7 +46,7 @@ static void LoadTileDefsFromFile( char const* filePath )
 void TileDefinition::InitializeTileDefs()
 {
 	s_definitions.clear();
-	LoadTileDefsFromFile( "Data/Definitions/TileDefinitions.xml" );
+	LoadTileDefsFromFile( "Data/Definitions/TileDefinitionsZombies.xml" );
 }
 
 //-----------------------------------------------------------------------------------------------
