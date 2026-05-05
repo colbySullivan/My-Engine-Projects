@@ -320,20 +320,32 @@ void Game2DPachinkoMachine::UpdateBounceBallsBumpers()
 
 		for ( int j = 0; j < static_cast< int >( m_testShapes.size() ); ++j )
 		{
-			TestShapeDisc* discB = dynamic_cast< TestShapeDisc* >( m_testShapes[j] );
-			if ( discB != nullptr )
+			/*TODO ll Ball-vs-Bumper collision checks should all begin with a trivial-rejection test of ball-vs-bounding-disc, so every bumper type (including
+			capsules and OBBs) should know their own bounding circle center and radius.For collision detection, most pairs( vs.all shapes ) should be
+				rejected quickly using a simple “distance - squared vs.square - of - sum - of - radii” disc - vs - disc overlap check.*/
+
+			TestShapeDisc* shapeDisc = dynamic_cast< TestShapeDisc* >( m_testShapes[j] );
+			if ( shapeDisc != nullptr )
 			{
 				DiscBounceOffDisc(
 					discA->m_center,
 					discA->m_velocity,
 					discA->m_discRadius,
 					m_elasticity,
-					discB->m_center,
-					discB->m_discRadius,
-					discB->m_elasticity
+					shapeDisc->m_center,
+					shapeDisc->m_discRadius,
+					shapeDisc->m_elasticity
 				);
 				continue;
 			}
+			TestShapeOBB2* shapeOBB2 = dynamic_cast< TestShapeOBB2* >( m_testShapes[j] );
+			if ( shapeOBB2 != nullptr )
+			{
+				shapeOBB2->m_closestPoint;
+				// TODO push disc out of closest point
+				continue;
+			}
+
 		}
 	}
 }
