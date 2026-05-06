@@ -33,7 +33,6 @@ Map::Map( Game* game, const MapDefinition* definition )
 
 	CreateTiles();
 	CreateGeometry();
-	AddActors();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -64,6 +63,7 @@ Map::~Map()
 //-----------------------------------------------------------------------------------------------
 void Map::Startup()
 {
+	AddActors();
 	if ( m_game->m_playerController1 )
 	{
 		SpawnPlayer( m_game->m_playerController1 );
@@ -274,6 +274,11 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 	Vec3 actorAEnd = actorA->m_position + Vec3( 0.f, 0.f, actorA->m_height );
 	Vec3 actorBEnd = actorB->m_position + Vec3( 0.f, 0.f, actorB->m_height );
 
+	if ( !actorA->m_actorDef->m_collidesWithActors || !actorB->m_actorDef->m_collidesWithActors )
+	{
+		return;
+	}
+
 	if ( actorA->m_canBePushed && !actorB->m_canBePushed )
 	{
 		PushCylinderOutOfFixedCylinder( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
@@ -284,7 +289,7 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 	}
 	else
 	{
-		//PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
+		PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
 	}
 }
 
@@ -671,6 +676,11 @@ Actor* Map::SpawnActor( const SpawnInfo& spawnInfo )
 	if ( spawnInfo.m_name == "Demon" )
 	{
 		AiController* aiController = new AiController( this );
+		ActorHandle playerHandle = m_game->m_playerController1->GetActorHandle();
+		if ( playerHandle.IsValid() )
+		{
+			aiController->SetTargetActor( playerHandle );
+		}
 		aiController->Possess( newActor );
 	}
 	return newActor;

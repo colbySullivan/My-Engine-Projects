@@ -101,6 +101,22 @@ public:
 	float GetDistanceToActor( const Actor* other ) const;
 	bool TryUpgradeCurrentWeapon();
 
+	bool IsDemonSpawner() const;
+	void UpdateSpawner( float deltaSeconds );
+	void SpawnDemon();
+	void StartNewRound();
+	int GetCurrentRound() const;
+	int GetDemonsRemainingThisRound() const;
+	bool IsRoundComplete() const;
+
+	Timer* m_spawnTimer = nullptr;
+	int m_currentRound = 1;
+	int m_demonsToSpawnThisRound = 0;
+	int m_demonsSpawnedThisRound = 0;
+	int m_maxDemonsAliveAtOnce = 24;
+	float m_spawnDelaySeconds = 2.0f;
+	bool m_isSpawnerActive = false;
+
 private:
 	Controller* m_currentController = nullptr;
 	Controller* m_savedAIController = nullptr;
@@ -136,4 +152,5 @@ private:
 	void GetCurrentAnimTimer( Camera* playerCamera );
 	const DirectionalAnimInfo* GetDirectionalAnimForCamera( const SpriteAnimationGroupDefinition* animGroup, Camera* playerCamera ) const;
 	void TryToPlaySound( SoundID sound, float volume = 1.f );
+	void CreateDemonSpawner();
 };

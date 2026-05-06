@@ -17,6 +17,7 @@ public:
 	virtual void RenderUI() const override;
 	void HandleMovement( float deltaSeconds );
 
+	void SetTargetActor( ActorHandle targetActorHandle ) { m_targetActorHandle = targetActorHandle; }
 	Vec3 GetRaycastDirection() const;
 	virtual void DamagedBy( Actor* attacker, float damage ) override;
 

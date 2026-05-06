@@ -7,6 +7,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 
 //-----------------------------------------------------------------------------------------------
 Actor::Actor( Game* owner, Vec3 start, Vec3 end, float radius, int numSlices )
@@ -46,6 +47,11 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
     {
         CreatePackAPunch();
     }
+    
+    else if ( spawnInfo.m_name == "DemonSpawner" )
+    {
+        CreateDemonSpawner();
+	}
 
     else
     {
@@ -66,40 +72,48 @@ Actor::Actor( ActorDefinition* ActorDef )
 //-----------------------------------------------------------------------------------------------
 Actor::~Actor()
 {
-    delete m_attackTimer;
-    m_attackTimer = nullptr;
+	delete m_attackTimer;
+	m_attackTimer = nullptr;
 
-    delete m_animTimer;
-    m_animTimer = nullptr;
+	delete m_animTimer;
+	m_animTimer = nullptr;
 
-    delete m_weaponRefireTimer;
-    m_weaponRefireTimer = nullptr;
+	delete m_weaponRefireTimer;
+	m_weaponRefireTimer = nullptr;
 
-    delete m_weaponAnimTimer;
-    m_weaponAnimTimer = nullptr;
+	delete m_weaponAnimTimer;
+	m_weaponAnimTimer = nullptr;
 
-    delete m_corpseTimer;
-    m_corpseTimer = nullptr;
+	delete m_corpseTimer;
+	m_corpseTimer = nullptr;
 
-    delete m_currentSpriteSheet;
-    m_currentSpriteSheet = nullptr;
+	delete m_spawnTimer;
+	m_spawnTimer = nullptr;
 
-    delete m_weaponSpriteSheet;
-    m_weaponSpriteSheet = nullptr;
+	delete m_currentSpriteSheet;
+	m_currentSpriteSheet = nullptr;
 
-    delete m_currentWeaponAnim;
-    m_currentWeaponAnim = nullptr;
+	delete m_weaponSpriteSheet;
+	m_weaponSpriteSheet = nullptr;
 
-    m_currentController = nullptr;
-    m_savedAIController = nullptr;
+	delete m_currentWeaponAnim;
+	m_currentWeaponAnim = nullptr;
 
-    m_texture = nullptr;
+	m_currentController = nullptr;
+	m_savedAIController = nullptr;
+
+	m_texture = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( [[maybe_unused]] float deltaSeconds )
 {
+	if ( IsDemonSpawner() )
+	{
+		UpdateSpawner( deltaSeconds );
+	}
+
     if ( m_currentController )
     {
         m_currentController->Update( deltaSeconds );
@@ -871,6 +885,29 @@ void Actor::TryToPlaySound( SoundID sound, float volume )
 
 }
 
+void Actor::CreateDemonSpawner()
+{
+	m_actorDef = ActorDefinition::GetByName( "DemonSpawner" );
+	if ( !m_actorDef )
+	{
+		return;
+	}
+
+	m_height = m_actorDef->m_physicsHeight;
+	m_radius = m_actorDef->m_physicsRadius;
+	m_health = m_actorDef->m_health;
+	m_canBePushed = false;
+
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+	m_modelColor = Rgba8( 255, 0, 0, 200 );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, m_modelColor, AABB2::ZERO_TO_ONE, 32 );
+
+	m_isSpawnerActive = true;
+	m_currentRound = 1;
+	StartNewRound();
+}
+
 //-----------------------------------------------------------------------------------------------
 void Actor::UpdateWeaponAnimation()
 {
@@ -1024,6 +1061,136 @@ bool Actor::TryUpgradeCurrentWeapon()
 
 	UpdateWeaponAnimation();
 	LoadWeaponSounds();
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::StartNewRound()
+{
+	m_demonsToSpawnThisRound = 6 + ( ( m_currentRound - 1 ) * 6 );
+	m_demonsSpawnedThisRound = 0;
+
+	m_spawnDelaySeconds = 2.0f - ( m_currentRound * 0.1f );
+	if ( m_spawnDelaySeconds < 0.5f )
+	{
+		m_spawnDelaySeconds = 0.5f;
+	}
+
+	if ( m_spawnTimer )
+	{
+		delete m_spawnTimer;
+	}
+	m_spawnTimer = new Timer( m_spawnDelaySeconds );
+	m_spawnTimer->Start();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::UpdateSpawner( float deltaSeconds )
+{
+	if ( !m_isSpawnerActive || !m_map )
+	{
+		return;
+	}
+
+	if ( IsRoundComplete() )
+	{
+		m_currentRound++;
+		StartNewRound();
+		return;
+	}
+
+	if ( m_demonsSpawnedThisRound >= m_demonsToSpawnThisRound )
+	{
+		return;
+	}
+
+	int aliveDemonsCount = 0;
+	for ( Actor* actor : m_map->m_actorVector )
+	{
+		if ( actor && actor->m_actorDef &&
+			actor->m_actorDef->m_name == "Demon" &&
+			!actor->m_isDead )
+		{
+			aliveDemonsCount++;
+		}
+	}
+
+	if ( aliveDemonsCount >= m_maxDemonsAliveAtOnce )
+	{
+		return;
+	}
+
+	if ( m_spawnTimer && m_spawnTimer->HasPeriodElapsed() )
+	{
+		SpawnDemon();
+		m_demonsSpawnedThisRound++;
+		m_spawnTimer->Start();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Actor::SpawnDemon()
+{
+	if ( !m_map )
+	{
+		return;
+	}
+
+	Vec3 spawnOffset = Vec3(
+		g_rng->RollRandomFloatInRange( -0.5f, 0.5f ),
+		g_rng->RollRandomFloatInRange( -0.5f, 0.5f ),
+		0.0f
+	);
+
+	SpawnInfo demonSpawn;
+	demonSpawn.m_name = "Demon";
+	demonSpawn.m_spawnLocation = m_position + spawnOffset;
+	demonSpawn.m_actorOrientation = EulerAngles( g_rng->RollRandomFloatInRange( 0.f, 360.f ), 0.f, 0.f );
+
+	Actor* spawnedDemon = m_map->SpawnActor( demonSpawn );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Actor::IsDemonSpawner() const
+{
+	return m_actorDef && m_actorDef->m_name == "DemonSpawner";
+}
+
+//-----------------------------------------------------------------------------------------------
+int Actor::GetCurrentRound() const
+{
+	return m_currentRound;
+}
+
+//-----------------------------------------------------------------------------------------------
+int Actor::GetDemonsRemainingThisRound() const
+{
+	return m_demonsToSpawnThisRound - m_demonsSpawnedThisRound;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Actor::IsRoundComplete() const
+{
+	if ( !m_map )
+	{
+		return false;
+	}
+
+	if ( m_demonsSpawnedThisRound < m_demonsToSpawnThisRound )
+	{
+		return false;
+	}
+
+	for ( Actor* actor : m_map->m_actorVector )
+	{
+		if ( actor && actor->m_actorDef &&
+			actor->m_actorDef->m_name == "Demon" &&
+			!actor->m_isDead )
+		{
+			return false;
+		}
+	}
 
 	return true;
 }

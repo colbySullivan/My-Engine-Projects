@@ -89,6 +89,44 @@ void PlayerController::RenderUI() const
 	std::string deathCountHudText = Stringf( "%5.0f", ownerActor ? m_deathCount : 0.f );
 	AddVertsForTextTriangles2D( textVerts, deathCountHudText, Vec2( viewportWidth * 0.85f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
+	if ( m_map )
+	{
+		Actor* spawner = nullptr;
+		int currentRound = 1;
+		int demonsRemaining = 0;
+
+		for ( Actor* actor : m_map->m_actorVector )
+		{
+			if ( actor && actor->IsDemonSpawner() )
+			{
+				spawner = actor;
+				currentRound = spawner->GetCurrentRound();
+				demonsRemaining = spawner->GetDemonsRemainingThisRound();
+				break;
+			}
+		}
+
+		if ( spawner )
+		{
+			int aliveDemonsCount = 0;
+			for ( Actor* actor : m_map->m_actorVector )
+			{
+				if ( actor && actor->m_actorDef &&
+					actor->m_actorDef->m_name == "Demon" &&
+					!actor->m_isDead )
+				{
+					aliveDemonsCount++;
+				}
+			}
+
+			std::string roundText = Stringf( "Round %d", currentRound );
+			AddVertsForTextTriangles2D( textVerts, roundText, Vec2( viewportWidth * 0.45f, viewportHeight * 0.9f ), viewportHeight * 0.05f, Rgba8( 255, 255, 0 ) );
+
+			std::string demonsText = Stringf( "Demons: %d", aliveDemonsCount );
+			AddVertsForTextTriangles2D( textVerts, demonsText, Vec2( viewportWidth * 0.42f, viewportHeight * 0.85f ), viewportHeight * 0.04f, Rgba8( 255, 0, 0 ) );
+		}
+	}
+
 	g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 
