@@ -39,6 +39,7 @@ public:
 private:
 	void HandleActorInput( float deltaSeconds );
 	void HandleFreeFlyInput( float deltaSeconds );
+	void PackAPunchInput( Actor* actor );
 	void ProcessMovementInput( float deltaSeconds );
 	void ProcessLookInput( float deltaSeconds );
 	void ToggleCameraMode();

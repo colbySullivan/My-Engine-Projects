@@ -977,3 +977,53 @@ void Actor::GetCurrentAnimTimer( Camera* playerCamera )
         m_animTimer->Start();
     }
 }
+
+//-----------------------------------------------------------------------------------------------
+bool Actor::IsPackAPunchMachine() const
+{
+	return m_actorDef && m_actorDef->m_name == "PackAPunch";
+}
+
+//-----------------------------------------------------------------------------------------------
+float Actor::GetDistanceToActor( const Actor* other ) const
+{
+	if ( !other )
+	{
+		return 99999.f;
+	}
+	return GetDistance3D( m_position, other->m_position );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Actor::TryUpgradeCurrentWeapon()
+{
+	if ( m_weapons.empty() || !m_weaponDef )
+	{
+		return false;
+	}
+
+	std::string currentWeaponName = m_weaponDef->m_name;
+	std::string papWeaponName = "PAP" + currentWeaponName;
+
+	const WeaponDefinition* papWeaponDef = WeaponDefinition::GetByName( papWeaponName );
+
+	if ( !papWeaponDef )
+	{
+		return false;
+	}
+
+	m_weapons[m_currentWeaponIndex] = papWeaponDef;
+	m_weaponDef = papWeaponDef;
+
+	if ( m_weaponRefireTimer )
+	{
+		delete m_weaponRefireTimer;
+	}
+	m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
+	m_weaponRefireTimer->Start();
+
+	UpdateWeaponAnimation();
+	LoadWeaponSounds();
+
+	return true;
+}

@@ -146,6 +146,7 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 		return;
 	}
 
+	PackAPunchInput( actor );
 	ProcessLookInput( deltaSeconds );
 	ProcessMovementInput( deltaSeconds );
 	ProcessWeaponChangeInput();
@@ -477,6 +478,31 @@ void PlayerController::RenderWeaponUI( float viewportWidth, float viewportHeight
 
 	g_engine->m_render->BindTexture( &ownerActor->m_weaponSpriteSheet->GetTexture() );
 	g_engine->m_render->DrawVertexArray( ( int )weaponVerts.size(), weaponVerts.data() );
+}
+
+//------------------------------------------------------------------------------
+void PlayerController::PackAPunchInput( Actor* actor )
+{
+	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( ' ' ) )
+	{
+		float interactionDistance = 2.0f;
+		for ( Actor* otherActor : m_map->m_actorVector )
+		{
+			if ( otherActor && otherActor->IsPackAPunchMachine() )
+			{
+				float distance = actor->GetDistanceToActor( otherActor );
+				if ( distance <= interactionDistance )
+				{
+					bool upgraded = actor->TryUpgradeCurrentWeapon();
+					if ( upgraded )
+					{
+						// #TODO Play upgrade
+					}
+					break;
+				}
+			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

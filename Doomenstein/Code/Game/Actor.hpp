@@ -97,6 +97,10 @@ public:
 	bool m_isAttacking = false;
 	double m_weaponAnimStartTime = 0.0;
 
+	bool IsPackAPunchMachine() const;
+	float GetDistanceToActor( const Actor* other ) const;
+	bool TryUpgradeCurrentWeapon();
+
 private:
 	Controller* m_currentController = nullptr;
 	Controller* m_savedAIController = nullptr;
