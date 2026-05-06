@@ -47,6 +47,7 @@
     </Sounds>
     <Inventory>
       <Weapon name="Pistol" />
+      <Weapon name="Bow" />
       <Weapon name="RPD" />
       <Weapon name="ShotgunRifle" />
       <Weapon name="PlasmaRifle" />

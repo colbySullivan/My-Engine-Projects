@@ -55,6 +55,17 @@
 			<Sound sound="Fire" name="Data/Audio/WeaponSounds/RPDshot.ogg" soundLevel="0.35"/>
 		</Sounds>
 	</WeaponDefinition>
+
+	<!-- Bow -->
+	<WeaponDefinition name="Bow" refireTime="1.5" projectileActor="BulletHit" rayCount="1" rayCone="0.0" rayRange="100.0" rayDamage="50.0~100.0" rayImpulse="8.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="350,350" spritePivot="0.25,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/bow_1x6.png" cellCount="6,1" secondsPerFrame="1.0" startFrame="0" endFrame="0" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/bow_1x6.png" cellCount="6,1" secondsPerFrame="0.05" startFrame="0" endFrame="5"/>
+		</HUD>
+		<Sounds>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/Arrow.ogg" soundLevel="1.0"/>
+		</Sounds>
+	</WeaponDefinition>
 	
 	
 	<!-- Pack a Punch Zone SO COOL! -->
