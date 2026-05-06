@@ -121,6 +121,7 @@ private:
 	void CreateDemon();
 	void CreateSpawnPoint();
 	void CreateProjectile( std::string name );
+	void CreatePackAPunch();
 	void AddForce( const Vec3& force );
 	void AddImpulse( const Vec3& impulse );
 	void InitializeWeapons();

@@ -249,6 +249,7 @@
     <Image Include="..\..\Run\Data\Images\Projectile_PlasmaHit.png" />
     <Image Include="..\..\Run\Data\Images\Reticle.png" />
     <Image Include="..\..\Run\Data\Images\Terrain_8x8.png" />
+    <Image Include="..\..\Run\Data\Images\Terrain_Zombies.png" />
     <Image Include="..\..\Run\Data\Images\TestUV.png" />
     <Image Include="..\..\Run\Data\Images\Weapon_Pistol.png" />
     <Image Include="..\..\Run\Data\Images\Weapon_Plasma.png" />

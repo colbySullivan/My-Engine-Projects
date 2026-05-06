@@ -238,6 +238,9 @@
     <Image Include="..\..\Run\Data\Maps\TownZombies.png">
       <Filter>Data\Maps</Filter>
     </Image>
+    <Image Include="..\..\Run\Data\Images\Terrain_Zombies.png">
+      <Filter>Data\Images</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Run\Data\Shaders\Diffuse.hlsl">

@@ -117,5 +117,20 @@
       </AnimationGroup>
     </Visuals>
   </ActorDefinition>
+	
+	<!-- PackAPunch -->
+	<ActorDefinition name="PackAPunch" faction="Nuetral" health="9999" canBePossessed="false" corpseLifetime="1.0" visible="true">
+	    <Collision radius="0.35" height="0.85" collidesWithWorld="true" collidesWithActors="true"/>
+	    <Visuals size="0.5,0.5" pivot="0.5,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data/Images/packapunch-Sheet.png" cellCount="3,3">
+		<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.25" playbackMode="Loop">
+			<Direction vector="-1,0,0"><Animation startFrame="0" endFrame="5"/></Direction>
+		</AnimationGroup>
+			<AnimationGroup name="Hurt" secondsPerFrame="0.75" playbackMode="Once"><Direction vector="-1,0,0"><Animation startFrame="0" endFrame="5"/></Direction></AnimationGroup>
+		</Visuals>
+		<Sounds>
+		    <Sound sound="Hurt" name="Data/Audio/DemonHurt.wav"/>
+		    <Sound sound="Death" name="Data/Audio/DemonDeath.wav"/>
+	    </Sounds>
+    </ActorDefinition>
 </Definitions>
 

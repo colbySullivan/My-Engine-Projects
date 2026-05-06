@@ -42,6 +42,10 @@ Actor::Actor( Game* owner, SpawnInfo spawnInfo )
     {
         CreateSpawnPoint();
     }
+    else if ( spawnInfo.m_name == "PackAPunch" )
+    {
+        CreatePackAPunch();
+    }
 
     else
     {
@@ -364,6 +368,31 @@ void Actor::CreateProjectile( std::string name )
     Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
     Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
     AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
+}
+
+//------------------------------------------------------------------------------
+void Actor::CreatePackAPunch()
+{
+	m_actorDef = ActorDefinition::GetByName( "PackAPunch" );
+	//m_actorHandle = m_game->m_playerController->GetActorHandle();
+
+	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "PackAPunch" );
+	if ( spriteAnimDef )
+	{
+		m_spriteAnimationDef = spriteAnimDef;
+		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+	}
+
+	m_height = m_actorDef->m_physicsHeight;
+	m_radius = m_actorDef->m_physicsRadius;
+ 	m_modelColor = Rgba8::WHITE;
+	m_canBePushed = false;
+	Vec3 startZeroed = Vec3( 0.f, 0.f, 0.f );
+	Vec3 endZeroed = Vec3( 0.f, 0.f, m_height );
+	AddVertsForCylinder3D( m_vertexes, startZeroed, endZeroed, m_radius, Rgba8( 255, 255, 255 ), AABB2::ZERO_TO_ONE, 32 );
 }
 
 //-----------------------------------------------------------------------------------------------
