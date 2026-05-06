@@ -244,7 +244,11 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 				}
 				else if ( weaponDef->m_projectileCount > 0 )
 				{
-					m_map->SpawnProjectileFromActor( actor, *weaponDef, raycastDir );
+					for ( int bulletNum = 0; bulletNum < weaponDef->m_projectileCount; bulletNum++ )
+					{
+						Vec3 randomConeDir = GetRandomVectorInCone( raycastDir, weaponDef->m_projectileConeDegrees );
+						m_map->SpawnProjectileFromActor( actor, *weaponDef, randomConeDir.GetNormalized() * weaponDef->m_projectileSpeed );
+					}
 				}
 
 				actor->FireWeapon();

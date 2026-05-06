@@ -179,4 +179,6 @@ enum class BillboardType
 
 Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTransform, const Vec3& billboardPosition, const Vec2& billboardScale = Vec2( 1.0f, 1.0f ) );
 
+// Miscellaneous
 Vec3 WorldToFMOD( const Vec3 worldPos );
+Vec3 GetRandomVectorInCone( const Vec3& direction, float coneDegrees );

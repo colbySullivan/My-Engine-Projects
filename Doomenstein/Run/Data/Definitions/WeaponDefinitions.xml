@@ -35,4 +35,24 @@
 			<Sound sound="Fire" name="Data/Audio/PistolFire.wav"/>
 		</Sounds>
 	</WeaponDefinition>
+	<!-- Shotgun Rifle -->
+	<WeaponDefinition name="ShotgunRifle" refireTime="2.0" projectileCount="8" projectileActor="PlasmaProjectile" projectileCone="10.0" projectileSpeed="10.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="34" endFrame="34" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="2" endFrame="23" />
+		</HUD>
+		<Sounds>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg"/>
+		</Sounds>
+	</WeaponDefinition>
+	<!-- PAP Shotgun Rifle -->
+	<WeaponDefinition name="PAPShotgunRifle" refireTime="4.0" projectileCount="16" projectileActor="PlasmaProjectile" projectileCone="10.0" projectileSpeed="10.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="34" endFrame="34" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="2" endFrame="34" />
+		</HUD>
+		<Sounds>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg"/>
+		</Sounds>
+	</WeaponDefinition>
 </Definitions>

@@ -870,11 +870,6 @@ void Game::SetUpSinglePlayer()
 
 	m_playerController1 = new PlayerController( m_currentMap, m_worldCamera1 );
 	m_playerController1->SetControllerIndex( 0, -1 ); // -1 insures player gets controller input
-
-	if ( m_currentMap )
-	{
-		m_currentMap->SpawnPlayer( m_playerController1 );
-	}
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -47,6 +47,7 @@
     </Sounds>
     <Inventory>
       <Weapon name="Pistol" />
+      <Weapon name="ShotgunRifle" />
       <Weapon name="PlasmaRifle" />
       <Weapon name="Sniper" />
     </Inventory>
@@ -126,6 +127,20 @@
 			<Direction vector="-1,0,0"><Animation startFrame="0" endFrame="5"/></Direction>
 		</AnimationGroup>
 			<AnimationGroup name="Hurt" secondsPerFrame="0.75" playbackMode="Once"><Direction vector="-1,0,0"><Animation startFrame="0" endFrame="5"/></Direction></AnimationGroup>
+		</Visuals>
+		<Sounds>
+		    <Sound sound="Hurt" name="Data/Audio/DemonHurt.wav"/>
+		    <Sound sound="Death" name="Data/Audio/DemonDeath.wav"/>
+	    </Sounds>
+    </ActorDefinition>
+	
+	<!-- AmmoKit-->
+	<ActorDefinition name="AmmoKit" faction="Nuetral" health="9999" canBePossessed="false" corpseLifetime="1.0" visible="true">
+	    <Collision radius="0.35" height="0.85" collidesWithWorld="true" collidesWithActors="true"/>
+	    <Visuals size="0.25,0.25" pivot="0.5,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data/Images/Weapons/ammokit.png" cellCount="1,1">
+		<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.25" playbackMode="Loop">
+			<Direction vector="-1,0,0"><Animation startFrame="0" endFrame="0"/></Direction>
+		</AnimationGroup>
 		</Visuals>
 		<Sounds>
 		    <Sound sound="Hurt" name="Data/Audio/DemonHurt.wav"/>

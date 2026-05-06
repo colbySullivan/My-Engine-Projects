@@ -284,7 +284,7 @@ void Map::CollideActors( Actor* actorA, Actor* actorB )
 	}
 	else
 	{
-		PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
+		//PushCylindersOutOfEachOther( actorA->m_position, actorAEnd, actorA->m_radius, actorB->m_position, actorBEnd, actorB->m_radius );
 	}
 }
 
@@ -450,6 +450,7 @@ Actor* Map::SpawnProjectileFromActor( Actor* owner, const WeaponDefinition& weap
 	spawnInfo.m_actorOrientation = owner->m_orientation;
 
 	Actor* projectile = SpawnActor( spawnInfo );
+
 	if ( !projectile )
 	{
 		return nullptr;
