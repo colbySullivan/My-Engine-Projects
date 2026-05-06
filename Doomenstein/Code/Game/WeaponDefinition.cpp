@@ -80,6 +80,7 @@ void WeaponDefinition::InitializeWeaponDefs()
 				WeaponSoundDefinition soundDef;
 				soundDef.m_soundName = xml.ParseXmlAttribute( *soundElem, "sound", std::string( "" ) );
 				soundDef.m_filePath = xml.ParseXmlAttribute( *soundElem, "name", std::string( "" ) );
+				soundDef.m_volume = xml.ParseXmlAttribute( *soundElem, "soundLevel", 1.f );
 
 				def.m_sounds.push_back( soundDef );
 				soundElem = soundElem->NextSiblingElement( "Sound" );
@@ -119,15 +120,15 @@ const WeaponAnimationDefinition* WeaponDefinition::GetAnimationByName( const std
 }
 
 //------------------------------------------------------------------------------
-std::string WeaponDefinition::GetSoundByName( const std::string& name ) const
+const WeaponSoundDefinition* WeaponDefinition::GetSoundByName( const std::string& name ) const
 {
 	for ( const WeaponSoundDefinition& soundDef : m_sounds )
 	{
 		if ( soundDef.m_soundName == name )
 		{
-			return soundDef.m_filePath;
+			return &soundDef;
 		}
 	}
 
-	return "";
+	return nullptr;
 }

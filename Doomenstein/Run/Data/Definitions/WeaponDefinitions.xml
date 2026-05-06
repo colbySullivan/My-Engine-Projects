@@ -42,7 +42,7 @@
 			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="2" endFrame="23" />
 		</HUD>
 		<Sounds>
-			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg"/>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg" soundLevel="0.35"/>
 		</Sounds>
 	</WeaponDefinition>
 	<!-- PAP Shotgun Rifle -->
@@ -52,7 +52,7 @@
 			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="2" endFrame="34" />
 		</HUD>
 		<Sounds>
-			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg"/>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg" soundLevel="0.5"/>
 		</Sounds>
 	</WeaponDefinition>
 </Definitions>

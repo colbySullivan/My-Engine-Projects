@@ -36,6 +36,7 @@ struct WeaponSoundDefinition
 {
 	std::string m_soundName;
 	std::string m_filePath;
+	float		m_volume;
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -47,7 +48,7 @@ public:
 	static void InitializeWeaponDefs();
 	static const WeaponDefinition* GetByName( const std::string& name );
 	const WeaponAnimationDefinition* GetAnimationByName( const std::string& name ) const;
-	std::string GetSoundByName( const std::string& name ) const;
+	const WeaponSoundDefinition* GetSoundByName( const std::string& name ) const;
 public:
 	std::string m_name;
 	float       m_refireTime = 0.f;

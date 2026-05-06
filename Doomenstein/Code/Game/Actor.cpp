@@ -727,8 +727,8 @@ void Actor::FireWeapon()
 
     if ( !m_isDead )
     {
-		std::string soundPath = m_weaponDef->GetSoundByName("Fire");
-		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( soundPath, FMOD_3D ) );
+        const WeaponSoundDefinition* soundDef = m_weaponDef->GetSoundByName("Fire");
+		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( soundDef->m_filePath, FMOD_3D ), soundDef->m_volume );
         SetCurrentAnimGroup( "Attack" );
     }
 }
@@ -855,7 +855,7 @@ const DirectionalAnimInfo* Actor::GetDirectionalAnimForCamera( const SpriteAnima
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::TryToPlaySound( SoundID sound )
+void Actor::TryToPlaySound( SoundID sound, float volume )
 {
     if ( sound == MISSING_SOUND_ID )
     {
@@ -867,7 +867,7 @@ void Actor::TryToPlaySound( SoundID sound )
  //   {
 	//	g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ) );
 	//}
-	g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ) );
+	g_engine->m_audio->StartSoundAt( sound, WorldToFMOD( m_position ), false, volume );
 
 }
 
