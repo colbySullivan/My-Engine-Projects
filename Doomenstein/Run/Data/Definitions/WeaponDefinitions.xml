@@ -36,26 +36,37 @@
 		</Sounds>
 	</WeaponDefinition>
 	<!-- Shotgun Rifle -->
-	<WeaponDefinition name="ShotgunRifle" refireTime="2.0" projectileCount="8" projectileActor="PlasmaProjectile" projectileCone="10.0" projectileSpeed="10.0">
-		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
-			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="34" endFrame="34" />
-			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="2" endFrame="23" />
+	<WeaponDefinition name="ShotgunRifle" refireTime="2.0" projectileCount="8" projectileActor="DefaultProjectile" projectileCone="10.0" projectileSpeed="10.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="512,512" spritePivot="0.5,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/RegularShotgun.png" cellCount="26,1" secondsPerFrame="0.125" startFrame="25" endFrame="25" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/RegularShotgun.png" cellCount="26,1" secondsPerFrame="0.075" startFrame="2" endFrame="25" />
 		</HUD>
 		<Sounds>
 			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg" soundLevel="0.35"/>
 		</Sounds>
 	</WeaponDefinition>
-	
-	
-	
-	<!-- PAP Shotgun Rifle -->
-	<WeaponDefinition name="PAPShotgunRifle" refireTime="4.0" projectileCount="16" projectileActor="PlasmaProjectile" projectileCone="10.0" projectileSpeed="10.0">
+	<!-- RPD -->
+	<WeaponDefinition name="RPD" refireTime="0.2" projectileActor="BulletHit" rayCount="1" rayCone="0.0" rayRange="100.0" rayDamage="2.0~3.0" rayImpulse="8.0">
 		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
-			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="34" endFrame="34" />
-			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/shotgun_6x6.png" cellCount="6,6" secondsPerFrame="0.125" startFrame="2" endFrame="34" />
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/rpd_3x2.png" cellCount="3,2" secondsPerFrame="0.1" startFrame="5" endFrame="5" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/rpd_3x2.png" cellCount="3,2" secondsPerFrame="0.05" startFrame="1" endFrame="4"/>
 		</HUD>
 		<Sounds>
-			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg" soundLevel="0.5"/>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/RPDshot.ogg" soundLevel="0.35"/>
+		</Sounds>
+	</WeaponDefinition>
+	
+	
+	<!-- Pack a Punch Zone SO COOL! -->
+
+	<!-- PAP Shotgun Rifle -->
+	<WeaponDefinition name="PAPShotgunRifle" refireTime="2.0" projectileCount="16" projectileActor="PlasmaProjectile" projectileCone="10.0" projectileSpeed="10.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="512,512" spritePivot="0.5,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/RegularShotgun_PAP.png" cellCount="26,1" secondsPerFrame="0.125" startFrame="25" endFrame="25" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/RegularShotgun_PAP.png" cellCount="26,1" secondsPerFrame="0.075" startFrame="2" endFrame="25" />
+		</HUD>
+		<Sounds>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/ShotgunShoot.ogg" soundLevel="0.35"/>
 		</Sounds>
 	</WeaponDefinition>
 
@@ -89,6 +100,17 @@
 		</HUD>
 		<Sounds>
 			<Sound sound="Fire" name="Data/Audio/PistolFire.wav" soundLevel="0.5"/>
+		</Sounds>
+	</WeaponDefinition>
+
+	<!-- PAP RPD -->
+	<WeaponDefinition name="PAPRPD" refireTime="0.15" projectileActor="BulletHit" rayCount="1" rayCone="0.0" rayRange="100.0" rayDamage="10.0~30.0" rayImpulse="8.0">
+		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Weapons/rpd_3x2_PAP.png" cellCount="3,2" secondsPerFrame="0.1" startFrame="5" endFrame="5" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Weapons/rpd_3x2_PAP.png" cellCount="3,2" secondsPerFrame="0.05" startFrame="1" endFrame="4"/>
+		</HUD>
+		<Sounds>
+			<Sound sound="Fire" name="Data/Audio/WeaponSounds/RPDshot.ogg" soundLevel="0.35"/>
 		</Sounds>
 	</WeaponDefinition>
 </Definitions>
