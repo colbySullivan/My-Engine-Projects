@@ -91,6 +91,9 @@
     <ClCompile Include="SpriteAnimationGroupDefinition.cpp">
       <Filter>GameDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="PowerUpDefinitions.cpp">
+      <Filter>GameDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -144,6 +147,9 @@
     <ClInclude Include="SpriteAnimationGroupDefinition.hpp">
       <Filter>GameDefinitions</Filter>
     </ClInclude>
+    <ClInclude Include="PowerUpDefinitions.hpp">
+      <Filter>GameDefinitions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml">
@@ -171,6 +177,9 @@
       <Filter>Data\Definitions</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies2.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\MayhemDefinitions.xml">
       <Filter>Data\Definitions</Filter>
     </Xml>
   </ItemGroup>

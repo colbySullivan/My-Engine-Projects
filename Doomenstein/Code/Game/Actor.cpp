@@ -1,4 +1,5 @@
 #include "Game/Actor.hpp"
+#include "Game/PowerUpDefinitions.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
@@ -155,11 +156,6 @@ void Actor::Update( [[maybe_unused]] float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Actor::Render( Camera* playerCamera ) const
 {
-    //if ( m_currentController != nullptr && m_currentController->IsPlayerControlled() )
-    //{
-    //	return; //#TODO: this is a temporary hack to render both players
-    //}
-
     if ( m_currentSpriteSheet )
     {
         RenderAnimSprite( playerCamera );
@@ -1096,6 +1092,7 @@ void Actor::UpdateSpawner( float deltaSeconds )
 	if ( IsRoundComplete() )
 	{
 		m_currentRound++;
+		ApplyPowerUp( "SpeedBoost" ); // #TODO implement the mayhem screen
 		StartNewRound();
 		return;
 	}
@@ -1193,4 +1190,49 @@ bool Actor::IsRoundComplete() const
 	}
 
 	return true;
+}
+
+//------------------------------------------------------------------------------
+void Actor::ApplyPowerUp( const std::string& powerUpName )
+{
+	const PowerUpDefinition* powerUpDef = PowerUpDefinition::GetByName( powerUpName );
+	if ( !powerUpDef )
+	{
+		return;
+	}
+
+	float percentageBoost = g_rng->RollRandomFloatInRange( powerUpDef->m_percentage.m_min, powerUpDef->m_percentage.m_max );
+	float multiplier = 1.0f + ( percentageBoost / 100.0f );
+
+	switch ( powerUpDef->m_type )
+	{
+	    case PowerUpType::SPEED_BOOST:
+	    {
+		    if ( m_actorDef )
+		    {
+                m_speedMultiplier *= multiplier;
+				g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Speed boost = %.2f", m_speedMultiplier ) );
+		    }
+		    break;
+	    }
+
+	    case PowerUpType::SHOOT_SPEED:
+	    {
+		    if ( m_weaponRefireTimer )
+		    {
+			    float newRefireTime = m_weaponDef->m_refireTime / multiplier;
+			    delete m_weaponRefireTimer;
+			    m_weaponRefireTimer = new Timer( newRefireTime );
+				g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Shoot speed boost = %.2f", newRefireTime ) );
+		    }
+		    break;
+	    }
+
+	    case PowerUpType::HEALTH_BOOST:
+	    {
+		    m_health = ( int )( m_health * multiplier );
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Health boost = %.2f", multiplier ) );
+		    break;
+	    }
+	}
 }

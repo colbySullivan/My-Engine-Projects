@@ -295,11 +295,11 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 		}
 	}
 
-	float moveSpeed = actor->m_actorDef->m_walkSpeed;
+	float moveSpeed = actor->m_actorDef->m_walkSpeed * actor->m_speedMultiplier;
 
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_SHIFT ) || controller.IsButtonDown( XboxButtonID::A ) )
 	{
-		moveSpeed = actor->m_actorDef->m_runSpeed;
+		moveSpeed = actor->m_actorDef->m_runSpeed * actor->m_speedMultiplier;
 	}
 
 	Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
@@ -464,7 +464,7 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 			spawnInfo.m_spawnLocation = worldHit.m_impactPos;
 			spawnInfo.m_actorOrientation = actor->m_orientation;
 
-			//Actor* projectile = m_map->SpawnActor( spawnInfo );
+			Actor* projectile = m_map->SpawnActor( spawnInfo );
 
 			if ( hitActor )
 			{

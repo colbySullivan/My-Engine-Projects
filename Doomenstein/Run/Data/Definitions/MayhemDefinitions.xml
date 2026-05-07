@@ -1,0 +1,5 @@
+<MayhemDefinitions>
+	<Powerup name="SpeedBoost" percentage="1.0~10.0"/>
+	<Powerup name="ShootSpeed" percentage="1.0~10.0"/>
+	<Powerup name="HealthBoost" percentage="1.0~10.0"/>
+</MayhemDefinitions>

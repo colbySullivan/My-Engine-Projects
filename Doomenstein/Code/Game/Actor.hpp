@@ -74,6 +74,9 @@ public:
 	bool		m_isDead = false;
 	int			m_health;
 
+	// Powerup
+	float m_speedMultiplier = 1.0f;
+	float m_refireMultiplier = 1.0f;
 
 	EulerAngles m_angularVelocity;
 	Rgba8		m_color = Rgba8( 255, 255, 255 );
@@ -108,7 +111,7 @@ public:
 	int GetCurrentRound() const;
 	int GetDemonsRemainingThisRound() const;
 	bool IsRoundComplete() const;
-
+	void ApplyPowerUp( const std::string& powerUpName );
 	Timer* m_spawnTimer = nullptr;
 	int m_currentRound = 1;
 	int m_demonsToSpawnThisRound = 0;

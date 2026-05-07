@@ -39,6 +39,12 @@ void AiController::HandleMovement( [[maybe_unused]] float deltaSeconds )
 		return;
 	}
 
+	float moveSpeed = actor->m_actorDef->m_runSpeed;
+	if ( actor->GetDistanceToActor( m_map->GetActorByHandle( m_targetActorHandle ) ) < 5.f )
+	{
+		moveSpeed = actor->m_actorDef->m_walkSpeed;
+	}
+
 	Vec3 forward = actor->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
 	forward.z = 0.f;
 
@@ -46,7 +52,7 @@ void AiController::HandleMovement( [[maybe_unused]] float deltaSeconds )
 	{
 		forward = forward.GetNormalized();
 
-		actor->MoveInDirection( forward, actor->m_actorDef->m_walkSpeed );
+		actor->MoveInDirection( forward, moveSpeed );
 	}
 }
 

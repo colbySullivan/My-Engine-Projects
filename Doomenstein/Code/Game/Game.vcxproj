@@ -204,6 +204,7 @@
     <ClCompile Include="MapDefinition.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerController.cpp" />
+    <ClCompile Include="PowerUpDefinitions.cpp" />
     <ClCompile Include="SpriteAnimationGroupDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinitions.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="MapDefinition.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="PlayerController.hpp" />
+    <ClInclude Include="PowerUpDefinitions.hpp" />
     <ClInclude Include="SpriteAnimationGroupDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinitions.hpp" />
@@ -232,6 +234,7 @@
     <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\MayhemDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\ProjectileActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies.xml" />

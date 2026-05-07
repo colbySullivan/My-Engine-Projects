@@ -21,6 +21,7 @@
 #include "Game/Player.hpp"
 #include "Game/WeaponDefinition.hpp"
 #include "Game/SpriteAnimationGroupDefinition.hpp"
+#include "Game/PowerUpDefinitions.hpp"
 
 Game* g_game = nullptr;
 
@@ -47,6 +48,7 @@ Game::Game()
 	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
 	WeaponDefinition::InitializeWeaponDefs();
 	MapDefinition::InitializeMapDefs();
+	PowerUpDefinition::InitializePowerUpDefs();
 	GetAndStartSoundsFromConfig( "Data/GameConfig.xml" );
 }
 
