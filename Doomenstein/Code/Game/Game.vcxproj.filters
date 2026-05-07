@@ -170,6 +170,9 @@
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies.xml">
       <Filter>Data\Definitions</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies2.xml">
+      <Filter>Data\Definitions</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Run\Data\Maps\MPMap.png">
@@ -239,6 +242,9 @@
       <Filter>Data\Maps</Filter>
     </Image>
     <Image Include="..\..\Run\Data\Images\Terrain_Zombies.png">
+      <Filter>Data\Images</Filter>
+    </Image>
+    <Image Include="..\..\Run\Data\Images\zombiemap2.png">
       <Filter>Data\Images</Filter>
     </Image>
   </ItemGroup>

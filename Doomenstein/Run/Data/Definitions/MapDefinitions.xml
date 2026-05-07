@@ -1,9 +1,8 @@
 <Definitions>
-  <MapDefinition name="Zombies" image="Data/Maps/TownZombies.png" shader="Data/Shaders/Diffuse" spriteSheetTexture="Data/Images/Terrain_Zombies.png" spriteSheetCellCount="8,8">
+  <MapDefinition name="Zombies" image="Data/Maps/TownZombies2.png" shader="Data/Shaders/Diffuse" spriteSheetTexture="Data/Images/Terrain_Zombies.png" spriteSheetCellCount="8,8">
     <SpawnInfos>
 		<SpawnInfo actor="SpawnPoint"  position="20.5,15.5,0.0" orientation="270.0,0.0,0.0" />
 		<SpawnInfo actor="AmmoKit" position="25.5,15.5,0.0" orientation="270.0,0.0,0.0" />
-		<SpawnInfo actor="DemonSpawner" position="1.5,15.5,0.0" orientation="270.0,0.0,0.0" />
 		<SpawnInfo actor="DemonSpawner" position="25.5,15.5,0.0" orientation="270.0,0.0,0.0" />
 		<SpawnInfo actor="PackAPunch"  position="15.5,15.5,0.0" orientation="270.0,0.0,0.0" />
     </SpawnInfos>

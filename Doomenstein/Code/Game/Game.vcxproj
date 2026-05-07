@@ -235,6 +235,7 @@
     <Xml Include="..\..\Run\Data\Definitions\ProjectileActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\TileDefinitionsZombies2.xml" />
     <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml" />
     <Xml Include="..\..\Run\Data\GameConfig.xml" />
   </ItemGroup>
@@ -253,6 +254,7 @@
     <Image Include="..\..\Run\Data\Images\TestUV.png" />
     <Image Include="..\..\Run\Data\Images\Weapon_Pistol.png" />
     <Image Include="..\..\Run\Data\Images\Weapon_Plasma.png" />
+    <Image Include="..\..\Run\Data\Images\zombiemap2.png" />
     <Image Include="..\..\Run\Data\Maps\MPMap.png" />
     <Image Include="..\..\Run\Data\Maps\PortalMap.png" />
     <Image Include="..\..\Run\Data\Maps\TestMap.png" />

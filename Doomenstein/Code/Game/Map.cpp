@@ -949,7 +949,7 @@ void Map::CreateGeometry()
 
 		float x = ( float )tile.m_tileCoords.x;
 		float y = ( float )tile.m_tileCoords.y;
-		AABB3 bounds( Vec3( x, y, 0.f ), Vec3( x + 1.f, y + 1.f, 1.f ) );
+		AABB3 bounds( Vec3( x, y, 0.f ), Vec3( x + 1.f, y + 1.f, 10.f ) );
 		tile.m_bounds = bounds;
 		if ( def.m_isSolid )
 		{

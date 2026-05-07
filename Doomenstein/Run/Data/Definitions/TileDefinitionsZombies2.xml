@@ -1,0 +1,5 @@
+<Definitions>
+	<TileDefinition name="OpenDirt" isSolid="false" mapImagePixelColor="255,255,255" floorSpriteCoords="5,2"/>
+	<TileDefinition name="BrickWall" isSolid="true" mapImagePixelColor="0,0,0" wallSpriteCoords="5,5"/>
+	<TileDefinition name="GrassWall" isSolid="true" mapImagePixelColor="50,60,57" wallSpriteCoords="1,1"/>
+</Definitions>
