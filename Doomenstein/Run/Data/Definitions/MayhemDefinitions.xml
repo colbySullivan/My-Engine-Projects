@@ -1,6 +1,6 @@
 <MayhemDefinitions>
-	<Powerup name="SpeedBoost" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/DamageIncrease.png" description="Increases movement speed."/>
-	<Powerup name="ShootSpeed" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/DamageIncrease.png" description="Increases shooting speed."/>
-	<Powerup name="HealthBoost" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/DamageIncrease.png" description="Increases health."/>
+	<Powerup name="SpeedBoost" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/movementspeed.png" description="Increases movement speed."/>
+	<Powerup name="ShootSpeed" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/attackspeed.png" description="Increases shooting speed."/>
+	<Powerup name="HealthBoost" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/healthincrease.png" description="Increases health."/>
 	<Powerup name="DamageBoost" percentage="1.0~10.0" weight="1.0" imagepath="Data/Images/Augments/DamageIncrease.png" description="Increases damage."/>
 </MayhemDefinitions>

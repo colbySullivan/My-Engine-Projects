@@ -25,7 +25,7 @@ public:
 	static const PowerUpDefinition* GetByName( const std::string& name );
 	static PowerUpType GetTypeFromName( const std::string& name );
 
-	static const std::string GetRandomPowerUp();
+	static std::string GetRandomPowerUp();
 
 public:
 	std::string m_name;

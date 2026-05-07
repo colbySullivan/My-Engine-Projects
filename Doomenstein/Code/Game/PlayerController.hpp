@@ -29,12 +29,15 @@ public:
 	int GetControllerIndex() const;
 	Camera* GetPlayerCamera() const;
 
+	void SetUpPickPowerUp();
+
 	bool		m_isFreeFlyMode;
 	bool		m_canProcessPossessInput = true;
 	int			m_killCount = 0;
 	int			m_deathCount = 0;
 	bool		m_isPlayerOne = false;
 	int			m_numOfPlayers = 1;
+	std::vector<std::string> m_threeChoosenPickups;
 
 private:
 	void HandleActorInput( float deltaSeconds );

@@ -21,9 +21,9 @@ PlayerController::PlayerController( Map* map, Camera* camera )
 	, m_isFreeFlyMode( false )
 {
 	m_isCurrentlyPlayerControlled = true;
-	m_hudTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/Hud_Base.png" );
-	m_mayhemTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/mayhem.png" );
-	m_reticleTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/Reticle.png" );
+	m_hudTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
+	m_mayhemTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/mayhem.png" );
+	m_reticleTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/Reticle.png" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -46,6 +46,10 @@ void PlayerController::Update( float deltaSeconds )
 	if ( m_map->IsCurrentlyPickingPowerUp() )
 	{
 		UpdatePickPowerUp( deltaSeconds );
+	}
+	else
+	{
+		SetUpPickPowerUp();
 	}
 }
 
@@ -541,10 +545,44 @@ void PlayerController::UpdatePickPowerUp( [[maybe_unused]] float deltaSeconds )
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
 		Actor* ownerActor = GetActor();
-		const std::string randomType = PowerUpDefinition::GetRandomPowerUp();
+		AABB2 box1 = AABB2( Vec2( 500.f, 300.f ), Vec2( 1100.f, 1100.f ) );
+		AABB2 box2 = AABB2( Vec2( 1500.f, 300.f ), Vec2( 2000.f, 1100.f ) );
+		AABB2 box3 = AABB2( Vec2( 2400.f, 300.f ), Vec2( 3000.f, 1100.f ) );
+		
+		bool clickValid = false;
+		if ( box1.IsPointInside( mouseDelta ) )
+		{
+			ownerActor->ApplyPowerUp( m_threeChoosenPickups[0] );
+			clickValid = true;
+		}
+		else if ( box2.IsPointInside( mouseDelta ) )
+		{
+			ownerActor->ApplyPowerUp( m_threeChoosenPickups[1] );
+			clickValid = true;
+		}
+		else if ( box3.IsPointInside( mouseDelta ) )
+		{
+			ownerActor->ApplyPowerUp( m_threeChoosenPickups[2] );
+			clickValid = true;
+		}
 
-		ownerActor->ApplyPowerUp( randomType ); // #Todo This should be based on the power-up that was picked, not hardcoded
-		m_map->EndPickingPowerUp();
+		if ( clickValid )
+		{
+			g_engine->m_audio->StartSound( g_engine->m_audio->CreateOrGetSound( "Data/Audio/Click.mp3" ) );
+			m_map->EndPickingPowerUp();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void PlayerController::SetUpPickPowerUp()
+{
+	m_threeChoosenPickups.clear();
+	m_threeChoosenPickups.reserve(3);
+
+	for ( int i = 0; i < 3; i++ )
+	{
+		m_threeChoosenPickups.push_back( PowerUpDefinition::GetRandomPowerUp() );
 	}
 }
 
@@ -555,6 +593,47 @@ void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHei
 	AddVertsForAABB2D( mayhemVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight ) ), Rgba8( 255, 255, 255 ) );
 	g_engine->m_render->BindTexture( m_mayhemTexture );
 	g_engine->m_render->DrawVertexArray( ( int )mayhemVerts.size(), mayhemVerts.data() );
+
+	float boxWidth = viewportWidth * 0.2f;
+	float boxHeight = viewportHeight * 0.3f;
+	float spacing = viewportWidth * 0.05f;
+	float startX = viewportWidth * 0.5f - ( 1.5f * boxWidth + spacing );
+	float startY = viewportHeight * 0.35f;
+
+	for ( int i = 0; i < ( int )m_threeChoosenPickups.size(); i++ )
+	{
+		float boxX = startX + i * ( boxWidth + spacing );
+		AABB2 powerUpBox( Vec2( boxX, startY ), Vec2( boxX + boxWidth, startY + boxHeight ) );
+
+		const PowerUpDefinition* powerUpDef = PowerUpDefinition::GetByName( m_threeChoosenPickups[i] );
+		if ( powerUpDef )
+		{
+			if ( !powerUpDef->m_imagePath.empty() )
+			{
+				Texture* powerUpTexture = g_engine->m_render->CreateOrGetTextureFromFile( powerUpDef->m_imagePath.c_str() );
+				if ( powerUpTexture )
+				{
+					float imgSize = boxWidth * 0.6f;
+					float imgX = boxX + ( boxWidth - imgSize ) * 0.5f;
+					float imgY = startY + boxHeight * 0.5f;
+					AABB2 imgBox( Vec2( imgX, imgY ), Vec2( imgX + imgSize, imgY + imgSize ) );
+
+					std::vector<Vertex> imgVerts;
+					AddVertsForAABB2D( imgVerts, imgBox, Rgba8::WHITE );
+					g_engine->m_render->BindTexture( powerUpTexture );
+					g_engine->m_render->DrawVertexArray( ( int )imgVerts.size(), imgVerts.data() );
+				}
+			}
+
+			std::vector<Vertex> textVerts;
+			float textHeight = boxHeight * 0.08f;
+			AddVertsForTextTriangles2D( textVerts, powerUpDef->m_name, Vec2( boxX + boxWidth * 0.1f, startY + boxHeight * 0.1f ), textHeight, Rgba8::WHITE );
+
+			g_engine->m_render->BindTexture( nullptr );
+			g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
+		}
+	}
+
 
 	g_engine->m_render->BindTexture( nullptr );
 }

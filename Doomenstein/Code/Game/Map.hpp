@@ -17,6 +17,7 @@
 #include "Game/MapDefinition.hpp"
 #include "Game/Controller.hpp"
 #include "Game/WeaponDefinition.hpp"
+#include "Game/PlayerController.hpp"
 
 class Game;
 class Actor;

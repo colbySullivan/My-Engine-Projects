@@ -82,7 +82,7 @@ PowerUpType PowerUpDefinition::GetTypeFromName( const std::string& name )
 	return PowerUpType::INVALID;
 }
 
-const std::string PowerUpDefinition::GetRandomPowerUp()
+std::string PowerUpDefinition::GetRandomPowerUp()
 {
 	float weightedMax = 0.f;
 	for ( auto& pair : s_definitions )
