@@ -10,6 +10,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
+#include "PowerUpDefinitions.hpp"
 
 //-----------------------------------------------------------------------------------------------
 PlayerController::PlayerController( Map* map, Camera* camera )
@@ -72,12 +73,7 @@ void PlayerController::RenderUI() const
 
 	if ( m_map->IsCurrentlyPickingPowerUp() )
 	{
-		std::vector<Vertex> mayhemVerts;
-		AddVertsForAABB2D( mayhemVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight ) ), Rgba8( 255, 255, 255 ) );
-		g_engine->m_render->BindTexture( m_mayhemTexture );
-		g_engine->m_render->DrawVertexArray( ( int )mayhemVerts.size(), mayhemVerts.data() );
-
-		g_engine->m_render->BindTexture( nullptr );
+		RenderPickPowerUp( viewportWidth, viewportHeight );
 		g_engine->m_render->EndCamera( uiCamera );
 		return;
 	}
@@ -482,12 +478,13 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 			spawnInfo.m_spawnLocation = worldHit.m_impactPos;
 			spawnInfo.m_actorOrientation = actor->m_orientation;
 
-			Actor* projectile = m_map->SpawnActor( spawnInfo );
+			m_map->SpawnActor( spawnInfo );
 
 			if ( hitActor )
 			{
 				float damage = g_rng->RollRandomFloatInRange( weaponDef->m_rayDamage.m_min, weaponDef->m_rayDamage.m_max );
 				hitActor->AttackedBy( actor, damage );
+				DebugAddWorldBillboardText( Stringf( "%1.1f", damage ), spawnInfo.m_spawnLocation, 0.05f, Vec2( 0.7f, 0.7f ), 0.2f, Rgba8( 255, 0, 0, 255 ), Rgba8( 255, 255, 255, 255 ) );
 			}
 		}
 	}
@@ -536,7 +533,7 @@ void PlayerController::RenderWeaponUI( float viewportWidth, float viewportHeight
 	g_engine->m_render->DrawVertexArray( ( int )weaponVerts.size(), weaponVerts.data() );
 }
 
-void PlayerController::UpdatePickPowerUp( float deltaSeconds )
+void PlayerController::UpdatePickPowerUp( [[maybe_unused]] float deltaSeconds )
 {
 	Vec2 mouseDelta = g_engine->m_input->GetCursorClientPosition();
 	DebugAddScreenText( Stringf( "Mouse Delta: (%.2f, %.2f)", mouseDelta.x, mouseDelta.y ), AABB2( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
@@ -544,9 +541,22 @@ void PlayerController::UpdatePickPowerUp( float deltaSeconds )
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
 		Actor* ownerActor = GetActor();
-		ownerActor->ApplyPowerUp( "HealthBoost" ); // #Todo This should be based on the power-up that was picked, not hardcoded
+		const std::string randomType = PowerUpDefinition::GetRandomPowerUp();
+
+		ownerActor->ApplyPowerUp( randomType ); // #Todo This should be based on the power-up that was picked, not hardcoded
 		m_map->EndPickingPowerUp();
 	}
+}
+
+//------------------------------------------------------------------------------
+void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHeight ) const
+{
+	std::vector<Vertex> mayhemVerts;
+	AddVertsForAABB2D( mayhemVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight ) ), Rgba8( 255, 255, 255 ) );
+	g_engine->m_render->BindTexture( m_mayhemTexture );
+	g_engine->m_render->DrawVertexArray( ( int )mayhemVerts.size(), mayhemVerts.data() );
+
+	g_engine->m_render->BindTexture( nullptr );
 }
 
 //------------------------------------------------------------------------------

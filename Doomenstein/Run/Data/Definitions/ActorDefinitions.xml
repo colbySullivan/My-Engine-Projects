@@ -46,13 +46,13 @@
       <Sound sound="Death" name="Data/Audio/PlayerDeath1.wav"/>
     </Sounds>
     <Inventory>
-      <Weapon name="Pistol" />
-      <Weapon name="Bow" />
-      <Weapon name="RPD" />
-      <Weapon name="ShotgunRifle" />
-      <Weapon name="PlasmaRifle" />
-      <Weapon name="Sniper" />
-    </Inventory>
+		<Weapon name="RPD" />
+		<Weapon name="ShotgunRifle" />
+		<Weapon name="Sniper" />
+		<Weapon name="PlasmaRifle" />
+		<Weapon name="Pistol" />
+		<Weapon name="Bow" />
+	</Inventory>
   </ActorDefinition>
   <!-- Demon -->
   <ActorDefinition name="Demon" faction="Demon" health="160" canBePossessed="true" corpseLifetime="1.0" visible="true">

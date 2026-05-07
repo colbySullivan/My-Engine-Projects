@@ -48,6 +48,7 @@ private:
 	void FireRaycastWeapon( Actor* actor, const WeaponDefinition* weaponDef, const Vec3& direction );
 	void RenderWeaponUI( float viewportWidth, float viewportHeight ) const;
 	void UpdatePickPowerUp( float deltaSeconds );
+	void RenderPickPowerUp( float viewportWidth, float viewportHeight ) const;
 
 private:
 	Camera* m_camera;

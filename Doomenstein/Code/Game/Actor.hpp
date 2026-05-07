@@ -77,6 +77,7 @@ public:
 	// Powerup
 	float m_speedMultiplier = 1.0f;
 	float m_refireMultiplier = 1.0f;
+	float m_damageMultiplier = 1.0f;
 
 	EulerAngles m_angularVelocity;
 	Rgba8		m_color = Rgba8( 255, 255, 255 );

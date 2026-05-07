@@ -457,6 +457,10 @@ void Actor::CheckIfShouldDie()
         }
 
 		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName("Death"), FMOD_3D ) );
+		if ( m_owner && ( m_actorDef->m_dieOnCollide || m_actorDef->m_dieOnSpawn ) )
+		{
+			DebugAddWorldBillboardText( Stringf( "%1.1f", m_actorDef->m_damageOnCollide.m_min ), m_position, 0.05f, Vec2( 0.5f, 0.5f ), 0.2f, Rgba8( 255, 0, 0, 255 ), Rgba8( 255, 255, 255, 255 ) );
+		}
         SetCurrentAnimGroup( "Death" );
     }
 }
@@ -768,6 +772,8 @@ void Actor::AttackedBy( Actor* attacker, float damage )
 {
     Vec3 impulse = Vec3( 0.f, 0.f, 0.f );
 
+	float modifiedDamage = damage * m_damageMultiplier;
+
     const WeaponDefinition* attackerWeapon = attacker->GetCurrentWeapon();
     if ( attackerWeapon )
     {
@@ -793,11 +799,11 @@ void Actor::AttackedBy( Actor* attacker, float damage )
     }
     m_lastAttacker = attacker;
 
-    Attacked( damage, impulse );
+    Attacked( modifiedDamage, impulse );
 
     if ( m_currentController && attacker )
     {
-        m_currentController->DamagedBy( attacker, damage );
+        m_currentController->DamagedBy( attacker, modifiedDamage );
     }
 }
 
@@ -1087,7 +1093,7 @@ void Actor::StartNewRound()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::UpdateSpawner( float deltaSeconds )
+void Actor::UpdateSpawner( [[maybe_unused]] float deltaSeconds )
 {
 	if ( !m_isSpawnerActive || !m_map )
 	{
@@ -1150,7 +1156,7 @@ void Actor::SpawnDemon()
 	demonSpawn.m_spawnLocation = m_position + spawnOffset;
 	demonSpawn.m_actorOrientation = EulerAngles( g_rng->RollRandomFloatInRange( 0.f, 360.f ), 0.f, 0.f );
 
-	Actor* spawnedDemon = m_map->SpawnActor( demonSpawn );
+	m_map->SpawnActor( demonSpawn );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -1228,6 +1234,7 @@ void Actor::ApplyPowerUp( const std::string& powerUpName )
 			    float newRefireTime = m_weaponDef->m_refireTime / multiplier;
 			    delete m_weaponRefireTimer;
 			    m_weaponRefireTimer = new Timer( newRefireTime );
+				m_weaponRefireTimer->Start();
 				g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Shoot speed boost = %.2f", newRefireTime ) );
 		    }
 		    break;
@@ -1239,5 +1246,12 @@ void Actor::ApplyPowerUp( const std::string& powerUpName )
 			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Health boost = %.2f", multiplier ) );
 		    break;
 	    }
-	}
+
+        case PowerUpType::DAMAGE_BOOST:
+        {
+			m_damageMultiplier *= multiplier;
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Damage boost = %.2f", m_damageMultiplier ) );
+		    break;
+        }
+    }
 }
