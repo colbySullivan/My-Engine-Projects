@@ -406,7 +406,7 @@ void Map::CollideActorWithMap( Actor* actor )
 	{
 		collidedWithSolidTile = IsTileSolidAtTileCoords( myTileCoords );
 	}
-	else
+	else if ( actor->m_actorDef->m_name != "Demon" )
 	{
 		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_EAST );
 		collidedWithSolidTile |= PushActorOutOfTileIfSolid( *actor, myTileCoords + STEP_WEST );
