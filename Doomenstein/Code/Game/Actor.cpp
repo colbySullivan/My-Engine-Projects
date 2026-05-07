@@ -110,6 +110,11 @@ Actor::~Actor()
 //-----------------------------------------------------------------------------------------------
 void Actor::Update( [[maybe_unused]] float deltaSeconds )
 {
+    if ( deltaSeconds <= 0.f )
+    {
+        return;
+	}
+
 	if ( IsDemonSpawner() )
 	{
 		UpdateSpawner( deltaSeconds );
@@ -1064,7 +1069,7 @@ bool Actor::TryUpgradeCurrentWeapon()
 //-----------------------------------------------------------------------------------------------
 void Actor::StartNewRound()
 {
-	m_demonsToSpawnThisRound = 6 + ( ( m_currentRound - 1 ) * 6 );
+	m_demonsToSpawnThisRound = 1 + ( ( m_currentRound - 1 ) * 6 );
 	m_demonsSpawnedThisRound = 0;
 
 	m_spawnDelaySeconds = 2.0f - ( m_currentRound * 0.1f );
@@ -1092,7 +1097,7 @@ void Actor::UpdateSpawner( float deltaSeconds )
 	if ( IsRoundComplete() )
 	{
 		m_currentRound++;
-		ApplyPowerUp( "SpeedBoost" ); // #TODO implement the mayhem screen
+        m_map->StartPickingPowerUp();
 		StartNewRound();
 		return;
 	}

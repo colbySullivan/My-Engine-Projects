@@ -47,6 +47,7 @@ private:
 	void ProcessWeaponChangeInput();
 	void FireRaycastWeapon( Actor* actor, const WeaponDefinition* weaponDef, const Vec3& direction );
 	void RenderWeaponUI( float viewportWidth, float viewportHeight ) const;
+	void UpdatePickPowerUp( float deltaSeconds );
 
 private:
 	Camera* m_camera;
@@ -54,6 +55,7 @@ private:
 	EulerAngles m_freeFlyCameraOrientation;
 	Actor*		m_hitActor;
 	Texture* m_hudTexture = nullptr;
+	Texture* m_mayhemTexture = nullptr;
 	Texture* m_reticleTexture = nullptr;
 	int m_controllerIndex = 0;
 

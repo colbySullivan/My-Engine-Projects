@@ -85,8 +85,9 @@ void App::UpdateCursorMode()
 	bool windowHasFocus = ( GetForegroundWindow() == hwnd );
 	bool devConsoleOpen = g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL );
 	bool inAttractMode = m_game && ( m_game->m_currentGameState == GAMESTATE_ATTRACT );
+	bool isPickingPowerUp = ( m_game && m_game->m_currentMap ) ? m_game->m_currentMap->IsCurrentlyPickingPowerUp() : false;
 
-	if ( !windowHasFocus || devConsoleOpen || inAttractMode )
+	if ( !windowHasFocus || devConsoleOpen || inAttractMode || isPickingPowerUp )
 	{
 		g_engine->m_input->SetCursorMode( CursorMode::POINTER );
 	}

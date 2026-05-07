@@ -31,6 +31,8 @@ public:
 	void Startup();
 	void Shutdown();
 
+	Clock m_gameClock;
+
 	void CreateTiles();
 	void CreateGeometry();
 	void AddGeometryForWall( const AABB3& bounds, const AABB2& UVs );
@@ -67,7 +69,9 @@ public:
 	RaycastResult3D RaycastWorldActors( const Vec3& start, const Vec3& direction, float distance, Actor* owner = nullptr ) const;
 
 	void HandleDeath();
-
+	void StartPickingPowerUp();
+	void EndPickingPowerUp();
+	bool IsCurrentlyPickingPowerUp() const { return m_isCurrentlyPickingPowerUp; }
 	Game* m_game = nullptr;
 
 	Vec3 m_sunDirection;
@@ -88,7 +92,7 @@ protected:
 	IndexBuffer* m_indexBuffer = nullptr;
 
 	unsigned int m_nextActorUID = 0;
-
+	bool		m_isCurrentlyPickingPowerUp = false;
 	ConstantBuffer* m_lightingConstant;
 private:
 	void SetLighting() const;

@@ -34,7 +34,11 @@ Clock::~Clock()
 		}
 	}
 	m_children.clear();
-	g_systemClock = nullptr;
+
+	if ( this == g_systemClock )
+	{
+		g_systemClock = nullptr;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -238,5 +242,14 @@ void Clock::RemoveChild( Clock* childClock )
 	{
 		return;
 	}
-	delete childClock;
+
+	for ( int childIndex = 0; childIndex < ( int )m_children.size(); ++childIndex )
+	{
+		if ( m_children[childIndex] == childClock )
+		{
+			m_children[childIndex] = m_children.back();
+			m_children.pop_back();
+			return;
+		}
+	}
 }

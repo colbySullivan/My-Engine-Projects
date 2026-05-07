@@ -21,6 +21,7 @@ PlayerController::PlayerController( Map* map, Camera* camera )
 {
 	m_isCurrentlyPlayerControlled = true;
 	m_hudTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/Hud_Base.png" );
+	m_mayhemTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/mayhem.png" );
 	m_reticleTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/Reticle.png" );
 }
 
@@ -40,6 +41,11 @@ void PlayerController::Update( float deltaSeconds )
 		WorldToFMOD( m_camera->GetOrientation().GetForwardDir_IFwd_JLeft_KUp() ), 
 		WorldToFMOD( Vec3::Z_AXIS ) 
 	);
+
+	if ( m_map->IsCurrentlyPickingPowerUp() )
+	{
+		UpdatePickPowerUp( deltaSeconds );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -63,6 +69,18 @@ void PlayerController::RenderUI() const
 	uiCamera.SetViewport( worldViewport );
 
 	g_engine->m_render->BeginCamera( uiCamera );
+
+	if ( m_map->IsCurrentlyPickingPowerUp() )
+	{
+		std::vector<Vertex> mayhemVerts;
+		AddVertsForAABB2D( mayhemVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( viewportWidth, viewportHeight ) ), Rgba8( 255, 255, 255 ) );
+		g_engine->m_render->BindTexture( m_mayhemTexture );
+		g_engine->m_render->DrawVertexArray( ( int )mayhemVerts.size(), mayhemVerts.data() );
+
+		g_engine->m_render->BindTexture( nullptr );
+		g_engine->m_render->EndCamera( uiCamera );
+		return;
+	}
 
 	RenderWeaponUI( viewportWidth, viewportHeight );
 
@@ -516,6 +534,19 @@ void PlayerController::RenderWeaponUI( float viewportWidth, float viewportHeight
 
 	g_engine->m_render->BindTexture( &ownerActor->m_weaponSpriteSheet->GetTexture() );
 	g_engine->m_render->DrawVertexArray( ( int )weaponVerts.size(), weaponVerts.data() );
+}
+
+void PlayerController::UpdatePickPowerUp( float deltaSeconds )
+{
+	Vec2 mouseDelta = g_engine->m_input->GetCursorClientPosition();
+	DebugAddScreenText( Stringf( "Mouse Delta: (%.2f, %.2f)", mouseDelta.x, mouseDelta.y ), AABB2( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	{
+		Actor* ownerActor = GetActor();
+		ownerActor->ApplyPowerUp( "HealthBoost" ); // #Todo This should be based on the power-up that was picked, not hardcoded
+		m_map->EndPickingPowerUp();
+	}
 }
 
 //------------------------------------------------------------------------------

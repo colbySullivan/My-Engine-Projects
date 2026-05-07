@@ -24,6 +24,7 @@ Map::Map( Game* game, const MapDefinition* definition )
 	, m_texture( definition->m_spriteSheetTexture )
 	, m_shader( definition->m_shader )
 	, m_definition( definition )
+	, m_gameClock( Clock::GetSystemClock() ) 
 {
 	m_dimensions = m_definition->m_image.GetDimensions();
 
@@ -230,7 +231,7 @@ const Tile* Map::GetTile( int x, int y ) const
 //-----------------------------------------------------------------------------------------------
 void Map::Update()
 {
-	float deltaSeconds = ( float )g_engine->m_systemClock->GetDeltaSeconds();
+ 	float deltaSeconds = (float)m_gameClock.GetDeltaSeconds();
 	for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* currActor = m_actorVector[actorIndex];
@@ -915,6 +916,21 @@ void Map::HandleDeath()
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+void Map::StartPickingPowerUp()
+{
+	m_isCurrentlyPickingPowerUp = true;
+	m_gameClock.Pause();
+}
+
+//------------------------------------------------------------------------------
+void Map::EndPickingPowerUp()
+{
+	m_isCurrentlyPickingPowerUp = false;
+	m_gameClock.Unpause();
+}
+
 
 //-----------------------------------------------------------------------------------------------
 void Map::SetLighting() const
