@@ -540,7 +540,7 @@ void PlayerController::RenderWeaponUI( float viewportWidth, float viewportHeight
 void PlayerController::UpdatePickPowerUp( [[maybe_unused]] float deltaSeconds )
 {
 	Vec2 mouseDelta = g_engine->m_input->GetCursorClientPosition();
-	DebugAddScreenText( Stringf( "Mouse Delta: (%.2f, %.2f)", mouseDelta.x, mouseDelta.y ), AABB2( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	//DebugAddScreenText( Stringf( "Mouse Delta: (%.2f, %.2f)", mouseDelta.x, mouseDelta.y ), AABB2( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
@@ -596,7 +596,7 @@ void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHei
 
 	float boxWidth = viewportWidth * 0.2f;
 	float boxHeight = viewportHeight * 0.3f;
-	float spacing = viewportWidth * 0.05f;
+	float spacing = viewportWidth * 0.08f;
 	float startX = viewportWidth * 0.5f - ( 1.5f * boxWidth + spacing );
 	float startY = viewportHeight * 0.35f;
 
@@ -614,7 +614,7 @@ void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHei
 				if ( powerUpTexture )
 				{
 					float imgSize = boxWidth * 0.6f;
-					float imgX = boxX + ( boxWidth - imgSize ) * 0.5f;
+					float imgX = boxX + ( boxWidth - imgSize ) * 0.5f;		
 					float imgY = startY + boxHeight * 0.5f;
 					AABB2 imgBox( Vec2( imgX, imgY ), Vec2( imgX + imgSize, imgY + imgSize ) );
 
@@ -626,8 +626,8 @@ void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHei
 			}
 
 			std::vector<Vertex> textVerts;
-			float textHeight = boxHeight * 0.08f;
-			AddVertsForTextTriangles2D( textVerts, powerUpDef->m_name, Vec2( boxX + boxWidth * 0.1f, startY + boxHeight * 0.1f ), textHeight, Rgba8::WHITE );
+			float textHeight = boxHeight * 0.07f;
+			AddVertsForTextTriangles2D( textVerts, powerUpDef->m_effectDescription, Vec2( boxX + boxWidth * 0.1f, startY + boxHeight * 0.3f ), textHeight, Rgba8::WHITE );
 
 			g_engine->m_render->BindTexture( nullptr );
 			g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
