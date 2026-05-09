@@ -91,6 +91,7 @@ protected:
 	Shader* m_shader = nullptr;
 	VertexBuffer* m_vertexBuffer = nullptr;
 	IndexBuffer* m_indexBuffer = nullptr;
+	Texture* m_skyboxTexture = nullptr;
 
 	unsigned int m_nextActorUID = 0;
 	bool		m_isCurrentlyPickingPowerUp = false;

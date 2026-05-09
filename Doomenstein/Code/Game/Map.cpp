@@ -74,6 +74,7 @@ void Map::Startup()
 	{
 		SpawnPlayer( m_game->m_playerController2 );
 	}
+	m_skyboxTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/Skybox.jpg" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -604,12 +605,22 @@ void Map::Render( Camera* playerCamera ) const
 	if ( m_vertexBuffer == nullptr || m_indexBuffer == nullptr )
 		return;
 
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_NONE;
+	g_engine->m_render->BindTexture( m_skyboxTexture );
+	Vec3 cameraPos = playerCamera->GetPosition();
+	std::vector<Vertex> skyboxVerts;
+	AddVertsForSphere3D( skyboxVerts, cameraPos, 100.f, 32, 32 );
+	g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 100, 100, 100, 255 ) );
+	g_engine->m_render->DrawVertexArray( skyboxVerts );
+
 	g_engine->m_render->BindTexture( m_texture );
 
 	SetLighting();
 
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+	//g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BindShader( m_shader );
-	g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 255, 255, 255, 255 ) );
+	g_engine->m_render->SetModelConstants( Mat44(), Rgba8( 255, 200, 200, 255 ) );
 
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->DrawIndexBuffer( m_vertexBuffer, m_indexBuffer, indexCount );
@@ -622,6 +633,9 @@ void Map::Render( Camera* playerCamera ) const
 			currActor->Render( playerCamera);
 		}
 	}
+
+
+
 	/*for ( int actorIndex = 0; actorIndex < m_actorVector.size(); ++actorIndex )
 	{
 		Actor* currActor = m_actorVector[actorIndex];

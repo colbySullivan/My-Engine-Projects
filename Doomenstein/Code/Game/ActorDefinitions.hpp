@@ -61,6 +61,8 @@ public:
 	float       m_eyeHeight = 0.f;
 	float       m_cameraFOV = 60.f;
 
+	float		m_goldOnDeath = 0.f;
+
 	std::vector<std::string> m_weaponNames;
 	std::vector<ActorSoundDefinition> m_sounds;
 

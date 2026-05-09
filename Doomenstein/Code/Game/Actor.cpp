@@ -447,15 +447,24 @@ void Actor::CheckIfShouldDie()
             m_animTimer = nullptr;
         }
 
-        if ( m_currentController && m_currentController->IsPlayerControlled() )
-        {
-			static_cast< PlayerController* >( m_currentController )->m_deathCount++;
-			if ( m_lastAttacker && m_lastAttacker->m_currentController && m_lastAttacker->m_currentController->IsPlayerControlled() )
-			{
-				static_cast< PlayerController* >( m_lastAttacker->m_currentController )->m_killCount++;
-			}
-        }
+        //if ( m_currentController && m_currentController->IsPlayerControlled() )
+        //{
+            //PlayerController* player = static_cast< PlayerController* >( m_currentController );
+   //         //player->m_deathCount++;
+			//if ( m_lastAttacker && m_lastAttacker->m_currentController && m_lastAttacker->m_currentController->IsPlayerControlled() )
+			//{
+   //             player->m_killCount++;
+			//}
+        //}
 
+        if ( m_lastAttacker && m_lastAttacker->m_currentController )
+		{
+            PlayerController* player = static_cast< PlayerController* >( m_lastAttacker->m_currentController );
+            if ( player )
+            {
+			    player->AddGold( m_actorDef->m_goldOnDeath );
+            }
+        }
 		TryToPlaySound( g_engine->m_audio->CreateOrGetSound( m_actorDef->GetSoundByName("Death"), FMOD_3D ) );
 		if ( m_owner && ( m_actorDef->m_dieOnCollide || m_actorDef->m_dieOnSpawn ) )
 		{

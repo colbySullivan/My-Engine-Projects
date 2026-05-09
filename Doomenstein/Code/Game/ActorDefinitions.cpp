@@ -29,6 +29,7 @@ static void LoadActorDefsFromFile( char const* filePath )
 		def.m_faction = xml.ParseXmlAttribute( *actorElem, "faction", "NEUTRAL" );
 		def.m_canBePossessed = xml.ParseXmlAttribute( *actorElem, "canBePossessed", false );
 		def.m_dieOnSpawn = xml.ParseXmlAttribute( *actorElem, "dieOnSpawn", false );
+		def.m_goldOnDeath = xml.ParseXmlAttribute( *actorElem, "goldOnDeath", 0.f );
 
 		XmlElement* collElem = actorElem->FirstChildElement( "Collision" );
 		if ( collElem )

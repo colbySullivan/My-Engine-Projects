@@ -30,6 +30,7 @@ public:
 	Camera* GetPlayerCamera() const;
 
 	void SetUpPickPowerUp();
+	void AddGold( float amount );
 
 	bool		m_isFreeFlyMode;
 	bool		m_canProcessPossessInput = true;
@@ -43,6 +44,7 @@ private:
 	void HandleActorInput( float deltaSeconds );
 	void HandleFreeFlyInput( float deltaSeconds );
 	void PackAPunchInput( Actor* actor );
+	void InteractableUI( Actor* actor ) const;
 	void ProcessMovementInput( float deltaSeconds );
 	void ProcessLookInput( float deltaSeconds );
 	void ToggleCameraMode();
@@ -62,6 +64,8 @@ private:
 	Texture* m_mayhemTexture = nullptr;
 	Texture* m_reticleTexture = nullptr;
 	int m_controllerIndex = 0;
+	float 		m_gold = 100.f;
+
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;
 	static constexpr float FREE_FLY_SPEED = 2.f;

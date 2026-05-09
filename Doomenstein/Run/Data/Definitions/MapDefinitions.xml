@@ -1,10 +1,12 @@
 <Definitions>
   <MapDefinition name="Zombies" image="Data/Maps/TownZombies2.png" shader="Data/Shaders/Diffuse" spriteSheetTexture="Data/Images/Terrain_Zombies.png" spriteSheetCellCount="8,8">
     <SpawnInfos>
-		<SpawnInfo actor="SpawnPoint"  position="20.5,15.5,0.0" orientation="270.0,0.0,0.0" />
-		<SpawnInfo actor="AmmoKit" position="25.5,15.5,0.0" orientation="270.0,0.0,0.0" />
-		<SpawnInfo actor="DemonSpawner" position="25.5,15.5,0.0" orientation="270.0,0.0,0.0" />
-		<SpawnInfo actor="PackAPunch"  position="15.5,15.5,0.0" orientation="270.0,0.0,0.0" />
+		<SpawnInfo actor="SpawnPoint"  position="62,46,0.0" orientation="270.0,0.0,0.0" />
+		<SpawnInfo actor="AmmoKit" position="51,31,0.0" orientation="270.0,0.0,0.0" />
+		<SpawnInfo actor="DemonSpawner" position="28,45.5,0.0" orientation="270.0,0.0,0.0" />
+		<SpawnInfo actor="DemonSpawner" position="96,50,0.0" orientation="270.0,0.0,0.0" />
+		<SpawnInfo actor="DemonSpawner" position="84,79,0.0" orientation="270.0,0.0,0.0" />
+		<SpawnInfo actor="PackAPunch"  position="86,30,0.0" orientation="270.0,0.0,0.0" />
     </SpawnInfos>
   </MapDefinition>
   <MapDefinition name="TestMap" image="Data/Maps/TestMap.png" shader="Data/Shaders/Diffuse" spriteSheetTexture="Data/Images/Terrain_8x8.png" spriteSheetCellCount="8,8">

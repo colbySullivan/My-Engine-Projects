@@ -104,8 +104,8 @@ void PlayerController::RenderUI() const
 	std::string killCountHudText = Stringf( "%5.0f", ownerActor ? m_killCount : 0.f );
 	AddVertsForTextTriangles2D( textVerts, killCountHudText, Vec2( 0.f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
 
-	std::string deathCountHudText = Stringf( "%5.0f", ownerActor ? m_deathCount : 0.f );
-	AddVertsForTextTriangles2D( textVerts, deathCountHudText, Vec2( viewportWidth * 0.85f, 15.f ), viewportHeight * 0.08f, Rgba8( 255, 255, 255 ) );
+	std::string deathCountHudText = Stringf( "%5.0f", m_gold );
+	AddVertsForTextTriangles2D( textVerts, deathCountHudText, Vec2( viewportWidth * 0.85f, 30.f ), viewportHeight * 0.06f, Rgba8( 255, 255, 255 ) );
 
 	if ( m_map )
 	{
@@ -146,6 +146,7 @@ void PlayerController::RenderUI() const
 	}
 
 	g_engine->m_render->BindTexture( nullptr );
+	InteractableUI( ownerActor );
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 
 	Actor* actor = GetActor();
@@ -587,6 +588,12 @@ void PlayerController::SetUpPickPowerUp()
 }
 
 //------------------------------------------------------------------------------
+void PlayerController::AddGold( float amount )
+{
+	m_gold += amount;
+}
+
+//------------------------------------------------------------------------------
 void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHeight ) const
 {
 	std::vector<Vertex> mayhemVerts;
@@ -649,15 +656,33 @@ void PlayerController::PackAPunchInput( Actor* actor )
 			if ( otherActor && otherActor->IsPackAPunchMachine() )
 			{
 				float distance = actor->GetDistanceToActor( otherActor );
-				if ( distance <= interactionDistance )
+				if ( distance <= interactionDistance && m_gold >= PACK_A_PUNCH_COST )
 				{
 					bool upgraded = actor->TryUpgradeCurrentWeapon();
 					if ( upgraded )
 					{
-						// #TODO Play upgrade
+						m_gold -= PACK_A_PUNCH_COST;
 					}
 					break;
 				}
+			}
+		}
+	}
+}
+
+void PlayerController::InteractableUI( Actor* actor ) const
+{
+	float interactionDistance = 0.5f;
+	for ( Actor* otherActor : m_map->m_actorVector )
+	{
+		if ( otherActor && otherActor->IsPackAPunchMachine() )
+		{
+			float distance = actor->GetDistanceToActor( otherActor );
+			if ( distance <= interactionDistance )
+			{
+				std::vector<Vertex> textVerts;
+				AddVertsForTextTriangles2D( textVerts, "Press Space to Pack-a-Punch: 750 gold", Vec2( 1600.f * 0.5f, 900.f * 0.5f ), 30.f, Rgba8::YELLOW );
+				g_engine->m_render->DrawVertexArray( textVerts );
 			}
 		}
 	}
