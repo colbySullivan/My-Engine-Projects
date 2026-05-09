@@ -11,6 +11,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/SimpleTriangleFont.hpp"
 #include "PowerUpDefinitions.hpp"
+#include "App.hpp"
 
 //-----------------------------------------------------------------------------------------------
 PlayerController::PlayerController( Map* map, Camera* camera )
@@ -24,6 +25,7 @@ PlayerController::PlayerController( Map* map, Camera* camera )
 	m_hudTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/Hud_Base.png" );
 	m_mayhemTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/mayhem.png" );
 	m_reticleTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Images/Reticle.png" );
+	g_engine->m_eventSystem->SubscribeEventCallbackFunction( "AddGold", Command_AddGold );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -744,7 +746,7 @@ void PlayerController::ToggleCameraMode()
 		m_freeFlyCameraOrientation.m_yawDegrees = actor->m_orientation.m_yawDegrees;
 		m_freeFlyCameraOrientation.m_pitchDegrees = 0.f;
 	}
-}
+}																																					   
 
 //-----------------------------------------------------------------------------------------------
 void PlayerController::PossessNextActor()
@@ -796,4 +798,16 @@ void PlayerController::ProcessWeaponChangeInput()
 	{
 		actor->EquipPreviousWeapon();
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Command_AddGold( [[maybe_unused]] EventArgs& args )
+{
+	float amount = args.GetValue( "1", 750.f );
+	if ( g_app && g_app->m_game && g_app->m_game->m_playerController1 )
+	{
+		g_app->m_game->m_playerController1->AddGold( amount );
+
+	}
+	return false;
 }

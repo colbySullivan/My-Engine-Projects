@@ -7,6 +7,7 @@
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Renderer/Texture.hpp"
+#include "Engine/Core/EventSystem.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -72,3 +73,5 @@ private:
 	static constexpr float FREE_FLY_SPRINT_SPEED = 15.f;
 	static constexpr float MAX_CAMERA_PITCH = 85.f;
 };
+
+bool Command_AddGold( [[maybe_unused]] EventArgs& args );

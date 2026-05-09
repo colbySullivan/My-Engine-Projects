@@ -106,8 +106,8 @@
 	<!-- PAP Sniper -->
 	<WeaponDefinition name="PAPSniper" refireTime="0.75" projectileActor="BulletHit" rayCount="1" rayCone="0.0" rayRange="150.0" rayDamage="4000.0~6000.0" rayImpulse="15.0">
 		<HUD shader="Default" baseTexture="Data/Images/Hud_Base.png" reticleTexture="Data/Images/Reticle.png" reticleSize="16,16" spriteSize="256,256" spritePivot="0.5,0.0">
-			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/Rifles.png" cellCount="7,7" secondsPerFrame="0.1" startFrame="0" endFrame="7" />
-			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/Rifles.png" cellCount="7,7" secondsPerFrame="0.025" startFrame="18" endFrame="44"/>
+			<Animation name="Idle" shader="Default" spriteSheet="Data/Images/RiflesPap.png" cellCount="7,7" secondsPerFrame="0.1" startFrame="0" endFrame="7" />
+			<Animation name="Attack" shader="Default" spriteSheet="Data/Images/RiflesPap.png" cellCount="7,7" secondsPerFrame="0.025" startFrame="18" endFrame="44"/>
 		</HUD>
 		<Sounds>
 			<Sound sound="Fire" name="Data/Audio/PistolFire.wav" soundLevel="0.5"/>

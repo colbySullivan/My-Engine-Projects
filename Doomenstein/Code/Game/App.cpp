@@ -113,7 +113,7 @@ bool App::IsQuitting() const
 //------------------------------------------------------------------------------
 bool App::Event_Quit( [[maybe_unused]] EventArgs& args )
 {
-	g_theApp->SetIsQuitting();
+	g_app->SetIsQuitting();
 	return false;
 }
 

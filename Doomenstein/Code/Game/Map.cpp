@@ -212,7 +212,7 @@ void Map::CreateBuffers()
 //-----------------------------------------------------------------------------------------------
 bool Map::IsPositionInBounds( const Vec3& position ) const
 {
-	return ( AreCoordsInBounds( ( int )position.x, ( int )position.y ) && ( position.z >= 0.f && position.z <= 1.f ) );
+	return ( AreCoordsInBounds( ( int )position.x, ( int )position.y ) && ( position.z >= 0.f /*&& position.z <= 1.f*/ ) );
 }
 
 //-----------------------------------------------------------------------------------------------
