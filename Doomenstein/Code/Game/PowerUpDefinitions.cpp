@@ -32,7 +32,7 @@ static void LoadPowerUpDefsFromFile( char const* filePath )
 		PowerUpDefinition& def = PowerUpDefinition::s_definitions[name];
 		def.m_name = name;
 		def.m_type = PowerUpDefinition::GetTypeFromName( name );
-		def.m_percentage = xml.ParseXmlAttribute( *powerupElem, "percentage", FloatRange( 1.0f, 10.0f ) );
+		def.m_percentage = xml.ParseXmlAttribute( *powerupElem, "percentage", FloatRange( 1.0f, 10.0f ), '~' );
 		def.m_effectDescription = xml.ParseXmlAttribute( *powerupElem, "description", "" );
 		def.m_imagePath = xml.ParseXmlAttribute( *powerupElem, "imagepath", "" );
 		def.m_weight = xml.ParseXmlAttribute( *powerupElem, "weight", 0.f );

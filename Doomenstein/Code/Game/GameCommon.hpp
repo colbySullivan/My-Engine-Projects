@@ -88,6 +88,7 @@ const IntVec2 STEP_SW = IntVec2( -1, -1 );
 
 
 const float PACK_A_PUNCH_COST = 750.f;
+const float GUN_CHEST_COST = 500.f;
 
 //------------------------------------------------------------------------------
 enum PowerUp

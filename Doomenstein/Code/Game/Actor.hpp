@@ -102,8 +102,10 @@ public:
 	double m_weaponAnimStartTime = 0.0;
 
 	bool IsPackAPunchMachine() const;
+	bool IsGunChest() const;
 	float GetDistanceToActor( const Actor* other ) const;
 	bool TryUpgradeCurrentWeapon();
+	bool TryToGetNewWeapon();
 
 	bool IsDemonSpawner() const;
 	void UpdateSpawner( float deltaSeconds );

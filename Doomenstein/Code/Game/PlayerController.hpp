@@ -44,7 +44,7 @@ public:
 private:
 	void HandleActorInput( float deltaSeconds );
 	void HandleFreeFlyInput( float deltaSeconds );
-	void PackAPunchInput( Actor* actor );
+	void InteractableInput( Actor* actor );
 	void InteractableUI( Actor* actor ) const;
 	void ProcessMovementInput( float deltaSeconds );
 	void ProcessLookInput( float deltaSeconds );
@@ -65,7 +65,7 @@ private:
 	Texture* m_mayhemTexture = nullptr;
 	Texture* m_reticleTexture = nullptr;
 	int m_controllerIndex = 0;
-	float 		m_gold = 100.f;
+	float 		m_gold = 500.f;
 
 
 	static constexpr float MOUSE_SENSITIVITY = 0.075f;

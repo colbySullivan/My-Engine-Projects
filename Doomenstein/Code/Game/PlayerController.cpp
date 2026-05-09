@@ -205,7 +205,7 @@ void PlayerController::HandleActorInput( float deltaSeconds )
 		return;
 	}
 
-	PackAPunchInput( actor );
+	InteractableInput( actor );
 	ProcessLookInput( deltaSeconds );
 	ProcessMovementInput( deltaSeconds );
 	ProcessWeaponChangeInput();
@@ -648,7 +648,7 @@ void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHei
 }
 
 //------------------------------------------------------------------------------
-void PlayerController::PackAPunchInput( Actor* actor )
+void PlayerController::InteractableInput( Actor* actor )
 {
 	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( ' ' ) )
 	{
@@ -668,22 +668,46 @@ void PlayerController::PackAPunchInput( Actor* actor )
 					break;
 				}
 			}
+
+			if ( otherActor && otherActor->IsGunChest() )
+			{
+				float distance = actor->GetDistanceToActor( otherActor );
+				if ( distance <= interactionDistance && m_gold >= GUN_CHEST_COST )
+				{
+					bool upgraded = actor->TryToGetNewWeapon();
+					if ( upgraded )
+					{
+						m_gold -= GUN_CHEST_COST;
+					}
+					break;
+				}
+			}
 		}
 	}
 }
 
 void PlayerController::InteractableUI( Actor* actor ) const
 {
-	float interactionDistance = 0.5f;
 	for ( Actor* otherActor : m_map->m_actorVector )
 	{
 		if ( otherActor && otherActor->IsPackAPunchMachine() )
 		{
 			float distance = actor->GetDistanceToActor( otherActor );
-			if ( distance <= interactionDistance )
+			if ( distance <= 0.5f )
 			{
 				std::vector<Vertex> textVerts;
 				AddVertsForTextTriangles2D( textVerts, "Press Space to Pack-a-Punch: 750 gold", Vec2( 1600.f * 0.5f, 900.f * 0.5f ), 30.f, Rgba8::YELLOW );
+				g_engine->m_render->DrawVertexArray( textVerts );
+			}
+		}
+
+		if ( otherActor && otherActor->IsGunChest() )
+		{
+			float distance = actor->GetDistanceToActor( otherActor );
+			if ( distance <= 1.0f )
+			{
+				std::vector<Vertex> textVerts;
+				AddVertsForTextTriangles2D( textVerts, "Press Space to Buy Weapon: 500 gold", Vec2( 1600.f * 0.5f, 900.f * 0.5f ), 30.f, Rgba8::YELLOW );
 				g_engine->m_render->DrawVertexArray( textVerts );
 			}
 		}

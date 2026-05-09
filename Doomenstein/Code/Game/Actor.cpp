@@ -1038,6 +1038,12 @@ bool Actor::IsPackAPunchMachine() const
 }
 
 //-----------------------------------------------------------------------------------------------
+bool Actor::IsGunChest() const
+{
+	return m_actorDef && m_actorDef->m_name == "AmmoKit";
+}
+
+//-----------------------------------------------------------------------------------------------
 float Actor::GetDistanceToActor( const Actor* other ) const
 {
 	if ( !other )
@@ -1081,13 +1087,39 @@ bool Actor::TryUpgradeCurrentWeapon()
 	return true;
 }
 
+//------------------------------------------------------------------------------
+bool Actor::TryToGetNewWeapon()
+{
+	m_weapons.clear();
+    const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( "PAPShotgunRifle" );
+	if ( weaponDef )
+	{
+		m_weapons.push_back( weaponDef );
+	}
+	if ( !m_weapons.empty() )
+	{
+		LoadWeaponSounds();
+		m_currentWeaponIndex = 0;
+		m_weaponDef = m_weapons[0];
+
+		if ( m_weaponRefireTimer )
+		{
+			delete m_weaponRefireTimer;
+		}
+		m_weaponRefireTimer = new Timer( m_weaponDef->m_refireTime );
+		m_weaponRefireTimer->Start();
+		UpdateWeaponAnimation();
+	}
+    return true;
+}
+
 //-----------------------------------------------------------------------------------------------
 void Actor::StartNewRound()
 {
-	m_demonsToSpawnThisRound = 1 + ( ( m_currentRound - 1 ) * 6 );
+	m_demonsToSpawnThisRound = 2 + ( ( m_currentRound - 1 ) * 3 );
 	m_demonsSpawnedThisRound = 0;
 
-	m_spawnDelaySeconds = 2.0f - ( m_currentRound * 0.1f );
+	m_spawnDelaySeconds = 1.0f - ( m_currentRound * 0.1f );
 	if ( m_spawnDelaySeconds < 0.5f )
 	{
 		m_spawnDelaySeconds = 0.5f;
