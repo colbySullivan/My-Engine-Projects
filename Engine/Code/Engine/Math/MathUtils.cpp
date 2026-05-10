@@ -534,13 +534,15 @@ bool DiscBounceOffDisc( Vec2& mobileDiscCenter, Vec2& mobileDiscVel, float mobil
 	{
 		return false;
 	}
-	PushDiscOutOfFixedDisc2D( mobileDiscCenter, mobileDiscRadius, fixedDiscCenter, fixedDiscRadius );
 
 	Vec2 normalReflect = mobileDiscCenter - fixedDiscCenter;
 	normalReflect = normalReflect.GetNormalized();
 	mobileDiscVel = mobileDiscVel.GetReflected( normalReflect );
 	float totalElasticity = mobileElasticity * fixedElasticity;
 	mobileDiscVel *= totalElasticity;
+
+	PushDiscOutOfFixedDisc2D( mobileDiscCenter, mobileDiscRadius, fixedDiscCenter, fixedDiscRadius );
+
 	return true;
 }
 
@@ -552,26 +554,25 @@ bool DiscBounceOffEachOther( Vec2& firstDiscCenter, Vec2& firstDiscVel, float fi
 		return false;
 	}
 
-	PushDiscsOutOfEachOther2D( firstDiscCenter, firstDiscRadius, otherDiscCenter, otherDiscRadius );
-
-	if ( DotProduct2D( firstDiscVel, otherDiscVel ) < 0.f )
+	Vec2 firstToOther = otherDiscCenter - firstDiscCenter;
+	Vec2 otherVelOnFirstToOther = otherDiscVel - firstDiscVel;
+	if ( DotProduct2D( otherVelOnFirstToOther, firstToOther ) < 0.f )
 	{
-		return false;
+		Vec2 normalReflect = firstDiscCenter - otherDiscCenter;
+		normalReflect = normalReflect.GetNormalized();
+
+		Vec2 firstVelOnNormal = DotProduct2D( firstDiscVel, normalReflect ) * normalReflect;
+		Vec2 firstVelOnTangent = firstDiscVel - firstVelOnNormal;
+
+		Vec2 otherVelOnNormal = DotProduct2D( otherDiscVel, normalReflect ) * normalReflect;
+		Vec2 otherVelOnTangent = otherDiscVel - otherVelOnNormal;
+
+		float totalElasticity = firstElasticity * otherElasticity;
+		firstDiscVel = firstVelOnTangent + ( otherVelOnNormal * totalElasticity );
+		otherDiscVel = otherVelOnTangent + ( firstVelOnNormal * totalElasticity );
 	}
 
-	Vec2 normalReflect = firstDiscCenter - otherDiscCenter;
-	normalReflect = normalReflect.GetNormalized();
-
-	Vec2 firstVelOnNormal = DotProduct2D( firstDiscVel, normalReflect ) * normalReflect;
-	Vec2 firstVelOnTangent = firstDiscVel - firstVelOnNormal;
-
-	Vec2 otherVelOnNormal = DotProduct2D( otherDiscVel, normalReflect ) * normalReflect;
-	Vec2 otherVelOnTangent = otherDiscVel - otherVelOnNormal;
-
-	float totalElasticity = firstElasticity * otherElasticity;
-	firstDiscVel = firstVelOnTangent + ( otherVelOnNormal * totalElasticity );
-	otherDiscVel = otherVelOnTangent + ( firstVelOnNormal * totalElasticity );
-
+	PushDiscsOutOfEachOther2D( firstDiscCenter, firstDiscRadius, otherDiscCenter, otherDiscRadius );
 	return true;
 }
 
