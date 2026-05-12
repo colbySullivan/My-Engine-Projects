@@ -35,6 +35,7 @@ Game::Game()
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	m_roundNumber = 1;
 	g_testFont = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
+	m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Images/MainScreen.png" );
 	//m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/TestUV.png" );
 	//m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/gradient.png" );
 	//m_testTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/harshgradiant.png" );
@@ -536,7 +537,7 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	{
 		m_shipAnimationTimer = 0.0f;
 	}
-	UpdateBlackHole();
+	//UpdateBlackHole();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -565,25 +566,15 @@ void Game::RenderAttractMode() const
 		1.0f,
 		0.f,
 		Vec2( 0.f, 0.f ) );
-	g_engine->m_render->DrawVertexArray( 6, background );
 
-	// Black hole
-	Vertex tempHoleWorldVerts[NUM_BLACK_HOLE_VERTS];
-	for ( int vertIndex = 0; vertIndex < NUM_BLACK_HOLE_VERTS; ++vertIndex )
-	{
-		tempHoleWorldVerts[vertIndex] = m_blackHoleVerts[vertIndex];
-	}
-	TransformVertexArrayXY3D(
-		NUM_BLACK_HOLE_VERTS,
-		tempHoleWorldVerts,
-		150.0f,
-		0.f,
-		Vec2( 800.f, 400.f ) );
-	g_engine->m_render->DrawVertexArray( NUM_BLACK_HOLE_VERTS, tempHoleWorldVerts );
-
+	std::vector<Vertex> hudVerts;
+	AddVertsForAABB2D( hudVerts, AABB2( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), Rgba8( 255, 255, 255 ) );
+	g_engine->m_render->BindTexture( m_testTexture );
+	g_engine->m_render->DrawVertexArray( ( int )hudVerts.size(), hudVerts.data() );
+	g_engine->m_render->BindTexture( nullptr );
 	// Title
-	char title[32] = "Doomenstein";
-	for ( int charIndex = 0; charIndex < 18; ++charIndex )
+	char title[64] = "Doomenstein Zombies";
+	for ( int charIndex = 0; charIndex < 20; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };
 		int offsetColorR =  g_rng->RollRandomIntInRange(200, 255);

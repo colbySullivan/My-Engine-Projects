@@ -483,7 +483,7 @@ bool Actor::IsDead() const
 //-----------------------------------------------------------------------------------------------
 void Actor::Attacked( float damage, Vec3 impulse )
 {
-    AddImpulse( impulse );
+    //AddImpulse( impulse );
     m_health -= (int)damage;
     
     if ( m_health <= 0 )
@@ -1291,7 +1291,7 @@ void Actor::ApplyPowerUp( const std::string& powerUpName )
 
         case PowerUpType::DAMAGE_BOOST:
         {
-			m_damageMultiplier *= multiplier;
+			m_damageMultiplier = percentageBoost / 100.0f;
 			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Damage boost = %.2f", m_damageMultiplier ) );
 		    break;
         }

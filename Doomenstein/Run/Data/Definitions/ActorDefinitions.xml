@@ -47,6 +47,7 @@
     </Sounds>
     <Inventory>
 		<Weapon name="Pistol" />
+		<Weapon name="PAPRPD" />
 	</Inventory>
   </ActorDefinition>
   <!-- Demon -->

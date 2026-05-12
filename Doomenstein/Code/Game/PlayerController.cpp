@@ -143,7 +143,7 @@ void PlayerController::RenderUI() const
 			AddVertsForTextTriangles2D( textVerts, roundText, Vec2( viewportWidth * 0.45f, viewportHeight * 0.9f ), viewportHeight * 0.05f, Rgba8( 255, 255, 0 ) );
 
 			std::string demonsText = Stringf( "Demons: %d", aliveDemonsCount );
-			AddVertsForTextTriangles2D( textVerts, demonsText, Vec2( viewportWidth * 0.42f, viewportHeight * 0.85f ), viewportHeight * 0.04f, Rgba8( 255, 0, 0 ) );
+			AddVertsForTextTriangles2D( textVerts, demonsText, Vec2( viewportWidth * 0.45f, viewportHeight * 0.85f ), viewportHeight * 0.04f, Rgba8( 255, 0, 0 ) );
 		}
 	}
 
@@ -490,6 +490,13 @@ void PlayerController::FireRaycastWeapon( Actor* actor, const WeaponDefinition* 
 			if ( hitActor )
 			{
 				float damage = g_rng->RollRandomFloatInRange( weaponDef->m_rayDamage.m_min, weaponDef->m_rayDamage.m_max );
+				FloatRange headshotRange = FloatRange( hitActor->m_actorDef->m_eyeHeight - 0.2f, hitActor->m_actorDef->m_eyeHeight );
+				if ( /*worldHit.m_impactPos.z >= hitActor->m_actorDef->m_eyeHeight*/ headshotRange.IsOnRange( worldHit.m_impactPos.z ) )
+				{
+					DebugAddWorldBillboardText( Stringf( "X" ), spawnInfo.m_spawnLocation, 0.05f, Vec2( 0.7f, 0.7f ), 2.0f, Rgba8( 0, 0, 0, 255 ), Rgba8( 255, 0, 0, 0 ) );
+					damage *= 2;
+				}
+
 				hitActor->AttackedBy( actor, damage );
 				DebugAddWorldBillboardText( Stringf( "%1.1f", damage ), spawnInfo.m_spawnLocation, 0.05f, Vec2( 0.7f, 0.7f ), 0.2f, Rgba8( 255, 0, 0, 255 ), Rgba8( 255, 255, 255, 255 ) );
 			}
@@ -650,7 +657,8 @@ void PlayerController::RenderPickPowerUp( float viewportWidth, float viewportHei
 //------------------------------------------------------------------------------
 void PlayerController::InteractableInput( Actor* actor )
 {
-	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( ' ' ) )
+	XboxController const& controller = g_engine->m_input->GetController( m_controllerIndex );
+	if ( m_isPlayerOne && g_engine->m_input->WasKeyJustPressed( ' ' ) || controller.IsButtonDown( XboxButtonID::X ) )
 	{
 		float interactionDistance = 2.0f;
 		for ( Actor* otherActor : m_map->m_actorVector )
