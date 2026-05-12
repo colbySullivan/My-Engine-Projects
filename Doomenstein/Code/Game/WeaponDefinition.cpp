@@ -110,7 +110,7 @@ const WeaponDefinition* WeaponDefinition::GetByName( const std::string& name )
 
 const WeaponDefinition* WeaponDefinition::GetRandomWeapon()
 {
-	int randIterKey = g_rng->RollRandomIntInRange( 0, s_definitions.size() );
+	int randIterKey = g_rng->RollRandomIntInRange( 0, ( int )s_definitions.size() );
 	auto it = s_definitions.begin();
 	std::advance( it, randIterKey );
 

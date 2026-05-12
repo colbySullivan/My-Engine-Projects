@@ -481,7 +481,7 @@ bool Actor::IsDead() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Actor::Attacked( float damage, Vec3 impulse )
+void Actor::Attacked( float damage, [[maybe_unused]] Vec3 impulse )
 {
     //AddImpulse( impulse );
     m_health -= (int)damage;
