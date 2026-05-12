@@ -1091,7 +1091,8 @@ bool Actor::TryUpgradeCurrentWeapon()
 bool Actor::TryToGetNewWeapon()
 {
 	m_weapons.clear();
-    const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( "PAPShotgunRifle" );
+    //const WeaponDefinition* weaponDef = WeaponDefinition::GetByName( "PAPShotgunRifle" );
+    const WeaponDefinition* weaponDef = WeaponDefinition::GetRandomWeapon();
 	if ( weaponDef )
 	{
 		m_weapons.push_back( weaponDef );

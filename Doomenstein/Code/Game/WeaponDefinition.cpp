@@ -1,6 +1,8 @@
 #include "Game/WeaponDefinition.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Math/IntVec2.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 
 //-----------------------------------------------------------------------------------------------
 std::map<std::string, WeaponDefinition> WeaponDefinition::s_definitions;
@@ -101,6 +103,16 @@ const WeaponDefinition* WeaponDefinition::GetByName( const std::string& name )
 	{
 		return nullptr;
 	}
+
+	const WeaponDefinition& foundDefinition = it->second;
+	return &foundDefinition;
+}
+
+const WeaponDefinition* WeaponDefinition::GetRandomWeapon()
+{
+	int randIterKey = g_rng->RollRandomIntInRange( 0, s_definitions.size() );
+	auto it = s_definitions.begin();
+	std::advance( it, randIterKey );
 
 	const WeaponDefinition& foundDefinition = it->second;
 	return &foundDefinition;

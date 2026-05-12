@@ -47,6 +47,7 @@ public:
 
 	static void InitializeWeaponDefs();
 	static const WeaponDefinition* GetByName( const std::string& name );
+	static const WeaponDefinition* GetRandomWeapon();
 	const WeaponAnimationDefinition* GetAnimationByName( const std::string& name ) const;
 	const WeaponSoundDefinition* GetSoundByName( const std::string& name ) const;
 public:
