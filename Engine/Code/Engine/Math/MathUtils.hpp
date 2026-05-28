@@ -181,4 +181,3 @@ Mat44 GetBillboardTransform( BillboardType billboardType, Mat44 const& targetTra
 
 // Miscellaneous
 Vec3 WorldToFMOD( const Vec3 worldPos );
-Vec3 GetRandomVectorInCone( const Vec3& direction, float coneDegrees );

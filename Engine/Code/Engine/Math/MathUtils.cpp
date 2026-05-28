@@ -1487,19 +1487,3 @@ Vec3 WorldToFMOD( const Vec3 worldPos )
 	
 	return fmodPos;
 }
-
-Vec3 GetRandomVectorInCone( const Vec3& direction, float coneDegrees )
-{
-	/*Vec3 normalizedDir = direction.GetNormalized();
-	float yaw = Atan2Degrees( normalizedDir.y, normalizedDir.x );
-	float pitch = Atan2Degrees( -normalizedDir.z, sqrtf( normalizedDir.x * normalizedDir.x + normalizedDir.y * normalizedDir.y ) );
-
-	float halfCone = coneDegrees * 0.5f;
-	float randomYawOffset = g_rng->RollRandomFloatInRange( -halfCone, halfCone );
-	float randomPitchOffset = g_rng->RollRandomFloatInRange( -halfCone, halfCone );
-
-	EulerAngles randomAngles( yaw + randomYawOffset, pitch + randomPitchOffset, 0.f );
-
-	return randomAngles.GetForwardDir_IFwd_JLeft_KUp();*/
-	return Vec3(0.f, 0.f, 0.f);
-}
