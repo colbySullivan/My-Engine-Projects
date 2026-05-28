@@ -83,6 +83,7 @@ void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgb
 
 }
 
+//-----------------------------------------------------------------------------------------------
 void AddVertsForAABB2D( std::vector<Vertex>& verts, AABB2 const& alignedBox, Rgba8 color, Vec2 const& uvAtMins, Vec2 const& uvAtMaxs )
 {
 	float minX = alignedBox.m_mins.x;
@@ -474,10 +475,15 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
 		float bv = UVs.m_mins.y;
 		float tv = UVs.m_maxs.y;
+		Vec2  center = Vec2( 0.5f, 0.5f );
+		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
 
-		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) ); // #TODO Top and Bottom caps need to be calculated with UVs as well
-		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BC, color, center ) );
+		verts.push_back( Vertex( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ) ) );
+		verts.push_back( Vertex( BL, color, Vec2( centerOfSetX, centerOfSetY ) ) );
 
 		verts.push_back( Vertex( BL, color, Vec2( lu, bv ) ) );
 		verts.push_back( Vertex( BR, color, Vec2( ru, bv ) ) );
@@ -487,9 +493,9 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 		verts.push_back( Vertex( TR, color, Vec2( ru, tv ) ) );
 		verts.push_back( Vertex( TL, color, Vec2( lu, tv ) ) );
 
-		verts.push_back( Vertex( TC, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TL, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( TR, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( TC, color, center ) );
+		verts.push_back( Vertex( TL, color, Vec2( centerOfSetX, centerOfSetY ) ) );
+		verts.push_back( Vertex( TR, color, Vec2( centerOfSetXNext, centerOfSetYNext ) ) );
 
 	}
 }
