@@ -306,7 +306,7 @@ void PlayerController::ProcessMovementInput( [[maybe_unused]] float deltaSeconds
 				{
 					for ( int bulletNum = 0; bulletNum < weaponDef->m_projectileCount; bulletNum++ )
 					{
-						Vec3 randomConeDir = GetRandomVectorInCone( raycastDir, weaponDef->m_projectileConeDegrees );
+						Vec3 randomConeDir = g_rng->GetRandomVectorInCone( raycastDir, weaponDef->m_projectileConeDegrees );
 						m_map->SpawnProjectileFromActor( actor, *weaponDef, randomConeDir.GetNormalized() * weaponDef->m_projectileSpeed );
 					}
 				}
