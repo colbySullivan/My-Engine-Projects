@@ -53,14 +53,6 @@ void Game::Startup()
 
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
-
-	////DebugAddWorldWireCylinder(Vec3( 2.f, 2.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	//DebugAddWorldCylinder(Vec3( 0.f, 3.f, -2.f ), Vec3( 2.f, 2.f, 2.f ), 0.1f, 5.f, Rgba8(0,255,100), Rgba8(255,255,255), DebugRenderMode::X_RAY);
-	//DebugAddWorldSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 0, 100, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::X_RAY );
-	////DebugAddWorldWireSphere( Vec3( 0.f, 0.f, 0.f ), 1.f, 5.f, Rgba8( 255, 100, 0 ), Rgba8( 255, 100, 0 ), DebugRenderMode::X_RAY );
-	////DebugAddScreenText( "Hello World", AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 35.f ), Vec2( SCREEN_SIZE_X * 0.5, SCREEN_SIZE_Y ) ), 30.f, Vec2( 0.f, 0.5f ), 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-	//DebugAddWorldWireArrow( Vec3( 0.f, 0.f, 0.f ), Vec3( 1.f, 1.f, 1.f ), 0.1f, 5.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
-	//DebugAddWorldBillboardText( "Hello World", Vec3( 0.f, 0.f, 0.f ), 1.f, Vec2( 0.5f, 0.5f ), 60.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 	CreateDebugRenderObjects();
 }
 
@@ -492,6 +484,7 @@ void Game::CreateProps()
 	m_props.push_back( newCone );
 }
 
+//-----------------------------------------------------------------------------------------------
 void Game::CreateDebugRenderObjects()
 {
 	Mat44 worldBasis;

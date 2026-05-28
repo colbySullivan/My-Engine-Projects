@@ -11,6 +11,10 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		DebugInline|x64 = DebugInline|x64
+		DebugInline|x86 = DebugInline|x86
+		FastBreak|x64 = FastBreak|x64
+		FastBreak|x86 = FastBreak|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -19,6 +23,14 @@ Global
 		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.Debug|x64.Build.0 = Debug|x64
 		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.Debug|x86.ActiveCfg = Debug|Win32
 		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.Debug|x86.Build.0 = Debug|Win32
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.DebugInline|x64.ActiveCfg = DebugInline|x64
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.DebugInline|x64.Build.0 = DebugInline|x64
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.DebugInline|x86.ActiveCfg = DebugInline|Win32
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.DebugInline|x86.Build.0 = DebugInline|Win32
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.FastBreak|x64.ActiveCfg = FastBreak|x64
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.FastBreak|x64.Build.0 = FastBreak|x64
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.FastBreak|x86.ActiveCfg = FastBreak|Win32
+		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.FastBreak|x86.Build.0 = FastBreak|Win32
 		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.Release|x64.ActiveCfg = Release|x64
 		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.Release|x64.Build.0 = Release|x64
 		{DA0AB200-0456-4563-BF65-362ADF3CA0BD}.Release|x86.ActiveCfg = Release|Win32
@@ -27,6 +39,14 @@ Global
 		{963C4550-86EE-453F-9AF5-8A16A1630C36}.Debug|x64.Build.0 = Debug|x64
 		{963C4550-86EE-453F-9AF5-8A16A1630C36}.Debug|x86.ActiveCfg = Debug|Win32
 		{963C4550-86EE-453F-9AF5-8A16A1630C36}.Debug|x86.Build.0 = Debug|Win32
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.DebugInline|x64.ActiveCfg = DebugInline|x64
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.DebugInline|x64.Build.0 = DebugInline|x64
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.DebugInline|x86.ActiveCfg = DebugInline|Win32
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.DebugInline|x86.Build.0 = DebugInline|Win32
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.FastBreak|x64.ActiveCfg = FastBreak|x64
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.FastBreak|x64.Build.0 = FastBreak|x64
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.FastBreak|x86.ActiveCfg = FastBreak|Win32
+		{963C4550-86EE-453F-9AF5-8A16A1630C36}.FastBreak|x86.Build.0 = FastBreak|Win32
 		{963C4550-86EE-453F-9AF5-8A16A1630C36}.Release|x64.ActiveCfg = Release|x64
 		{963C4550-86EE-453F-9AF5-8A16A1630C36}.Release|x64.Build.0 = Release|x64
 		{963C4550-86EE-453F-9AF5-8A16A1630C36}.Release|x86.ActiveCfg = Release|Win32
