@@ -419,6 +419,45 @@ void AddVertsForSphere3D( std::vector<Vertex>& verts, Vec3 center, float radius,
 }
 
 //------------------------------------------------------------------------------
+void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
+{
+	float degreesPerStack = 180.f / numStacks;
+	float degreesPerSlice = 360.f / numSlices;
+	for ( int i = 0; i < numStacks; ++i )
+	{
+		for ( int j = 0; j < numSlices; j++ )
+		{
+			float leftDegrees = j * degreesPerSlice;
+			float rightDegrees = ( j + 1 ) * degreesPerSlice;
+			float bottomDegrees = ( i * degreesPerStack ) - 90;
+			float topDegrees = ( ( i + 1 ) * degreesPerStack ) - 90;
+
+			Vec3 bl = center + Vec3::MakeFromPolarDegrees( leftDegrees, bottomDegrees ) * radius;
+			Vec3 br = center + Vec3::MakeFromPolarDegrees( rightDegrees, bottomDegrees ) * radius;
+			Vec3 tr = center + Vec3::MakeFromPolarDegrees( rightDegrees, topDegrees ) * radius;
+			Vec3 tl = center + Vec3::MakeFromPolarDegrees( leftDegrees, topDegrees ) * radius;
+
+			float bv = 1.0f - ( float )i / ( float )numStacks;
+			float tv = 1.0f - ( float )( i + 1 ) / ( float )numStacks;
+			float lu = ( float )j / ( float )numSlices;
+			float ru = ( float )( j + 1 ) / ( float )numSlices;
+
+			Vec3 u = br - bl;
+			Vec3 v = tl - br;
+			Vec3 normal = CrossProduct3D( u, v );
+
+			verts.push_back( Vertex_PCUTBN( ( bl ), color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+			verts.push_back( Vertex_PCUTBN( ( tr ), color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+			verts.push_back( Vertex_PCUTBN( ( br ), color, Vec2( ru, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+
+			verts.push_back( Vertex_PCUTBN( ( bl ), color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+			verts.push_back( Vertex_PCUTBN( ( tl ), color, Vec2( lu, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+			verts.push_back( Vertex_PCUTBN( ( tr ), color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 void TransformVertexArray3D( std::vector<Vertex>& verts, const Mat44& transform )
 {
 	for ( int vertIndex = 0; vertIndex < verts.size(); ++vertIndex )
@@ -501,6 +540,63 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 }
 
 //------------------------------------------------------------------------------
+void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
+{
+	Mat44 lookAt = Mat44::MakeLookAt( start, end );
+	Vec3 iBasis = lookAt.GetIBasis3D();
+	Vec3 jBasis = lookAt.GetJBasis3D();
+	Vec3 kBasis = lookAt.GetKBasis3D();
+
+	float uvWidth = UVs.m_maxs.x - UVs.m_mins.x;
+
+	for ( int i = 0; i < numSlices; ++i )
+	{
+		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
+		float thetaINext = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i + 1 );
+
+		Vec3 BC = start;
+		Vec3 BL = BC + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 BR = BC + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+
+		Vec3 TC = end;
+		Vec3 TL = end + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 TR = end + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+
+
+		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
+		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
+		float bv = UVs.m_mins.y;
+		float tv = UVs.m_maxs.y;
+		Vec2  center = Vec2( 0.5f, 0.5f );
+		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
+
+		Vec3 u = BR - BL;
+		Vec3 v = TL - BR;
+		Vec3 normal = CrossProduct3D( u, v );
+
+		verts.push_back( Vertex_PCUTBN( BC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( centerOfSetX, centerOfSetY ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+						 
+		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( ru, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( TR, color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+						 
+		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( TR, color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( TL, color, Vec2( lu, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+						 
+		verts.push_back( Vertex_PCUTBN( TC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( TL, color, Vec2( centerOfSetX, centerOfSetY ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( TR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+
+	}
+}
+
+//------------------------------------------------------------------------------
 void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
 {
 	Mat44 lookAt = Mat44::MakeLookAt( start, end );
@@ -528,14 +624,67 @@ void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec
 		float mu = ( lu + ru ) * 0.5f;
 		float bv = UVs.m_mins.y;
 		float tv = UVs.m_maxs.y;
+		Vec2  center = Vec2( 0.5f, 0.5f );
+		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
 
-		verts.push_back( Vertex( BC, color, Vec2( 0.f, 0.f ) ) ); //#TODO Bottom needs to be calculated with UVs as well
-		verts.push_back( Vertex( BR, color, Vec2( 0.f, 0.f ) ) );
-		verts.push_back( Vertex( BL, color, Vec2( 0.f, 0.f ) ) );
+		verts.push_back( Vertex( BC, color, center ) );
+		verts.push_back( Vertex( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ) ) );
+		verts.push_back( Vertex( BL, color, Vec2( centerOfSetX, centerOfSetY ) ) );
 
 		verts.push_back( Vertex( BL, color, Vec2( lu, bv ) ) );
 		verts.push_back( Vertex( BR, color, Vec2( ru, bv ) ) );
 		verts.push_back( Vertex( TC, color, Vec2( mu, tv ) ) );
+	}
+}
+
+//------------------------------------------------------------------------------
+void AddVertsForCone3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
+{
+	Mat44 lookAt = Mat44::MakeLookAt( start, end );
+	Vec3 iBasis = lookAt.GetIBasis3D();
+	Vec3 jBasis = lookAt.GetJBasis3D();
+	Vec3 kBasis = lookAt.GetKBasis3D();
+
+	float uvWidth = UVs.m_maxs.x - UVs.m_mins.x;
+
+	for ( int i = 0; i < numSlices; ++i )
+	{
+		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
+		float thetaINext = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i + 1 );
+
+		Vec3 BC = start;
+		Vec3 BL = BC + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 BR = BC + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+
+		Vec3 TC = end;
+		Vec3 TL = end;
+		Vec3 TR = end;
+
+		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
+		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
+		float mu = ( lu + ru ) * 0.5f;
+		float bv = UVs.m_mins.y;
+		float tv = UVs.m_maxs.y;
+		Vec2  center = Vec2( 0.5f, 0.5f );
+		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
+
+		Vec3 u = BR - BL;
+		Vec3 v = TL - BR;
+		Vec3 normal = CrossProduct3D( u, v );
+
+		verts.push_back( Vertex_PCUTBN( BC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( centerOfSetX, centerOfSetY ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+
+		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( ru, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( TC, color, Vec2( mu, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 	}
 }
 
