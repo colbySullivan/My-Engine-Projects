@@ -32,6 +32,9 @@
     <Filter Include="Renderer\Sprite">
       <UniqueIdentifier>{9477cc71-0d49-4794-ab6c-e050855e4454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math\Planes">
+      <UniqueIdentifier>{22a2ff25-235f-48ea-a456-8d063460335b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Rgba8.cpp">
@@ -189,6 +192,9 @@
     </ClCompile>
     <ClCompile Include="Renderer\OBJLoader.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Plane2D.cpp">
+      <Filter>Math\Planes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -380,6 +386,9 @@
     </ClInclude>
     <ClInclude Include="Renderer\OBJLoader.hpp">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Plane2D.hpp">
+      <Filter>Math\Planes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
