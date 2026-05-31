@@ -357,6 +357,7 @@
     <ClCompile Include="Math\MathUtils.cpp" />
     <ClCompile Include="Math\OBB2.cpp" />
     <ClCompile Include="Math\Plane2D.cpp" />
+    <ClCompile Include="Math\Plane3D.cpp" />
     <ClCompile Include="Math\RandomNumberGenerator.cpp" />
     <ClCompile Include="Math\Vec2.cpp" />
     <ClCompile Include="Math\Vec3.cpp" />
@@ -421,6 +422,7 @@
     <ClInclude Include="Math\MathUtils.hpp" />
     <ClInclude Include="Math\OBB2.hpp" />
     <ClInclude Include="Math\Plane2D.hpp" />
+    <ClInclude Include="Math\Plane3D.hpp" />
     <ClInclude Include="Math\RandomNumberGenerator.hpp" />
     <ClInclude Include="Math\Vec2.hpp" />
     <ClInclude Include="Math\Vec3.hpp" />

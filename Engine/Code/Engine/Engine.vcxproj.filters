@@ -196,6 +196,9 @@
     <ClCompile Include="Math\Plane2D.cpp">
       <Filter>Math\Planes</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Plane3D.cpp">
+      <Filter>Math\Planes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Rgba8.hpp">
@@ -388,6 +391,9 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Math\Plane2D.hpp">
+      <Filter>Math\Planes</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Plane3D.hpp">
       <Filter>Math\Planes</Filter>
     </ClInclude>
   </ItemGroup>
