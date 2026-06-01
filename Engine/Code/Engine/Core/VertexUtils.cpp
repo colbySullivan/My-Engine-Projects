@@ -348,11 +348,7 @@ void AddVertsForQuad3D( std::vector<Vertex>& vertexes, std::vector<unsigned int>
 	vertexes.push_back( Vertex( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ) ) );
 	vertexes.push_back( Vertex( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ) ) );
 	vertexes.push_back( Vertex( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ) ) );
-
-	vertexes.push_back( Vertex( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ) ) );
-	vertexes.push_back( Vertex( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ) ) );
 	vertexes.push_back( Vertex( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ) ) ); 
-
 
 	indexes.push_back( startIndex + 0 );
 	indexes.push_back( startIndex + 1 );
@@ -368,22 +364,18 @@ void AddVertsForQuad3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsign
 {
 	unsigned int startIndex = ( unsigned int )vertexes.size();
 
-	Vec3 u = bottomRight - bottomLeft;
-	u.Normalize();
-	Vec3 v = topLeft - bottomRight;
-	v.Normalize();
+	Vec3 tangent = bottomRight - bottomLeft;
+	tangent.Normalize();
+	Vec3 bitangent = topLeft - bottomLeft;
+	bitangent.Normalize();
 
-	Vec3 normal = CrossProduct3D(u, v);
+	Vec3 normal = CrossProduct3D(tangent, bitangent);
 	normal.Normalize();
 
-	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-	vertexes.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-
-	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-	vertexes.push_back( Vertex_PCUTBN( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-
+	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), tangent, bitangent, normal ) );
+	vertexes.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), tangent, bitangent, normal ) );
+	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ), tangent, bitangent, normal ) );
+	vertexes.push_back( Vertex_PCUTBN( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ), tangent, bitangent, normal ) );
 
 	indexes.push_back( startIndex + 0 );
 	indexes.push_back( startIndex + 1 );
@@ -443,31 +435,30 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, Vec3 center, float 
 			float bottomDegrees = ( i * degreesPerStack ) - 90;
 			float topDegrees = ( ( i + 1 ) * degreesPerStack ) - 90;
 
-			Vec3 bl = center + Vec3::MakeFromPolarDegrees( leftDegrees, bottomDegrees ) * radius;
-			Vec3 br = center + Vec3::MakeFromPolarDegrees( rightDegrees, bottomDegrees ) * radius;
-			Vec3 tr = center + Vec3::MakeFromPolarDegrees( rightDegrees, topDegrees ) * radius;
-			Vec3 tl = center + Vec3::MakeFromPolarDegrees( leftDegrees, topDegrees ) * radius;
+			Vec3 bottomLeft = center + Vec3::MakeFromPolarDegrees( leftDegrees, bottomDegrees ) * radius;
+			Vec3 bottomRight = center + Vec3::MakeFromPolarDegrees( rightDegrees, bottomDegrees ) * radius;
+			Vec3 topRight = center + Vec3::MakeFromPolarDegrees( rightDegrees, topDegrees ) * radius;
+			Vec3 topLeft = center + Vec3::MakeFromPolarDegrees( leftDegrees, topDegrees ) * radius;
 
 			float bv = 1.0f - ( float )i / ( float )numStacks;
 			float tv = 1.0f - ( float )( i + 1 ) / ( float )numStacks;
 			float lu = ( float )j / ( float )numSlices;
 			float ru = ( float )( j + 1 ) / ( float )numSlices;
 
-			Vec3 u = br - bl;
-			u.Normalize();
-			Vec3 v = tl - br;
-			v.Normalize();
-
-			Vec3 normal = CrossProduct3D( u, v );
+			Vec3 tangent = bottomRight - bottomLeft;
+			tangent.Normalize();
+			Vec3 bitangent = topLeft - bottomLeft;
+			bitangent.Normalize();
+			Vec3 normal = bottomLeft - center;
 			normal.Normalize();
 
-			verts.push_back( Vertex_PCUTBN( ( bl ), color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-			verts.push_back( Vertex_PCUTBN( ( tr ), color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-			verts.push_back( Vertex_PCUTBN( ( br ), color, Vec2( ru, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomRight ), color, Vec2( ru, bv ), tangent, bitangent, normal ) );
 
-			verts.push_back( Vertex_PCUTBN( ( bl ), color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-			verts.push_back( Vertex_PCUTBN( ( tl ), color, Vec2( lu, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-			verts.push_back( Vertex_PCUTBN( ( tr ), color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( topLeft ), color, Vec2( lu, tv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, normal ) );
 		}
 	}
 }
@@ -530,10 +521,10 @@ void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const
 		float bv = UVs.m_mins.y;
 		float tv = UVs.m_maxs.y;
 		Vec2  center = Vec2( 0.5f, 0.5f );
-		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
-		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
-		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
-		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
+		float centerOfSetX = center.x + ( 0.5f * ( CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( SinDegrees( thetaINext ) ) );
 
 		verts.push_back( Vertex( BC, color, center ) );
 		verts.push_back( Vertex( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ) ) );
@@ -569,13 +560,13 @@ void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start
 		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
 		float thetaINext = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i + 1 );
 
-		Vec3 BC = start;
-		Vec3 BL = BC + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
-		Vec3 BR = BC + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+		Vec3 bottomCenter = start;
+		Vec3 bottomLeft = bottomCenter + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 bottomRight = bottomCenter + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
 
-		Vec3 TC = end;
-		Vec3 TL = end + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
-		Vec3 TR = end + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+		Vec3 topCenter = end;
+		Vec3 topLeft = end + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 topRight = end + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
 
 
 		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
@@ -583,34 +574,42 @@ void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start
 		float bv = UVs.m_mins.y;
 		float tv = UVs.m_maxs.y;
 		Vec2  center = Vec2( 0.5f, 0.5f );
-		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
-		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
-		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
-		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
+		float centerOfSetX = center.x + ( 0.5f * ( CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( SinDegrees( thetaINext ) ) );
 
-		Vec3 u = BR - BL;
-		u.Normalize();
-		Vec3 v = TL - BR;
-		v.Normalize();
+		Vec3 tangent = bottomRight - bottomLeft;
+		tangent.Normalize();
+		Vec3 bitangent = topLeft - bottomLeft;
+		bitangent.Normalize();
 
-		Vec3 normal = CrossProduct3D( u, v );
-		normal.Normalize();
+		Vec3 bottomLeftNormal = bottomLeft - bottomCenter;
+		bottomLeftNormal.Normalize();
+		Vec3 bottomRightNormal = bottomRight - bottomCenter;
+		bottomRightNormal.Normalize();
+		Vec3 topLeftNormal = topLeft - topCenter;
+		topLeftNormal.Normalize();
+		Vec3 topRightNormal = topRight - topCenter;
+		topRightNormal.Normalize();
 
-		verts.push_back( Vertex_PCUTBN( BC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( centerOfSetX, centerOfSetY ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		// Bottom cap
+		verts.push_back( Vertex_PCUTBN( bottomCenter, color, center, jBasis, kBasis, -iBasis ) );
+		verts.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( centerOfSetXNext, centerOfSetYNext ), jBasis, kBasis, -iBasis ) );
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( centerOfSetX, centerOfSetY ), jBasis, kBasis, -iBasis ) );
 						 
-		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( ru, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( TR, color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( lu, bv ), tangent, bitangent, bottomLeftNormal ) );
+		verts.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( ru, bv ), tangent, bitangent, bottomRightNormal ) );
+		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( ru, tv ), tangent, bitangent, topRightNormal ) );
 						 
-		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( TR, color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( TL, color, Vec2( lu, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-						 
-		verts.push_back( Vertex_PCUTBN( TC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( TL, color, Vec2( centerOfSetX, centerOfSetY ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( TR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( lu, bv ), tangent, bitangent, bottomLeftNormal ) );
+		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( ru, tv ), tangent, bitangent, topRightNormal ) );
+		verts.push_back( Vertex_PCUTBN( topLeft, color, Vec2( lu, tv ), tangent, bitangent, topLeftNormal ) );
+			
+		// Top cap
+		verts.push_back( Vertex_PCUTBN( topCenter, color, center, jBasis, kBasis, iBasis ) );
+		verts.push_back( Vertex_PCUTBN( topLeft, color, Vec2( centerOfSetX, centerOfSetY ), jBasis, kBasis, iBasis ) );
+		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( centerOfSetXNext, centerOfSetYNext ), jBasis, kBasis, iBasis ) );
 
 	}
 }
@@ -644,10 +643,10 @@ void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec
 		float bv = UVs.m_mins.y;
 		float tv = UVs.m_maxs.y;
 		Vec2  center = Vec2( 0.5f, 0.5f );
-		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
-		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
-		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
-		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
+		float centerOfSetX = center.x + ( 0.5f * ( CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( SinDegrees( thetaINext ) ) );
 
 		verts.push_back( Vertex( BC, color, center ) );
 		verts.push_back( Vertex( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ) ) );
@@ -674,13 +673,13 @@ void AddVertsForCone3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, co
 		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
 		float thetaINext = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i + 1 );
 
-		Vec3 BC = start;
-		Vec3 BL = BC + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
-		Vec3 BR = BC + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+		Vec3 bottomCenter = start;
+		Vec3 bottomLeft = bottomCenter + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 bottomRight = bottomCenter + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
 
-		Vec3 TC = end;
-		Vec3 TL = end;
-		Vec3 TR = end;
+		Vec3 topCenter = end;
+		Vec3 topLeft = end;
+		Vec3 topRight = end;
 
 		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
 		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
@@ -688,26 +687,28 @@ void AddVertsForCone3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, co
 		float bv = UVs.m_mins.y;
 		float tv = UVs.m_maxs.y;
 		Vec2  center = Vec2( 0.5f, 0.5f );
-		float centerOfSetX = center.x + ( 0.5f * ( radius * CosDegrees( thetaI ) ) );
-		float centerOfSetY = center.y + ( 0.5f * ( radius * SinDegrees( thetaI ) ) );
-		float centerOfSetXNext = center.x + ( 0.5f * ( radius * CosDegrees( thetaINext ) ) );
-		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
+		float centerOfSetX = center.x + ( 0.5f * ( CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( SinDegrees( thetaINext ) ) );
 
-		Vec3 u = BR - BL;
-		u.Normalize();
-		Vec3 v = TL - BR;
-		v.Normalize();
+		Vec3 tangent = bottomRight - bottomLeft;
+		tangent.Normalize();
+		Vec3 bitangent = topLeft - bottomLeft;
+		bitangent.Normalize();
 
-		Vec3 normal = CrossProduct3D( u, v );
+		Vec3 normal = CrossProduct3D( tangent, bitangent );
 		normal.Normalize();
 
-		verts.push_back( Vertex_PCUTBN( BC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( centerOfSetX, centerOfSetY ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		// Cap
+		verts.push_back( Vertex_PCUTBN( bottomCenter, color, center, jBasis, kBasis, -iBasis ) );
+		verts.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( centerOfSetXNext, centerOfSetYNext ), jBasis, kBasis, -iBasis ) );
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( centerOfSetX, centerOfSetY ), jBasis, kBasis, -iBasis ) );
 
-		verts.push_back( Vertex_PCUTBN( BL, color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( ru, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
-		verts.push_back( Vertex_PCUTBN( TC, color, Vec2( mu, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+		// Tip
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( lu, bv ), tangent, bitangent, normal ) );
+		verts.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( ru, bv ), tangent, bitangent, normal ) );
+		verts.push_back( Vertex_PCUTBN( topCenter, color, Vec2( mu, tv ), tangent, bitangent, normal ) );
 	}
 }
 
