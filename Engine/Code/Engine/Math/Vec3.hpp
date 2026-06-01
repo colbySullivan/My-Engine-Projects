@@ -47,10 +47,13 @@ public:
 	Vec3 const	GetRotatedAboutZRadians(float rotationRadiansAboutZ) const;
 	Vec3 const	GetClampedToMaxLength(float maxLength) const;
 	Vec3 const	GetNormalized() const;
-	void SetFromText( char const* text );
+	void		SetFromText( char const* text );
 
 	// Static methods (e.g. creation functions)
 	static Vec3 const MakeFromPolarDegrees( float pitchDegrees, float yawDegrees, float length = 1.f );
+
+	// Mutators (non-const methods)
+	void Normalize(); 
 
 	static const Vec3 ZERO;
 	static const Vec3 ONE;

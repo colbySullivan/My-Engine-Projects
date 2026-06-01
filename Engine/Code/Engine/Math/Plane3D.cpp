@@ -42,7 +42,7 @@ bool Plane3D::isBackSide( Vec3 point )
 //-----------------------------------------------------------------------------------------------
 bool Plane3D::isPointOnPlane( Vec3 point )
 {
-	float tolerance = 0.001;
+	float tolerance = 0.001f;
 	float altitude = GetAltitude( point );
 	FloatRange toleranceRange = FloatRange( -tolerance, tolerance );
 	if ( toleranceRange.IsOnRange( altitude ) )

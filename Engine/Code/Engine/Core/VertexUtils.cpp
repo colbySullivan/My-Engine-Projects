@@ -348,6 +348,9 @@ void AddVertsForQuad3D( std::vector<Vertex>& vertexes, std::vector<unsigned int>
 	vertexes.push_back( Vertex( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ) ) );
 	vertexes.push_back( Vertex( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ) ) );
 	vertexes.push_back( Vertex( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ) ) );
+
+	vertexes.push_back( Vertex( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ) ) );
+	vertexes.push_back( Vertex( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ) ) );
 	vertexes.push_back( Vertex( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ) ) ); 
 
 
@@ -366,11 +369,19 @@ void AddVertsForQuad3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsign
 	unsigned int startIndex = ( unsigned int )vertexes.size();
 
 	Vec3 u = bottomRight - bottomLeft;
+	u.Normalize();
 	Vec3 v = topLeft - bottomRight;
+	v.Normalize();
+
 	Vec3 normal = CrossProduct3D(u, v);
+	normal.Normalize();
+
 	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 	vertexes.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+
+	vertexes.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( UVs.m_mins.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
+	vertexes.push_back( Vertex_PCUTBN( topRight, color, Vec2( UVs.m_maxs.x, UVs.m_mins.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 	vertexes.push_back( Vertex_PCUTBN( topLeft, color, Vec2( UVs.m_mins.x, UVs.m_maxs.y ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 
 
@@ -443,8 +454,12 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, Vec3 center, float 
 			float ru = ( float )( j + 1 ) / ( float )numSlices;
 
 			Vec3 u = br - bl;
+			u.Normalize();
 			Vec3 v = tl - br;
+			v.Normalize();
+
 			Vec3 normal = CrossProduct3D( u, v );
+			normal.Normalize();
 
 			verts.push_back( Vertex_PCUTBN( ( bl ), color, Vec2( lu, bv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 			verts.push_back( Vertex_PCUTBN( ( tr ), color, Vec2( ru, tv ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
@@ -574,8 +589,12 @@ void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start
 		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
 
 		Vec3 u = BR - BL;
+		u.Normalize();
 		Vec3 v = TL - BR;
+		v.Normalize();
+
 		Vec3 normal = CrossProduct3D( u, v );
+		normal.Normalize();
 
 		verts.push_back( Vertex_PCUTBN( BC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
@@ -675,8 +694,12 @@ void AddVertsForCone3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, co
 		float centerOfSetYNext = center.y + ( 0.5f * ( radius * SinDegrees( thetaINext ) ) );
 
 		Vec3 u = BR - BL;
+		u.Normalize();
 		Vec3 v = TL - BR;
+		v.Normalize();
+
 		Vec3 normal = CrossProduct3D( u, v );
+		normal.Normalize();
 
 		verts.push_back( Vertex_PCUTBN( BC, color, center, Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );
 		verts.push_back( Vertex_PCUTBN( BR, color, Vec2( centerOfSetXNext, centerOfSetYNext ), Vec3( 0, 0, 0 ), Vec3( 0, 0, 0 ), normal ) );

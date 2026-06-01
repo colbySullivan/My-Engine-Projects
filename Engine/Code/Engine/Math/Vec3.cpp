@@ -208,6 +208,12 @@ Vec3 const Vec3::MakeFromPolarDegrees( float pitchDegrees, float yawDegrees, flo
 }
 
 //-----------------------------------------------------------------------------------------------
+void Vec3::Normalize()
+{
+	*this = this->GetNormalized();
+}
+
+//-----------------------------------------------------------------------------------------------
 void Vec3::SetFromText( char const* text )
 {
 	Strings splitVec2 = SplitStringOnDelimiter( text, ',' );
