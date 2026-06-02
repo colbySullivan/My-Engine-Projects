@@ -17,6 +17,9 @@
     <Filter Include="Entities">
       <UniqueIdentifier>{d6489d8a-8ad8-4510-8927-c0d8b0207228}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Definitions">
+      <UniqueIdentifier>{7207d9aa-e243-46fc-acae-35e6d9cd05ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -40,6 +43,7 @@
     <ClCompile Include="Prop.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="ChessPieceDefinition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -63,5 +67,11 @@
     <ClInclude Include="Prop.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
+    <ClInclude Include="ChessPieceDefinition.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="ChessPieceDefinitions.xml">
+      <Filter>Definitions</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

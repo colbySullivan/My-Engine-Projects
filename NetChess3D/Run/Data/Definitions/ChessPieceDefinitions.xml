@@ -1,0 +1,8 @@
+<Definitions>
+	<ChessPieceDefinition name="King" symbol="K"/>
+	<ChessPieceDefinition name="Queen" symbol="Q"/>
+	<ChessPieceDefinition name="Rook" symbol="R"/>
+	<ChessPieceDefinition name="Knight" symbol="N"/>
+	<ChessPieceDefinition name="Bishop" symbol="B"/>
+	<ChessPieceDefinition name="Pawn" symbol="P"/>
+</Definitions>

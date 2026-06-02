@@ -13,6 +13,7 @@
 #include "Game/Entity.hpp"
 #include "Game/Player.hpp"
 #include "Game/Prop.hpp"
+#include "Game/ChessPieceDefinition.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
 RandomNumberGenerator g_rng;
@@ -33,6 +34,7 @@ Game::Game()
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	CreateProps();
+	ChessPieceDefinition::InitializeChessPieceDefs();
 }
 
 //-----------------------------------------------------------------------------------------------

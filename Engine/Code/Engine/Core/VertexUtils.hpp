@@ -38,3 +38,4 @@ void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start
 void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color = Rgba8::WHITE, const AABB2& UVs = AABB2::ZERO_TO_ONE, int numSlices = 32 );
 void AddVertsForCone3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ );
 void AddVertsForArrow3D( std::vector<Vertex>& verts, Vec3 const& start, Vec3 const& end, float radius, Rgba8 const& color = Rgba8::WHITE, int numSlices = 32 );
+// #TODO do OBB3 hint cross ibasis and z
