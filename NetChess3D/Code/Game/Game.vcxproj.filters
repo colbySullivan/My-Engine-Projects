@@ -44,6 +44,7 @@
       <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="ChessPieceDefinition.cpp" />
+    <ClCompile Include="ChessPiece.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -68,6 +69,7 @@
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="ChessPieceDefinition.hpp" />
+    <ClInclude Include="ChessPiece.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="ChessPieceDefinitions.xml">

@@ -6,6 +6,7 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Clock.hpp"
+#include "Game/ChessPiece.hpp"
 
 class App;
 class Entity;
@@ -18,6 +19,7 @@ class Clock;
 class Player;
 class Prop;
 class Timer;
+class ChessPiece;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -69,6 +71,7 @@ public:
 	// Player and props
 	Player* m_player = nullptr;
 	std::vector<Prop*> m_props;
+	std::vector<ChessPiece*> m_chessPieces;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -85,7 +88,9 @@ private:
 	void CreateProps();
 	void CreateDebugRenderObjects();
 
-	App*			m_app = nullptr;
+	void CreateChessPieces();
+
+	App* m_app = nullptr;
 	Camera*			m_screenCamera = nullptr;
 	Texture*		m_testTexture = nullptr;
 	// Black hole

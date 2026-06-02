@@ -56,6 +56,7 @@ void Game::Startup()
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
 	CreateDebugRenderObjects();
+	CreateChessPieces();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -137,6 +138,13 @@ void Game::Render() const
 				m_props[propIndex]->Render();
 			}
 		}
+		for ( int i = 0; i < m_chessPieces.size(); ++i )
+		{
+			if ( m_chessPieces[i] != nullptr )
+			{
+				m_chessPieces[i]->Render();
+			}
+		}
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
@@ -151,7 +159,12 @@ void Game::Render() const
 //-----------------------------------------------------------------------------------------------
 void Game::Shutdown()
 {
-
+	for ( int i = 0; i < m_chessPieces.size(); ++i )
+	{
+		delete m_chessPieces[i];
+		m_chessPieces[i] = nullptr;
+	}
+	m_chessPieces.clear();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -428,22 +441,22 @@ void Game::UpdateBlackHole()
 //-----------------------------------------------------------------------------------------------
 void Game::CreateProps()
 {
-	Prop* box = new Prop( this );
-	box->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	box->m_position = Vec3( 2.f, 2.f, 0.f );
-	box->m_angularVelocity.m_pitchDegrees = 30.f;
-	box->m_angularVelocity.m_rollDegrees = 30.f;
-	m_props.push_back( box );
+	//Prop* box = new Prop( this );
+	//box->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	//box->m_position = Vec3( 2.f, 2.f, 0.f );
+	//box->m_angularVelocity.m_pitchDegrees = 30.f;
+	//box->m_angularVelocity.m_rollDegrees = 30.f;
+	//m_props.push_back( box );
 
-	Prop* newBox = new Prop( this );
-	newBox->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
-	newBox->m_position = Vec3( -2.f, -2.f, 0.f );
-	m_props.push_back( newBox );
+	//Prop* newBox = new Prop( this );
+	//newBox->MakeCube( Rgba8( 255, 0, 0 ), Rgba8( 0, 255, 255 ), Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 255 ), Rgba8( 255, 255, 0 ), Rgba8( 0, 0, 255 ) );
+	//newBox->m_position = Vec3( -2.f, -2.f, 0.f );
+	//m_props.push_back( newBox );
 
-	Prop* sphere = new Prop( this );
-	sphere->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
-	sphere->m_texture = m_testTexture;
-	m_props.push_back( sphere );
+	//Prop* sphere = new Prop( this );
+	//sphere->MakeSphere( Vec3( 10, -5, 1 ), 1.f, 32, 16 );
+	//sphere->m_texture = m_testTexture;
+	//m_props.push_back( sphere );
 
 	Prop* xAxisLines = new Prop( this );
 	for (int xGridIndex = 0; xGridIndex < 100 ; ++xGridIndex)
@@ -475,15 +488,15 @@ void Game::CreateProps()
 	}
 	m_props.push_back( yAxisLines );
 
-	Prop* newCylinder = new Prop( this );
-	newCylinder->MakeCylinder( Vec3( -10.f, 5.f, 0.f ), Vec3( -10.f, 5.f, 2.f ), 0.5f, 32 );
-	newCylinder->m_texture = m_testTexture;
-	m_props.push_back( newCylinder );
+	//Prop* newCylinder = new Prop( this );
+	//newCylinder->MakeCylinder( Vec3( -10.f, 5.f, 0.f ), Vec3( -10.f, 5.f, 2.f ), 0.5f, 32 );
+	//newCylinder->m_texture = m_testTexture;
+	//m_props.push_back( newCylinder );
 
-	Prop* newCone = new Prop( this );
-	newCone->MakeCone( Vec3( 10.f, 10.f, 0.f ), Vec3( 10.f, 10.f, 2.f ), 0.5f, 32 );
-	newCone->m_texture = m_testTexture;
-	m_props.push_back( newCone );
+	//Prop* newCone = new Prop( this );
+	//newCone->MakeCone( Vec3( 10.f, 10.f, 0.f ), Vec3( 10.f, 10.f, 2.f ), 0.5f, 32 );
+	//newCone->m_texture = m_testTexture;
+	//m_props.push_back( newCone );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -491,4 +504,46 @@ void Game::CreateDebugRenderObjects()
 {
 	Mat44 worldBasis;
 	DebugAddWorldBasis( worldBasis, -1.f, DebugRenderMode::USE_DEPTH );
+}
+
+void Game::CreateChessPieces()
+{
+	ChessPieceDefinition const* kingDef = ChessPieceDefinition::GetByName( "King" );
+	ChessPieceDefinition const* queenDef = ChessPieceDefinition::GetByName( "Queen" );
+	ChessPieceDefinition const* rookDef = ChessPieceDefinition::GetByName( "Rook" );
+	ChessPieceDefinition const* knightDef = ChessPieceDefinition::GetByName( "Knight" );
+	ChessPieceDefinition const* bishopDef = ChessPieceDefinition::GetByName( "Bishop" );
+	ChessPieceDefinition const* pawnDef = ChessPieceDefinition::GetByName( "Pawn" );
+
+	if ( rookDef )
+	{
+		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 0.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 7.5f, 0.5f, 0.f ) ) );
+	}
+	if ( knightDef )
+	{
+		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 1.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 6.5f, 0.5f, 0.f ) ) );
+	}
+	if ( bishopDef )
+	{
+		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 2.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 5.5f, 0.5f, 0.f ) ) );
+	}
+	if ( queenDef )
+	{
+		m_chessPieces.push_back( new ChessPiece( this, queenDef, Vec3( 3.5f, 0.5f, 0.f ) ) );
+	}
+	if ( kingDef )
+	{
+		m_chessPieces.push_back( new ChessPiece( this, kingDef, Vec3( 4.5f, 0.5f, 0.f ) ) );
+	}
+
+	if ( pawnDef )
+	{
+		for ( int pawnColumn = 0; pawnColumn < 8; pawnColumn++ )
+		{
+			m_chessPieces.push_back( new ChessPiece( this, pawnDef, Vec3( ( float )pawnColumn + 0.5f, 1.5f, 0.f ) ) );
+		}
+	}
 }
