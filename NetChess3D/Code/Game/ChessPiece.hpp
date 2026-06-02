@@ -3,12 +3,18 @@
 #include "Game/ChessPieceDefinition.hpp"
 
 class Game;
+enum PlayerNumber
+{
+	PlayerOne,
+	PlayerTwo,
+	count
+};
 
 //-----------------------------------------------------------------------------------------------
 class ChessPiece
 {
 public:
-	ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position );
+	ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, PlayerNumber playernum );
 	virtual ~ChessPiece();
 
 	virtual void Update();

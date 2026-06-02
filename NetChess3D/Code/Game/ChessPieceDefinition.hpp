@@ -2,8 +2,11 @@
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
+#include "Engine/Math/AABB3.hpp"
+#include "Engine/Math/AABB2.hpp"
 #include <string>
 #include <map>
+
 
 
 enum ChessPieceType
@@ -46,6 +49,7 @@ public:
 	IndexBuffer* m_ibo = nullptr;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
+	std::vector<unsigned int> m_indexes;
 
 	static std::map<std::string, ChessPieceDefinition> s_definitions;
 };

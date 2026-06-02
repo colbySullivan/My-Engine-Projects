@@ -13,6 +13,7 @@
 #include "Game/Entity.hpp"
 #include "Game/Player.hpp"
 #include "Game/Prop.hpp"
+#include "ChessPiece.hpp"
 #include "Game/ChessPieceDefinition.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
@@ -519,33 +520,48 @@ void Game::CreateChessPieces()
 
 	if ( rookDef )
 	{
-		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 0.5f, 0.5f, 0.f ) ) );
-		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 7.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 0.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 7.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+
+		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 0.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
+		m_chessPieces.push_back( new ChessPiece( this, rookDef, Vec3( 7.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 	}
 	if ( knightDef )
 	{
-		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 1.5f, 0.5f, 0.f ) ) );
-		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 6.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 1.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 6.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+
+		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 1.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
+		m_chessPieces.push_back( new ChessPiece( this, knightDef, Vec3( 6.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 	}
-	if ( bishopDef )
+	if ( bishopDef ) 
 	{
-		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 2.5f, 0.5f, 0.f ) ) );
-		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 5.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 2.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 5.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+
+		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 2.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
+		m_chessPieces.push_back( new ChessPiece( this, bishopDef, Vec3( 5.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 	}
 	if ( queenDef )
 	{
-		m_chessPieces.push_back( new ChessPiece( this, queenDef, Vec3( 3.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, queenDef, Vec3( 3.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+
+		m_chessPieces.push_back( new ChessPiece( this, queenDef, Vec3( 3.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 	}
 	if ( kingDef )
 	{
-		m_chessPieces.push_back( new ChessPiece( this, kingDef, Vec3( 4.5f, 0.5f, 0.f ) ) );
+		m_chessPieces.push_back( new ChessPiece( this, kingDef, Vec3( 4.5f, 0.5f, 0.f ), PlayerNumber::PlayerOne ) );
+
+		m_chessPieces.push_back( new ChessPiece( this, kingDef, Vec3( 4.5f, 7.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 	}
 
 	if ( pawnDef )
 	{
 		for ( int pawnColumn = 0; pawnColumn < 8; pawnColumn++ )
 		{
-			m_chessPieces.push_back( new ChessPiece( this, pawnDef, Vec3( ( float )pawnColumn + 0.5f, 1.5f, 0.f ) ) );
+			m_chessPieces.push_back( new ChessPiece( this, pawnDef, Vec3( ( float )pawnColumn + 0.5f, 1.5f, 0.f ), PlayerNumber::PlayerOne ) );
+
+			m_chessPieces.push_back( new ChessPiece( this, pawnDef, Vec3( ( float )pawnColumn + 0.5f, 6.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 		}
 	}
 }

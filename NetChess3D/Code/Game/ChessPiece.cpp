@@ -2,11 +2,15 @@
 #include "Engine/Core/Engine.hpp"
 
 //-----------------------------------------------------------------------------------------------
-ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position )
+ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, PlayerNumber playernum )
 	: m_game( owner )
 	, m_definition( definition )
 	, m_position( position )
 {
+	if ( playernum == PlayerTwo ) // #todo this needs to be handled easier
+	{
+		m_color = Rgba8( 120, 120, 120 );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
