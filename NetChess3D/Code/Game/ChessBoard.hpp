@@ -20,6 +20,7 @@ public:
 
 	ChessPiece* GetPieceAt( int row, int col ) const;
 	void SetPieceAt( int row, int col, ChessPiece* piece );
+	static bool Command_ChessMove( [[maybe_unused]] EventArgs& args );
 
 public:
 	VertexBuffer* m_vbo = nullptr;

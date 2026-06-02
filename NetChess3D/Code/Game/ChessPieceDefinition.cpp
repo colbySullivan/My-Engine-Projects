@@ -102,10 +102,6 @@ ChessPieceType ChessPieceDefinition::GetTypeFromString( const std::string& typeN
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateBuffersAndCopy()
 {
-	//unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	//m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
-	//g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
-
 	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );
 	m_vbo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
@@ -153,8 +149,8 @@ void ChessPieceDefinition::CreateGeometryForKing()
 {
 	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
 	AddVertsForCylinder3D( m_vertexes, Vec3( 0.f, 0.f, 0.9f ), Vec3( 0.f, 0.f, 1.f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AABB3 topHat = AABB3( Vec3( -0.05f, -0.05f, 1.f ), Vec3( 0.05f, 0.05f, 1.2f ) );
-	AddVertsForAABB3D( m_vertexes, m_indexes, topHat, Rgba8::RED, AABB2::ZERO_TO_ONE );
+	//AABB3 topHat = AABB3( Vec3( -0.05f, -0.05f, 1.f ), Vec3( 0.05f, 0.05f, 1.2f ) );
+	//AddVertsForAABB3D( m_vertexes, m_indexes, topHat, Rgba8::RED, AABB2::ZERO_TO_ONE ); // #todo In order to use this all shapes need to be indexed
 	CreateBuffersAndCopy();
 }
 

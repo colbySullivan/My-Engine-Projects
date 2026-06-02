@@ -2,6 +2,8 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 
+static ChessBoard* g_activeChessBoard = nullptr;
+
 //-----------------------------------------------------------------------------------------------
 ChessBoard::ChessBoard()
 {
@@ -12,7 +14,9 @@ ChessBoard::ChessBoard()
 			m_board[row][col] = nullptr;
 		}
 	}
-
+	g_activeChessBoard = this;
+	//SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
+	SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
 }
@@ -147,4 +151,14 @@ void ChessBoard::CreateBoardGeometry()
 			AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, color, AABB2::ZERO_TO_ONE );
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::Command_ChessMove( [[maybe_unused]] EventArgs& args )
+{
+	if ( g_activeChessBoard )
+	{
+		g_activeChessBoard->PrintBoardStateToConsole();
+	}
+	return false;
 }
