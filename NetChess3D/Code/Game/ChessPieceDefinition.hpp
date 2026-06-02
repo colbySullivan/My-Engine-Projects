@@ -29,7 +29,13 @@ public:
 	static void LoadPiecesDefsFromFile( char const* filePath );
 
 	void CreateGeometryForKing();
+	void CreateGeometryForQueen();
+	void CreateGeometryForRook();
+	void CreateGeometryForKnight();
+	void CreateGeometryForBishop();
+	void CreateGeometryForPawn();
 
+	ChessPieceType GetTypeFromString( const std::string& typeName );
 public:
 	ChessPieceType m_type = Count; // #todo might need to convert name to this
 	std::string m_name;
