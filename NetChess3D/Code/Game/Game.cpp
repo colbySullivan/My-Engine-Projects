@@ -57,8 +57,8 @@ void Game::Startup()
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
 	CreateDebugRenderObjects();
-	CreateChessPieces();
 	m_chessBoard = new ChessBoard();
+	CreateChessPieces();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -564,4 +564,5 @@ void Game::CreateChessPieces()
 			m_chessPieces.push_back( new ChessPiece( this, pawnDef, Vec3( ( float )pawnColumn + 0.5f, 6.5f, 0.f ), PlayerNumber::PlayerTwo ) );
 		}
 	}
+	m_chessBoard->PrintBoardStateToConsole();
 }

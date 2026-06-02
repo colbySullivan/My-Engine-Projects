@@ -5,6 +5,14 @@
 //-----------------------------------------------------------------------------------------------
 ChessBoard::ChessBoard()
 {
+	for ( int row = 0; row < 8; ++row )
+	{
+		for ( int col = 0; col < 8; ++col )
+		{
+			m_board[row][col] = nullptr;
+		}
+	}
+
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
 }
@@ -49,6 +57,71 @@ void ChessBoard::CreateBuffersAndCopy()
 
 	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vbo );
 	g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_ibo );
+}
+
+//-----------------------------------------------------------------------------------------------
+void ChessBoard::PrintBoardStateToConsole() const
+{
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "   A  B  C  D  E  F  G  H" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "  ------------------------" );
+
+	for ( int row = 7; row >= 0; --row )
+	{
+		std::string rowString = Stringf( "%d |", row + 1 );
+
+		for ( int col = 0; col < 8; ++col )
+		{
+			ChessPiece* piece = m_board[row][col];
+			if ( piece && piece->m_definition )
+			{
+				char symbol = piece->m_definition->m_symbol;
+				rowString += Stringf( " %c ", symbol );
+			}
+			else
+			{
+				rowString += " . ";
+			}
+		}
+		rowString += Stringf( "| %d", row + 1 );
+		g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, rowString );
+	}
+
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "  ------------------------" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "   A  B  C  D  E  F  G  H" );
+}
+//-----------------------------------------------------------------------------------------------
+IntVec2 ChessBoard::GetSquareFromWorldPosition( Vec3 const& worldPos ) const
+{
+	Vec3 localPos = worldPos - m_position;
+	int col = ( int )localPos.x;
+	int row = ( int )localPos.y;
+	return IntVec2( col, row );	// #todo might need to swtich these
+}
+
+//-----------------------------------------------------------------------------------------------
+Vec3 ChessBoard::GetWorldPositionFromSquare( IntVec2 const& square ) const
+{
+	return m_position + Vec3( square.x + 0.5f, square.y + 0.5f, 0.f );
+}
+
+//-----------------------------------------------------------------------------------------------
+ChessPiece* ChessBoard::GetPieceAt( int row, int col ) const
+{
+	if ( row < 0 || row >= 8 || col < 0 || col >= 8 )
+	{
+		return nullptr;
+	}
+	return m_board[row][col];
+}
+
+//-----------------------------------------------------------------------------------------------
+void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
+{
+	if ( row < 0 || row >= 8 || col < 0 || col >= 8 )
+	{
+		return;
+	}
+	m_board[row][col] = piece;
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -11,6 +11,8 @@ ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec
 	{
 		m_color = Rgba8( 120, 120, 120 );
 	}
+	IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
+	m_game->m_chessBoard->SetPieceAt( square.y, square.x, this );
 }
 
 //-----------------------------------------------------------------------------------------------
