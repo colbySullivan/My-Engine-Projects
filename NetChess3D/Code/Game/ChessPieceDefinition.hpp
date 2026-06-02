@@ -36,13 +36,14 @@ public:
 	void CreateGeometryForPawn();
 
 	ChessPieceType GetTypeFromString( const std::string& typeName );
+	void CreateBuffersAndCopy();
 public:
 	ChessPieceType m_type = Count; // #todo might need to convert name to this
 	std::string m_name;
 	char m_symbol;
 
-	VertexBuffer* m_vbo;
-	IndexBuffer* m_ibo;
+	VertexBuffer* m_vbo = nullptr;
+	IndexBuffer* m_ibo = nullptr;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 

@@ -7,6 +7,7 @@
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Clock.hpp"
 #include "Game/ChessPiece.hpp"
+#include "Game/ChessBoard.hpp"
 
 class App;
 class Entity;
@@ -20,6 +21,7 @@ class Player;
 class Prop;
 class Timer;
 class ChessPiece;
+class ChessBoard;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -72,6 +74,7 @@ public:
 	Player* m_player = nullptr;
 	std::vector<Prop*> m_props;
 	std::vector<ChessPiece*> m_chessPieces;
+	ChessBoard* m_chessBoard;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );

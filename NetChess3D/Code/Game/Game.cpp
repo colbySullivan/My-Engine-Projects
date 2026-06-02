@@ -57,6 +57,7 @@ void Game::Startup()
 	m_cubeBlinkTimer->Start();
 	CreateDebugRenderObjects();
 	CreateChessPieces();
+	m_chessBoard = new ChessBoard();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -131,13 +132,13 @@ void Game::Render() const
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 0.f ) ); // Suppresses error with conversion
 		g_engine->m_render->ClearScreen( backgroundColor );
-		for ( int propIndex = 0; propIndex < (int)m_props.size(); ++propIndex )
+		/*for ( int propIndex = 0; propIndex < (int)m_props.size(); ++propIndex )
 		{
 			if ( m_props[propIndex] != nullptr )
 			{
 				m_props[propIndex]->Render();
 			}
-		}
+		}*/
 		for ( int i = 0; i < m_chessPieces.size(); ++i )
 		{
 			if ( m_chessPieces[i] != nullptr )
@@ -145,6 +146,7 @@ void Game::Render() const
 				m_chessPieces[i]->Render();
 			}
 		}
+		m_chessBoard->Render();
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );

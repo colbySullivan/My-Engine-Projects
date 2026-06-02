@@ -43,8 +43,15 @@
     <ClCompile Include="Prop.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="ChessPieceDefinition.cpp" />
-    <ClCompile Include="ChessPiece.cpp" />
+    <ClCompile Include="ChessPiece.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessPieceDefinition.cpp">
+      <Filter>Definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessBoard.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -68,8 +75,15 @@
     <ClInclude Include="Prop.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
-    <ClInclude Include="ChessPieceDefinition.hpp" />
-    <ClInclude Include="ChessPiece.hpp" />
+    <ClInclude Include="ChessPiece.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessPieceDefinition.hpp">
+      <Filter>Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessBoard.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="ChessPieceDefinitions.xml">

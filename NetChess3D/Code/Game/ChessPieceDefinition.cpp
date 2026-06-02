@@ -99,58 +99,52 @@ ChessPieceType ChessPieceDefinition::GetTypeFromString( const std::string& typeN
 	return ChessPieceType::Count;
 }
 
-void ChessPieceDefinition::CreateGeometryForRook()
+//-----------------------------------------------------------------------------------------------
+void ChessPieceDefinition::CreateBuffersAndCopy()
 {
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-
 	unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
 	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
+}
+
+void ChessPieceDefinition::CreateGeometryForRook()
+{
+	
+	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.1f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, Vec3( 0.f, 0.f, 0.9f ), Vec3( 0.f, 0.f, 1.f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	CreateBuffersAndCopy();
 }
 
 void ChessPieceDefinition::CreateGeometryForKnight()
 {
 	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-
-	unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
+	CreateBuffersAndCopy();
 }
 
 void ChessPieceDefinition::CreateGeometryForBishop()
 {
 	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-
-	unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
+	//AddVertsForSphere3D( m_vertexes, Vec3::ZERO, 0.5f, 32, 32, Rgba8::WHITE );
+	CreateBuffersAndCopy();
 }
 
 void ChessPieceDefinition::CreateGeometryForPawn()
 {
 	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-
-	unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
+	CreateBuffersAndCopy();
 }
 
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateGeometryForKing()
 {
 	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-
-	unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
+	CreateBuffersAndCopy();
 }
 
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateGeometryForQueen()
 {
 	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-
-	unsigned int vboSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	m_vbo = g_engine->m_render->CreateVertexBuffer( vboSize, sizeof( Vertex_PCUTBN ) );
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vboSize, m_vbo );
+	CreateBuffersAndCopy();
 }
