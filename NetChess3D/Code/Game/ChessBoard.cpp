@@ -162,7 +162,13 @@ bool ChessBoard::Command_ChessMove( [[maybe_unused]] EventArgs& args )
 {
 	if ( g_activeChessBoard )
 	{
-		std::string strValue = args.GetValue( "Test", "" );
+		std::string toSquare = args.GetValue( "to", "" );
+		if ( toSquare.empty() )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove requires 'to' parameter (e.g., ChessMove to=a7)" );
+			return false;
+		}
+
 		//g_activeChessBoard->GetPieceAt( )
 	}
 	return false;

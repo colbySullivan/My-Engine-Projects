@@ -63,43 +63,64 @@ void DevConsole::EndFrame()
 }
 
 //-----------------------------------------------------------------------------------------------
-void DevConsole::Execute( [[maybe_unused]] std::string const& consoleCommandText )
+void DevConsole::Execute( std::string const& consoleCommandText )
 {
 	std::vector<std::string> spaceSplit = SplitStringOnDelimiter( consoleCommandText, ' ' );
-	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
-	std::vector<std::string> parsedCommands;
-	for ( int i = 0; i < spaceSplit.size(); ++i )
+
+	if ( spaceSplit.empty() )
 	{
-		std::vector<std::string> equalSplit = SplitStringOnDelimiter( spaceSplit[i], '=' );
-		std::string command = equalSplit[0];
-		auto it = std::find( registeredCommands.begin(), registeredCommands.end(), command );
-		EventArgs args = {};
-		if ( it != registeredCommands.end() )
+		return;
+	}
+
+	std::string command = spaceSplit[0];
+	std::vector<std::string> registeredCommands = g_engine->m_eventSystem->GetAllRegisteredCommands();
+	auto it = std::find( registeredCommands.begin(), registeredCommands.end(), command );
+
+	if ( it != registeredCommands.end() )
+	{
+		EventArgs args;
+
+		for ( int i = 1; i < spaceSplit.size(); ++i )
 		{
-			for ( int equalSplitIndex = 1; equalSplitIndex < equalSplit.size(); ++equalSplitIndex )
+			std::vector<std::string> equalSplit = SplitStringOnDelimiter( spaceSplit[i], '=' );
+
+			if ( equalSplit.size() >= 2 )
 			{
-				args.SetValue( Stringf( "%d", ( unsigned char )equalSplitIndex ), equalSplit[equalSplitIndex]);
+				std::string key = equalSplit[0];
+				std::string value = equalSplit[1];
+
+				for ( int j = 2; j < equalSplit.size(); ++j )
+				{
+					value += "=" + equalSplit[j];
+				}
+
+				args.SetValue( key, value );
 			}
-
-			AddLine( COMMAND_COLOR, command, 20.f, 0.f );
-			FireEvent( command, args );
-		}
-		else
-		{
-			AddLine( COMMAND_COLOR, command, 20.f, 0.f );
-			AddLine( ERROR_COLOR, "Unknown command: " + command, 20.f, 0.f);
-		}
-
-		if ( m_commandHistory.empty() || m_commandHistory.back() != consoleCommandText )
-		{
-			m_commandHistory.push_back( consoleCommandText );
-
-			if ( m_commandHistory.size() > m_maxCommandHistory )
+			else if ( equalSplit.size() == 1 )
 			{
-				m_commandHistory.erase( m_commandHistory.begin() );
+				args.SetValue( Stringf( "%d", i ), equalSplit[0] );
 			}
+		}
+
+		AddLine( COMMAND_COLOR, command, 20.f, 0.f );
+		FireEvent( command, args );
+	}
+	else
+	{
+		AddLine( COMMAND_COLOR, command, 20.f, 0.f );
+		AddLine( ERROR_COLOR, "Unknown command: " + command, 20.f, 0.f );
+	}
+
+	if ( m_commandHistory.empty() || m_commandHistory.back() != consoleCommandText )
+	{
+		m_commandHistory.push_back( consoleCommandText );
+
+		if ( m_commandHistory.size() > m_maxCommandHistory )
+		{
+			m_commandHistory.erase( m_commandHistory.begin() );
 		}
 	}
+
 	g_DevConsole->m_historyIndex = -1;
 	m_insertionPointPosition = 0;
 }
