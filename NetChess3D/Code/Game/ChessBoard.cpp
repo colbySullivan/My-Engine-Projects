@@ -130,17 +130,19 @@ void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
 		return;
 	}
 	m_board[row][col] = piece;
-	piece->m_position = GetWorldPositionFromSquare( IntVec2(col, row) );
+	if ( piece )
+	{
+		piece->m_position = GetWorldPositionFromSquare( IntVec2( col, row ) );
+	}
 }
 
-//-----------------------------------------------------------------------------------------------
 void ChessBoard::CreateBoardGeometry()
 {
 	Vec3 bl = Vec3( 0.f, 0.f, 0.f );
 	Vec3 br = Vec3( 1.f, 0.f, 0.f );
 	Vec3 tr = Vec3( 1.f, 1.f, 0.f );
 	Vec3 tl = Vec3( 0.f, 1.f, 0.f );
-	for (int row = 0; row < 8 ; ++row)
+	for ( int row = 0; row < 8; ++row )
 	{
 		for ( int column = 0; column < 8; ++column )
 		{
@@ -149,10 +151,10 @@ void ChessBoard::CreateBoardGeometry()
 			{
 				color = Rgba8( 120, 255, 120, 120 );
 			}
-			bl = Vec3( 0.f + row, 0.f + column, 0.f );
-			br = Vec3( 1.f + row, 0.f + column, 0.f );
-			tr = Vec3( 1.f + row, 1.f + column, 0.f );
-			tl = Vec3( 0.f + row, 1.f + column, 0.f );
+			bl = Vec3( 0.f + column, 0.f + row, 0.f );
+			br = Vec3( 1.f + column, 0.f + row, 0.f );
+			tr = Vec3( 1.f + column, 1.f + row, 0.f );
+			tl = Vec3( 0.f + column, 1.f + row, 0.f );
 			AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, color, AABB2::ZERO_TO_ONE );
 		}
 	}
@@ -166,7 +168,7 @@ IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::Command_ChessMove( [[maybe_unused]] EventArgs& args )
+bool ChessBoard::Command_ChessMove( EventArgs& args )
 {
 	if ( g_activeChessBoard )
 	{
@@ -178,14 +180,22 @@ bool ChessBoard::Command_ChessMove( [[maybe_unused]] EventArgs& args )
 			return false;
 		}
 
-		IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
-		IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
-		ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.x, fromSquare.y );
-		g_activeChessBoard->SetPieceAt( toSquare.x, toSquare.y, piece );
+		IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );  
+		IntVec2 toSquare = GetBoardToIntVec2( toSquareString );      
+		ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
+		if ( piece == nullptr )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at %s", fromSquareString.c_str() ) );
+			return false;
+		}
+
+		g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
+		g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+
 		g_activeChessBoard->PrintBoardStateToConsole();
 	}
 	return false;
-}	
+}
 
 //-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_DisplayBoard( [[maybe_unused]] EventArgs& args )

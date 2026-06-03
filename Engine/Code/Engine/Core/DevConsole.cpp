@@ -37,6 +37,7 @@ void DevConsole::Startup()
 	m_insertionPointBlinkTimer = new Timer(0.5f);
 	m_insertionPointBlinkTimer->Start();
 	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
+	m_commandHistory.push_back( "ChessMove from=a2 to=a3"); //#todo remove this and implement a command history file
 }
 
 //-----------------------------------------------------------------------------------------------
