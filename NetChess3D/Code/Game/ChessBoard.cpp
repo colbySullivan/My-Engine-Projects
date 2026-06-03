@@ -130,6 +130,7 @@ void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
 		return;
 	}
 	m_board[row][col] = piece;
+	piece->m_position = GetWorldPositionFromSquare( IntVec2(col, row) );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -157,19 +158,31 @@ void ChessBoard::CreateBoardGeometry()
 	}
 }
 
+IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
+{
+	char firstChar = chessString[0] - 97;
+	int secondNumber = chessString[1] - '0' - 1;
+	return IntVec2( (int)firstChar, secondNumber );
+}
+
 //-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_ChessMove( [[maybe_unused]] EventArgs& args )
 {
 	if ( g_activeChessBoard )
 	{
-		std::string toSquare = args.GetValue( "to", "" );
-		if ( toSquare.empty() )
+		std::string fromSquareString = args.GetValue( "from", "" );
+		std::string toSquareString = args.GetValue( "to", "" );
+		if ( fromSquareString.empty() || toSquareString.empty() )
 		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove requires 'to' parameter (e.g., ChessMove to=a7)" );
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
 			return false;
 		}
 
-		//g_activeChessBoard->GetPieceAt( )
+		IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
+		IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
+		ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.x, fromSquare.y );
+		g_activeChessBoard->SetPieceAt( toSquare.x, toSquare.y, piece );
+		g_activeChessBoard->PrintBoardStateToConsole();
 	}
 	return false;
 }	
@@ -183,3 +196,4 @@ bool ChessBoard::Command_DisplayBoard( [[maybe_unused]] EventArgs& args )
 	}
 	return false;
 }
+

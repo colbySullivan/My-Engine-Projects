@@ -37,4 +37,5 @@ public:
 	ChessPiece* m_board[8][8] = { nullptr };
 private:
 	void CreateBoardGeometry();
+	static IntVec2 GetBoardToIntVec2( std::string chessString );
 };
