@@ -139,10 +139,10 @@ void AddVertsForAABB3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsign
 
 	// +Z Top face
 	AddVertsForQuad3D( vertexes, indexes,
-		Vec3( mins.x, maxs.y, maxs.z ),
-		Vec3( maxs.x, maxs.y, maxs.z ),
-		Vec3( maxs.x, mins.y, maxs.z ),
 		Vec3( mins.x, mins.y, maxs.z ),
+		Vec3( maxs.x, mins.y, maxs.z ),
+		Vec3( maxs.x, maxs.y, maxs.z ),
+		Vec3( mins.x, maxs.y, maxs.z ),
 		color, UVs );
 
 	// -Z Bottom face
@@ -464,6 +464,61 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, Vec3 center, float 
 }
 
 //------------------------------------------------------------------------------
+void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigned int>& indexes, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
+{
+	unsigned int startIndex = ( unsigned int )verts.size(); 
+
+	float degreesPerStack = 180.f / numStacks;
+	float degreesPerSlice = 360.f / numSlices;
+	for ( int i = 0; i < numStacks; ++i )
+	{
+		for ( int j = 0; j < numSlices; j++ )
+		{
+			float leftDegrees = j * degreesPerSlice;
+			float rightDegrees = ( j + 1 ) * degreesPerSlice;
+			float bottomDegrees = ( i * degreesPerStack ) - 90;
+			float topDegrees = ( ( i + 1 ) * degreesPerStack ) - 90;
+
+			Vec3 bottomLeft = center + Vec3::MakeFromPolarDegrees( leftDegrees, bottomDegrees ) * radius;
+			Vec3 bottomRight = center + Vec3::MakeFromPolarDegrees( rightDegrees, bottomDegrees ) * radius;
+			Vec3 topRight = center + Vec3::MakeFromPolarDegrees( rightDegrees, topDegrees ) * radius;
+			Vec3 topLeft = center + Vec3::MakeFromPolarDegrees( leftDegrees, topDegrees ) * radius;
+
+			float bv = 1.0f - ( float )i / ( float )numStacks;
+			float tv = 1.0f - ( float )( i + 1 ) / ( float )numStacks;
+			float lu = ( float )j / ( float )numSlices;
+			float ru = ( float )( j + 1 ) / ( float )numSlices;
+
+			Vec3 tangent = bottomRight - bottomLeft;
+			tangent.Normalize();
+			Vec3 bitangent = topLeft - bottomLeft;
+			bitangent.Normalize();
+			Vec3 normal = bottomLeft - center;
+			normal.Normalize();
+
+			unsigned int quadBaseIndex = startIndex + ( i * numSlices * 6 ) + ( j * 6 );
+
+
+			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomRight ), color, Vec2( ru, bv ), tangent, bitangent, normal ) );
+
+			indexes.push_back( quadBaseIndex + 0 );
+			indexes.push_back( quadBaseIndex + 1 );
+			indexes.push_back( quadBaseIndex + 2 );
+
+			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( topLeft ), color, Vec2( lu, tv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, normal ) );
+
+			indexes.push_back(quadBaseIndex + 3 );
+			indexes.push_back(quadBaseIndex + 4 );
+			indexes.push_back(quadBaseIndex + 5 );
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 void TransformVertexArray3D( std::vector<Vertex>& verts, const Mat44& transform )
 {
 	for ( int vertIndex = 0; vertIndex < verts.size(); ++vertIndex )
@@ -611,6 +666,94 @@ void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start
 		verts.push_back( Vertex_PCUTBN( topLeft, color, Vec2( centerOfSetX, centerOfSetY ), jBasis, kBasis, iBasis ) );
 		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( centerOfSetXNext, centerOfSetYNext ), jBasis, kBasis, iBasis ) );
 
+	}
+}
+
+//------------------------------------------------------------------------------
+void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigned int>& indexes, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ )
+{
+	unsigned int startIndex = ( unsigned int )verts.size();
+
+	Mat44 lookAt = Mat44::MakeLookAt( start, end );
+	Vec3 iBasis = lookAt.GetIBasis3D();
+	Vec3 jBasis = lookAt.GetJBasis3D();
+	Vec3 kBasis = lookAt.GetKBasis3D();
+
+	float uvWidth = UVs.m_maxs.x - UVs.m_mins.x;
+
+	for ( int i = 0; i < numSlices; ++i )
+	{
+		float thetaI = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i );
+		float thetaINext = ( 360.f / static_cast< float >( numSlices ) ) * static_cast< float >( i + 1 );
+
+		Vec3 bottomCenter = start;
+		Vec3 bottomLeft = bottomCenter + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 bottomRight = bottomCenter + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+
+		Vec3 topCenter = end;
+		Vec3 topLeft = end + ( radius * CosDegrees( thetaI ) * jBasis ) + ( radius * SinDegrees( thetaI ) * kBasis );
+		Vec3 topRight = end + ( radius * CosDegrees( thetaINext ) * jBasis ) + ( radius * SinDegrees( thetaINext ) * kBasis );
+
+
+		float lu = UVs.m_mins.x + uvWidth * ( ( float )i / ( float )numSlices );
+		float ru = UVs.m_mins.x + uvWidth * ( ( float )( i + 1 ) / ( float )numSlices );
+		float bv = UVs.m_mins.y;
+		float tv = UVs.m_maxs.y;
+		Vec2  center = Vec2( 0.5f, 0.5f );
+		float centerOfSetX = center.x + ( 0.5f * ( CosDegrees( thetaI ) ) );
+		float centerOfSetY = center.y + ( 0.5f * ( SinDegrees( thetaI ) ) );
+		float centerOfSetXNext = center.x + ( 0.5f * ( CosDegrees( thetaINext ) ) );
+		float centerOfSetYNext = center.y + ( 0.5f * ( SinDegrees( thetaINext ) ) );
+
+		Vec3 tangent = bottomRight - bottomLeft;
+		tangent.Normalize();
+		Vec3 bitangent = topLeft - bottomLeft;
+		bitangent.Normalize();
+
+		Vec3 bottomLeftNormal = bottomLeft - bottomCenter;
+		bottomLeftNormal.Normalize();
+		Vec3 bottomRightNormal = bottomRight - bottomCenter;
+		bottomRightNormal.Normalize();
+		Vec3 topLeftNormal = topLeft - topCenter;
+		topLeftNormal.Normalize();
+		Vec3 topRightNormal = topRight - topCenter;
+		topRightNormal.Normalize();
+
+		unsigned int sliceBaseIndex = startIndex + ( i * 12 );
+
+		// Bottom cap
+		verts.push_back( Vertex_PCUTBN( bottomCenter, color, center, jBasis, kBasis, -iBasis ) );
+		verts.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( centerOfSetXNext, centerOfSetYNext ), jBasis, kBasis, -iBasis ) );
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( centerOfSetX, centerOfSetY ), jBasis, kBasis, -iBasis ) );
+
+		indexes.push_back( sliceBaseIndex + 0 );
+		indexes.push_back( sliceBaseIndex + 1 );
+		indexes.push_back( sliceBaseIndex + 2 );
+
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( lu, bv ), tangent, bitangent, bottomLeftNormal ) );
+		verts.push_back( Vertex_PCUTBN( bottomRight, color, Vec2( ru, bv ), tangent, bitangent, bottomRightNormal ) );
+		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( ru, tv ), tangent, bitangent, topRightNormal ) );
+
+		indexes.push_back( sliceBaseIndex + 3 );
+		indexes.push_back( sliceBaseIndex + 4 );
+		indexes.push_back( sliceBaseIndex + 5 );
+
+		verts.push_back( Vertex_PCUTBN( bottomLeft, color, Vec2( lu, bv ), tangent, bitangent, bottomLeftNormal ) );
+		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( ru, tv ), tangent, bitangent, topRightNormal ) );
+		verts.push_back( Vertex_PCUTBN( topLeft, color, Vec2( lu, tv ), tangent, bitangent, topLeftNormal ) );
+
+		indexes.push_back( sliceBaseIndex + 6 );
+		indexes.push_back( sliceBaseIndex + 7 );
+		indexes.push_back( sliceBaseIndex + 8 );
+
+		// Top cap
+		verts.push_back( Vertex_PCUTBN( topCenter, color, center, jBasis, kBasis, iBasis ) );
+		verts.push_back( Vertex_PCUTBN( topLeft, color, Vec2( centerOfSetX, centerOfSetY ), jBasis, kBasis, iBasis ) );
+		verts.push_back( Vertex_PCUTBN( topRight, color, Vec2( centerOfSetXNext, centerOfSetYNext ), jBasis, kBasis, iBasis ) );
+
+		indexes.push_back( sliceBaseIndex + 9 );
+		indexes.push_back( sliceBaseIndex + 10 );
+		indexes.push_back( sliceBaseIndex + 11 );
 	}
 }
 

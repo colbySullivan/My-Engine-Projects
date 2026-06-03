@@ -31,10 +31,12 @@ void AddVertsForQuad3D( std::vector<Vertex>& vertexes, std::vector<unsigned int>
 void AddVertsForQuad3D( std::vector<Vertex_PCUTBN>& vertexes, std::vector<unsigned int>& indexes, const Vec3& bottomLeft, const Vec3& bottomRight, const Vec3& topRight, const Vec3& topLeft, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE */ );
 void AddVertsForSphere3D( std::vector<Vertex>& verts, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color = Rgba8::WHITE );
 void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color );
+void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigned int>& indexes, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color ); // #todo this is a very hacky version and is not optimized to utilize indexes
 void TransformVertexArray3D( std::vector<Vertex>& verts, const Mat44& transform );
 AABB2 GetVertexBounds2D( const std::vector<Vertex>& verts );
 void AddVertsForCylinder3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color = Rgba8::WHITE, const AABB2& UVs = AABB2::ZERO_TO_ONE, int numSlices = 32 );
 void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ );
+void AddVertsForCylinder3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigned int>& indexes, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ );   // #todo this is a very hacky version and is not optimized to utilize indexes
 void AddVertsForCone3D( std::vector<Vertex>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color = Rgba8::WHITE, const AABB2& UVs = AABB2::ZERO_TO_ONE, int numSlices = 32 );
 void AddVertsForCone3D( std::vector<Vertex_PCUTBN>& verts, const Vec3& start, const Vec3& end, float radius, const Rgba8& color /*= Rgba8::WHITE*/, const AABB2& UVs /*= AABB2::ZERO_TO_ONE*/, int numSlices /*= 32 */ );
 void AddVertsForArrow3D( std::vector<Vertex>& verts, Vec3 const& start, Vec3 const& end, float radius, Rgba8 const& color = Rgba8::WHITE, int numSlices = 32 );

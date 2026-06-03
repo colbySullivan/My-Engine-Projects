@@ -118,45 +118,84 @@ void ChessPieceDefinition::CreateBuffersAndCopy()
 
 void ChessPieceDefinition::CreateGeometryForRook()
 {
-	
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.1f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForCylinder3D( m_vertexes, Vec3( 0.f, 0.f, 0.9f ), Vec3( 0.f, 0.f, 1.f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.15f ), 0.3f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.15f ), Vec3( 0.f, 0.f, 0.8f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.8f ), Vec3( 0.f, 0.f, 0.9f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	float topHatHeight = 1.05f;
+	AABB3 box1 = AABB3( Vec3( 0.15f, -0.05f, 0.9f ), Vec3( 0.25f, 0.05f, topHatHeight ) );
+	AABB3 box2 = AABB3( Vec3( -0.25f, -0.05f, 0.9f ), Vec3( -0.15f, 0.05f, topHatHeight ) );
+	AABB3 box3 = AABB3( Vec3( -0.05f, 0.15f, 0.9f ), Vec3( 0.05f, 0.25f, topHatHeight ) );
+	AABB3 box4 = AABB3( Vec3( -0.05f, -0.25f, 0.9f ), Vec3( 0.05f, -0.15f, topHatHeight ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, box1, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
+	AddVertsForAABB3D( m_vertexes, m_indexes, box2, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
+	AddVertsForAABB3D( m_vertexes, m_indexes, box3, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
+	AddVertsForAABB3D( m_vertexes, m_indexes, box4, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
 	CreateBuffersAndCopy();
 }
 
 void ChessPieceDefinition::CreateGeometryForKnight()
 {
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.15f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.15f ), Vec3( 0.f, 0.f, 0.7f ), 0.12f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AABB3 head = AABB3( Vec3( -0.08f, -0.15f, 0.6f ), Vec3( 0.08f, 0.2f, 0.9f ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, head, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
+	AABB3 ears = AABB3( Vec3( -0.05f, 0.05f, 0.85f ), Vec3( 0.05f, 0.15f, 0.95f ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, ears, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
 	CreateBuffersAndCopy();
 }
 
 void ChessPieceDefinition::CreateGeometryForBishop()
 {
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForSphere3D( m_vertexes, Vec3( 0.f, 0.f, 1.f ), 0.25f, 32, 32, Rgba8::WHITE );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.15f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.15f ), Vec3( 0.f, 0.f, 0.5f ), 0.18f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.5f ), Vec3( 0.f, 0.f, 0.8f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.95f ), 0.18f, 16, 16, Rgba8::WHITE );
+	AABB3 slit = AABB3( Vec3( -0.03f, -0.2f, 0.9f ), Vec3( 0.03f, 0.2f, 0.95f ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, slit, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
 	CreateBuffersAndCopy();
 }
 
 void ChessPieceDefinition::CreateGeometryForPawn()
 {
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.1f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.1f ), Vec3( 0.f, 0.f, 0.6f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.75f ), 0.15f, 16, 16, Rgba8::WHITE );
 	CreateBuffersAndCopy();
 }
 
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateGeometryForKing()
 {
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForCylinder3D( m_vertexes, Vec3( 0.f, 0.f, 0.9f ), Vec3( 0.f, 0.f, 1.f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	//AABB3 topHat = AABB3( Vec3( -0.05f, -0.05f, 1.f ), Vec3( 0.05f, 0.05f, 1.2f ) );
-	//AddVertsForAABB3D( m_vertexes, m_indexes, topHat, Rgba8::RED, AABB2::ZERO_TO_ONE ); // #todo In order to use this all shapes need to be indexed
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.15f ), 0.3f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.15f ), Vec3( 0.f, 0.f, 0.7f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.7f ), Vec3( 0.f, 0.f, 0.8f ), 0.22f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.8f ), Vec3( 0.f, 0.f, 1.0f ), 0.18f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 1.1f ), 0.15f, 16, 16, Rgba8::WHITE );
+	AABB3 crossVertical = AABB3( Vec3( -0.03f, -0.03f, 1.15f ), Vec3( 0.03f, 0.03f, 1.35f ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, crossVertical, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
+	AABB3 crossHorizontal = AABB3( Vec3( -0.12f, -0.03f, 1.22f ), Vec3( 0.12f, 0.03f, 1.28f ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, crossHorizontal, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
 	CreateBuffersAndCopy();
 }
 
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateGeometryForQueen()
 {
-	AddVertsForCylinder3D( m_vertexes, Vec3::ZERO, Vec3( 0.f, 0.f, 1.f ), 0.1f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.15f ), 0.3f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.15f ), Vec3( 0.f, 0.f, 0.7f ), 0.2f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.7f ), Vec3( 0.f, 0.f, 0.85f ), 0.23f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.85f ), Vec3( 0.f, 0.f, 1.0f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	float crownRadius = 0.2f;
+	float crownHeight = 1.0f;
+	int numPoints = 5;
+	for ( int i = 0; i < numPoints; ++i )
+	{
+		float angle = ( 360.f / numPoints ) * i;
+		float x = crownRadius * CosDegrees( angle );
+		float y = crownRadius * SinDegrees( angle );
+		AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( x, y, crownHeight ), 0.08f, 12, 12, Rgba8::WHITE );
+	}
+
+	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 1.15f ), 0.1f, 12, 12, Rgba8::WHITE );
 	CreateBuffersAndCopy();
 }
