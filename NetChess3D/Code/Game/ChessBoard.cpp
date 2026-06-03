@@ -15,8 +15,8 @@ ChessBoard::ChessBoard()
 		}
 	}
 	g_activeChessBoard = this;
-	//SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
 	SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
+	SubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
 }
@@ -79,6 +79,10 @@ void ChessBoard::PrintBoardStateToConsole() const
 			if ( piece && piece->m_definition )
 			{
 				char symbol = piece->m_definition->m_symbol;
+				if ( piece->m_playernum == PlayerTwo )
+				{
+					symbol += 32;
+				}
 				rowString += Stringf( " %c ", symbol );
 			}
 			else
@@ -155,6 +159,17 @@ void ChessBoard::CreateBoardGeometry()
 
 //-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_ChessMove( [[maybe_unused]] EventArgs& args )
+{
+	if ( g_activeChessBoard )
+	{
+		std::string strValue = args.GetValue( "Test", "" );
+		//g_activeChessBoard->GetPieceAt( )
+	}
+	return false;
+}	
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::Command_DisplayBoard( [[maybe_unused]] EventArgs& args )
 {
 	if ( g_activeChessBoard )
 	{

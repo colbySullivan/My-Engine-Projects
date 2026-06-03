@@ -6,6 +6,7 @@ ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec
 	: m_game( owner )
 	, m_definition( definition )
 	, m_position( position )
+	, m_playernum( playernum )
 {
 	if ( playernum == PlayerTwo ) // #todo this needs to be handled easier
 	{

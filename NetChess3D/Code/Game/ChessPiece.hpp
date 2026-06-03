@@ -25,4 +25,5 @@ public:
 	Vec3 m_position = Vec3::ZERO;
 	float m_scale = 1.0f;
 	Rgba8 m_color = Rgba8::WHITE;
+	PlayerNumber m_playernum;
 };
