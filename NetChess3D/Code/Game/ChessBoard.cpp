@@ -227,6 +227,7 @@ bool ChessBoard::Command_ChessMove( EventArgs& args )
 		TryToDoMovePiece( fromSquare, toSquare, piece );
 
 		g_activeChessBoard->PrintBoardStateToConsole();
+		return true;
 	}
 	return false;
 }
