@@ -38,4 +38,6 @@ public:
 private:
 	void CreateBoardGeometry();
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
+	static void TryToDoMovePiece( IntVec2 fromSquare, IntVec2 toSquare, ChessPiece* piece );
+	static bool MoveValidInsideBoard( IntVec2 moveSquare );
 };

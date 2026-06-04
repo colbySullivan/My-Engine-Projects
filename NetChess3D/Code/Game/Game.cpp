@@ -509,6 +509,7 @@ void Game::CreateDebugRenderObjects()
 	DebugAddWorldBasis( worldBasis, -1.f, DebugRenderMode::USE_DEPTH );
 }
 
+//------------------------------------------------------------------------------
 void Game::CreateChessPieces()
 {
 	ChessPieceDefinition const* kingDef = ChessPieceDefinition::GetByName( "King" );
@@ -565,4 +566,31 @@ void Game::CreateChessPieces()
 		}
 	}
 	m_chessBoard->PrintBoardStateToConsole();
+}
+//------------------------------------------------------------------------------
+void Game::RemoveChessPiece( ChessPiece* piece )
+{
+	for ( int i = 0; i < m_chessPieces.size(); ++i )
+	{
+		if ( m_chessPieces[i] == piece )
+		{
+			m_chessPieces.erase( m_chessPieces.begin() + i );
+			return;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void Game::KingFelled()
+{
+	for ( int i = 0; i < m_chessPieces.size(); ++i )
+	{
+		delete m_chessPieces[i];
+		m_chessPieces[i] = nullptr;
+	}
+	m_chessPieces.clear();
+
+	delete m_chessBoard;
+	m_chessBoard = new ChessBoard();
+	CreateChessPieces();
 }

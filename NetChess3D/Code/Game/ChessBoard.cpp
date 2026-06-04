@@ -167,6 +167,36 @@ IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 	return IntVec2( (int)firstChar, secondNumber );
 }
 
+void ChessBoard::TryToDoMovePiece( IntVec2 fromSquare, IntVec2 toSquare, ChessPiece* piece )
+{
+	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
+	ChessPieceType capturedType = Count;
+	if ( toPiece ) // Capture piece
+	{
+		capturedType = toPiece->m_definition->m_type;
+		piece->m_game->RemoveChessPiece( toPiece );
+		if ( toPiece && capturedType == King )
+		{
+			piece->m_game->KingFelled();
+			return;
+		}
+		delete toPiece;
+		toPiece = nullptr;
+	}
+	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
+	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+
+}
+
+bool ChessBoard::MoveValidInsideBoard( IntVec2 moveSquare )
+{
+	if ( moveSquare.x < 0 || moveSquare.x >= 8 || moveSquare.y < 0 || moveSquare.y >= 8 )
+	{
+		return false;
+	}
+	return true;
+}
+
 //-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_ChessMove( EventArgs& args )
 {
@@ -176,12 +206,17 @@ bool ChessBoard::Command_ChessMove( EventArgs& args )
 		std::string toSquareString = args.GetValue( "to", "" );
 		if ( fromSquareString.empty() || toSquareString.empty() )
 		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
 			return false;
 		}
 
 		IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );  
-		IntVec2 toSquare = GetBoardToIntVec2( toSquareString );      
+		IntVec2 toSquare = GetBoardToIntVec2( toSquareString );     
+		if ( !MoveValidInsideBoard( fromSquare ) || !MoveValidInsideBoard( toSquare ) )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: move invalid please ensure it is within the board" );
+			return false;
+		}
 		ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
 		if ( piece == nullptr )
 		{
@@ -189,8 +224,7 @@ bool ChessBoard::Command_ChessMove( EventArgs& args )
 			return false;
 		}
 
-		g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
-		g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+		TryToDoMovePiece( fromSquare, toSquare, piece );
 
 		g_activeChessBoard->PrintBoardStateToConsole();
 	}

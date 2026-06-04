@@ -44,6 +44,8 @@ public:
 	void Update();
 	void Render() const;
 	void Shutdown();
+	void RemoveChessPiece( ChessPiece* piece );
+	void KingFelled();
 
 	// Game State
 	bool				m_isQuitting = false;
