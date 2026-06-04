@@ -396,5 +396,8 @@
     <ClInclude Include="Math\Plane3D.hpp">
       <Filter>Math\Planes</Filter>
     </ClInclude>
+    <ClInclude Include="SunlightShader.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -443,6 +443,7 @@
     <ClInclude Include="Renderer\SpriteSheet.hpp" />
     <ClInclude Include="Renderer\Texture.hpp" />
     <ClInclude Include="Renderer\VertexBuffer.hpp" />
+    <ClInclude Include="SunlightShader.hpp" />
     <ClInclude Include="Window\Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

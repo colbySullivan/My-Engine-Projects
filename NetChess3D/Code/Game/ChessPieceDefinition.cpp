@@ -102,6 +102,8 @@ ChessPieceType ChessPieceDefinition::GetTypeFromString( const std::string& typeN
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateBuffersAndCopy()
 {
+	m_shader = g_engine->m_render->CreateOrGetShader( "Data/Shaders/SunlightShader", VertexType::VERTEX_PCUTBN );
+
 	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );
 	m_vbo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );

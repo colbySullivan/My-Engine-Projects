@@ -39,6 +39,7 @@ void ChessPiece::Render() const
 	g_engine->m_render->SetModelConstants( modelMatrix, m_color );
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+	g_engine->m_render->BindShader( m_definition->m_shader );
 
 	if ( m_definition->m_ibo )
 	{
@@ -48,5 +49,6 @@ void ChessPiece::Render() const
 	{
 		g_engine->m_render->DrawVertexBuffer( m_definition->m_vbo, ( unsigned int )m_definition->m_vertexes.size() );
 	}
+	g_engine->m_render->BindShader( nullptr );
 }
 

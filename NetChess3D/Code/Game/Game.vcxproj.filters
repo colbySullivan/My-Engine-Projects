@@ -20,6 +20,9 @@
     <Filter Include="Definitions">
       <UniqueIdentifier>{7207d9aa-e243-46fc-acae-35e6d9cd05ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{a20488da-0fbd-472b-b936-2140fc8f3177}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -89,5 +92,10 @@
     <Xml Include="ChessPieceDefinitions.xml">
       <Filter>Definitions</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\Run\Data\Shaders\SunlightShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
