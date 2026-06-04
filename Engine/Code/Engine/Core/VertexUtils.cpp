@@ -466,7 +466,7 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, Vec3 center, float 
 //------------------------------------------------------------------------------
 void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigned int>& indexes, Vec3 center, float radius, int numSlices, int numStacks, const Rgba8& color )
 {
-	unsigned int startIndex = ( unsigned int )verts.size(); 
+	unsigned int startIndex = ( unsigned int )verts.size();
 
 	float degreesPerStack = 180.f / numStacks;
 	float degreesPerSlice = 360.f / numSlices;
@@ -493,27 +493,33 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigne
 			tangent.Normalize();
 			Vec3 bitangent = topLeft - bottomLeft;
 			bitangent.Normalize();
-			Vec3 normal = bottomLeft - center;
-			normal.Normalize();
+			Vec3 bottomLeftnormal = bottomLeft - center;
+			Vec3 bottomRightnormal = bottomRight - center;
+			Vec3 topLeftnormal = topLeft - center;
+			Vec3 topRightnormal = topRight - center;
+			bottomLeftnormal.Normalize();
+			bottomRightnormal.Normalize();
+			topLeftnormal.Normalize();
+			topRightnormal.Normalize();
 
 			unsigned int quadBaseIndex = startIndex + ( i * numSlices * 6 ) + ( j * 6 );
 
 
-			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, normal ) );
-			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, normal ) );
-			verts.push_back( Vertex_PCUTBN( ( bottomRight ), color, Vec2( ru, bv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, bottomLeftnormal ) );
+			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, topRightnormal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomRight ), color, Vec2( ru, bv ), tangent, bitangent, bottomRightnormal ) );
 
 			indexes.push_back( quadBaseIndex + 0 );
 			indexes.push_back( quadBaseIndex + 1 );
 			indexes.push_back( quadBaseIndex + 2 );
 
-			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, normal ) );
-			verts.push_back( Vertex_PCUTBN( ( topLeft ), color, Vec2( lu, tv ), tangent, bitangent, normal ) );
-			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, normal ) );
+			verts.push_back( Vertex_PCUTBN( ( bottomLeft ), color, Vec2( lu, bv ), tangent, bitangent, bottomLeftnormal ) );
+			verts.push_back( Vertex_PCUTBN( ( topLeft ), color, Vec2( lu, tv ), tangent, bitangent, topLeftnormal ) );
+			verts.push_back( Vertex_PCUTBN( ( topRight ), color, Vec2( ru, tv ), tangent, bitangent, topRightnormal ) );
 
-			indexes.push_back(quadBaseIndex + 3 );
-			indexes.push_back(quadBaseIndex + 4 );
-			indexes.push_back(quadBaseIndex + 5 );
+			indexes.push_back( quadBaseIndex + 3 );
+			indexes.push_back( quadBaseIndex + 4 );
+			indexes.push_back( quadBaseIndex + 5 );
 		}
 	}
 }
