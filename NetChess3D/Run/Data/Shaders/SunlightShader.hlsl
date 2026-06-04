@@ -19,6 +19,8 @@ struct vs_input_t
     float3 modelSpacePosition : POSITION;
     float4 color : COLOR;
     float2 uv : TEXCOORD;
+    float3 tangent : TANGENT;
+	float3 bitangent : BITANGENT;
     float3 normal : NORMAL;
 };
 
@@ -27,6 +29,8 @@ struct v2p_t
     float4 clipSpacePosition : SV_Position;
     float4 color : COLOR;
     float2 uv : TEXCOORD;
+    float3 worldTangent : TANGENT;
+	float3 worldBitangent : BITANGENT;
     float3 worldNormal : NORMAL;
 };
 
@@ -37,14 +41,23 @@ v2p_t VertexMain(vs_input_t input)
     float4 cameraSpacePosition = mul( WorldToCameraTransform,  worldSpacePosition  );
     float4 renderSpacePosition = mul( CameraToRenderTransform, cameraSpacePosition );
     float4 clipSpacePosition   = mul( RenderToClipTransform,   renderSpacePosition );
+
     float4 modelNormal = float4(input.normal, 0);
     float4 worldNormal = mul( ModelToWorldTransform, modelNormal );
+
+    float4 modelTangent = float4(input.tangent, 0);
+    float4 worldTangent = mul( ModelToWorldTransform, modelTangent );
+
+    float4 modelBitangent = float4(input.bitangent, 0);
+    float4 worldBitangent = mul( ModelToWorldTransform, modelBitangent );
         
     v2p_t v2p;
     v2p.clipSpacePosition = clipSpacePosition;
     v2p.color = input.color * ModelColor;
     v2p.uv = input.uv;
     v2p.worldNormal = worldNormal.xyz;
+    v2p.worldTangent = worldTangent.xyz;
+    v2p.worldBitangent = worldBitangent.xyz;
     return v2p;
 }
 
@@ -60,6 +73,8 @@ float4 PixelMain(v2p_t input) : SV_Target0
         
     // Get normalized world-space normal (interpolated from vertex shader)
     // Remember to re-normalize the interpolated world-space normal inside the Pixel Shader, since interpolating two valid different normals can result in a non-normalized vector!
+    float3 worldTangent = normalize( input.worldTangent );
+    float3 worldBitangent = normalize( input.worldBitangent );
     float3 worldNormal = normalize( input.worldNormal );
         
     // pixels are lit based on the dot product of the (interpolated) pixel world-space normal and the pixel-to-light direction vector
@@ -72,7 +87,11 @@ float4 PixelMain(v2p_t input) : SV_Target0
     // multiplied by the light’s color and the surface (chess piece triangle) diffuse color
     float3 litColor = diffuseColor.rgb * lightStrength * sunColor;
         
+    // Normal visual testing 
+    litColor = worldNormal * 0.5 + 0.5;
+
     float4 color = float4( litColor, diffuseColor.a );
     clip(color.a - 0.01f);
     return color;
+   
 }
