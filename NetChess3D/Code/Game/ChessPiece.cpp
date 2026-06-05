@@ -2,13 +2,13 @@
 #include "Engine/Core/Engine.hpp"
 
 //-----------------------------------------------------------------------------------------------
-ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, PlayerNumber playernum )
+ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, int playernum )
 	: m_game( owner )
 	, m_definition( definition )
 	, m_position( position )
 	, m_playernum( playernum )
 {
-	if ( playernum == PlayerTwo ) // #todo this needs to be handled easier
+	if ( playernum == 2 ) // #todo this needs to be handled easier
 	{
 		m_color = Rgba8( 120, 120, 120 );
 	}
@@ -31,7 +31,7 @@ void ChessPiece::Update()
 //-----------------------------------------------------------------------------------------------
 void ChessPiece::Render() const
 {
-	if ( !m_definition || !m_definition->m_vbo )
+	if ( !m_definition || !m_definition->m_vboPlayerOne || !m_definition->m_vboPlayerTwo )
 	{
 		return;
 	}
@@ -41,13 +41,21 @@ void ChessPiece::Render() const
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindShader( m_definition->m_shader );
 
-	if ( m_definition->m_ibo )
+	if ( m_definition->m_iboPlayerOne && m_definition->m_iboPlayerTwo )
 	{
-		g_engine->m_render->DrawIndexBuffer( m_definition->m_vbo, m_definition->m_ibo, ( unsigned int )m_definition->m_indexes.size() );
+		VertexBuffer* playerVbo = m_definition->m_vboPlayerOne;
+		IndexBuffer* playerIbo = m_definition->m_iboPlayerOne;
+		if ( m_playernum == 2 )
+		{
+			playerVbo = m_definition->m_vboPlayerTwo;
+			playerIbo = m_definition->m_iboPlayerTwo;
+		}
+		g_engine->m_render->DrawIndexBuffer( playerVbo, playerIbo, ( unsigned int )m_definition->m_indexes.size() );
 	}
 	else
 	{
-		g_engine->m_render->DrawVertexBuffer( m_definition->m_vbo, ( unsigned int )m_definition->m_vertexes.size() );
+		g_engine->m_render->DrawVertexBuffer( m_definition->m_vboPlayerOne, ( unsigned int )m_definition->m_vertexes.size() );
+		g_engine->m_render->DrawVertexBuffer( m_definition->m_vboPlayerTwo, ( unsigned int )m_definition->m_vertexes.size() );
 	}
 	g_engine->m_render->BindShader( nullptr );
 }

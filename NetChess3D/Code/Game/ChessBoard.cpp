@@ -1,6 +1,7 @@
 #include "Game/ChessBoard.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Game/ChessPiece.hpp"
 
 static ChessBoard* g_activeChessBoard = nullptr;
 
@@ -80,7 +81,7 @@ void ChessBoard::PrintBoardStateToConsole() const
 			if ( piece && piece->m_definition )
 			{
 				char symbol = piece->m_definition->m_symbol;
-				if ( piece->m_playernum == PlayerTwo )
+				if ( piece->m_playernum == 2 )
 				{
 					symbol += 32;
 				}
@@ -137,6 +138,7 @@ void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
 void ChessBoard::CreateBoardGeometry()
 {
 	Vec3 bl = Vec3( 0.f, 0.f, 0.f );
@@ -163,6 +165,7 @@ void ChessBoard::CreateBoardGeometry()
 	AddVertsForAABB3D( m_vertexes, m_indexes, boardBox, Rgba8( 166, 42, 42 ), AABB2::ZERO_TO_ONE);
 }
 
+//-----------------------------------------------------------------------------------------------
 IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 {
 	char firstChar = chessString[0] - 97;
@@ -170,6 +173,7 @@ IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 	return IntVec2( (int)firstChar, secondNumber );
 }
 
+//-----------------------------------------------------------------------------------------------
 bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toSquareString )
 {
 	IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
@@ -214,7 +218,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		if ( toPiece && capturedType == King )
 		{
 			piece->m_game->KingFelled();
-			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i won", piece->m_playernum + 1 ) );
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i won", g_activeChessBoard->m_currentPlayerNum ) );
 			return true;
 		}
 		delete toPiece;
@@ -225,7 +229,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
 	g_activeChessBoard->ChangePlayer();
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum + 1 ) );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
 
 	g_activeChessBoard->PrintBoardStateToConsole();
 	return false;
@@ -244,7 +248,7 @@ bool ChessBoard::MoveValidInsideBoard( IntVec2 moveSquare )
 //-----------------------------------------------------------------------------------------------
 void ChessBoard::ChangePlayer()
 {
-	m_currentPlayerNum = static_cast<PlayerNumber>((m_currentPlayerNum + 1) % PlayerNumber::count);
+	m_currentPlayerNum = ( m_currentPlayerNum % 2 ) + 1;
 }
 
 //-----------------------------------------------------------------------------------------------

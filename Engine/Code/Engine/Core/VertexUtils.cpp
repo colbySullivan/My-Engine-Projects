@@ -491,8 +491,10 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigne
 
 			Vec3 tangent = bottomRight - bottomLeft;
 			tangent.Normalize();
+
 			Vec3 bitangent = topLeft - bottomLeft;
 			bitangent.Normalize();
+
 			Vec3 bottomLeftnormal = bottomLeft - center;
 			Vec3 bottomRightnormal = bottomRight - center;
 			Vec3 topLeftnormal = topLeft - center;
@@ -501,6 +503,8 @@ void AddVertsForSphere3D( std::vector<Vertex_PCUTBN>& verts, std::vector<unsigne
 			bottomRightnormal.Normalize();
 			topLeftnormal.Normalize();
 			topRightnormal.Normalize();
+
+			tangent = CrossProduct3D(bottomLeftnormal, Vec3::Z_AXIS);
 
 			unsigned int quadBaseIndex = startIndex + ( i * numSlices * 6 ) + ( j * 6 );
 

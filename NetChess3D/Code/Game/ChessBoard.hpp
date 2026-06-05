@@ -1,10 +1,9 @@
 #pragma once
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
-#include "Game/ChessPiece.hpp"
+#include "Engine/Core/EventSystem.hpp"
 
 class ChessPiece;
-enum PlayerNumber;
 
 class ChessBoard
 {
@@ -34,7 +33,7 @@ public:
 	Vec3 m_position = Vec3::ZERO;
 	float m_scale = 1.0f;
 	Rgba8 m_color = Rgba8::WHITE;
-	PlayerNumber m_currentPlayerNum	;
+	int m_currentPlayerNum = 1;
 
 	ChessPiece* m_board[8][8] = { nullptr };
 private:

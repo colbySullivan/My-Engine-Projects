@@ -9,10 +9,15 @@ std::map<std::string, ChessPieceDefinition> ChessPieceDefinition::s_definitions;
 //-----------------------------------------------------------------------------------------------
 ChessPieceDefinition::~ChessPieceDefinition()
 {
-	delete m_vbo;
-	m_vbo = nullptr;
-	delete m_ibo;
-	m_ibo = nullptr;
+	delete m_vboPlayerOne;
+	m_vboPlayerOne = nullptr;
+	delete m_iboPlayerOne;
+	m_iboPlayerOne = nullptr;
+
+	delete m_vboPlayerTwo;
+	m_vboPlayerTwo = nullptr;
+	delete m_iboPlayerTwo;
+	m_iboPlayerTwo = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -110,16 +115,20 @@ void ChessPieceDefinition::CreateBuffersAndCopy()
 
 	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );
-	m_vbo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
+	m_vboPlayerOne = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
+	m_vboPlayerTwo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
 
 	unsigned int indexBufferSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
 	if ( indexBufferSize > 0 )
 	{
-		m_ibo = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
-		g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_ibo );
+		m_iboPlayerOne = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
+		m_iboPlayerTwo = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
+		g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_iboPlayerOne );
+		g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_iboPlayerTwo );
 	}
 
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vbo );
+	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vboPlayerOne );
+	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vboPlayerTwo );
 }
 
 void ChessPieceDefinition::CreateGeometryForRook()
@@ -154,7 +163,7 @@ void ChessPieceDefinition::CreateGeometryForBishop()
 {
 	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.15f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
 	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.15f ), Vec3( 0.f, 0.f, 0.5f ), 0.18f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.5f ), Vec3( 0.f, 0.f, 0.8f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.5f ), Vec3( 0.f, 0.f, 0.8f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 64 );
 	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.95f ), 0.18f, 16, 16, Rgba8::WHITE );
 	AABB3 slit = AABB3( Vec3( -0.03f, -0.2f, 0.9f ), Vec3( 0.03f, 0.2f, 0.95f ) );
 	AddVertsForAABB3D( m_vertexes, m_indexes, slit, Rgba8::WHITE, AABB2::ZERO_TO_ONE );
@@ -165,7 +174,7 @@ void ChessPieceDefinition::CreateGeometryForPawn()
 {
 	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.1f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
 	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.1f ), Vec3( 0.f, 0.f, 0.6f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.75f ), 0.15f, 16, 16, Rgba8::WHITE );
+	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.75f ), 0.15f, 32, 32, Rgba8::WHITE );
 	CreateBuffersAndCopy();
 }
 

@@ -46,8 +46,10 @@ public:
 	char m_symbol;
 	std::string m_shaderPath;
 
-	VertexBuffer* m_vbo = nullptr;
-	IndexBuffer* m_ibo = nullptr;
+	VertexBuffer* m_vboPlayerOne = nullptr;
+	IndexBuffer* m_iboPlayerOne = nullptr;
+	VertexBuffer* m_vboPlayerTwo = nullptr;
+	IndexBuffer* m_iboPlayerTwo = nullptr;
 	Shader* m_shader = nullptr;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
