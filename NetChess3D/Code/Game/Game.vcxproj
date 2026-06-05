@@ -393,6 +393,7 @@
     <ClInclude Include="Prop.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Run\Data\Definitions\ChessPieceDefinitions.xml" />
     <Xml Include="ChessPieceDefinitions.xml" />
   </ItemGroup>
   <ItemGroup>

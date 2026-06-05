@@ -15,6 +15,7 @@ ChessBoard::ChessBoard()
 		}
 	}
 	g_activeChessBoard = this;
+
 	SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
 	SubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
 	CreateBoardGeometry();
@@ -158,6 +159,8 @@ void ChessBoard::CreateBoardGeometry()
 			AddVertsForQuad3D( m_vertexes, m_indexes, bl, br, tr, tl, color, AABB2::ZERO_TO_ONE );
 		}
 	}
+	AABB3 boardBox = AABB3( Vec3( -0.3f, -0.3f, -1.f ), Vec3( tr.x + 0.3f, tr.y + 0.3f, -.01f ) );
+	AddVertsForAABB3D( m_vertexes, m_indexes, boardBox, Rgba8( 166, 42, 42 ), AABB2::ZERO_TO_ONE);
 }
 
 IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
@@ -167,8 +170,41 @@ IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 	return IntVec2( (int)firstChar, secondNumber );
 }
 
-void ChessBoard::TryToDoMovePiece( IntVec2 fromSquare, IntVec2 toSquare, ChessPiece* piece )
+bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toSquareString )
 {
+	IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
+	IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
+
+	// Missing one or both to / from
+	if ( fromSquareString.empty() || toSquareString.empty() )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
+		return false;
+	}
+
+	// Tried to move outside of board
+	if ( !MoveValidInsideBoard( fromSquare ) || !MoveValidInsideBoard( toSquare ) )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: move invalid please ensure it is within the board" );
+		return false;
+	}
+
+	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
+	// No piece at to location
+	if ( piece == nullptr )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at %s", fromSquareString.c_str() ) );
+		return false;
+	}
+
+	// Wrong player piece
+	if ( piece->m_playernum != g_activeChessBoard->m_currentPlayerNum )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "Piece at 'from' square is not player %i", g_activeChessBoard->m_currentPlayerNum + 1 ) );
+		return false;
+	}
+
+	
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
 	if ( toPiece ) // Capture piece
@@ -178,16 +214,24 @@ void ChessBoard::TryToDoMovePiece( IntVec2 fromSquare, IntVec2 toSquare, ChessPi
 		if ( toPiece && capturedType == King )
 		{
 			piece->m_game->KingFelled();
-			return;
+			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i won", piece->m_playernum + 1 ) );
+			return true;
 		}
 		delete toPiece;
 		toPiece = nullptr;
 	}
 	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
 	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
+	g_activeChessBoard->ChangePlayer();
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum + 1 ) );
+
+	g_activeChessBoard->PrintBoardStateToConsole();
+	return false;
 }
 
+//-----------------------------------------------------------------------------------------------
 bool ChessBoard::MoveValidInsideBoard( IntVec2 moveSquare )
 {
 	if ( moveSquare.x < 0 || moveSquare.x >= 8 || moveSquare.y < 0 || moveSquare.y >= 8 )
@@ -198,36 +242,19 @@ bool ChessBoard::MoveValidInsideBoard( IntVec2 moveSquare )
 }
 
 //-----------------------------------------------------------------------------------------------
+void ChessBoard::ChangePlayer()
+{
+	m_currentPlayerNum = static_cast<PlayerNumber>((m_currentPlayerNum + 1) % PlayerNumber::count);
+}
+
+//-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_ChessMove( EventArgs& args )
 {
 	if ( g_activeChessBoard )
 	{
 		std::string fromSquareString = args.GetValue( "from", "" );
 		std::string toSquareString = args.GetValue( "to", "" );
-		if ( fromSquareString.empty() || toSquareString.empty() )
-		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
-			return false;
-		}
-
-		IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );  
-		IntVec2 toSquare = GetBoardToIntVec2( toSquareString );     
-		if ( !MoveValidInsideBoard( fromSquare ) || !MoveValidInsideBoard( toSquare ) )
-		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: move invalid please ensure it is within the board" );
-			return false;
-		}
-		ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
-		if ( piece == nullptr )
-		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at %s", fromSquareString.c_str() ) );
-			return false;
-		}
-
-		TryToDoMovePiece( fromSquare, toSquare, piece );
-
-		g_activeChessBoard->PrintBoardStateToConsole();
-		return true;
+		return TryToDoMovePiece( fromSquareString, toSquareString );
 	}
 	return false;
 }

@@ -92,6 +92,9 @@
     <Xml Include="ChessPieceDefinitions.xml">
       <Filter>Definitions</Filter>
     </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\ChessPieceDefinitions.xml">
+      <Filter>Definitions</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Run\Data\Shaders\SunlightShader.hlsl">

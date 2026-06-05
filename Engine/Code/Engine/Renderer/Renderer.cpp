@@ -414,7 +414,6 @@ Shader* Renderer::CreateShader( char const* shaderName, char const* shaderSource
 	config.m_name = shaderName;
 	Shader* shader = new Shader( config );
 
-	// Compile vertex shader — same as your existing CreateShader( name, source )
 	std::vector<uint8_t> vertexBytes;
 	CompileShaderToByteCode( vertexBytes, config.m_name.c_str(), shaderSource,
 		config.m_vertexEntryPoint.c_str(), "vs_5_0" );

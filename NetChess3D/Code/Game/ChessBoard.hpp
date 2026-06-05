@@ -4,6 +4,7 @@
 #include "Game/ChessPiece.hpp"
 
 class ChessPiece;
+enum PlayerNumber;
 
 class ChessBoard
 {
@@ -33,11 +34,14 @@ public:
 	Vec3 m_position = Vec3::ZERO;
 	float m_scale = 1.0f;
 	Rgba8 m_color = Rgba8::WHITE;
+	PlayerNumber m_currentPlayerNum	;
 
 	ChessPiece* m_board[8][8] = { nullptr };
 private:
 	void CreateBoardGeometry();
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
-	static void TryToDoMovePiece( IntVec2 fromSquare, IntVec2 toSquare, ChessPiece* piece );
+	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
+	void ChangePlayer();
+
 };

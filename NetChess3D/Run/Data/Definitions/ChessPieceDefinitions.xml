@@ -1,8 +1,8 @@
 <Definitions>
-	<ChessPieceDefinition name="King" symbol="K"/>
-	<ChessPieceDefinition name="Queen" symbol="Q"/>
-	<ChessPieceDefinition name="Rook" symbol="R"/>
-	<ChessPieceDefinition name="Knight" symbol="N"/>
-	<ChessPieceDefinition name="Bishop" symbol="B"/>
-	<ChessPieceDefinition name="Pawn" symbol="P"/>
+	<ChessPieceDefinition name="King" symbol="K" shader="Data/Shaders/SunlightShader"/>
+	<ChessPieceDefinition name="Queen" symbol="Q" shader="Data/Shaders/SunlightShader"/>
+	<ChessPieceDefinition name="Rook" symbol="R" shader="Data/Shaders/SunlightShader"/>
+	<ChessPieceDefinition name="Knight" symbol="N" shader="Data/Shaders/SunlightShader"/>
+	<ChessPieceDefinition name="Bishop" symbol="B" shader="Data/Shaders/SunlightShader"/>
+	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader"/>
 </Definitions>

@@ -37,6 +37,7 @@ void ChessPieceDefinition::LoadPiecesDefsFromFile( char const* filePath )
 		def.m_name = name;
 		def.m_symbol = xml.ParseXmlAttribute( *tileElem, "symbol", ' ' );
 		def.m_type = def.GetTypeFromString( name );
+		def.m_shaderPath = xml.ParseXmlAttribute( *tileElem, "shader", "default");
 
 		switch ( def.m_type )
 		{
@@ -102,7 +103,10 @@ ChessPieceType ChessPieceDefinition::GetTypeFromString( const std::string& typeN
 //-----------------------------------------------------------------------------------------------
 void ChessPieceDefinition::CreateBuffersAndCopy()
 {
-	m_shader = g_engine->m_render->CreateOrGetShader( "Data/Shaders/SunlightShader", VertexType::VERTEX_PCUTBN );
+	if ( m_shaderPath != "default" )
+	{
+		m_shader = g_engine->m_render->CreateOrGetShader( m_shaderPath.c_str(), VertexType::VERTEX_PCUTBN );
+	}
 
 	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );

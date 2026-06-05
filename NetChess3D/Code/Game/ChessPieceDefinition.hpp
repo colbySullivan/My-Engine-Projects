@@ -44,6 +44,7 @@ public:
 	ChessPieceType m_type = Count; // #todo might need to convert name to this
 	std::string m_name;
 	char m_symbol;
+	std::string m_shaderPath;
 
 	VertexBuffer* m_vbo = nullptr;
 	IndexBuffer* m_ibo = nullptr;
