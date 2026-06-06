@@ -25,10 +25,12 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 {
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
-	UpdateKeyboardAndControllerInput( deltaSeconds, controller );
+	if ( m_game->m_currentCameraMode->freeCamera )
+	{
+		UpdateKeyboardAndControllerInput( deltaSeconds, controller );
+	}
 
 	m_worldCamera->SetPositionAndOrientation( m_position, m_orientation );
-	
 }
 
 //------------------------------------------------------------------------------

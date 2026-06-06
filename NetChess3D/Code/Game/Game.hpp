@@ -32,6 +32,14 @@ enum Game_State
 	NUM_GAMESTATES
 };
 
+struct CameraMode 
+{
+	std::string modeName;
+	bool freeCamera = false;
+	Vec3 position;
+	EulerAngles orientation;
+};
+
 //-----------------------------------------------------------------------------------------------
 class Game
 {
@@ -78,6 +86,10 @@ public:
 	std::vector<ChessPiece*> m_chessPieces;
 	ChessBoard* m_chessBoard;
 
+	// CameraModes
+	std::vector<CameraMode*> m_cameraModes;
+	CameraMode* m_currentCameraMode = nullptr;
+
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
 	void DebugInput();
@@ -102,4 +114,5 @@ private:
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
+	void CreateCameraModes();
 };

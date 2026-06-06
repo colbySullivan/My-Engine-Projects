@@ -35,6 +35,7 @@ Game::Game()
 	m_player->m_position = Vec3( 0.f, 0.f, 1.f);
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	CreateProps();
+	CreateCameraModes();
 	ChessPieceDefinition::InitializeChessPieceDefs();
 }
 
@@ -105,6 +106,11 @@ void Game::Update()
 		if ( m_cubeBlinkTimer->DecrementPeriodIfElapsed() )
 		{
 			m_cubeBlinkTimer->Start();
+		}
+		if ( !m_currentCameraMode->freeCamera )
+		{
+			m_player->m_position = m_currentCameraMode->position;
+			m_player->m_orientation = m_currentCameraMode->orientation;
 		}
 		m_player->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
@@ -286,6 +292,9 @@ void Game::RenderUI() const
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
+	//DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_rollDegrees );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
@@ -567,6 +576,18 @@ void Game::CreateChessPieces()
 	}
 	m_chessBoard->PrintBoardStateToConsole();
 }
+
+//------------------------------------------------------------------------------
+void Game::CreateCameraModes()
+{
+	CameraMode* playerCameraMode = new CameraMode;
+	playerCameraMode->position = Vec3( 4, -3, 4 );
+	playerCameraMode->orientation = EulerAngles( 90.f, 30.f, 0.f );
+	playerCameraMode->modeName = "playerCamera";
+	m_cameraModes.push_back( playerCameraMode );
+	m_currentCameraMode = m_cameraModes[0];
+}
+
 //------------------------------------------------------------------------------
 void Game::RemoveChessPiece( ChessPiece* piece )
 {
