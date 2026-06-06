@@ -16,7 +16,7 @@ ChessBoard::ChessBoard()
 		}
 	}
 	g_activeChessBoard = this;
-
+	m_gameOver = false;
 	SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
 	SubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
 	CreateBoardGeometry();
@@ -26,6 +26,14 @@ ChessBoard::ChessBoard()
 //-----------------------------------------------------------------------------------------------
 ChessBoard::~ChessBoard()
 {
+	UnsubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
+	UnsubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
+
+	if ( g_activeChessBoard == this )
+	{
+		g_activeChessBoard = nullptr;
+	}
+
 	delete m_vbo;
 	m_vbo = nullptr;
 	delete m_ibo;
@@ -179,6 +187,12 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
 	IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
 
+	if ( g_activeChessBoard->m_gameOver )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Game over use the ChessBegin command to restart" );
+		return false;
+	}
+
 	// Missing one or both to / from
 	if ( fromSquareString.empty() || toSquareString.empty() )
 	{
@@ -211,28 +225,34 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
+
+	// Move piece
+	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
+	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
+
 	if ( toPiece ) // Capture piece
 	{
 		capturedType = toPiece->m_definition->m_type;
 		piece->m_game->RemoveChessPiece( toPiece );
 		if ( toPiece && capturedType == King )
 		{
-			piece->m_game->KingFelled();
+			g_activeChessBoard->m_gameOver = true;
 			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i won", g_activeChessBoard->m_currentPlayerNum ) );
-			return true;
 		}
 		delete toPiece;
 		toPiece = nullptr;
 	}
-	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
-	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
-	g_activeChessBoard->ChangePlayer();
-	g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
+	if ( !g_activeChessBoard->m_gameOver )
+	{
+		g_activeChessBoard->ChangePlayer();
+		piece->m_game->ChangePlayerCamera( g_activeChessBoard->m_currentPlayerNum );
+		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "" );
+		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
 
-	g_activeChessBoard->PrintBoardStateToConsole();
+		g_activeChessBoard->PrintBoardStateToConsole();
+	}
 	return false;
 }
 
@@ -273,4 +293,3 @@ bool ChessBoard::Command_DisplayBoard( [[maybe_unused]] EventArgs& args )
 	}
 	return false;
 }
-

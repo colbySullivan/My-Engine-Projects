@@ -8,6 +8,8 @@
 #include "Engine/Core/FileUtils.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EventSystem.hpp"
+#include "Game/App.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -36,6 +38,7 @@ Game::Game()
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	CreateProps();
 	CreateCameraModes();
+	SubscribeEventCallbackFunction( "ChessBegin", Command_BeginGame );
 	ChessPieceDefinition::InitializeChessPieceDefs();
 }
 
@@ -111,6 +114,7 @@ void Game::Update()
 		{
 			m_player->m_position = m_currentCameraMode->position;
 			m_player->m_orientation = m_currentCameraMode->orientation;
+			//g_engine->m_input->SetCursorMode( CursorMode::POINTER );
 		}
 		m_player->Update( (float) g_engine->m_systemClock->GetDeltaSeconds() );
 	}
@@ -215,9 +219,10 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		}
 	}
 
-	if (g_engine->m_input->WasKeyJustPressed('I'))
+	if (g_engine->m_input->WasKeyJustPressed( KEYCODE_F4 ))
 	{
-
+		m_currentCameraNum =  (m_currentCameraNum + 1 ) % m_cameraModes.size();
+		m_currentCameraMode = m_cameraModes[m_currentCameraNum];
 	}
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
@@ -292,10 +297,14 @@ void Game::RenderUI() const
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z );
-	//DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-
-	hudText = Stringf( "Player position: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_rollDegrees );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 25.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	hudText = Stringf( "Player orientation: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_rollDegrees );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 45.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	std::string cameraName = m_cameraModes[m_currentCameraNum]->modeName;
+	hudText = Stringf( "Player camera mode: %s", cameraName.c_str() );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 65.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
 }
@@ -580,12 +589,44 @@ void Game::CreateChessPieces()
 //------------------------------------------------------------------------------
 void Game::CreateCameraModes()
 {
-	CameraMode* playerCameraMode = new CameraMode;
-	playerCameraMode->position = Vec3( 4, -3, 4 );
-	playerCameraMode->orientation = EulerAngles( 90.f, 30.f, 0.f );
-	playerCameraMode->modeName = "playerCamera";
-	m_cameraModes.push_back( playerCameraMode );
-	m_currentCameraMode = m_cameraModes[0];
+	CameraMode* playerCameraMode1 = new CameraMode;
+	playerCameraMode1->position = Vec3( 4, -3, 4 );
+	playerCameraMode1->orientation = EulerAngles( 90.f, 30.f, 0.f );
+	playerCameraMode1->modeName = "Player One Camera";
+	m_cameraModes.push_back( playerCameraMode1 );
+
+	CameraMode* playerCameraMode2 = new CameraMode;
+	playerCameraMode2->position = Vec3( 4, 11, 4 );
+	playerCameraMode2->orientation = EulerAngles( -90.f, 30.f, 0.f );
+	playerCameraMode2->modeName = "Payer Two Camera";
+	m_cameraModes.push_back( playerCameraMode2 );
+
+	CameraMode* playerCameraFlyOver = new CameraMode;
+	playerCameraFlyOver->position = Vec3( 4, 4, 9 );
+	playerCameraFlyOver->orientation = EulerAngles( 90.f, 90.f, 0.f );
+	playerCameraFlyOver->modeName = "Fly Over Camera";
+	m_cameraModes.push_back( playerCameraFlyOver );
+
+	CameraMode* playerCameraModeFree = new CameraMode;
+	playerCameraModeFree->freeCamera = true;
+	playerCameraModeFree->modeName = "Player Free Camera";
+	m_cameraModes.push_back( playerCameraModeFree );
+
+	m_currentCameraMode = m_cameraModes[m_currentCameraNum];
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Game::Command_BeginGame( [[maybe_unused]] EventArgs& args )
+{
+	if ( g_app->m_game->m_chessBoard->m_gameOver )
+	{
+		g_app->m_game->RestartGame();
+	}
+	else
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessBegin: Game already started" );
+	}
+	return false;
 }
 
 //------------------------------------------------------------------------------
@@ -602,7 +643,7 @@ void Game::RemoveChessPiece( ChessPiece* piece )
 }
 
 //------------------------------------------------------------------------------
-void Game::KingFelled()
+void Game::RestartGame()
 {
 	for ( int i = 0; i < m_chessPieces.size(); ++i )
 	{
@@ -614,4 +655,10 @@ void Game::KingFelled()
 	delete m_chessBoard;
 	m_chessBoard = new ChessBoard();
 	CreateChessPieces();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::ChangePlayerCamera( int player )
+{
+	m_currentCameraMode = m_cameraModes[ player - 1 ];
 }

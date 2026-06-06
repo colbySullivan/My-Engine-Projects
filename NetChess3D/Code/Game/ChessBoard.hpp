@@ -34,6 +34,7 @@ public:
 	float m_scale = 1.0f;
 	Rgba8 m_color = Rgba8::WHITE;
 	int m_currentPlayerNum = 1;
+	bool m_gameOver = false;
 
 	ChessPiece* m_board[8][8] = { nullptr };
 private:
@@ -42,5 +43,4 @@ private:
 	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
 	void ChangePlayer();
-
 };

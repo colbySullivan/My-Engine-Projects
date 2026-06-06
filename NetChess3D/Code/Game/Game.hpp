@@ -53,7 +53,8 @@ public:
 	void Render() const;
 	void Shutdown();
 	void RemoveChessPiece( ChessPiece* piece );
-	void KingFelled();
+	void RestartGame();
+	void ChangePlayerCamera( int player );
 
 	// Game State
 	bool				m_isQuitting = false;
@@ -89,6 +90,7 @@ public:
 	// CameraModes
 	std::vector<CameraMode*> m_cameraModes;
 	CameraMode* m_currentCameraMode = nullptr;
+	int m_currentCameraNum = 0;
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );
@@ -115,4 +117,5 @@ private:
 	Vertex			m_gameBlackHole[NUM_BLACK_HOLE_VERTS];
 	int				m_roundBlackHoleAmount = 2;
 	void CreateCameraModes();
+	static bool Command_BeginGame( [[maybe_unused]] EventArgs& args );
 };
