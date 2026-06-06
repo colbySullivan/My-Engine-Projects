@@ -204,7 +204,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	// Wrong player piece
 	if ( piece->m_playernum != g_activeChessBoard->m_currentPlayerNum )
 	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "Piece at 'from' square is not player %i", g_activeChessBoard->m_currentPlayerNum + 1 ) );
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "Piece at 'from' square is not player %i", g_activeChessBoard->m_currentPlayerNum ) );
 		return false;
 	}
 
@@ -229,7 +229,8 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
 	g_activeChessBoard->ChangePlayer();
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
+	g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
 
 	g_activeChessBoard->PrintBoardStateToConsole();
 	return false;
