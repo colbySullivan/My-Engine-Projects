@@ -26,6 +26,7 @@ public:
 public:
 	VertexBuffer* m_vbo = nullptr;
 	IndexBuffer* m_ibo = nullptr;
+	Texture* m_texture = nullptr;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;

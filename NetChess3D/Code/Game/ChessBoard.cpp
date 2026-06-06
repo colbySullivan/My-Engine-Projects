@@ -21,6 +21,7 @@ ChessBoard::ChessBoard()
 	SubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
+	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/wood.jpg" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -56,7 +57,9 @@ void ChessBoard::Render() const
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
+	g_engine->m_render->BindTexture(m_texture);
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -157,10 +160,10 @@ void ChessBoard::CreateBoardGeometry()
 	{
 		for ( int column = 0; column < 8; ++column )
 		{
-			Rgba8 color = Rgba8( 120, 120, 255, 255 );
+			Rgba8 color = Rgba8( 120, 120, 120, 255 );
 			if ( ( row + column ) % 2 == 0 )
 			{
-				color = Rgba8( 120, 255, 120, 120 );
+				color = Rgba8( 180, 180, 180, 255 );
 			}
 			bl = Vec3( 0.f + column, 0.f + row, 0.f );
 			br = Vec3( 1.f + column, 0.f + row, 0.f );
@@ -170,7 +173,7 @@ void ChessBoard::CreateBoardGeometry()
 		}
 	}
 	AABB3 boardBox = AABB3( Vec3( -0.3f, -0.3f, -1.f ), Vec3( tr.x + 0.3f, tr.y + 0.3f, -.01f ) );
-	AddVertsForAABB3D( m_vertexes, m_indexes, boardBox, Rgba8( 166, 42, 42 ), AABB2::ZERO_TO_ONE);
+	AddVertsForAABB3D( m_vertexes, m_indexes, boardBox, Rgba8( 75, 75, 75 ), AABB2::ZERO_TO_ONE);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -238,6 +241,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		if ( toPiece && capturedType == King )
 		{
 			g_activeChessBoard->m_gameOver = true;
+			piece->m_game->ChangePlayerCamera( 3 ); // Change to fly over
 			g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Player %i won", g_activeChessBoard->m_currentPlayerNum ) );
 		}
 		delete toPiece;

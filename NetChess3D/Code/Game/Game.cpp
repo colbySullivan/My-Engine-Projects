@@ -303,7 +303,7 @@ void Game::RenderUI() const
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 45.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	std::string cameraName = m_cameraModes[m_currentCameraNum]->modeName;
-	hudText = Stringf( "Player camera mode: %s", cameraName.c_str() );
+	hudText = Stringf( "Player camera mode (F4): %s", cameraName.c_str() );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 65.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
@@ -655,6 +655,7 @@ void Game::RestartGame()
 	delete m_chessBoard;
 	m_chessBoard = new ChessBoard();
 	CreateChessPieces();
+	ChangePlayerCamera( 1 );
 }
 
 //-----------------------------------------------------------------------------------------------
