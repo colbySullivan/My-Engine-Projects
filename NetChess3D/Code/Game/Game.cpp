@@ -61,8 +61,7 @@ void Game::Startup()
 	m_cubeBlinkTimer = new Timer( 3.5f );
 	m_cubeBlinkTimer->Start();
 	CreateDebugRenderObjects();
-	m_chessBoard = new ChessBoard();
-	CreateChessPieces();
+	RestartGame();
 }
 
 //-----------------------------------------------------------------------------------------------
