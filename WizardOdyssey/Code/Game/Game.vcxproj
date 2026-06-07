@@ -24,7 +24,7 @@
     <ProjectGuid>{da0ab200-0456-4563-bf65-362adf3ca0bd}</ProjectGuid>
     <RootNamespace>Game</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Libra</ProjectName>
+    <ProjectName>WizardOdyssey</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

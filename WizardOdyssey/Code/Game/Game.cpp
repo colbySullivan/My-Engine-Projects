@@ -407,7 +407,7 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->DrawVertexArray( 6, background );
 
 	// Title
-	/*char title[32] = "Libra";
+	/*char title[32] = "WizardOdyssey";
 	for ( int charIndex = 0; charIndex < 18; ++charIndex )
 	{
 		char singleChar[2] = { title[charIndex], '\0' };
