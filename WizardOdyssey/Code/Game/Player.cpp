@@ -6,6 +6,7 @@
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Game/SpriteAnimationDefinition.hpp"
 
 //------------------------------------------------------------------------------
 Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
@@ -20,6 +21,7 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_health = PLAYER_HEALTH;
 	m_lives = PLAYER_LIVES;
 	m_bulletCooldown = 0.1f;
+	InitializePlayerSpriteSheet();
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;
@@ -80,13 +82,13 @@ void Player::Render() const
 		return;
 	}
 	RenderPlayer();
-	RenderTurret();
+	//RenderTurret();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Player::RenderPlayer() const
 {
-	if (m_isDead)
+	/*if (m_isDead)
 	{
 		return;
 	}
@@ -105,7 +107,23 @@ void Player::RenderPlayer() const
 	if ( m_game->g_drawDebug )
 	{
 		DebugRender();
-	}
+	}*/
+	std::vector<Vertex> explosionVerts;
+	std::vector<Vertex> tileVerts;
+
+	const SpriteDefinition& explosionSprite = g_game->m_tilesSpriteSheetAnim->GetSpriteDefAtTime( m_frameTimeEntity );
+	Vec2 explosionMins, explosionMaxs;
+	explosionSprite.GetUVs( explosionMins, explosionMaxs );
+
+	Vec2 mins( m_position.x - 0.5f, m_position.y - 0.5f );
+	Vec2 maxs( m_position.x + 0.5f, m_position.y + 0.5f );
+	AABB2 localBox( mins, maxs );
+
+	AddVertsForAABB2D( explosionVerts, localBox, Rgba8( 255, 255, 255 ), explosionMins, explosionMaxs );
+
+	g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
+	g_engine->m_render->DrawVertexArray( explosionVerts );
+	g_engine->m_render->BindTexture( nullptr );
 
 }
 
@@ -242,6 +260,19 @@ bool Player::TurretControlKeyboard()
 	return false;
 }
 
+void Player::InitializePlayerSpriteSheet()
+{
+	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Wizard" );
+	if ( spriteAnimDef )
+	{
+		m_spriteAnimationDef = spriteAnimDef;
+		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
+		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
+		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
+		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 bool Player::IsPlayer() const
 {
@@ -308,5 +339,44 @@ void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
 		Vec2 rightStickPos = controller.GetRightStick().GetPosition();
 		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, rightStickPos.GetOrientationDegrees(), 1.f );
 		m_desiredTurretDirection = rightStickPos;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Player::SetCurrentAnimGroup( const std::string& groupName )
+{
+	if ( !m_spriteAnimationDef )
+	{
+		return;
+	}
+
+	for ( int i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
+	{
+		if ( m_spriteAnimationDef->m_animationGroups[i].m_name == groupName )
+		{
+			m_currentAnimGroup = &m_spriteAnimationDef->m_animationGroups[i];
+			m_currentAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
+
+			if ( !m_currentAnimGroup->m_directionalAnims.empty() )
+			{
+				const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
+				int startFrame = dirAnim.startFrame;
+				int endFrame = dirAnim.endFrame;
+				float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
+
+				if ( !m_animTimer )
+				{
+					m_animTimer = new Timer( animDuration );
+				}
+				else
+				{
+					delete m_animTimer;
+					m_animTimer = new Timer( animDuration );
+				}
+				m_animTimer->Start();
+			}
+
+			return;
+		}
 	}
 }

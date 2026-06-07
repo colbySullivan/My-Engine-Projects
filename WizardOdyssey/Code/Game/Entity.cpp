@@ -206,7 +206,7 @@ void Entity::PlayDeathExplosion() const
 {
 	std::vector<Vertex> explosionVerts;
 	std::vector<Vertex> tileVerts;
-
+		
 	const SpriteDefinition& explosionSprite = g_game->m_tilesSpriteSheetAnim->GetSpriteDefAtTime(m_frameTimeEntity);
 	Vec2 explosionMins, explosionMaxs;
 	explosionSprite.GetUVs(explosionMins, explosionMaxs);

@@ -14,6 +14,9 @@
     <Filter Include="Data">
       <UniqueIdentifier>{262e3e25-4d3c-43ec-9525-3cf68ea3e9ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Definitons">
+      <UniqueIdentifier>{598b0834-41cf-4d51-9831-635f724d0913}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -54,6 +57,9 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteAnimationDefinition.cpp">
+      <Filter>Definitons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +102,9 @@
     <ClInclude Include="Bullet.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
+    <ClInclude Include="SpriteAnimationDefinition.hpp">
+      <Filter>Definitons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml">
@@ -105,6 +114,9 @@
       <Filter>Data</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="ActorDefinitions.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

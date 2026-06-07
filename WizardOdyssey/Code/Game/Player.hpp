@@ -2,7 +2,10 @@
 #include "Engine/Math/Vec2.hpp"
 #include "Game/Entity.hpp"
 #include "Game/GameCommon.hpp"
+#include "SpriteAnimationDefinition.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
+#include "Engine/Core/Timer.hpp"
 
 //------------------------------------------------------------------------------
 class Game;
@@ -27,6 +30,7 @@ private:
 	void UpdateFromKeyboard(float deltaSeconds);
 	//void Shoot(); 
 	void UpdateFromController(float deltaSeconds);
+	void SetCurrentAnimGroup( const std::string& groupName );
 	void InitializeTurretVerts();
 	void RenderPlayer() const;
 	void RenderTurret() const;
@@ -38,4 +42,12 @@ private:
 	Vertex		m_turretVerts[NUM_TURRET_VERTS];
 	float		m_thrustFraction = -5.f;
 	bool		m_isMoving = false;
+
+	// Animations
+	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
+	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
+	double m_currentAnimStartTime = 0.0;
+	SpriteSheet* m_currentSpriteSheet = nullptr;
+	Timer* m_animTimer = nullptr;
+	void InitializePlayerSpriteSheet();
 };

@@ -35,6 +35,7 @@ Game::Game()
 	InitializeWinLoseVerts();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	TileDefinition::InitializeTileDefs();
+	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
 	LoadTextures();
 }
 
