@@ -80,7 +80,7 @@ void Entity::Die()
 		m_justDied = true;
 	}
 	PlayDeathExplosion();
-	m_game->m_enemyDied = g_engine->m_audio->StartSound( 4, false, 0.8f );
+	//m_game->m_enemyDied = g_engine->m_audio->StartSound( 4, false, 0.8f );
 	m_isGarbage = true;
 	m_isDead = true;
 }
@@ -268,7 +268,7 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 		Vec2 turretForward = Vec2::MakeFromPolarDegrees( fireOrientation );
 		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
 
-		m_game->m_shootSound = g_engine->m_audio->StartSound( 3, false, 0.8f );
+		//m_game->m_shootSound = g_engine->m_audio->StartSound( 3, false, 0.8f );
 		m_map->SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, bulletSpawnPos, fireOrientation, faction );
 		m_timeSinceLastShot = m_bulletCooldown;
 	}
@@ -285,7 +285,7 @@ bool Entity::TakeDamage( [[maybe_unused]] Vec2 bulletPos )
 	{
 		m_health -= 1;
 	}
-	m_game->m_playerHit = g_engine->m_audio->StartSound( 7, false, 0.8f );
+	//m_game->m_playerHit = g_engine->m_audio->StartSound( 7, false, 0.8f );
 	return true;
 }
 

@@ -33,7 +33,7 @@ Game::Game()
 	LoadSounds();
 	InitializePauseVerts();
 	InitializeWinLoseVerts();
-	m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	TileDefinition::InitializeTileDefs();
 	LoadTextures();
 }
@@ -137,12 +137,12 @@ void Game::Update(float deltaSeconds)
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
 		{
 			m_pauseAfterNextUpdate = false; // Reset run token for simulation step
-			g_engine->m_audio->SetSoundPlaybackSpeed(m_gameMusicPlaybackID, 1.0f);
+			//g_engine->m_audio->SetSoundPlaybackSpeed(m_gameMusicPlaybackID, 1.0f);
 			UpdateEntities( deltaSeconds );
 		}
 		else
 		{
-			g_engine->m_audio->SetSoundPlaybackSpeed(m_gameMusicPlaybackID, 0.0f);
+			//g_engine->m_audio->SetSoundPlaybackSpeed(m_gameMusicPlaybackID, 0.0f);
 		}
 	}
 }
@@ -169,12 +169,12 @@ void Game::Render() const
 		RenderEntities();
 		if ( m_hasWon )
 		{
-			g_engine->m_audio->StartSound( 8, false, 0.8f ); // TODO fix repeat sounds
+			//g_engine->m_audio->StartSound( 8, false, 0.8f ); // TODO fix repeat sounds
 			RenderWinLoseSreen( m_endWinScreen );
 		}
 		if ( m_currentMap->m_lostGame )
 		{
-			g_engine->m_audio->StartSound( 9, false, 0.8f );
+			//g_engine->m_audio->StartSound( 9, false, 0.8f );
 			RenderWinLoseSreen( m_endLoseScreen );
 		}
 		if ( m_isPaused && ( !m_currentMap->m_lostGame && !m_hasWon ))
@@ -212,7 +212,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 	if ( ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) ) && m_currentGameState != GAMESTATE_ATTRACT && m_isPaused )
 	{
 		m_nextGameState = GAMESTATE_ATTRACT;
-		m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+		//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_ESC ) || controller.WasButtonJustPressed( XboxButtonID::BACK ) )
@@ -248,8 +248,8 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		{
 			m_nextGameState = GAMESTATE_PLAY;
 			Startup();
-			g_engine->m_audio->StopSound( m_lobbyPlaybackID );
-			m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 2, false, 0.8f );
+			//g_engine->m_audio->StopSound( m_lobbyPlaybackID );
+			//m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 2, false, 0.8f );
 		}
 	}
 
@@ -356,7 +356,7 @@ void Game::UpdateAttractMode(float deltaSeconds)
 {
 	if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
 	{
-		g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
+		//g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
 	}
 	m_shipAnimationTimer += deltaSeconds;
 
@@ -493,16 +493,16 @@ void Game::RenderEntities() const
 //-----------------------------------------------------------------------------------------------
 void Game::LoadSounds()
 {
-	m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Tank!.mp3" );		//	SoundID = 0
-	g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/tragic.mp3");				//	SoundID = 1
-	m_gameMusicPlaybackID = g_engine->m_audio->CreateOrGetSound("Data/Audio/lobby.mp3");	//	SoundID = 2
-	m_shootSound = g_engine->m_audio->CreateOrGetSound("Data/Audio/PlayerShootNormal.ogg"); //	SoundID = 3
-	m_enemyDied = g_engine->m_audio->CreateOrGetSound( "Data/Audio/EnemyDied.wav" );		//	SoundID = 4
-	m_bulletBounce = g_engine->m_audio->CreateOrGetSound( "Data/Audio/BulletRicochet.wav" );	//	SoundID = 5
-	m_enemyHit = g_engine->m_audio->CreateOrGetSound( "Data/Audio/EnemyHit.wav" );			//	SoundID = 6
-	m_playerHit = g_engine->m_audio->CreateOrGetSound( "Data/Audio/PlayerHit.wav" );		//	SoundID = 7
-	m_victorySound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );		//	SoundID = 8
-	m_lossSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );			//	SoundID = 9
+	//m_lobbyPlaybackID = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Tank!.mp3" );		//	SoundID = 0
+	//g_engine->m_audio->CreateOrGetSound("Data/Audio/Roundstarts/tragic.mp3");				//	SoundID = 1
+	//m_gameMusicPlaybackID = g_engine->m_audio->CreateOrGetSound("Data/Audio/lobby.mp3");	//	SoundID = 2
+	//m_shootSound = g_engine->m_audio->CreateOrGetSound("Data/Audio/PlayerShootNormal.ogg"); //	SoundID = 3
+	//m_enemyDied = g_engine->m_audio->CreateOrGetSound( "Data/Audio/EnemyDied.wav" );		//	SoundID = 4
+	//m_bulletBounce = g_engine->m_audio->CreateOrGetSound( "Data/Audio/BulletRicochet.wav" );	//	SoundID = 5
+	//m_enemyHit = g_engine->m_audio->CreateOrGetSound( "Data/Audio/EnemyHit.wav" );			//	SoundID = 6
+	//m_playerHit = g_engine->m_audio->CreateOrGetSound( "Data/Audio/PlayerHit.wav" );		//	SoundID = 7
+	//m_victorySound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );		//	SoundID = 8
+	//m_lossSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );			//	SoundID = 9
 
 }
 
@@ -515,7 +515,7 @@ void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float so
 	if (priority == PRIORITY_LOW)
 	{
 		if (m_shootSound != MISSING_SOUND_ID)
- 			g_engine->m_audio->StopSound(m_shootSound);
+ 			//g_engine->m_audio->StopSound(m_shootSound);
 
  		m_shootSound = soundID;
 		m_shotSoundDurationTimer = soundDuration;
@@ -526,13 +526,13 @@ void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float so
 	{
 		if (priority < m_currentSoundPriority)
 		{
-			g_engine->m_audio->StopSound(soundID);
+			//g_engine->m_audio->StopSound(soundID);
 			return;
 		}
 	}
 
 	if (m_currentSound != MISSING_SOUND_ID)
-		g_engine->m_audio->StopSound(m_currentSound);
+		//g_engine->m_audio->StopSound(m_currentSound);
 
 	m_currentSound = soundID;
 	m_currentSoundPriority = priority;
@@ -625,7 +625,7 @@ void Game::PlayerPortalEndConditionCheck()
 		{
 			m_hasWon = true;
 			m_isPaused = true;
-			g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
+			//g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
 			return;
 		}
 
@@ -653,7 +653,7 @@ void Game::LoadTextures()
 	m_tilesSpriteSheet = new SpriteSheet( *spriteSheetTexture, IntVec2( 8, 8 ) );
 	m_scorpioBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyCannon.png" );
 	m_playerBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankBase.png" );
-	m_playerTurretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/PlayerTankTop.png" );
+	m_playerTurretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/TheWizard.png" );
 	m_scorpioBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTurretBase.png" );
 	m_scorpioTurretTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyCannon.png" );
 	m_leoBodyTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/EnemyTank4.png" );

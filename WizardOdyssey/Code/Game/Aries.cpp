@@ -81,7 +81,7 @@ bool Aries::TakeDamage( Vec2 bulletPos )
 {
 	if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
 	{
-		m_game->m_bulletBounce = g_engine->m_audio->StartSound( 5, false, 2.8f );
+		//m_game->m_bulletBounce = g_engine->m_audio->StartSound( 5, false, 2.8f );
 		return false;
 	}
 	else

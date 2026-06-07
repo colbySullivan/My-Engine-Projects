@@ -24,7 +24,7 @@ Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	InitializeTurretVerts();
 	m_faction = faction;
 	m_bodyTexture = m_game->m_playerBodyTexture;
-	m_turretTexture = m_game->m_playerTurretTexture;
+	m_wizardTexture = m_game->m_playerTurretTexture;
 	m_map = map;
 
 	g_engine->m_render->BindTexture( nullptr );
@@ -122,7 +122,7 @@ void Player::RenderTurret() const
 	}
 
 	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempTurretWorldVerts, 1.f, m_turretOrientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_turretTexture );
+	g_engine->m_render->BindTexture( m_wizardTexture );
 	g_engine->m_render->DrawVertexArray( NUM_TURRET_VERTS, tempTurretWorldVerts );
 	g_engine->m_render->BindTexture( nullptr );
 
