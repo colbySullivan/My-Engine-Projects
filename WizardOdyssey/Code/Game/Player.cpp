@@ -88,43 +88,30 @@ void Player::Render() const
 //-----------------------------------------------------------------------------------------------
 void Player::RenderPlayer() const
 {
-	/*if (m_isDead)
+	if ( m_isDead )
 	{
 		return;
 	}
 
-	Vertex tempShipWorldVerts[NUM_PLAYER_VERTS];
+	std::vector<Vertex> wizardVerts;
 
-	for ( int vertIndex = 0; vertIndex < NUM_PLAYER_VERTS; ++vertIndex )
-	{
-		tempShipWorldVerts[vertIndex] = m_playerVerts[vertIndex];
-	}
-	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempShipWorldVerts, 1.f, m_orientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_bodyTexture );
-	g_engine->m_render->DrawVertexArray(NUM_PLAYER_VERTS, tempShipWorldVerts );
-	g_engine->m_render->BindTexture( nullptr );
+	float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
+	const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
+	const SpriteAnimDefinition currentAnim = SpriteAnimDefinition( *m_currentSpriteSheet, dirAnim.startFrame, dirAnim.endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
 
-	if ( m_game->g_drawDebug )
-	{
-		DebugRender();
-	}*/
-	std::vector<Vertex> explosionVerts;
-	std::vector<Vertex> tileVerts;
-
-	const SpriteDefinition& explosionSprite = g_game->m_tilesSpriteSheetAnim->GetSpriteDefAtTime( m_frameTimeEntity );
-	Vec2 explosionMins, explosionMaxs;
-	explosionSprite.GetUVs( explosionMins, explosionMaxs );
+	const SpriteDefinition& wizardSprite = currentAnim.GetSpriteDefAtTime( m_frameTimeEntity );
+	Vec2 wizardUVMins, wizardUVMaxs;
+	wizardSprite.GetUVs( wizardUVMins, wizardUVMaxs );
 
 	Vec2 mins( m_position.x - 0.5f, m_position.y - 0.5f );
 	Vec2 maxs( m_position.x + 0.5f, m_position.y + 0.5f );
 	AABB2 localBox( mins, maxs );
 
-	AddVertsForAABB2D( explosionVerts, localBox, Rgba8( 255, 255, 255 ), explosionMins, explosionMaxs );
+	AddVertsForAABB2D( wizardVerts, localBox, Rgba8( 255, 255, 255 ), wizardUVMins, wizardUVMaxs );
 
 	g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( explosionVerts );
+	g_engine->m_render->DrawVertexArray( wizardVerts );
 	g_engine->m_render->BindTexture( nullptr );
-
 }
 
 //-----------------------------------------------------------------------------------------------
