@@ -3,6 +3,14 @@
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/EventSystem.hpp"
 
+struct DebugConstants
+{
+	float	time;
+	int		debugInt;
+	float	debugFloat;
+	float	padding;
+};
+
 class ChessPiece;
 
 class ChessBoard
@@ -13,10 +21,10 @@ public:
 	virtual void Update();
 	virtual void Render() const;
 
-	void CreateBuffersAndCopy();
 	void PrintBoardStateToConsole() const;
 	IntVec2 GetSquareFromWorldPosition( Vec3 const& worldPos ) const;
 	Vec3 GetWorldPositionFromSquare( IntVec2 const& square ) const;
+	void SetDebugConstant() const;
 
 	ChessPiece* GetPieceAt( int row, int col ) const;
 	void SetPieceAt( int row, int col, ChessPiece* piece );
@@ -24,10 +32,14 @@ public:
 	static bool Command_DisplayBoard( [[maybe_unused]] EventArgs& args );
 
 public:
+	// Buffers
+	void CreateBuffersAndCopy();
 	VertexBuffer* m_vbo = nullptr;
 	IndexBuffer* m_ibo = nullptr;
-	Texture* m_texture = nullptr;
+	ConstantBuffer* m_debugConstant;
 	unsigned int  m_indexCount = 0;
+
+	Texture* m_texture = nullptr;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;
 

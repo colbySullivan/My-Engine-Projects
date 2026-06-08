@@ -58,6 +58,7 @@ void ChessBoard::Render() const
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->BindTexture(m_texture);
+	SetDebugConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
 
 }
@@ -65,6 +66,8 @@ void ChessBoard::Render() const
 //-----------------------------------------------------------------------------------------------
 void ChessBoard::CreateBuffersAndCopy()
 {
+	m_debugConstant = g_engine->m_render->CreateConstantBuffer( sizeof( DebugConstants ) );
+
 	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );
 	m_vbo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
@@ -123,6 +126,18 @@ IntVec2 ChessBoard::GetSquareFromWorldPosition( Vec3 const& worldPos ) const
 Vec3 ChessBoard::GetWorldPositionFromSquare( IntVec2 const& square ) const
 {
 	return m_position + Vec3( square.x + 0.5f, square.y + 0.5f, 0.f );
+}
+
+//-----------------------------------------------------------------------------------------------
+void ChessBoard::SetDebugConstant() const
+{
+	DebugConstants DebugConstants = { };
+	DebugConstants.time = 0.f;
+	DebugConstants.debugFloat = 0.f;
+	DebugConstants.debugInt = 1;
+
+	g_engine->m_render->BindConstantBuffer( 1, m_debugConstant );
+	g_engine->m_render->CopyCPUToGPU( &DebugConstants, sizeof( DebugConstants ), m_debugConstant );
 }
 
 //-----------------------------------------------------------------------------------------------

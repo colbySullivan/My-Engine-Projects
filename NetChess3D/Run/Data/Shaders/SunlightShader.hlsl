@@ -1,6 +1,14 @@
 Texture2D diffuseTexture : register(t0);
 SamplerState diffuseSampler : register(s0);
 
+cbuffer DebugConstants : register(b1)
+{
+	float   time;
+	int	    debugInt;
+	float   debugFloat;
+	float   padding;
+};
+
 cbuffer CameraConstants : register(b2)
 {
     float4x4 WorldToCameraTransform;
@@ -88,7 +96,10 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float3 litColor = diffuseColor.rgb * lightStrength * sunColor;
         
     // Normal visual testing 
-    // litColor = (worldNormal + 1.0) * 0.5;
+    if (debugInt == 1)
+	{
+	    litColor = (worldNormal + 1.0) * 0.5;
+	}
 
     float4 color = float4( litColor, diffuseColor.a );
     clip(color.a - 0.01f);
