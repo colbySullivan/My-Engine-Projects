@@ -745,16 +745,16 @@ Texture* Renderer::GetTextureForFileName( char const* imageFilePath )
 }
 
 //------------------------------------------------------------------------------
-void Renderer::BindTexture( Texture* texture )
+void Renderer::BindTexture( Texture* texture, int textureRegisterSlot )
 {
 	if ( texture == nullptr )
 	{
-		m_deviceContext->PSSetShaderResources( 0, 1, &m_defaultTexture->m_shaderResourceView );
+		m_deviceContext->PSSetShaderResources( textureRegisterSlot, 1, &m_defaultTexture->m_shaderResourceView );
 	}
 	else
 	{
 		m_currentTexture = texture;
-		m_deviceContext->PSSetShaderResources( 0, 1, &m_currentTexture->m_shaderResourceView );
+		m_deviceContext->PSSetShaderResources( textureRegisterSlot, 1, &m_currentTexture->m_shaderResourceView );
 	}
 }
 

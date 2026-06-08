@@ -102,7 +102,7 @@ public:
 	Texture* CreateTextureFromFile( const char* imageFilePath );
 	Texture* CreateOrGetTextureFromFile( char const* imageFilePath );
 	Texture* GetTextureForFileName( char const* imageFilePath );
-	void BindTexture( Texture* texture );
+	void BindTexture( Texture* texture, int textureRegisterSlot=0 );
 
 	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
