@@ -166,7 +166,7 @@ void Game::Render() const
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
-		g_engine->m_render->ClearScreen(backgroundColor);
+		//g_engine->m_render->ClearScreen(backgroundColor);
 		g_engine->m_render->BeginCamera( *m_worldCamera );
 		m_currentMap->Render();
 		g_engine->m_render->EndCamera( *m_worldCamera );
@@ -328,9 +328,9 @@ void Game::RenderUI() const
 	float scale = ( float )g_engine->m_systemClock->GetTimeScale();
 	float totalTime = ( float )g_engine->m_systemClock->GetTotalSeconds();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", totalTime, fps, scale );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 0, 0, 0 ), Rgba8( 255, 255, 255 ) );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	DebugRenderScreen( *m_screenCamera );
+	//DebugRenderScreen( *m_screenCamera ); // Moved this to App render
 }
 
 //-----------------------------------------------------------------------------------------------

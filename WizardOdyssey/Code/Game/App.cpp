@@ -77,6 +77,7 @@ void App::Render() const
 {
 	m_game->Render();
 	g_engine->m_render->BeginCamera( *g_UICamera );
+	DebugRenderScreen( *g_UICamera );
 	g_engine->m_console->Render(AABB2(g_UICamera->GetOrthoBottomLeft(), g_UICamera->GetOrthoTopRight()), *m_game->g_testFont, 1.f);
 	g_engine->m_render->EndCamera(*g_UICamera);
 }

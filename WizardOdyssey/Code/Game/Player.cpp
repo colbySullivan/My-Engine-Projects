@@ -8,6 +8,7 @@
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include "Engine/Math/MathUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 //------------------------------------------------------------------------------
 Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
@@ -171,17 +172,19 @@ void Player::UpdateLinearMovement()
 //-----------------------------------------------------------------------------------------------
 void Player::UpdateTurretOrientation()
 {
-	Vec2 mouseScreenPos = g_engine->m_input->GetCursorClientPosition();
-	
-	Vec2 cameraBottomLeft = m_game->m_screenCamera->GetOrthographicBottomLeft();
-	Vec2 cameraTopRight = m_game->m_screenCamera->GetOrthographicTopRight();
+	Vec2 normalizedMousePos = g_engine->m_input->GetCursorNormalizedPosition();
 
-	float worldX = RangeMapClamped( mouseScreenPos.x, 0.f, SCREEN_SIZE_X, cameraBottomLeft.x, cameraTopRight.x );
-	float worldY = RangeMapClamped( mouseScreenPos.y, SCREEN_SIZE_Y, 0.f, cameraBottomLeft.y, cameraTopRight.y );
+	Vec2 cameraBottomLeft = m_game->m_worldCamera->GetOrthographicBottomLeft();
+	Vec2 cameraTopRight = m_game->m_worldCamera->GetOrthographicTopRight();
+
+	float worldX = cameraBottomLeft.x + ( normalizedMousePos.x * ( cameraTopRight.x - cameraBottomLeft.x ) );
+
+	float worldY = cameraTopRight.y - ( normalizedMousePos.y * ( cameraTopRight.y - cameraBottomLeft.y ) );
+
 	Vec2 mouseWorldPos = Vec2( worldX, worldY );
-	
+
 	Vec2 directionToMouse = mouseWorldPos - m_position;
-	
+
 	if ( directionToMouse.GetLengthSquared() > 0.0f )
 	{
 		m_turretOrientationDegrees = directionToMouse.GetOrientationDegrees();

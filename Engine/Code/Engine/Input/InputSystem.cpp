@@ -181,7 +181,19 @@ Vec2 InputSystem::GetCursorClientPosition() const
 //-----------------------------------------------------------------------------------------------
 Vec2 InputSystem::GetCursorNormalizedPosition() const
 {
-	return Vec2(0.f, 0.f);
+	HWND hwnd = ( HWND )g_engine->m_window->GetHwnd();
+	RECT clientRect;
+	if ( GetClientRect( hwnd, &clientRect ) )
+	{
+		float width = ( float )( clientRect.right - clientRect.left );
+		float height = ( float )( clientRect.bottom - clientRect.top );
+
+		if ( width > 0.f && height > 0.f )
+		{
+			return Vec2( m_cursorState.m_cursorClientPosition.x / width, m_cursorState.m_cursorClientPosition.y / height );
+		}
+	}
+	return Vec2( 0.f, 0.f );
 }
 
 //-----------------------------------------------------------------------------------------------
