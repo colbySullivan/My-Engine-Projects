@@ -199,6 +199,9 @@
     <ClCompile Include="Math\Plane3D.cpp">
       <Filter>Math\Planes</Filter>
     </ClCompile>
+    <ClCompile Include="Core\UIButton2D.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Rgba8.hpp">
@@ -398,6 +401,9 @@
     </ClInclude>
     <ClInclude Include="SunlightShader.hpp">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\UIButton2D.hpp">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

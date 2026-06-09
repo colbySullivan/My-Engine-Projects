@@ -20,6 +20,7 @@
 #include "Game/Tile.hpp"
 #include "Engine/Core/EngineCommon.hpp"
 #include <cmath>
+#include "Engine/Core/UIButton2D.hpp"
 
 XmlUtils m_xml;
 Game* g_game = nullptr;
@@ -82,6 +83,7 @@ void Game::Update(float deltaSeconds)
 
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
+	UpdateMousePosition();
 
 	if ( m_currentMap != m_nextMap )
 	{
@@ -393,13 +395,18 @@ void Game::RenderAttractMode() const
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
 
+	//UIButton2D buttonTest = UIButton2D( Vec2( 100.f, 100.f ), Vec2( 200.f, 200.f ), "test" );
+	UIButton2D buttonTest = UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f , "test", Rgba8( 120, 0, 0 ) );
+	buttonTest.UpdateHoverState( m_mouseScreenWindowPosition );
+	buttonTest.Render();
+
 	std::vector<Vertex> verts;
 	Vec2 mins( 0.0f, 0.0f );
 	Vec2 maxs( SCREEN_SIZE_X, SCREEN_SIZE_Y );
 	AABB2 localBox( mins, maxs );
 	AddVertsForAABB2D( verts, localBox, Rgba8( 255, 255, 255, 255 ) );
-	g_engine->m_render->BindTexture( m_startScreen );
-	g_engine->m_render->DrawVertexArray( verts );
+	//g_engine->m_render->BindTexture( m_startScreen );
+	//g_engine->m_render->DrawVertexArray( verts );
 	g_engine->m_render->BindTexture( nullptr );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
@@ -533,6 +540,34 @@ void Game::ConstructMapFromXML()
 			}
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::UpdateMousePosition()
+{
+	Vec2 normalizedMousePos = g_engine->m_input->GetCursorNormalizedPosition();
+
+	Vec2 cameraBottomLeft = m_screenCamera->GetOrthographicBottomLeft();
+	Vec2 cameraTopRight = m_screenCamera->GetOrthographicTopRight();
+
+	float worldX = cameraBottomLeft.x + ( normalizedMousePos.x * ( cameraTopRight.x - cameraBottomLeft.x ) );
+
+	float worldY = cameraTopRight.y - ( normalizedMousePos.y * ( cameraTopRight.y - cameraBottomLeft.y ) );
+
+	Vec2 mouseScreenPos = Vec2( worldX, worldY );
+
+	m_mouseScreenWindowPosition = mouseScreenPos;
+
+	cameraBottomLeft = m_worldCamera->GetOrthographicBottomLeft();
+	cameraTopRight = m_worldCamera->GetOrthographicTopRight();
+
+	worldX = cameraBottomLeft.x + ( normalizedMousePos.x * ( cameraTopRight.x - cameraBottomLeft.x ) );
+
+	worldY = cameraTopRight.y - ( normalizedMousePos.y * ( cameraTopRight.y - cameraBottomLeft.y ) );
+
+	Vec2 mouseWorldPos = Vec2( worldX, worldY );
+
+	m_mouseWorldWindowPosition = mouseWorldPos;
 }
 
 //-----------------------------------------------------------------------------------------------

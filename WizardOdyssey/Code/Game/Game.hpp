@@ -96,6 +96,8 @@ public:
 	SpriteAnimDefinition* m_tilesSpriteSheetAnim;
 	Vec2				m_textOffset = Vec2(0.f, 0.f);
 	float				m_frameTime = 0.0f;
+	Vec2				m_mouseScreenWindowPosition;
+	Vec2				m_mouseWorldWindowPosition;
 
 
 
@@ -164,4 +166,5 @@ private:
 	MapDef CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile );
 	void ConstructMapFromXML();
 	SpriteAnimDefinition* m_tilesSpriteSheetAnimPingPong;
+	void UpdateMousePosition();
 };

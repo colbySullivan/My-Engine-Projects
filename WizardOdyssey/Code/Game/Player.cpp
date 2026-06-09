@@ -172,18 +172,7 @@ void Player::UpdateLinearMovement()
 //-----------------------------------------------------------------------------------------------
 void Player::UpdateTurretOrientation()
 {
-	Vec2 normalizedMousePos = g_engine->m_input->GetCursorNormalizedPosition();
-
-	Vec2 cameraBottomLeft = m_game->m_worldCamera->GetOrthographicBottomLeft();
-	Vec2 cameraTopRight = m_game->m_worldCamera->GetOrthographicTopRight();
-
-	float worldX = cameraBottomLeft.x + ( normalizedMousePos.x * ( cameraTopRight.x - cameraBottomLeft.x ) );
-
-	float worldY = cameraTopRight.y - ( normalizedMousePos.y * ( cameraTopRight.y - cameraBottomLeft.y ) );
-
-	Vec2 mouseWorldPos = Vec2( worldX, worldY );
-
-	Vec2 directionToMouse = mouseWorldPos - m_position;
+	Vec2 directionToMouse = m_game->m_mouseWorldWindowPosition - m_position;
 
 	if ( directionToMouse.GetLengthSquared() > 0.0f )
 	{

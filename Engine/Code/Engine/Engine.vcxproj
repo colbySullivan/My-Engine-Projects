@@ -339,6 +339,7 @@
     <ClCompile Include="Core\StringUtils.cpp" />
     <ClCompile Include="Core\Time.cpp" />
     <ClCompile Include="Core\Timer.cpp" />
+    <ClCompile Include="Core\UIButton2D.cpp" />
     <ClCompile Include="Core\Vertex.cpp" />
     <ClCompile Include="Core\VertexUtils.cpp" />
     <ClCompile Include="Core\Vertex_PCUTBN.cpp" />
@@ -404,6 +405,7 @@
     <ClInclude Include="Core\StringUtils.hpp" />
     <ClInclude Include="Core\Time.hpp" />
     <ClInclude Include="Core\Timer.hpp" />
+    <ClInclude Include="Core\UIButton2D.hpp" />
     <ClInclude Include="Core\Vertex.hpp" />
     <ClInclude Include="Core\VertexUtils.hpp" />
     <ClInclude Include="Core\Vertex_PCUTBN.hpp" />
