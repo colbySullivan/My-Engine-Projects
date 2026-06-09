@@ -1,7 +1,6 @@
 #pragma once
 #include "App.hpp"
 #include "GameCommon.hpp"
-#include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Game/Player.hpp"
@@ -12,12 +11,12 @@
 class App;
 class Entity;
 class InputSystem;
-class RandomNumberGenerator;
 class XboxController;
 class AudioSystem;
 class Player;
 class Map;
 class BitmapFont;
+class Clock;
 struct MapDef;
 
 //-----------------------------------------------------------------------------------------------
@@ -133,6 +132,7 @@ public:
 	SoundPlaybackID		m_victorySound = MISSING_SOUND_ID;
 	SoundPlaybackID		m_lossSound = MISSING_SOUND_ID;
 
+	Clock*				m_gameClock = nullptr;
 
 	SoundPriority		m_currentSoundPriority = PRIORITY_LOW;
 	float				m_soundDurationTimer = 0.f;

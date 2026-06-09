@@ -1,31 +1,32 @@
 #include "Game/Player.hpp"
 #include "Game/Game.hpp"
 #include "Game/Map.hpp"
+#include "Game/SpriteAnimationDefinition.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Renderer/Renderer.hpp"  
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/EngineCommon.hpp"
-#include "Game/SpriteAnimationDefinition.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 //------------------------------------------------------------------------------
-Player::Player(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
-	: Entity(owner, startPos, orientationDegrees, faction, map, type)
+Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
-	m_physicsRadius = g_gameConfig->GetValue("playerPhysicsRadius", 0.3f);
-	m_cosmeticRadius = g_gameConfig->GetValue("playerCosmeticRadius", 0.5f);
+	m_physicsRadius = g_gameConfig->GetValue( "playerPhysicsRadius", 0.3f );
+	m_cosmeticRadius = g_gameConfig->GetValue( "playerCosmeticRadius", 0.5f );
 	m_isPushedByWalls = true;
 	m_isPushedByEntities = true;
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
 	m_health = PLAYER_HEALTH;
 	m_lives = PLAYER_LIVES;
-	m_bulletCooldown = 0.1f;
+	m_bulletCooldown = 1.1f;
 	InitializePlayerSpriteSheet();
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;
-	m_bodyTexture = m_game->m_playerBodyTexture;
+	m_gunTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/goldgun.png" );
 	m_wizardTexture = m_game->m_playerTurretTexture;
 	m_map = map;
 
@@ -39,7 +40,7 @@ Player::~Player()
 }
 
 //------------------------------------------------------------------------------
-void Player::Update([[maybe_unused]] float deltaSeconds)
+void Player::Update( [[maybe_unused]] float deltaSeconds )
 {
 	m_frameTimeEntity += deltaSeconds;
 	if ( m_health <= 0 )
@@ -51,38 +52,34 @@ void Player::Update([[maybe_unused]] float deltaSeconds)
 		}
 		return;
 	}
+
 	m_isMoving = false;
-	m_velocity = GetForwardNormal() * g_gameConfig->GetValue("playerSpeed", 1.0f);
-	UpdateFromKeyboard(deltaSeconds);
-	UpdateFromController(deltaSeconds);
+	m_velocity = Vec2( 0.f, 0.f );
+
+	UpdateFromKeyboard( deltaSeconds );
+	UpdateFromController( deltaSeconds );
+	UpdateTurretOrientation();
 
 	if ( m_lives <= 0 )
 	{
 		m_map->m_lostGame = true;
 	}
 
-	if ( !m_isMoving )
-	{
-		m_velocity = Vec2( 0.f, 0.f );
-	}
-	if ( g_engine->m_input->IsKeyDown( ' ' ) || g_engine->m_input->GetController( 0 ).GetRightTrigger() > 0.5f )
-	{
- 		TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
-	}
-	m_position += m_velocity * deltaSeconds;
+	TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
 
+	m_position += m_velocity * deltaSeconds;
 }
 
 //------------------------------------------------------------------------------
 void Player::Render() const
 {
 	if ( m_health <= 0 )
-	{		
+	{
 		PlayDeathExplosion();
 		return;
 	}
 	RenderPlayer();
-	//RenderTurret();
+	RenderGun();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -115,7 +112,7 @@ void Player::RenderPlayer() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Player::RenderTurret() const
+void Player::RenderGun() const
 {
 	if ( m_isDead )
 		return;
@@ -126,8 +123,8 @@ void Player::RenderTurret() const
 		tempTurretWorldVerts[vertIndex] = m_turretVerts[vertIndex];
 	}
 
-	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempTurretWorldVerts, 1.f, m_turretOrientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_wizardTexture );
+	TransformVertexArrayXY3D( NUM_PLAYER_VERTS, tempTurretWorldVerts, 0.5f, m_turretOrientationDegrees, m_position );
+	g_engine->m_render->BindTexture( m_gunTexture );
 	g_engine->m_render->DrawVertexArray( NUM_TURRET_VERTS, tempTurretWorldVerts );
 	g_engine->m_render->BindTexture( nullptr );
 
@@ -138,113 +135,57 @@ void Player::RenderTurret() const
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Player::PlayerControlKeyboard()
+void Player::UpdateLinearMovement()
 {
-	if ( g_engine->m_input->IsKeyDown( 'E' ) && g_engine->m_input->IsKeyDown( 'S' ) )
-	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 135.f, 1.f );
-		m_desiredMoveDirection = Vec2( -1.f, 1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'E' ) && g_engine->m_input->IsKeyDown( 'F' ) )
-	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 45.f, 1.f );
-		m_desiredMoveDirection = Vec2( 1.f, 1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'F' ) && g_engine->m_input->IsKeyDown( 'D' ) )
-	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -45.f, 1.f );
-		m_desiredMoveDirection = Vec2( 1.f, -1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'D' ) && g_engine->m_input->IsKeyDown( 'S' ) )
-	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -135.f, 1.f );
-		m_desiredMoveDirection = Vec2( -1.f, -1.f );
-		return true;
-	}
+	Vec2 moveDirection = Vec2( 0.f, 0.f );
+	float playerSpeed = g_gameConfig->GetValue( "playerSpeed", 1.0f );
 
-	if ( g_engine->m_input->IsKeyDown( 'E' ) )
+	if ( g_engine->m_input->IsKeyDown( 'W' ) || g_engine->m_input->IsKeyDown( 'E' ) )
 	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 90.f, 1.f );
-		m_desiredMoveDirection = Vec2( 0.f, 1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'D' ) )
-	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -90.f, 1.f );
-		m_desiredMoveDirection = Vec2( 0.f, -1.f );
-		return true;
+		moveDirection.y += 1.0f;
+		m_isMoving = true;
 	}
 	if ( g_engine->m_input->IsKeyDown( 'S' ) )
 	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, -180.f, 1.f );
-		m_desiredMoveDirection = Vec2( -1.f, 0.f );
-		return true;
+		moveDirection.y -= 1.0f;
+		m_isMoving = true;
 	}
-	if ( g_engine->m_input->IsKeyDown( 'F' ) )
+	if ( g_engine->m_input->IsKeyDown( 'A' ) )
 	{
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, 0.f, 1.f );
-		m_desiredMoveDirection = Vec2( 1.f, 0.f );
-		return true;
+		moveDirection.x -= 1.0f;
+		m_isMoving = true;
 	}
-	return false;
+	if ( g_engine->m_input->IsKeyDown( 'D' ) || g_engine->m_input->IsKeyDown( 'F' ) )
+	{
+		moveDirection.x += 1.0f;
+		m_isMoving = true;
+	}
+
+	if ( moveDirection.GetLengthSquared() > 0.0f )
+	{
+		moveDirection.Normalize();
+		m_velocity = moveDirection * playerSpeed;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Player::TurretControlKeyboard()
+void Player::UpdateTurretOrientation()
 {
-	if ( g_engine->m_input->IsKeyDown( 'I' ) && g_engine->m_input->IsKeyDown( 'J' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 135.f, 1.f );
-		m_desiredTurretDirection = Vec2( -1.f, 1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'I' ) && g_engine->m_input->IsKeyDown( 'L' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 45.f, 1.f );
-		m_desiredTurretDirection = Vec2( 1.f, 1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'K' ) && g_engine->m_input->IsKeyDown( 'L' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -45.f, 1.f );
-		m_desiredTurretDirection = Vec2( 1.f, -1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'K' ) && g_engine->m_input->IsKeyDown( 'J' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -135.f, 1.f );
-		m_desiredTurretDirection = Vec2( -1.f, -1.f );
-		return true;
-	}
+	Vec2 mouseScreenPos = g_engine->m_input->GetCursorClientPosition();
+	
+	Vec2 cameraBottomLeft = m_game->m_screenCamera->GetOrthographicBottomLeft();
+	Vec2 cameraTopRight = m_game->m_screenCamera->GetOrthographicTopRight();
 
-	if ( g_engine->m_input->IsKeyDown( 'I' ) )
+	float worldX = RangeMapClamped( mouseScreenPos.x, 0.f, SCREEN_SIZE_X, cameraBottomLeft.x, cameraTopRight.x );
+	float worldY = RangeMapClamped( mouseScreenPos.y, SCREEN_SIZE_Y, 0.f, cameraBottomLeft.y, cameraTopRight.y );
+	Vec2 mouseWorldPos = Vec2( worldX, worldY );
+	
+	Vec2 directionToMouse = mouseWorldPos - m_position;
+	
+	if ( directionToMouse.GetLengthSquared() > 0.0f )
 	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 90.f, 1.f );
-		m_desiredTurretDirection = Vec2( 0.f, 1.f );
-		return true;
+		m_turretOrientationDegrees = directionToMouse.GetOrientationDegrees();
 	}
-	if ( g_engine->m_input->IsKeyDown( 'K' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -90.f, 1.f );
-		m_desiredTurretDirection = Vec2( 0.f, -1.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'J' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, -180.f, 1.f );
-		m_desiredTurretDirection = Vec2( -1.f, 0.f );
-		return true;
-	}
-	if ( g_engine->m_input->IsKeyDown( 'L' ) )
-	{
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, 0.f, 1.f );
-		m_desiredTurretDirection = Vec2( 1.f, 0.f );
-		return true;
-	}
-	return false;
 }
 
 void Player::InitializePlayerSpriteSheet()
@@ -291,8 +232,7 @@ void Player::InitializeTurretVerts()
 //------------------------------------------------------------------------------
 void Player::UpdateFromKeyboard( [[maybe_unused]] float deltaSeconds )
 {
-	m_isMoving = PlayerControlKeyboard();
-	TurretControlKeyboard();
+	UpdateLinearMovement();
 }
 
 //------------------------------------------------------------------------------
@@ -307,25 +247,24 @@ void Player::Respawn()
 }
 
 //------------------------------------------------------------------------------
-void Player::UpdateFromController([[maybe_unused]] float deltaSeconds)
+void Player::UpdateFromController( [[maybe_unused]] float deltaSeconds )
 {
-	XboxController const& controller = g_engine->m_input->GetController(0);
+	XboxController const& controller = g_engine->m_input->GetController( 0 );
+	float playerSpeed = g_gameConfig->GetValue( "playerSpeed", 1.0f );
 
 	float leftStickMagnitude = controller.GetLeftStick().GetMagnitude();
-	if (leftStickMagnitude > 0.f)
+	if ( leftStickMagnitude > 0.f )
 	{
 		m_isMoving = true;
 		Vec2 leftStickPos = controller.GetLeftStick().GetPosition();
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, leftStickPos.GetOrientationDegrees(), 1.f );
-		m_desiredMoveDirection = leftStickPos;
+		m_velocity = leftStickPos * playerSpeed;
 	}
 
 	float rightStickMagnitude = controller.GetRightStick().GetMagnitude();
 	if ( rightStickMagnitude > 0.f )
 	{
 		Vec2 rightStickPos = controller.GetRightStick().GetPosition();
-		m_turretOrientationDegrees = GetTurnedTowardDegrees( m_turretOrientationDegrees, rightStickPos.GetOrientationDegrees(), 1.f );
-		m_desiredTurretDirection = rightStickPos;
+		m_turretOrientationDegrees = rightStickPos.GetOrientationDegrees();
 	}
 }
 

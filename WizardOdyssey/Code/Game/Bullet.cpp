@@ -18,11 +18,11 @@ Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	m_isHitByBullets = false;
 	if ( faction == FACTION_EVIL )
 	{
-		m_bodyTexture = m_game->m_badBulletTexture;
+		m_gunTexture = m_game->m_badBulletTexture;
 	}
 	else
 	{
-		m_bodyTexture = m_game->m_goodBulletTexture;
+		m_gunTexture = m_game->m_goodBulletTexture;
 	}
 	m_entityType = ENTITY_TYPE_GOOD_BULLET;
 	g_engine->m_render->BindTexture( nullptr );
@@ -59,7 +59,7 @@ void Bullet::Render() const
 	std::vector<Vertex> bodyVerts;
 	AddVertsForMe( bodyVerts );
 	TransformVertexArrayXY3D( ( int )bodyVerts.size(), bodyVerts.data(), .1f, m_orientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_bodyTexture );
+	g_engine->m_render->BindTexture( m_gunTexture );
 	g_engine->m_render->DrawVertexArray( ( int )bodyVerts.size(), bodyVerts.data() );
 
 	g_engine->m_render->BindTexture( nullptr );

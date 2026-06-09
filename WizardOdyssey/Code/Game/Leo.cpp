@@ -16,7 +16,7 @@ Leo::Leo( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFac
 	m_isHitByBullets = true;
 	m_bulletCooldown = 1.3f;
 	m_wanderTimer = 2.0f;
-	m_bodyTexture = m_game->m_leoBodyTexture;
+	m_gunTexture = m_game->m_leoBodyTexture;
 	g_engine->m_render->BindTexture( nullptr );
 }
 
@@ -43,7 +43,7 @@ void Leo::Render() const
 	std::vector<Vertex> bodyVerts;
 	AddVertsForMe( bodyVerts );
 	TransformVertexArrayXY3D( ( int )bodyVerts.size(), bodyVerts.data(), 1.f, m_orientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_bodyTexture );
+	g_engine->m_render->BindTexture( m_gunTexture );
 	g_engine->m_render->DrawVertexArray( ( int )bodyVerts.size(), bodyVerts.data() );
 
 	g_engine->m_render->BindTexture( nullptr );

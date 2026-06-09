@@ -10,6 +10,7 @@
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/DevConsole.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -17,9 +18,9 @@
 #include "Game/Player.hpp"
 #include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
+#include "Engine/Core/EngineCommon.hpp"
 #include <cmath>
 
-RandomNumberGenerator g_rng;
 XmlUtils m_xml;
 Game* g_game = nullptr;
 
@@ -34,6 +35,7 @@ Game::Game()
 	InitializePauseVerts();
 	InitializeWinLoseVerts();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
+	m_gameClock = new Clock( *g_engine->m_systemClock );
 	TileDefinition::InitializeTileDefs();
 	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
 	LoadTextures();
@@ -152,7 +154,8 @@ void Game::Update(float deltaSeconds)
 void Game::Render() const
 {
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
-	
+	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
+	g_engine->m_render->ClearScreen( backgroundColor );
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		g_engine->m_render->BindTexture( nullptr );
@@ -314,14 +317,20 @@ void Game::RenderWinLoseSreen( Texture* texture ) const
 }
 
 //-----------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 void Game::RenderUI() const
 {
-	//Camera attractCamera;
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) );
 
-	g_engine->m_render->BeginCamera( *m_screenCamera );
+	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
+	float scale = ( float )g_engine->m_systemClock->GetTimeScale();
+	float deltaSeconds = ( float )m_gameClock->GetDeltaSeconds();
+	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", deltaSeconds, fps, scale );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
-	g_engine->m_render->EndCamera( *m_screenCamera );
+	DebugRenderScreen( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -337,16 +346,16 @@ void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) c
 void Game::UpdateCameras( float deltaSeconds )
 {
 	// Random camera shake
-	float shakeHorizontal = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
-	float shakeVertical = g_rng.RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
-	
-	m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X + shakeHorizontal, WORLD_SIZE_Y + shakeVertical ) );
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	//float shakeHorizontal = g_rng->RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
+	//float shakeVertical = g_rng->RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
 
-	if ( m_camShakeAmount > 0 )
-	{
-		m_camShakeAmount -= deltaSeconds;
-	}
+	//m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X + shakeHorizontal, WORLD_SIZE_Y + shakeVertical ) );
+	//m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+
+	//if ( m_camShakeAmount > 0 )
+	//{
+	//	m_camShakeAmount -= deltaSeconds;
+	//}
 
 }
 

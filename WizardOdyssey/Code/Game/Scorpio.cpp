@@ -17,7 +17,7 @@ Scorpio::Scorpio( Game* owner, Vec2 const& startPos, float orientationDegrees, E
 	m_doesPushEntities = true;
 	m_isHitByBullets = true;
 	m_bulletCooldown = 0.3f;
-	m_bodyTexture = m_game->m_scorpioBodyTexture;
+	m_gunTexture = m_game->m_scorpioBodyTexture;
 	m_wizardTexture = m_game->m_scorpioTurretTexture;
 	g_engine->m_render->BindTexture( nullptr );
 }
@@ -73,7 +73,7 @@ void Scorpio::Render() const
 	std::vector<Vertex> bodyVerts;
 	AddVertsForMe(bodyVerts);
 	TransformVertexArrayXY3D( (int)bodyVerts.size(), bodyVerts.data(), 1.f, m_orientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_bodyTexture );
+	g_engine->m_render->BindTexture( m_gunTexture );
 	g_engine->m_render->DrawVertexArray( (int)bodyVerts.size(), bodyVerts.data() );
 
 	std::vector<Vertex> turretVerts;

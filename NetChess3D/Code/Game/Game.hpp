@@ -80,7 +80,6 @@ public:
 
 	// Clock
 	Clock* m_gameClock = nullptr;
-
 	// Player and props
 	Player* m_player = nullptr;
 	std::vector<Prop*> m_props;

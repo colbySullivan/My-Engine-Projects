@@ -84,7 +84,7 @@ public:
 	bool			m_noClip = false;
 	Vec2			m_desiredMoveDirection = Vec2( 0.f, 0.f );
 	Vec2			m_desiredTurretDirection = Vec2( 0.f, 0.f );
-	Texture*		m_bodyTexture = nullptr;
+	Texture*		m_gunTexture = nullptr;
 	Texture*		m_wizardTexture = nullptr;
 	AABB2*			m_turretABB2 = nullptr;
 	AABB2*			m_bodyABB2 = nullptr;

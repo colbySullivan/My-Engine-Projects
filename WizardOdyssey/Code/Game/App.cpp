@@ -6,6 +6,7 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/NamedStrings.hpp"
 #include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 #include "Game/Game.hpp"
 
 App* g_app = nullptr;
@@ -16,6 +17,10 @@ App::App()
 	config.m_windowConfig.m_clientAspect = 2.0f;
 	config.m_windowConfig.m_windowTitle = "WizardOdyssey";
 	g_engine = new Engine( config );
+
+
+	DebugRenderConfig debugConfig;
+	DebugRenderSystemStartup( debugConfig );
 
 	g_app = this;
 	m_game = new Game();
