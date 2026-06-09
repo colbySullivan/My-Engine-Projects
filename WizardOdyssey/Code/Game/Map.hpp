@@ -32,7 +32,7 @@ class Entity;
 class Map
 {
 	RandomNumberGenerator g_rng;
-
+public:
 	std::vector< Tile > m_tiles; // Note: this is NOT a 2D array!
 	//std::vector< Entity* > m_entities;
 	IntVec2 m_dimensions; // # of tiles wide (x) and high (y)
@@ -61,11 +61,9 @@ public:
 	void RenderEntities() const;
 	void UpdateCameras();
 	void BuildMapTiles();
-	void SpawnBarrierTileSetup();
 	void OutEdgeTileSetup();
 	void SprinkleTileSetup();
 	void FillTile1Setup();
-	void WormFillTiles();
 
 	// Update
 	void Update( float deltaSeconds );
@@ -79,7 +77,6 @@ public:
 	void AddEntityToMap( Entity& e );
 	void RemoveEntityFromMap( Entity& e );
 	void DestroyGarbageEntities();
-	bool IsPlayerOnPortal();
 	bool IsPlayerAlive();
 	void CreateInitialEntities();
 	void PopulateDijkstraMap( TileHeatMap& out_dijkstraMap, IntVec2 startCoords, float maxCost, bool treatWaterAsSolid=true );

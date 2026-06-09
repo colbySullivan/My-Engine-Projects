@@ -36,7 +36,7 @@ Game::Game()
 	LoadSounds();
 	InitializePauseVerts();
 	InitializeWinLoseVerts();
-	InitializeButtons();
+	InitializeButtonsAndEvents();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	TileDefinition::InitializeTileDefs();
@@ -71,7 +71,7 @@ void Game::Startup()
 	m_endGameDelayTimer = 3.0f;
 	ConstructMapFromXML();
 	m_currentMap = m_maps[m_currentMapNumber];
-	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( 1.5f, 1.5f ), 0.f, FACTION_GOOD );
+	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( m_currentMap->m_dimensions.x * 0.5, m_currentMap->m_dimensions.y * 0.5 ), 0.f, FACTION_GOOD );
 	m_nextMap = m_currentMap;
 	m_isPaused = false;
 }
@@ -127,7 +127,6 @@ void Game::Update(float deltaSeconds)
 			}
 		return;
 		}
-		PlayerPortalEndConditionCheck();
 		if ( m_isSlowMo ) // T pressed
 		{
 			deltaSeconds = 1.f / 600.f; // Run at 1/10th the speed
@@ -576,9 +575,8 @@ void Game::UpdateMousePosition()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::InitializeButtons()
+void Game::InitializeButtonsAndEvents()
 {
-	//UIButton2D buttonTest = UIButton2D( Vec2( 100.f, 100.f ), Vec2( 200.f, 200.f ), "test" );
 	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
 	m_startButton = new UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f, "Start Game", "StartGame", Rgba8( 120, 0, 0 ) );
 }
@@ -589,26 +587,6 @@ bool Game::AdvanceGameMode( EventArgs& args )
 	//g_app->m_game->m_nextGameState = (Game_State)(g_app->m_game->m_currentGameState + 1);
 	g_app->m_game->m_nextGameState = GAMESTATE_PLAY;
 	return false;
-}
-
-//-----------------------------------------------------------------------------------------------
-void Game::PlayerPortalEndConditionCheck()
-{
-	if ( m_currentMap->IsPlayerOnPortal() )
-	{
-		if ( m_currentMapNumber == static_cast<int>(m_maps.size() - 1) )
-		{
-			m_hasWon = true;
-			m_isPaused = true;
-			//g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
-			return;
-		}
-
-		m_currentMapNumber = ( m_currentMapNumber + 1 ) % static_cast< int >( m_maps.size() );
-		m_nextMap = m_maps[m_currentMapNumber];
-		MovePlayerToNewMap();
-		m_currentMap = m_nextMap;
-	}
 }
 
 //-----------------------------------------------------------------------------------------------

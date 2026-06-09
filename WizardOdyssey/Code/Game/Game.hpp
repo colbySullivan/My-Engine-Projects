@@ -166,13 +166,12 @@ private:
 	void InitializePauseVerts();
 	void InitializeWinLoseVerts();
 	void MovePlayerToNewMap();
-	void PlayerPortalEndConditionCheck();
 	void LoadTextures();
 	MapDef CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile );
 	void ConstructMapFromXML();
 	SpriteAnimDefinition* m_tilesSpriteSheetAnimPingPong;
 	void UpdateMousePosition();
-	void InitializeButtons();
+	void InitializeButtonsAndEvents();
 
 	// Events
 	static bool AdvanceGameMode( EventArgs& args );

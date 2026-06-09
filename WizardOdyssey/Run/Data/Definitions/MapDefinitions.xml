@@ -5,8 +5,6 @@
 		dimensions="30,15"
 		fillTileType="LongGrass"
 		edgeTileType="RockWall"
-		worm1TileType="DarkGrass"	worm1Count="15"	worm1MaxLength="12"
-		worm2TileType="RockWall"	worm2Count="60"	worm2MaxLength="8"
 		startFloorTileType="Concrete"
 		startBunkerTileType="RockWall"
 		endFloorTileType="Concrete"

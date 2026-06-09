@@ -295,49 +295,11 @@ void Map::BuildMapTiles()
 
 	FillTile1Setup();
 	SprinkleTileSetup();
-	WormFillTiles();
 	OutEdgeTileSetup();
-	SpawnBarrierTileSetup();
 }
 
 //------------------------------------------------------------------------------
 // Tile Setups
-//------------------------------------------------------------------------------
-void Map::SpawnBarrierTileSetup()
-{
-	// Bottom left
-	for (int barrierBoxFloorX = 1; barrierBoxFloorX < 5 ; ++barrierBoxFloorX)
-	{
-		for ( int barrierBoxFloorY = 1; barrierBoxFloorY < 5; ++barrierBoxFloorY ) 
-		{
-			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = "Concrete";
-		}
-	}	
-	m_tiles[GetTileIndexForTileCoords(IntVec2(2, 4))].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(3, 4))].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 4))].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 3))].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords(IntVec2(4, 2))].m_type = m_barrierTileType;
-
-	// Top right
-	for ( int barrierBoxFloorX = m_dimensions.x - 5; barrierBoxFloorX < m_dimensions.x - 1; ++barrierBoxFloorX )
-	{
-		for ( int barrierBoxFloorY = m_dimensions.y - 5; barrierBoxFloorY < m_dimensions.y - 1; ++barrierBoxFloorY )
-		{
-			m_tiles[GetTileIndexForTileCoords( IntVec2( barrierBoxFloorX, barrierBoxFloorY ) )].m_type = "Concrete";
-		}
-	}
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 3, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 4, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 5 ) )].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 3 ) )].m_type = m_barrierTileType;
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 5, m_dimensions.y - 4 ) )].m_type = m_barrierTileType;
-
-	m_tiles[GetTileIndexForTileCoords( IntVec2( 1, 1 ) )].m_type = "MapEntry";
-	m_tiles[GetTileIndexForTileCoords( IntVec2( m_dimensions.x - 2, m_dimensions.y - 2 ) )].m_type = "MapExit";
-
-}
-
 //------------------------------------------------------------------------------
 void Map::OutEdgeTileSetup()
 {
@@ -389,34 +351,6 @@ void Map::FillTile1Setup()
 			int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 			m_tiles[tileIndex].m_tileCoords = IntVec2(tileX, tileY);
 			m_tiles[tileIndex].m_type = m_fillTileType;
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-void Map::WormFillTiles()
-{
-	int numOfWorms = g_rng.RollRandomIntInRange( 10, 20 );
-	for (int wormNum = 0; wormNum < numOfWorms ; ++wormNum)
-	{
-		IntVec2 spawnPos = GetRandomValidPointInMapIntVec2();
-		int tileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
-		m_tiles[tileIndex].m_type = m_edgeTileType;
-		int wormHealth = g_rng.RollRandomIntInRange( 3, 10 );
-		while ( wormHealth >= 0 )
-		{
-			IntVec2 legalMoves[4] = {
-				IntVec2( spawnPos.x, spawnPos.y + 1 ),
-				IntVec2( spawnPos.x, spawnPos.y - 1 ),
-				IntVec2( spawnPos.x + 1, spawnPos.y ),
-				IntVec2( spawnPos.x - 1, spawnPos.y )
-			};
-			int move = g_rng.RollRandomIntInRange( 0, 3 );
-			spawnPos = legalMoves[move];
-			int newtileIndex = GetTileIndexForTileCoords( IntVec2( spawnPos.x, spawnPos.y ) );
-			if ( newtileIndex > 0 && newtileIndex < static_cast<int>(m_tiles.size()) )
-				m_tiles[newtileIndex].m_type = m_sprinkle2TileType;
-			wormHealth--;
 		}
 	}
 }
@@ -593,12 +527,12 @@ void Map::FillInImpossibleTiles()
 //-----------------------------------------------------------------------------------------------
 void Map::CreateInitialEntities()
 {
-	for ( int Index = 0; Index < 10; ++Index )
+	/*for ( int Index = 0; Index < 10; ++Index )
 	{
 		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -701,14 +635,6 @@ void Map::DestroyGarbageEntities()
 			RemoveEntityFromMap(*grabageEntity);
 		}
 	}
-}
-
-//-----------------------------------------------------------------------------------------------
-bool Map::IsPlayerOnPortal()
-{
-	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
-	Vec2 portalPosition( m_dimensions.x - 2.f, m_dimensions.y - 2.f );
- 	return ( player->m_position - portalPosition ).GetLengthSquared() < 0.5f;
 }
 
 //-----------------------------------------------------------------------------------------------
