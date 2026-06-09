@@ -89,7 +89,7 @@ public:
 	float				m_bestRoundTime = 0.f;
 	float				m_spawnBuffer;
 	std::vector<Map*>	m_maps = {};
-	Vertex				m_pauseScreenVerts[NUM_PLAYER_VERTS];
+	std::vector<Vertex>	m_pauseScreenVerts;
 	Vertex				m_winLoseScreen[NUM_PLAYER_VERTS];
 	SpriteSheet*		m_tilesSpriteSheet;
 	SpriteSheet*		m_explosionSpriteSheet;

@@ -329,8 +329,6 @@ void Game::RenderUI() const
 	float totalTime = ( float )g_engine->m_systemClock->GetTotalSeconds();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", totalTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
-
-	//DebugRenderScreen( *m_screenCamera ); // Moved this to App render
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -392,51 +390,8 @@ void Game::UpdateEntities(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void Game::RenderAttractMode() const
 {
-		m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
-
-	// Background
-	Vertex background[6];
-	background[0].m_position = Vec3( 0.f, 0.f, 0.f );
-	background[1].m_position = Vec3( 0.f, SCREEN_SIZE_Y, 0.f );
-	background[2].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
-
-	background[3].m_position = Vec3( 0.f, 0.f, 0.f );
-	background[4].m_position = Vec3( SCREEN_SIZE_X, 0.f, 0.f );
-	background[5].m_position = Vec3( SCREEN_SIZE_X, SCREEN_SIZE_Y, 0.f );
-	for ( int vertIndex = 0; vertIndex < 6; ++vertIndex )
-	{
-		background[vertIndex].m_color = Rgba8( 255, 255, 255, 255 );
-	}
-	TransformVertexArrayXY3D(
-		6,
-		background,
-		1.0f,
-		0.f,
-		Vec2( 0.f, 0.f ) );
-	g_engine->m_render->DrawVertexArray( 6, background );
-
-	// Title
-	/*char title[32] = "WizardOdyssey";
-	for ( int charIndex = 0; charIndex < 18; ++charIndex )
-	{
-		char singleChar[2] = { title[charIndex], '\0' };
-		int offsetColorR =  g_rng.RollRandomIntInRange(200, 255);
-		int offsetColorG =  g_rng.RollRandomIntInRange(200, 255);
-		int offsetColorB =  g_rng.RollRandomIntInRange(0, 255);
-		RenderText( singleChar, Vec2( 475.f + charIndex * 40.f, 100.f ), 40.0f, Rgba8( static_cast<unsigned char>(offsetColorR), static_cast<unsigned char>(offsetColorG), static_cast<unsigned char>(offsetColorB) ) );
-
-	}
-	char nameTitle[96] = "Made by Colby Sullivan";
-	for ( int charIndex = 0; charIndex < 22; ++charIndex )
-	{
-		char singleChar[2] = { nameTitle[charIndex], '\0' };
-		int offsetColorR = g_rng.RollRandomIntInRange( 200, 255 );
-		int offsetColorG = g_rng.RollRandomIntInRange( 200, 255 );
-		int offsetColorB = g_rng.RollRandomIntInRange( 0, 255 );
-		RenderText( singleChar, Vec2( 390.f + charIndex * 40.f, 50.f ), 40.0f, Rgba8( static_cast< unsigned char >( offsetColorR ), static_cast< unsigned char >( offsetColorG ), static_cast< unsigned char >( offsetColorB ) ) );
-
-	}*/
 
 	std::vector<Vertex> verts;
 	Vec2 mins( 0.0f, 0.0f );
@@ -446,42 +401,6 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->BindTexture( m_startScreen );
 	g_engine->m_render->DrawVertexArray( verts );
 	g_engine->m_render->BindTexture( nullptr );
-
-	std::vector<Vertex> explosionVerts;
-	std::vector<Vertex> textVerts;
-	std::vector<Vertex> textVerts2;
-	std::vector<Vertex> boxOutlineVerts;
-	std::vector<Vertex> boxOutlineVerts2;
-
-	AddVertsForAABB2D( boxOutlineVerts, AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), Rgba8( 0, 0, 0 ) );
-	AddVertsForAABB2D( boxOutlineVerts2, AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), Rgba8( 0, 0, 0 ) );
-	g_testFont->AddVertsForTextInBox2D(textVerts, "This\nis\nshrink to fit", AABB2(Vec2(100.f, 250.f), Vec2(700.f, 350.f)), 40.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::SHRINK_TO_FIT);
-	g_testFont->AddVertsForTextInBox2D(textVerts2, "This\nis\noverrun", AABB2(Vec2(300.f, 550.f), Vec2(800.f, 650.f)), 50.f, Rgba8(100, 0, 0), 1.f, m_textOffset, TextBoxMode::OVERRUN);
-	
-	g_engine->m_render->DrawVertexArray( boxOutlineVerts );
-	g_engine->m_render->DrawVertexArray( boxOutlineVerts2 );
-
-	std::vector<Vertex> tileVerts;
-
-	const SpriteDefinition& explosionSprite = m_tilesSpriteSheetAnimPingPong->GetSpriteDefAtTime( m_frameTime );
-	Vec2 explosionMins, explosionMaxs;
-	explosionSprite.GetUVs( explosionMins, explosionMaxs );
-
-	float minX = 400.0f;
-	float minY = 400.0f;
-	float maxX = minX + 100.0f;
-	float maxY = minY + 100.0f;
-	AABB2 box = AABB2( minX, minY, maxX, maxY );
-
-	AddVertsForAABB2D( explosionVerts, box, Rgba8(255,255,255), explosionMins, explosionMaxs);
-	
-	g_engine->m_render->BindTexture( &m_explosionSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( explosionVerts );
-
-	g_engine->m_render->BindTexture( nullptr );
-	g_engine->m_render->BindTexture( &g_testFont->GetTexture() );
-	g_engine->m_render->DrawVertexArray( textVerts );
-	g_engine->m_render->DrawVertexArray( textVerts2 );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
@@ -552,18 +471,8 @@ void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float so
 //-----------------------------------------------------------------------------------------------
 void Game::InitializePauseVerts()
 {
-	m_pauseScreenVerts[0].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_pauseScreenVerts[1].m_position = Vec3( 0.5f, -0.5f, 0.f );
-	m_pauseScreenVerts[2].m_position = Vec3( 0.5f, 0.5f, 0.f );
-
-	m_pauseScreenVerts[3].m_position = Vec3( -0.5f, -0.5f, 0.f );
-	m_pauseScreenVerts[4].m_position = Vec3( -0.5f, 0.5f, 0.f );
-	m_pauseScreenVerts[5].m_position = Vec3( 0.5f, 0.5f, 0.f );
-
-	for ( int vertIndex = 0; vertIndex < NUM_TURRET_VERTS; ++vertIndex )
-	{
-		m_pauseScreenVerts[vertIndex].m_color = Rgba8( 0, 0, 0, 100 );
-	}
+	AABB2 box = AABB2( Vec2( -0.5, -0.5 ), Vec2( 0.5, 0.5 ));
+	AddVertsForAABB2D( m_pauseScreenVerts, box, Rgba8( 0, 0, 0, 100 ) );
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -17,6 +17,7 @@ Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_faction = faction;
 	m_map = map;
 	m_entityType = type;
+	InitializeBoxes();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -188,8 +189,8 @@ void Entity::SearchForPlayerAndTryToShoot( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 void Entity::InitializeBoxes()
 {
-	m_turretABB2 = new AABB2( Vec2( 0, 0 ), Vec2( 1, 1 ) );
-	m_bodyABB2 = new AABB2( Vec2( 0, 0 ), Vec2( 1, 1 ) );
+	m_turretABB2 = new AABB2( Vec2( -0.5, -0.5 ), Vec2( 0.5, 0.5 ) );
+	m_bodyABB2 = new AABB2( Vec2( -0.5, -0.5 ), Vec2( 0.5, 0.5 ) );
 }
 
 //-----------------------------------------------------------------------------------------------

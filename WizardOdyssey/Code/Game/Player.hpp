@@ -38,8 +38,8 @@ private:
 	void UpdateTurretOrientation();
 
 private:
-	Vertex		m_playerVerts[NUM_PLAYER_VERTS];
-	Vertex		m_turretVerts[NUM_TURRET_VERTS];
+	std::vector<Vertex>		m_playerVerts;
+	std::vector<Vertex>		m_turretVerts;
 	float		m_thrustFraction = -5.f;
 	bool		m_isMoving = false;
 

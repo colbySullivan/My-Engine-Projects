@@ -213,23 +213,13 @@ bool Player::IsPlayer() const
 //------------------------------------------------------------------------------
 void Player::InitializePlayerVerts()
 {
-	m_playerVerts[0] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
-	m_playerVerts[1] = Vertex( Vec3( 0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 0.f ) );
-	m_playerVerts[2] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
-	m_playerVerts[3] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
-	m_playerVerts[4] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
-	m_playerVerts[5] = Vertex( Vec3( -0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 1.f ) );
+	AddVertsForAABB2D( m_playerVerts, *m_bodyABB2, Rgba8( 255, 255, 255 ) );
 }
 
 //-----------------------------------------------------------------------------------------------
 void Player::InitializeTurretVerts()
 {
-	m_turretVerts[0] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
-	m_turretVerts[1] = Vertex( Vec3( 0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 0.f ) );
-	m_turretVerts[2] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
-	m_turretVerts[3] = Vertex( Vec3( -0.5f, -0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 0.f ) );
-	m_turretVerts[4] = Vertex( Vec3( 0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 1.f, 1.f ) );
-	m_turretVerts[5] = Vertex( Vec3( -0.5f, 0.5f, 0.f ), Rgba8( 255, 255, 255, 255 ), Vec2( 0.f, 1.f ) );
+	AddVertsForAABB2D( m_turretVerts, *m_turretABB2, Rgba8( 255, 255, 255 ) );
 }
 
 //------------------------------------------------------------------------------
