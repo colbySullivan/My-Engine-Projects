@@ -2,7 +2,7 @@
 
 	<MapDefinition
 		name="Approach"
-		dimensions="20,50"
+		dimensions="30,15"
 		fillTileType="LongGrass"
 		edgeTileType="RockWall"
 		worm1TileType="DarkGrass"	worm1Count="15"	worm1MaxLength="12"
@@ -13,7 +13,7 @@
 		endBunkerTileType="StoneWall"
 		leoCount="1"
 		ariesCount="0"
-		scorpioCount="15"
+		scorpioCount="1"
 		taurusCount="0"
 		capricornCount="0"
 		sagittariusCount="0"

@@ -20,11 +20,12 @@ App::App()
 
 
 	DebugRenderConfig debugConfig;
-	DebugRenderSystemStartup( debugConfig );
+	DebugRenderSystemStartup( debugConfig );	
+	DebugRenderSetVisible();
 
+	LoadXmlMap();
 	g_app = this;
 	m_game = new Game();
-	LoadXmlMap();
 
 	g_UICamera = new Camera();
 	g_UICamera->SetOrthoView(Vec2(0.f, 0.f), Vec2(g_gameConfig->GetValue("screenSizeX", 0.f), g_gameConfig->GetValue("screenSizeY", 0.f)));
@@ -49,13 +50,13 @@ App::~App()
 
 void App::RunFrame()
 {
-	float timeNow = (float)GetCurrentTimeSeconds();
-	float deltaSeconds = timeNow - m_lastFrameTime;
-	m_lastFrameTime = timeNow;
+	float deltaSeconds =  (float) g_engine->m_systemClock->GetDeltaSeconds();
 
 	g_engine->BeginFrame();
+	DebugRenderBeginFrame();
 	Update(deltaSeconds);
 	Render();
+	DebugRenderEndFrame();
 	g_engine->EndFrame();
 }
 //-----------------------------------------------------------------------------------------------

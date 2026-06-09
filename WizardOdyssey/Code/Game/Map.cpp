@@ -205,7 +205,9 @@ void Map::UpdateCameras()
 
 		m_game->m_worldCamera->SetOrthoView( cameraMin, cameraMax );
 	}
-	
+	//Vec2 cameraMin( 0.f, 0.f );
+	//Vec2 cameraMax( static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
+	//m_game->m_worldCamera->SetOrthoView( cameraMin, cameraMax );
 }
 
 //-----------------------------------------------------------------------------------------------

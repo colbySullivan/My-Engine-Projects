@@ -5,39 +5,30 @@
     mapSizeY="25"
     worldCenterX="10.0"
     worldCenterY="5.0"
-    
     screenSizeX="1600.0"
     screenSizeY="800.0"
     screenCenterX="800.0"
     screenCenterY="400.0"
-    
     bulletLifetimeSeconds="2.0"
     bulletPhysicsRadius="0.1"
     bulletCosmeticRadius="0.15"
     bulletSpeed="8.0"
-    
     numBlackHoleVerts="192"
     numBlackHoleTris="64"
     numBlackHoleSides="64"
-    
     numPlayerVerts="6"
     numTurretVerts="6"
-    
     playerPhysicsRadius="0.3"
     playerCosmeticRadius="0.5"
     playerTurnSpeed="180.0"
     playerSpeed="1.0"
     playerHealth="3"
     playerLives="3"
-	
-	scorpioPhysicsRadius="0.3"
+    scorpioPhysicsRadius="0.3"
     scorpioCosmeticRadius="0.5"
-	
-	AriesPhysicsRadius="0.3"
+    AriesPhysicsRadius="0.3"
     AriesCosmeticRadius="0.5"
-    
     shootCooldownTime="1.0"
-    
     leoMaxVis="10.0"
     scorpioMaxVis="10.0"
 />

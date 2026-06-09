@@ -160,6 +160,7 @@ void Game::Render() const
 	{
 		g_engine->m_render->BindTexture( nullptr );
 		RenderAttractMode();
+		RenderUI();
 		return;
 	}
 
@@ -317,18 +318,17 @@ void Game::RenderWinLoseSreen( Texture* texture ) const
 }
 
 //-----------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------
 void Game::RenderUI() const
 {
-	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 0.f );
-	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 0.f );
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 800.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 1600.f );
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) );
 
 	float fps = 1.f / ( float )g_engine->m_systemClock->GetDeltaSeconds();
 	float scale = ( float )g_engine->m_systemClock->GetTimeScale();
-	float deltaSeconds = ( float )m_gameClock->GetDeltaSeconds();
-	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", deltaSeconds, fps, scale );
-	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+	float totalTime = ( float )g_engine->m_systemClock->GetTotalSeconds();
+	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", totalTime, fps, scale );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, screenSizeY - 25.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 0.5f ), 0.f, Rgba8( 0, 0, 0 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
 }
@@ -392,7 +392,7 @@ void Game::UpdateEntities(float deltaSeconds)
 //-----------------------------------------------------------------------------------------------
 void Game::RenderAttractMode() const
 {
-	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
+		m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
 
 	// Background
