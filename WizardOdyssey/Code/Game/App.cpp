@@ -103,7 +103,7 @@ bool App::HandleQuit()
 //------------------------------------------------------------------------------
 bool App::Event_Quit( [[maybe_unused]] EventArgs& args) 
 {
-	g_theApp->HandleQuit();
+	g_app->HandleQuit();
 	return false;
 }
 

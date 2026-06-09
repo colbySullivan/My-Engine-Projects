@@ -3,22 +3,24 @@
 #include "Engine.hpp"
 
 //-----------------------------------------------------------------------------------------------
-UIButton2D::UIButton2D( const Vec2& min, const Vec2& max, const std::string& buttonText, Rgba8 baseColor, Rgba8 hoveredColor )
+UIButton2D::UIButton2D( const Vec2& min, const Vec2& max, const std::string& buttonText, const std::string& onClickEvent, Rgba8 baseColor, Rgba8 hoveredColor )
 	: m_bounds( AABB2( min, max ) )
 	, m_buttonText( buttonText )
 	, m_baseColor( baseColor )
 	, m_hoveredColor( hoveredColor )
 	, m_isCurrentlyHovered( false )
+	, m_onClickEvent( onClickEvent )
 {
 	m_font = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont");
 }
 
 //-----------------------------------------------------------------------------------------------
-UIButton2D::UIButton2D( const Vec2& centerPosition, float sizeX, float sizeY, const std::string& buttonText, Rgba8 baseColor, Rgba8 hoveredColor )
+UIButton2D::UIButton2D( const Vec2& centerPosition, float sizeX, float sizeY, const std::string& buttonText, const std::string& onClickEvent, Rgba8 baseColor, Rgba8 hoveredColor )
 	: m_buttonText( buttonText )
 	, m_baseColor( baseColor )
 	, m_hoveredColor( hoveredColor )
 	, m_isCurrentlyHovered( false )
+	, m_onClickEvent( onClickEvent )
 {
 	float halfX = sizeX * 0.5f;
 	float halfY = sizeY * 0.5f;
@@ -28,6 +30,20 @@ UIButton2D::UIButton2D( const Vec2& centerPosition, float sizeX, float sizeY, co
 		Vec2( centerPosition.x + halfX, centerPosition.y + halfY )
 	);
 	m_font = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
+}
+
+//-----------------------------------------------------------------------------------------------
+void UIButton2D::Update( const Vec2& mousePos, bool isMouseLeftJustPressed )
+{
+	m_isCurrentlyHovered = m_bounds.IsPointInside( mousePos );
+
+	if ( m_isCurrentlyHovered && isMouseLeftJustPressed )
+	{
+		if ( !m_onClickEvent.empty() )
+		{
+			FireEvent( m_onClickEvent, m_eventArgs );
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

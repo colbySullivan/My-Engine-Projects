@@ -17,6 +17,8 @@ class Player;
 class Map;
 class BitmapFont;
 class Clock;
+class UIButton2D;
+//class EventArgs;
 struct MapDef;
 
 //-----------------------------------------------------------------------------------------------
@@ -96,8 +98,11 @@ public:
 	SpriteAnimDefinition* m_tilesSpriteSheetAnim;
 	Vec2				m_textOffset = Vec2(0.f, 0.f);
 	float				m_frameTime = 0.0f;
+
+	// Buttons
 	Vec2				m_mouseScreenWindowPosition;
 	Vec2				m_mouseWorldWindowPosition;
+	UIButton2D*			m_startButton = nullptr;
 
 
 
@@ -167,4 +172,8 @@ private:
 	void ConstructMapFromXML();
 	SpriteAnimDefinition* m_tilesSpriteSheetAnimPingPong;
 	void UpdateMousePosition();
+	void InitializeButtons();
+
+	// Events
+	static bool AdvanceGameMode( EventArgs& args );
 };

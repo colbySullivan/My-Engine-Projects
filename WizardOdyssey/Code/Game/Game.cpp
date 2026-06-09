@@ -11,6 +11,8 @@
 #include "Engine/Core/XmlUtils.hpp"
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Renderer/DebugRender.hpp"
+#include "Engine/Core/EngineCommon.hpp"
+#include "Engine/Core/UIButton2D.hpp"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -18,9 +20,8 @@
 #include "Game/Player.hpp"
 #include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
-#include "Engine/Core/EngineCommon.hpp"
+#include "Game/App.hpp"
 #include <cmath>
-#include "Engine/Core/UIButton2D.hpp"
 
 XmlUtils m_xml;
 Game* g_game = nullptr;
@@ -35,6 +36,7 @@ Game::Game()
 	LoadSounds();
 	InitializePauseVerts();
 	InitializeWinLoseVerts();
+	InitializeButtons();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	TileDefinition::InitializeTileDefs();
@@ -93,6 +95,10 @@ void Game::Update(float deltaSeconds)
 
 	if ( m_currentGameState != m_nextGameState )
 	{
+		if ( m_nextGameState == GAMESTATE_PLAY )
+		{
+			Startup();
+		}
 		m_currentGameState = m_nextGameState;
 	}
 
@@ -254,7 +260,6 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		if ( m_currentGameState != GAMESTATE_PLAY )
 		{
 			m_nextGameState = GAMESTATE_PLAY;
-			Startup();
 			//g_engine->m_audio->StopSound( m_lobbyPlaybackID );
 			//m_gameMusicPlaybackID = g_engine->m_audio->StartSound( 2, false, 0.8f );
 		}
@@ -381,6 +386,9 @@ void Game::UpdateAttractMode(float deltaSeconds)
 	{
 		m_textOffset.y += 1.f;
 	}
+
+	bool mousePressed = g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE );
+	m_startButton->Update( m_mouseScreenWindowPosition, mousePressed );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -395,10 +403,7 @@ void Game::RenderAttractMode() const
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
 
-	//UIButton2D buttonTest = UIButton2D( Vec2( 100.f, 100.f ), Vec2( 200.f, 200.f ), "test" );
-	UIButton2D buttonTest = UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f , "test", Rgba8( 120, 0, 0 ) );
-	buttonTest.UpdateHoverState( m_mouseScreenWindowPosition );
-	buttonTest.Render();
+	m_startButton->Render();
 
 	std::vector<Vertex> verts;
 	Vec2 mins( 0.0f, 0.0f );
@@ -568,6 +573,22 @@ void Game::UpdateMousePosition()
 	Vec2 mouseWorldPos = Vec2( worldX, worldY );
 
 	m_mouseWorldWindowPosition = mouseWorldPos;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::InitializeButtons()
+{
+	//UIButton2D buttonTest = UIButton2D( Vec2( 100.f, 100.f ), Vec2( 200.f, 200.f ), "test" );
+	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
+	m_startButton = new UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f, "Start Game", "StartGame", Rgba8( 120, 0, 0 ) );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Game::AdvanceGameMode( EventArgs& args )
+{
+	//g_app->m_game->m_nextGameState = (Game_State)(g_app->m_game->m_currentGameState + 1);
+	g_app->m_game->m_nextGameState = GAMESTATE_PLAY;
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
