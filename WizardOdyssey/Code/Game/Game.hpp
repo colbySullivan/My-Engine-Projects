@@ -26,7 +26,6 @@ enum Game_State
 {
 	GAMESTATE_ATTRACT,
 	GAMESTATE_PLAY,
-	GAMESTATE_INVALID,
 	NUM_GAMESTATES
 };
 
@@ -46,6 +45,13 @@ enum MapRenderMode
 	HEAT_MAP_MODE,
 	SOLID_MAP_MODE,
 	NUM_MAP_MODES
+};
+
+//-----------------------------------------------------------------------------------------------
+struct GameUIButton
+{
+	Game_State	gameState = NUM_GAMESTATES;
+	UIButton2D* buttonRef = nullptr;
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -100,9 +106,10 @@ public:
 	float				m_frameTime = 0.0f;
 
 	// Buttons
-	Vec2				m_mouseScreenWindowPosition;
-	Vec2				m_mouseWorldWindowPosition;
-	UIButton2D*			m_startButton = nullptr;
+	Vec2						m_mouseScreenWindowPosition;
+	Vec2						m_mouseWorldWindowPosition;
+	std::vector<GameUIButton*>	m_buttons;
+	//UIButton2D*					m_startButton = nullptr;
 
 
 
@@ -152,14 +159,15 @@ private:
 	void UpdateKeyboardInput( XboxController const& controller );
 
 	void RenderUI() const;
+	void RenderUIButtons() const;
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void RenderAttractMode() const;
 	void RenderEntities() const;
 	void RenderPauseSreen() const;
 	void RenderWinLoseSreen( Texture* texture ) const;
 
+	void UpdateUIButtons();
 	void UpdateCameras( float deltaSeconds );
-	void UpdateAttractMode( float deltaSeconds );
 	void UpdateEntities( float deltaSeconds );
 
 	void LoadSounds();

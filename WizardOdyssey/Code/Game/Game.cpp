@@ -87,6 +87,7 @@ void Game::Update(float deltaSeconds)
 	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
 	UpdateMousePosition();
+	UpdateUIButtons();
 
 	if ( m_currentMap != m_nextMap )
 	{
@@ -114,7 +115,6 @@ void Game::Update(float deltaSeconds)
 		m_isPaused = false;
 		m_endGame = false;
 		m_currentMapNumber = 0;
-		UpdateAttractMode( deltaSeconds );
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
@@ -164,12 +164,12 @@ void Game::Render() const
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->ClearScreen( backgroundColor );
+
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		g_engine->m_render->BindTexture( nullptr );
 		RenderAttractMode();
 		RenderUI();
-		return;
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
@@ -195,7 +195,8 @@ void Game::Render() const
 			RenderPauseSreen();
 		}
 	}
-	
+	RenderUIButtons();
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -325,6 +326,19 @@ void Game::RenderWinLoseSreen( Texture* texture ) const
 }
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateUIButtons()
+{
+	bool mousePressed = g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE );
+	for ( auto button : m_buttons )
+	{
+		if ( button && button->gameState == m_currentGameState )
+		{
+			button->buttonRef->Update( m_mouseScreenWindowPosition, mousePressed );
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 void Game::RenderUI() const
 {
 	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 800.f );
@@ -336,6 +350,20 @@ void Game::RenderUI() const
 	float totalTime = ( float )g_engine->m_systemClock->GetTotalSeconds();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", totalTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderUIButtons() const
+{
+	g_engine->m_render->BeginCamera( *m_screenCamera );
+	for ( auto button : m_buttons )
+	{
+		if ( button && button->gameState == m_currentGameState )
+		{
+			button->buttonRef->Render();
+		}
+	}
+	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -367,31 +395,6 @@ void Game::UpdateCameras( float deltaSeconds )
 //-----------------------------------------------------------------------------------------------
 // Attract Mode
 //-----------------------------------------------------------------------------------------------
-void Game::UpdateAttractMode(float deltaSeconds)
-{
-	if ( m_gameMusicPlaybackID != MISSING_SOUND_ID )
-	{
-		//g_engine->m_audio->StopSound( m_gameMusicPlaybackID );
-	}
-	m_shipAnimationTimer += deltaSeconds;
-
-	m_textOffset.x = std::fmod(m_textOffset.x + deltaSeconds, 1.f);
-	if (m_textOffset.x < 0.f)
-	{
-		m_textOffset.x += 1.f;
-	}
-	m_textOffset.y = std::fmod(m_textOffset.y + deltaSeconds, 1.f);
-
-	if (m_textOffset.y < 0.f)
-	{
-		m_textOffset.y += 1.f;
-	}
-
-	bool mousePressed = g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE );
-	m_startButton->Update( m_mouseScreenWindowPosition, mousePressed );
-}
-
-//-----------------------------------------------------------------------------------------------
 void Game::UpdateEntities(float deltaSeconds)
 {
 	m_currentMap->Update( deltaSeconds );
@@ -402,8 +405,6 @@ void Game::RenderAttractMode() const
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
 	g_engine->m_render->BeginCamera( *m_screenCamera );
-
-	m_startButton->Render();
 
 	std::vector<Vertex> verts;
 	Vec2 mins( 0.0f, 0.0f );
@@ -579,14 +580,21 @@ void Game::UpdateMousePosition()
 void Game::InitializeButtonsAndEvents()
 {
 	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
-	m_startButton = new UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f, "Start Game", "StartGame", Rgba8( 120, 0, 0 ) );
+	GameUIButton* startButton = new GameUIButton;
+	startButton->buttonRef = new UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f, "Start Game", "StartGame", Rgba8( 120, 0, 0 ) );
+	startButton->gameState = GAMESTATE_ATTRACT;
+	m_buttons.push_back( startButton );
+
+	GameUIButton* backButton = new GameUIButton;
+	backButton->buttonRef = new UIButton2D( Vec2( 100.f, 700.f ), 200.f, 100.f, "Go Back?", "StartGame", Rgba8( 120, 0, 0 ) );
+	backButton->gameState = GAMESTATE_PLAY;
+	m_buttons.push_back( backButton );
 }
 
 //-----------------------------------------------------------------------------------------------
 bool Game::AdvanceGameMode( EventArgs& args )
 {
-	//g_app->m_game->m_nextGameState = (Game_State)(g_app->m_game->m_currentGameState + 1);
-	g_app->m_game->m_nextGameState = GAMESTATE_PLAY;
+	g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
 	return false;
 }
 
