@@ -10,7 +10,7 @@
 
 struct DirectionalAnimInfo
 {
-	Vec3 direction;
+	Vec2 direction;
 	int startFrame;
 	int endFrame;
 };

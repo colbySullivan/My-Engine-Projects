@@ -47,7 +47,7 @@ static void LoadSpriteAnimationDefsFromFile( char const* filePath )
 				XmlElement* directionElem = animGroupElem->FirstChildElement( "Direction" );
 				while ( directionElem )
 				{
-					Vec3 direction = xml.ParseXmlAttribute( *directionElem, "vector", Vec3::ZERO );
+					Vec2 direction = xml.ParseXmlAttribute( *directionElem, "vector", Vec2( 0.f, 0.f ) );
 
 					XmlElement* animElem = directionElem->FirstChildElement( "Animation" );
 					if ( animElem )
@@ -75,7 +75,7 @@ static void LoadSpriteAnimationDefsFromFile( char const* filePath )
 void SpriteAnimationDefinition::InitializeSpriteAnimationDefs()
 {
 	LoadSpriteAnimationDefsFromFile( "Data/Definitions/ActorDefinitions.xml" );
-	LoadSpriteAnimationDefsFromFile( "Data/Definitions/ProjectileActorDefinitions.xml" );
+	//LoadSpriteAnimationDefsFromFile( "Data/Definitions/ProjectileActorDefinitions.xml" );
 }
 
 //-----------------------------------------------------------------------------------------------

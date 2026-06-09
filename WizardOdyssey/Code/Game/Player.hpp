@@ -31,7 +31,7 @@ private:
 	void UpdateFromController( float deltaSeconds );
 	void SetCurrentAnimGroup( const std::string& groupName );
 	void InitializeTurretVerts();
-	void RenderPlayer() const;
+	//void RenderPlayer() const;
 	void RenderGun() const;
 
 	void UpdateLinearMovement();
@@ -40,14 +40,6 @@ private:
 private:
 	std::vector<Vertex>		m_playerVerts;
 	std::vector<Vertex>		m_turretVerts;
-	float		m_thrustFraction = -5.f;
-	bool		m_isMoving = false;
-
-	// Animations
-	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
-	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
-	double m_currentAnimStartTime = 0.0;
-	SpriteSheet* m_currentSpriteSheet = nullptr;
-	Timer* m_animTimer = nullptr;
-	void InitializePlayerSpriteSheet();
+	float					m_thrustFraction = -5.f;
+	bool					m_isMoving = false;
 };

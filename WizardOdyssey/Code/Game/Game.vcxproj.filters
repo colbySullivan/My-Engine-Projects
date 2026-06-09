@@ -43,13 +43,7 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Leo.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Scorpio.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Aries.cpp">
@@ -87,13 +81,7 @@
     <ClInclude Include="Entity.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Leo.hpp">
-      <Filter>Entities</Filter>
-    </ClInclude>
     <ClInclude Include="Player.hpp">
-      <Filter>Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Scorpio.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Aries.hpp">
@@ -116,7 +104,7 @@
     <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml">
       <Filter>Data</Filter>
     </Xml>
-    <Xml Include="ActorDefinitions.xml">
+    <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

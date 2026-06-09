@@ -3,6 +3,9 @@
 #include "Engine/Math/RandomNumberGenerator.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include <vector>
+#include "Game/SpriteAnimationDefinition.hpp"
+#include "Engine/Core/Timer.hpp"
+#include "Engine/Renderer/SpriteSheet.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -62,8 +65,11 @@ public:
 	void		SearchForPlayerAndTryToShoot( float deltaSeconds );
 
 	void InitializeBoxes();
+	void InitializeSpriteSheet();
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
 	void PlayDeathExplosion() const;
+
+
 
 	RandomNumberGenerator g_rng;
 
@@ -104,6 +110,14 @@ public:
 	bool			m_isProtected = false;
 	float			m_frameTimeEntity = 0.f;
 	bool			m_justDied = false;
-	//TileHeatMap*	m_heatMap = nullptr; // [[MAYBE]] TODO personal heat map used for pathing
 
+	// Animations
+	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
+	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
+	double m_currentAnimStartTime = 0.0;
+	SpriteSheet* m_currentSpriteSheet = nullptr;
+	Timer* m_animTimer = nullptr;
+	std::string		m_defName = "Wizard";
+
+	//TileHeatMap*	m_heatMap = nullptr; // [[MAYBE]] TODO personal heat map used for pathing
 };

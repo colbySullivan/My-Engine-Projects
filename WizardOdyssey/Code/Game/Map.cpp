@@ -5,8 +5,6 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/HeatMaps.hpp"
-#include "Game/Scorpio.hpp"
-#include "Game/Leo.hpp"
 #include "Game/Aries.hpp"
 #include "Game/Bullet.hpp"
 
@@ -533,6 +531,7 @@ void Map::CreateInitialEntities()
 		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 	}*/
+	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -591,8 +590,6 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 	switch ( type )
 	{
 		case ENTITY_TYPE_GOOD_PLAYER:	newEntity = new Player( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_PLAYER );	break;
-		case ENTITY_TYPE_EVIL_LEO:		newEntity = new Leo( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_LEO );		break;
-		case ENTITY_TYPE_EVIL_SCORPIO:	newEntity = new Scorpio( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SCORPIO );	break;
 		case ENTITY_TYPE_EVIL_ARIES:	newEntity = new Aries( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_ARIES );	break;
 		case ENTITY_TYPE_GOOD_BULLET:	newEntity = new Bullet( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_BULLET );	break;
 		default:																										return nullptr;

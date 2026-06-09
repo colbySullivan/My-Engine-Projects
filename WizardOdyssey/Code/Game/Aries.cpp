@@ -19,7 +19,8 @@ Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, Entit
 	m_isHitByBullets = true;
 	m_bulletCooldown = 1.3f;
 	m_gunTexture = m_game->m_ariesBodyTexture;
-	g_engine->m_render->BindTexture( nullptr );
+	m_defName = "SmallBaldDude";
+	InitializeSpriteSheet();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -62,13 +63,7 @@ void Aries::Render() const
 	if ( m_isDead )
 		return;
 
-	std::vector<Vertex> bodyVerts;
-	AddVertsForMe( bodyVerts );
-	TransformVertexArrayXY3D( ( int )bodyVerts.size(), bodyVerts.data(), 1.f, m_orientationDegrees, m_position );
-	g_engine->m_render->BindTexture( m_gunTexture );
-	g_engine->m_render->DrawVertexArray( ( int )bodyVerts.size(), bodyVerts.data() );
-
-	g_engine->m_render->BindTexture( nullptr );
+	Entity::Render();
 
 	if ( m_game->g_drawDebug )
 	{
@@ -79,22 +74,31 @@ void Aries::Render() const
 //-----------------------------------------------------------------------------------------------
 bool Aries::TakeDamage( Vec2 bulletPos )
 {
-	if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
-	{
-		//m_game->m_bulletBounce = g_engine->m_audio->StartSound( 5, false, 2.8f );
-		return false;
-	}
-	else
-	{
-		m_health -= 1;
+	//if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
+	//{
+	//	//m_game->m_bulletBounce = g_engine->m_audio->StartSound( 5, false, 2.8f );
+	//	return false;
+	//}
+	//else
+	//{
+	//	m_health -= 1;
 
-		if ( m_health <= 0 )
-		{
-			m_isDead = true;
-			return true;
-		}
+	//	if ( m_health <= 0 )
+	//	{
+	//		m_isDead = true;
+	//		return true;
+	//	}
+	//	return true;
+	//}
+
+	m_health -= 1;
+
+	if ( m_health <= 0 )
+	{
+		m_isDead = true;
 		return true;
 	}
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------

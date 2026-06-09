@@ -18,7 +18,6 @@
 #include "Game/Entity.hpp"
 #include "Game/Map.hpp"
 #include "Game/Player.hpp"
-#include "Game/Scorpio.hpp"
 #include "Game/Tile.hpp"
 #include "Game/App.hpp"
 #include <cmath>
@@ -71,7 +70,7 @@ void Game::Startup()
 	m_endGameDelayTimer = 3.0f;
 	ConstructMapFromXML();
 	m_currentMap = m_maps[m_currentMapNumber];
-	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( m_currentMap->m_dimensions.x * 0.5, m_currentMap->m_dimensions.y * 0.5 ), 0.f, FACTION_GOOD );
+	m_currentMap->SpawnNewEntity( ENTITY_TYPE_GOOD_PLAYER, Vec2( m_currentMap->m_dimensions.x * 0.5f, m_currentMap->m_dimensions.y * 0.5f ), 0.f, FACTION_GOOD );
 	m_nextMap = m_currentMap;
 	m_isPaused = false;
 }

@@ -23,7 +23,7 @@ Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	m_health = PLAYER_HEALTH;
 	m_lives = PLAYER_LIVES;
 	m_bulletCooldown = 1.1f;
-	InitializePlayerSpriteSheet();
+	InitializeSpriteSheet();
 	InitializePlayerVerts();
 	InitializeTurretVerts();
 	m_faction = faction;
@@ -79,38 +79,38 @@ void Player::Render() const
 		PlayDeathExplosion();
 		return;
 	}
-	RenderPlayer();
+	Entity::Render();
 	RenderGun();
 }
 
-//-----------------------------------------------------------------------------------------------
-void Player::RenderPlayer() const
-{
-	if ( m_isDead )
-	{
-		return;
-	}
-
-	std::vector<Vertex> wizardVerts;
-
-	float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
-	const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
-	const SpriteAnimDefinition currentAnim = SpriteAnimDefinition( *m_currentSpriteSheet, dirAnim.startFrame, dirAnim.endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
-
-	const SpriteDefinition& wizardSprite = currentAnim.GetSpriteDefAtTime( m_frameTimeEntity );
-	Vec2 wizardUVMins, wizardUVMaxs;
-	wizardSprite.GetUVs( wizardUVMins, wizardUVMaxs );
-
-	Vec2 mins( m_position.x - 0.5f, m_position.y - 0.5f );
-	Vec2 maxs( m_position.x + 0.5f, m_position.y + 0.5f );
-	AABB2 localBox( mins, maxs );
-
-	AddVertsForAABB2D( wizardVerts, localBox, Rgba8( 255, 255, 255 ), wizardUVMins, wizardUVMaxs );
-
-	g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
-	g_engine->m_render->DrawVertexArray( wizardVerts );
-	g_engine->m_render->BindTexture( nullptr );
-}
+////-----------------------------------------------------------------------------------------------
+//void Player::RenderPlayer() const
+//{
+//	if ( m_isDead )
+//	{
+//		return;
+//	}
+//
+//	std::vector<Vertex> wizardVerts;
+//
+//	float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
+//	const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
+//	const SpriteAnimDefinition currentAnim = SpriteAnimDefinition( *m_currentSpriteSheet, dirAnim.startFrame, dirAnim.endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
+//
+//	const SpriteDefinition& wizardSprite = currentAnim.GetSpriteDefAtTime( m_frameTimeEntity );
+//	Vec2 wizardUVMins, wizardUVMaxs;
+//	wizardSprite.GetUVs( wizardUVMins, wizardUVMaxs );
+//
+//	Vec2 mins( m_position.x - 0.5f, m_position.y - 0.5f );
+//	Vec2 maxs( m_position.x + 0.5f, m_position.y + 0.5f );
+//	AABB2 localBox( mins, maxs );
+//
+//	AddVertsForAABB2D( wizardVerts, localBox, Rgba8( 255, 255, 255 ), wizardUVMins, wizardUVMaxs );
+//
+//	g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
+//	g_engine->m_render->DrawVertexArray( wizardVerts );
+//	g_engine->m_render->BindTexture( nullptr );
+//}
 
 //-----------------------------------------------------------------------------------------------
 void Player::RenderGun() const
@@ -177,19 +177,6 @@ void Player::UpdateTurretOrientation()
 	if ( directionToMouse.GetLengthSquared() > 0.0f )
 	{
 		m_turretOrientationDegrees = directionToMouse.GetOrientationDegrees();
-	}
-}
-
-void Player::InitializePlayerSpriteSheet()
-{
-	const SpriteAnimationDefinition* spriteAnimDef = SpriteAnimationDefinition::GetByName( "Wizard" );
-	if ( spriteAnimDef )
-	{
-		m_spriteAnimationDef = spriteAnimDef;
-		m_currentAnimGroup = &spriteAnimDef->m_animationGroups[0];
-		const char* spriteSheetPath = spriteAnimDef->m_spriteSheetPath.c_str();
-		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
-		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
 	}
 }
 
