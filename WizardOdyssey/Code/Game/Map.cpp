@@ -590,7 +590,7 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 	switch ( type )
 	{
 		case ENTITY_TYPE_GOOD_PLAYER:	newEntity = new Player( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_PLAYER );	break;
-		case ENTITY_TYPE_EVIL_ARIES:	newEntity = new Aries( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_ARIES );	break;
+		case ENTITY_TYPE_EVIL_ARIES:	newEntity = new Aries( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_ARIES, "SmallBaldDude" );	break;
 		case ENTITY_TYPE_GOOD_BULLET:	newEntity = new Bullet( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_BULLET );	break;
 		default:																										return nullptr;
 	}

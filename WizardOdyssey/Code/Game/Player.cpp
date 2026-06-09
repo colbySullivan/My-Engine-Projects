@@ -14,15 +14,9 @@
 Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
-	m_physicsRadius = g_gameConfig->GetValue( "playerPhysicsRadius", 0.3f );
-	m_cosmeticRadius = g_gameConfig->GetValue( "playerCosmeticRadius", 0.5f );
-	m_isPushedByWalls = true;
-	m_isPushedByEntities = true;
-	m_doesPushEntities = true;
-	m_isHitByBullets = true;
-	m_health = PLAYER_HEALTH;
-	m_lives = PLAYER_LIVES;
-	m_bulletCooldown = 1.1f;
+	m_bulletCooldown = 0.1f;
+	m_defName = "Wizard";
+	InitializeDefitionStats();
 	InitializeSpriteSheet();
 	InitializePlayerVerts();
 	InitializeTurretVerts();
@@ -30,8 +24,6 @@ Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	m_gunTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/goldgun.png" );
 	m_wizardTexture = m_game->m_playerTurretTexture;
 	m_map = map;
-
-	g_engine->m_render->BindTexture( nullptr );
 }
 
 //------------------------------------------------------------------------------
@@ -68,7 +60,7 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 
 	TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
 
-	m_position += m_velocity * deltaSeconds;
+	m_position += m_velocity * m_walkSpeed * deltaSeconds;
 }
 
 //------------------------------------------------------------------------------
@@ -82,35 +74,6 @@ void Player::Render() const
 	Entity::Render();
 	RenderGun();
 }
-
-////-----------------------------------------------------------------------------------------------
-//void Player::RenderPlayer() const
-//{
-//	if ( m_isDead )
-//	{
-//		return;
-//	}
-//
-//	std::vector<Vertex> wizardVerts;
-//
-//	float secondsPerFrame = m_currentAnimGroup->m_secondsPerFrame;
-//	const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
-//	const SpriteAnimDefinition currentAnim = SpriteAnimDefinition( *m_currentSpriteSheet, dirAnim.startFrame, dirAnim.endFrame, secondsPerFrame, m_currentAnimGroup->m_playbackMode );
-//
-//	const SpriteDefinition& wizardSprite = currentAnim.GetSpriteDefAtTime( m_frameTimeEntity );
-//	Vec2 wizardUVMins, wizardUVMaxs;
-//	wizardSprite.GetUVs( wizardUVMins, wizardUVMaxs );
-//
-//	Vec2 mins( m_position.x - 0.5f, m_position.y - 0.5f );
-//	Vec2 maxs( m_position.x + 0.5f, m_position.y + 0.5f );
-//	AABB2 localBox( mins, maxs );
-//
-//	AddVertsForAABB2D( wizardVerts, localBox, Rgba8( 255, 255, 255 ), wizardUVMins, wizardUVMaxs );
-//
-//	g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
-//	g_engine->m_render->DrawVertexArray( wizardVerts );
-//	g_engine->m_render->BindTexture( nullptr );
-//}
 
 //-----------------------------------------------------------------------------------------------
 void Player::RenderGun() const

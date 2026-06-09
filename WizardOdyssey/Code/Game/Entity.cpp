@@ -6,9 +6,10 @@
 #include "Game/GameCommon.hpp"
 #include "Game/Game.hpp"
 #include "Game/Map.hpp"
+#include "Game/ActorDefinitions.hpp"
 
 
-Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName )
 {
 	m_game = owner;
 	m_position = startPos;
@@ -17,6 +18,7 @@ Entity::Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, Enti
 	m_faction = faction;
 	m_map = map;
 	m_entityType = type;
+	m_defName = defName;
 	InitializeBoxes();
 }
 
@@ -55,15 +57,18 @@ void Entity::Render() const
 	Vec2 wizardUVMins, wizardUVMaxs;
 	wizardSprite.GetUVs( wizardUVMins, wizardUVMaxs );
 
-	Vec2 mins( m_position.x - 0.5f, m_position.y - 0.5f );
-	Vec2 maxs( m_position.x + 0.5f, m_position.y + 0.5f );
+	float halfWidth = 0.5f * m_scale.x;
+	float halfHeight = 0.5f * m_scale.y;
+
+	Vec2 mins( m_position.x - halfWidth, m_position.y - halfHeight );
+	Vec2 maxs( m_position.x + halfWidth, m_position.y + halfHeight );
 	AABB2 localBox( mins, maxs );
 
 	AddVertsForAABB2D( spriteVerts, localBox, Rgba8( 255, 255, 255 ), wizardUVMins, wizardUVMaxs );
-
 	g_engine->m_render->BindTexture( &m_currentSpriteSheet->GetTexture() );
 	g_engine->m_render->DrawVertexArray( spriteVerts );
 	g_engine->m_render->BindTexture( nullptr );
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -259,6 +264,25 @@ void Entity::InitializeSpriteSheet()
 		Texture* spriteSheetTexture = g_engine->m_render->CreateOrGetTextureFromFile( spriteSheetPath );
 		m_currentSpriteSheet = new SpriteSheet( *spriteSheetTexture, spriteAnimDef->m_cellCount );
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Entity::InitializeDefitionStats()
+{
+	const ActorDefinitions* actorDef = ActorDefinitions::GetByName( m_defName );
+	if ( actorDef )
+	{
+		m_physicsRadius = actorDef->m_collision.m_radius;
+		m_cosmeticRadius = actorDef->m_collision.m_radius;
+		m_isPushedByWalls = true;
+		m_isPushedByEntities = true;
+		m_doesPushEntities = true;
+		m_isHitByBullets = true;
+		m_health = actorDef->m_health;
+		m_walkSpeed = actorDef->m_physics.m_walkSpeed;
+		m_scale = actorDef->m_visuals.m_visualSize;
+	}
+	
 }
 
 //-----------------------------------------------------------------------------------------------

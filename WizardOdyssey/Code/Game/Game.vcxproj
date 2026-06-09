@@ -193,6 +193,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActorDefinitions.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Aries.cpp" />
     <ClCompile Include="Bullet.cpp" />
@@ -207,6 +208,7 @@
     <ClCompile Include="TileDefinitions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActorDefinitions.hpp" />
     <ClInclude Include="App.hpp" />
     <ClInclude Include="Aries.hpp" />
     <ClInclude Include="Bullet.hpp" />

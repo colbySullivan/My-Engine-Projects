@@ -44,7 +44,7 @@ typedef std::vector<Entity*> EntityList;
 class Entity
 {
 public:
-	Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type);
+	Entity(Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName="SmallBaldDude");
 	virtual ~Entity();
 
 	virtual void Update(float deltaSeconds) = 0;
@@ -66,6 +66,7 @@ public:
 
 	void InitializeBoxes();
 	void InitializeSpriteSheet();
+	void InitializeDefitionStats();
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
 	void PlayDeathExplosion() const;
 
@@ -77,6 +78,8 @@ public:
 	Game* m_game = nullptr;
 	Vec2			m_position;
 	Vec2			m_velocity;
+	Vec2			m_scale;
+	float			m_walkSpeed;
 	float			m_orientationDegrees = 0.f;  // counter-clockwise from +x/east
 	float			m_turretOrientationDegrees = 0.f;
 	float			m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise

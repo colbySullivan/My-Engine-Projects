@@ -25,7 +25,6 @@ Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 		m_gunTexture = m_game->m_goodBulletTexture;
 	}
 	m_entityType = ENTITY_TYPE_GOOD_BULLET;
-	g_engine->m_render->BindTexture( nullptr );
 }
 
 //-----------------------------------------------------------------------------------------------

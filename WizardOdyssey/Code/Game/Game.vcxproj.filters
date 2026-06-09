@@ -55,6 +55,9 @@
     <ClCompile Include="SpriteAnimationDefinition.cpp">
       <Filter>Definitons</Filter>
     </ClCompile>
+    <ClCompile Include="ActorDefinitions.cpp">
+      <Filter>Definitons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -91,6 +94,9 @@
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="SpriteAnimationDefinition.hpp">
+      <Filter>Definitons</Filter>
+    </ClInclude>
+    <ClInclude Include="ActorDefinitions.hpp">
       <Filter>Definitons</Filter>
     </ClInclude>
   </ItemGroup>

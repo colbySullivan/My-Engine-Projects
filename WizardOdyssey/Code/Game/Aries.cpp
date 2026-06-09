@@ -7,19 +7,16 @@
 #include "Engine/Core/EngineCommon.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_physicsRadius = g_gameConfig->GetValue( "AriesPhysicsRadius", 0.3f );
 	m_cosmeticRadius = g_gameConfig->GetValue( "AriesCosmeticRadius", 0.5f );
 	m_entityType = type;
-	m_isPushedByWalls = true;
-	m_isPushedByEntities = false;
-	m_doesPushEntities = true;
-	m_isHitByBullets = true;
+	InitializeDefitionStats();
 	m_bulletCooldown = 1.3f;
 	m_gunTexture = m_game->m_ariesBodyTexture;
-	m_defName = "SmallBaldDude";
+	m_defName = defName;
 	InitializeSpriteSheet();
 }
 
@@ -47,7 +44,7 @@ void Aries::Update( float deltaSeconds )
 		if ( IsPointInsideOrientedSector2D( m_targetPos, m_position, m_orientationDegrees, 90.f, LEO_MAX_VIS ) )
 		{
 			Vec2 forwardDir = GetForwardNormal();
-			m_velocity = forwardDir;
+			m_velocity = forwardDir * m_walkSpeed;
 			m_position += m_velocity * deltaSeconds * 0.5;
 		}
 	}

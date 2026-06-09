@@ -20,6 +20,7 @@
 #include "Game/Player.hpp"
 #include "Game/Tile.hpp"
 #include "Game/App.hpp"
+#include "Game/ActorDefinitions.hpp"
 #include <cmath>
 
 XmlUtils m_xml;
@@ -38,6 +39,7 @@ Game::Game()
 	InitializeButtonsAndEvents();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
+	ActorDefinitions::InitializeActorDefs();
 	TileDefinition::InitializeTileDefs();
 	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
 	LoadTextures();
