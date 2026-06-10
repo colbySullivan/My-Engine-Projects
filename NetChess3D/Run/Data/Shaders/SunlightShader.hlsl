@@ -1,12 +1,14 @@
 Texture2D diffuseTexture : register(t0);
+Texture2D normalTexture : register(t1);
 SamplerState diffuseSampler : register(s0);
+SamplerState normalSampler : register(s1);
 
 cbuffer DebugConstants : register(b1)
 {
-	float   time;
-	int	    debugInt;
-	float   debugFloat;
-	float   padding;
+    float   time;
+    int     debugInt;
+    float   debugFloat;
+    float   padding;
 };
 
 cbuffer CameraConstants : register(b2)
@@ -28,7 +30,7 @@ struct vs_input_t
     float4 color : COLOR;
     float2 uv : TEXCOORD;
     float3 tangent : TANGENT;
-	float3 bitangent : BITANGENT;
+    float3 bitangent : BITANGENT;
     float3 normal : NORMAL;
 };
 
@@ -38,9 +40,19 @@ struct v2p_t
     float4 color : COLOR;
     float2 uv : TEXCOORD;
     float3 worldTangent : TANGENT;
-	float3 worldBitangent : BITANGENT;
+    float3 worldBitangent : BITANGENT;
     float3 worldNormal : NORMAL;
 };
+
+float3 encodeXYZToRGB8( float3 xyzVec )
+{
+    return ( xyzVec + 1.0 ) * 0.5;
+}
+
+float3 decodeRGB8ToXYZ( float3 color )
+{
+    return ( color * 2.0 ) - 1.0;
+}
 
 v2p_t VertexMain(vs_input_t input)
 {
@@ -72,37 +84,97 @@ v2p_t VertexMain(vs_input_t input)
 float4 PixelMain(v2p_t input) : SV_Target0
 {
     float4 textureColor = diffuseTexture.Sample(diffuseSampler, input.uv);
+    float4 normalColor = normalTexture.Sample(normalSampler, input.uv);
     float4 vertexColor = input.color;
     float4 diffuseColor = textureColor * vertexColor;
         
+    // Decode tangent space normal map
+    float3 normalColorToXYZ = normalize( decodeRGB8ToXYZ( normalColor.rgb ) );
+
     // A single fixed directional white sunlight shines diagonally ESE and downward across the board e.g. {3,1,-2} normalized
     float3 sunDirection = normalize( float3( 3.0, 1.0, -2.0 ) );
     float3 sunColor = float3( 1.0, 1.0, 1.0 );
+    float3 pixelToLightDir = -sunDirection;
         
-    // Get normalized world-space normal (interpolated from vertex shader)
+     // Get normalized world-space normal (interpolated from vertex shader)
     // Remember to re-normalize the interpolated world-space normal inside the Pixel Shader, since interpolating two valid different normals can result in a non-normalized vector!
     float3 worldTangent = normalize( input.worldTangent );
     float3 worldBitangent = normalize( input.worldBitangent );
     float3 worldNormal = normalize( input.worldNormal );
         
+    // TBN-To-World transformation matrix construction
+    // HLSL matrices are row-major by default
+    float3x3 TBNToWorld = float3x3( worldTangent, worldBitangent, worldNormal );
+    float3 perPixelNormalToWorld = normalize( mul( normalColorToXYZ, TBNToWorld ) );
+
     // pixels are lit based on the dot product of the (interpolated) pixel world-space normal and the pixel-to-light direction vector
-    float3 pixelToLightDir = -sunDirection;
-    float diffuseDot = dot( worldNormal, pixelToLightDir );
-       
+    float surfaceDot = dot( worldNormal, pixelToLightDir );
+    float normalMapDot = dot( perPixelNormalToWorld, pixelToLightDir );
+        
     // clamped to some minimum ambient value (e.g. 0.2f)
-    float lightStrength = max( diffuseDot, 0.2 );
+    float lightStrength = max( normalMapDot, 0.2 );
         
     // multiplied by the light’s color and the surface (chess piece triangle) diffuse color
     float3 litColor = diffuseColor.rgb * lightStrength * sunColor;
-        
-    // Normal visual testing 
-    if (debugInt == 1)
-	{
-	    litColor = (worldNormal + 1.0) * 0.5;
-	}
 
-    float4 color = float4( litColor, diffuseColor.a );
-    clip(color.a - 0.01f);
-    return color;
-   
+    // 1. Diffuse map texel only
+    if (debugInt == 1)
+    {
+        litColor = textureColor.rgb;
+    }
+
+    // 2. Normal map texel only
+    if (debugInt == 2)
+    {
+        litColor = normalColor.rgb;
+    }
+
+    // 3. UV as Red, Green (with Blue=0)
+    if (debugInt == 3)
+    {
+        litColor = float3(input.uv.x, input.uv.y, 0.0);
+    }
+
+    // 4. World-space surface (vertex) Tangents
+    if (debugInt == 4)
+    {
+        litColor = encodeXYZToRGB8( worldTangent );
+    }
+    
+    // 5. World-space surface (vertex) Bitangents
+    if (debugInt == 5)
+    {
+        litColor = encodeXYZToRGB8( worldBitangent );
+    }
+    
+    // 6. World-space surface (vertex) Normals
+    if (debugInt == 6)
+    {
+        litColor = encodeXYZToRGB8( worldNormal );
+    }
+    
+    // 7. World-space normal map normals (TBN -> World converted)
+    if (debugInt == 7)
+    {
+        litColor = encodeXYZToRGB8( perPixelNormalToWorld );
+    }
+    
+    // 8. Surface-based lighting only (Ignore normal map, diffuse texture, and vertex colors)
+    if (debugInt == 8)
+    {
+       float surfaceLight = max( surfaceDot, 0.2 );
+       litColor = float3( surfaceLight, surfaceLight, surfaceLight );
+    }
+    
+    // 9. Normal-mapped lighting only (Ignore diffuse texture and vertex colors)
+    if (debugInt == 9)
+    {
+        float normalMapLight = max( normalMapDot, 0.2 );
+        litColor = float3( normalMapLight, normalMapLight, normalMapLight );
+    }
+
+    float4 outColor = float4( litColor, diffuseColor.a );
+    clip(outColor.a - 0.01f);
+    
+    return outColor;
 }

@@ -24,6 +24,7 @@ public:
 	void PrintBoardStateToConsole() const;
 	IntVec2 GetSquareFromWorldPosition( Vec3 const& worldPos ) const;
 	Vec3 GetWorldPositionFromSquare( IntVec2 const& square ) const;
+	void UpdateDebugConstants();
 	void SetDebugConstant() const;
 
 	ChessPiece* GetPieceAt( int row, int col ) const;
@@ -39,7 +40,13 @@ public:
 	ConstantBuffer* m_debugConstant;
 	unsigned int  m_indexCount = 0;
 
+	// Debug
+	DebugConstants	m_debugConstants = { };
+	int				m_debugInt = 1;
+	float			m_debugFloat = 0.f;
+
 	Texture* m_texture = nullptr;
+	Texture* m_normalTexture = nullptr;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;
 

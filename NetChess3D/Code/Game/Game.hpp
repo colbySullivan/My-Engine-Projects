@@ -90,6 +90,7 @@ public:
 	std::vector<CameraMode*> m_cameraModes;
 	CameraMode* m_currentCameraMode = nullptr;
 	int m_currentCameraNum = 0;
+	std::string m_modeName = "Mode 0: Normal rendering";
 
 private:
 	void UpdateKeyboardInput( XboxController const& controller );

@@ -637,6 +637,7 @@ void Renderer::SetStatesIfChanged()
 	{
 		m_samplerState = m_samplerStates[( int )m_desiredSamplerMode];
 		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
+		m_deviceContext->PSSetSamplers( 1, 1, &m_samplerState ); // #TODO this was a temp fix for binding normal samples
 	}
 
 	if ( m_rasterizerStates[( int )m_desiredRasterizerMode] != m_rasterizerState )

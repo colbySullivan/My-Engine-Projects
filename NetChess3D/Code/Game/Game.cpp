@@ -102,6 +102,7 @@ void Game::Update()
 				m_props[propIndex]->Update( deltaSeconds );
 			}
 		}
+		m_chessBoard->Update();
 
 		unsigned char elapsedFraction = static_cast<unsigned char>(50 + ( m_cubeBlinkTimer->GetElapsedFraction() * 200 ));
 		m_props[1]->m_color = Rgba8(elapsedFraction, elapsedFraction, elapsedFraction);
@@ -239,51 +240,83 @@ void Game::DebugInput()
 {
 	if ( g_engine->m_input->WasKeyJustPressed( '1' ) )
 	{
-		Mat44 toWorld = m_player->GetModelToWorldTransform();
-		Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 20.f;
-		DebugAddWorldCylinder( m_player->m_position, endPos, 0.0625f, 10.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
+		m_chessBoard->m_debugInt = 1;
+		m_modeName = "Mode 1: Diffuse map texel only";
+		//Mat44 toWorld = m_player->GetModelToWorldTransform();
+		//Vec3 endPos = m_player->m_position + toWorld.GetIBasis3D() * 20.f;
+		//DebugAddWorldCylinder( m_player->m_position, endPos, 0.0625f, 10.f, Rgba8( 255, 255, 0 ), Rgba8( 255, 255, 0 ), DebugRenderMode::X_RAY );
 	}
 
 	if ( g_engine->m_input->IsKeyDown( '2' ) )
 	{
-		Vec3 playerPos = m_player->m_position;
-		DebugAddWorldSphere( Vec3( playerPos.x, playerPos.y, 0.f ), 0.1f, 60.f, Rgba8( 150, 75, 0 ), Rgba8( 150, 75, 0 ), DebugRenderMode::USE_DEPTH );
+		m_chessBoard->m_debugInt = 2;
+		m_modeName = "Mode 2: Normal map texel only";
+		//Vec3 playerPos = m_player->m_position;
+		//DebugAddWorldSphere( Vec3( playerPos.x, playerPos.y, 0.f ), 0.1f, 60.f, Rgba8( 150, 75, 0 ), Rgba8( 150, 75, 0 ), DebugRenderMode::USE_DEPTH );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '3' ) )
 	{
-		Vec3 forward = m_player->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
-		Vec3 spawnPos = m_player->m_position + forward * 2.f;
-		DebugAddWorldWireSphere( spawnPos, 1.f, 5.f, Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
+		m_chessBoard->m_debugInt = 3;
+		m_modeName = "Mode 3: UV as Red, Green (with Blue=0)";
+		//Vec3 forward = m_player->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
+		//Vec3 spawnPos = m_player->m_position + forward * 2.f;
+		//DebugAddWorldWireSphere( spawnPos, 1.f, 5.f, Rgba8( 0, 255, 0 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '4' ) )
 	{
-		DebugAddBasis( m_player->GetModelToWorldTransform(), 5.f, 1.f, 0.1f, 1.f, 1.f, DebugRenderMode::USE_DEPTH );
+		m_chessBoard->m_debugInt = 4;
+		m_modeName = "Mode 4: World-space surface (vertex) Tangent vectors";
+		//DebugAddBasis( m_player->GetModelToWorldTransform(), 5.f, 1.f, 0.1f, 1.f, 1.f, DebugRenderMode::USE_DEPTH );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '5' ) )
 	{
-		Vec3 forward = m_player->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
-		Vec3 spawnPos = m_player->m_position + forward * 2.f;
-		std::string posOrientText = Stringf( "Position: %5.2f, %5.2f, %5.2f Orientation: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z, m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
-		DebugAddWorldBillboardText( posOrientText, spawnPos, 0.125f, Vec2( 0.5f, 0.5f ), 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+		m_chessBoard->m_debugInt = 5;
+		m_modeName = "Mode 5: World-space surface (vertex) Bitangents";
+		//Vec3 forward = m_player->m_orientation.GetForwardDir_IFwd_JLeft_KUp();
+		//Vec3 spawnPos = m_player->m_position + forward * 2.f;
+		//std::string posOrientText = Stringf( "Position: %5.2f, %5.2f, %5.2f Orientation: %5.2f, %5.2f, %5.2f", m_player->m_position.x, m_player->m_position.y, m_player->m_position.z, m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
+		//DebugAddWorldBillboardText( posOrientText, spawnPos, 0.125f, Vec2( 0.5f, 0.5f ), 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '6' ) )
 	{
-		float halfHeight = 0.5f;
-		Mat44 toWorld = m_player->GetModelToWorldTransform();
-		Vec3 upVector = toWorld.GetKBasis3D();
-		Vec3 startPos = m_player->m_position - ( upVector * halfHeight );
-		Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
-		DebugAddWorldWireCylinder( startPos, endPos, 0.5f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
+		m_chessBoard->m_debugInt = 6;
+		m_modeName = "Mode 6: World-space surface (vertex) Normals";
+		//float halfHeight = 0.5f;
+		//Mat44 toWorld = m_player->GetModelToWorldTransform();
+		//Vec3 upVector = toWorld.GetKBasis3D();
+		//Vec3 startPos = m_player->m_position - ( upVector * halfHeight );
+		//Vec3 endPos = m_player->m_position + ( upVector * halfHeight );
+		//DebugAddWorldWireCylinder( startPos, endPos, 0.5f, 10.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ), DebugRenderMode::USE_DEPTH );
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( '7' ) )
 	{
-		std::string hudText = Stringf( "Camera orientation: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
-		DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+		m_chessBoard->m_debugInt = 7;
+		m_modeName = "Mode 7: World-space normal map normals";
+		//std::string hudText = Stringf( "Camera orientation: %5.2f, %5.2f, %5.2f", m_player->m_orientation.m_pitchDegrees, m_player->m_orientation.m_yawDegrees, m_player->m_orientation.m_rollDegrees );
+		//DebugAddMessage( hudText, 5.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '8' ) )
+	{
+		m_chessBoard->m_debugInt = 8;
+		m_modeName = "Mode 8: Surface-based lighting only";
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '9' ) )
+	{
+		m_chessBoard->m_debugInt = 9;
+		m_modeName = "Mode 9: Normal-mapped lighting only";
+	}
+
+	if ( g_engine->m_input->WasKeyJustPressed( '0' ) )
+	{
+		m_chessBoard->m_debugInt = 0;
+		m_modeName = "Mode 0: Normal rendering";
 	}
 }
 
@@ -304,6 +337,8 @@ void Game::RenderUI() const
 	std::string cameraName = m_cameraModes[m_currentCameraNum]->modeName;
 	hudText = Stringf( "Player camera mode (F4): %s", cameraName.c_str() );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 65.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	DebugAddScreenText( m_modeName, AABB2( Vec2( 0.f, SCREEN_SIZE_Y - 85.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) ), 10.f, Vec2( 0.f, 0.5f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 
 	DebugRenderScreen( *m_screenCamera );
 }
