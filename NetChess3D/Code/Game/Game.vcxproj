@@ -394,7 +394,6 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\Definitions\ChessPieceDefinitions.xml" />
-    <Xml Include="ChessPieceDefinitions.xml" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Run\Data\Shaders\SunlightShader.hlsl">

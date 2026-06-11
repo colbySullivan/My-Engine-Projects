@@ -21,8 +21,8 @@ ChessBoard::ChessBoard()
 	SubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
-	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/220{A011}.jpg" );
-	m_normalTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/220_norm{A011}.jpg" );
+	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_d.png" );
+	m_normalTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_n.png" );
 }
 
 //-----------------------------------------------------------------------------------------------

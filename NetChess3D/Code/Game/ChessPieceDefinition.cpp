@@ -70,6 +70,25 @@ void ChessPieceDefinition::LoadPiecesDefsFromFile( char const* filePath )
 
 		tileElem = tileElem->NextSiblingElement( "ChessPieceDefinition" );
 	}
+
+	XmlElement* tileElemTextures = rootElement->FirstChildElement( "Textures" );
+
+	for ( auto const& name : s_definitions )
+	{
+		ChessPieceDefinition& def = ChessPieceDefinition::s_definitions[name.first];
+
+		std::string texturePath = xml.ParseXmlAttribute( *tileElemTextures, "texturePlayerOne", "Data/Textures/TestUV.png" );
+		def.m_texturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
+
+		std::string normalTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "normal_texture_PlayerOne", "Data/Textures/TestUV.png" );
+		def.m_normalTexturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
+
+		texturePath = xml.ParseXmlAttribute( *tileElemTextures, "texturePlayerTwo", "Data/Textures/TestUV.png" );
+		def.m_texturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
+
+		normalTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "normal_texture_PlayerTwo", "Data/Textures/TestUV.png" );
+		def.m_normalTexturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

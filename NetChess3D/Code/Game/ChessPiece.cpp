@@ -45,11 +45,20 @@ void ChessPiece::Render() const
 	{
 		VertexBuffer* playerVbo = m_definition->m_vboPlayerOne;
 		IndexBuffer* playerIbo = m_definition->m_iboPlayerOne;
-		if ( m_playernum == 2 )
+		if ( m_playernum == 1 )
 		{
+			g_engine->m_render->BindTexture( m_definition->m_texturePlayerOne, 0 );
+			g_engine->m_render->BindTexture( m_definition->m_normalTexturePlayerOne, 1 );
+		}
+		else if ( m_playernum == 2 )
+		{
+			g_engine->m_render->BindTexture( m_definition->m_texturePlayerTwo, 0 );
+			g_engine->m_render->BindTexture( m_definition->m_normalTexturePlayerTwo, 1 );
+
 			playerVbo = m_definition->m_vboPlayerTwo;
 			playerIbo = m_definition->m_iboPlayerTwo;
 		}
+
 		g_engine->m_render->DrawIndexBuffer( playerVbo, playerIbo, ( unsigned int )m_definition->m_indexes.size() );
 	}
 	else

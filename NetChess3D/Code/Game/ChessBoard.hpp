@@ -42,7 +42,7 @@ public:
 
 	// Debug
 	DebugConstants	m_debugConstants = { };
-	int				m_debugInt = 1;
+	int				m_debugInt = 0;
 	float			m_debugFloat = 0.f;
 
 	Texture* m_texture = nullptr;

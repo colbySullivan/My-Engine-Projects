@@ -51,6 +51,10 @@ public:
 	VertexBuffer* m_vboPlayerTwo = nullptr;
 	IndexBuffer* m_iboPlayerTwo = nullptr;
 	Shader* m_shader = nullptr;
+	Texture* m_texturePlayerOne = nullptr;
+	Texture* m_texturePlayerTwo = nullptr;
+	Texture* m_normalTexturePlayerOne = nullptr;
+	Texture* m_normalTexturePlayerTwo = nullptr;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;

@@ -89,9 +89,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="ChessPieceDefinitions.xml">
-      <Filter>Definitions</Filter>
-    </Xml>
     <Xml Include="..\..\Run\Data\Definitions\ChessPieceDefinitions.xml">
       <Filter>Definitions</Filter>
     </Xml>

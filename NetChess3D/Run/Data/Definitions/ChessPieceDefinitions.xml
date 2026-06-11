@@ -5,4 +5,6 @@
 	<ChessPieceDefinition name="Knight" symbol="N" shader="Data/Shaders/SunlightShader"/>
 	<ChessPieceDefinition name="Bishop" symbol="B" shader="Data/Shaders/SunlightShader"/>
 	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader"/>
+
+	<Textures texturePlayerOne="Data/Textures/220{A011}.jpg" normal_texture_PlayerOne="Data/Textures/220_norm{A011}.jpg" texturePlayerTwo="Data/Textures/240{A011}.jpg" normal_texture_PlayerTwo="Data/Textures/240_norm{A011}.jpg"/>
 </Definitions>
