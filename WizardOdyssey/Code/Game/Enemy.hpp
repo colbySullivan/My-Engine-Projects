@@ -16,5 +16,8 @@ public:
 	void Respawn() override;
 
 private:
-
+	Timer* m_spawnTimer;
+	Texture* m_spawnTexture;
+	void UpdateMoveIfSpawned();
+	void RenderSpawnX() const;
 };

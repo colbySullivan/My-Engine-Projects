@@ -16,6 +16,9 @@ Enemy::Enemy( Game* owner, Vec2 const& startPos, float orientationDegrees, Entit
 	m_bulletCooldown = 1.3f;
 	m_gunTexture = m_game->m_ariesBodyTexture;
 	InitializeSpriteSheet();
+	m_spawnTimer = new Timer( 1.f );
+	m_spawnTimer->Start();
+	m_spawnTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/x_mark.png" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -27,9 +30,63 @@ Enemy::~Enemy()
 //-----------------------------------------------------------------------------------------------
 void Enemy::Update( float deltaSeconds )
 {
-	Entity::Update( deltaSeconds );
+	if ( m_spawnTimer->DecrementPeriodIfElapsed() )
+	{
+		m_spawnTimer->Stop();
+	}
+	if ( m_spawnTimer->IsStopped() )
+	{
+		Entity::Update( deltaSeconds );
+		UpdateMoveIfSpawned();
+	}
+	
+}
+
+//-----------------------------------------------------------------------------------------------
+void Enemy::Render() const
+{
+	if ( m_isDead )
+		return;
+
+	if ( m_game->g_drawDebug )
+	{
+		DebugRender();
+	}
+
+	if ( !m_spawnTimer->IsStopped() )
+	{
+		RenderSpawnX();
+		return;
+	}
+	Entity::Render();
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Enemy::TakeDamage()
+{
+	m_health -= 1;
+
+	if ( m_health <= 0 )
+	{
+		m_isDead = true;
+		return true;
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Enemy::Respawn()
+{
+
+}
+
+void Enemy::UpdateMoveIfSpawned()
+{
 	m_targetPos = Vec2( 0.f, 0.f );
 	Entity* player = m_map->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+
+	float deltaSeconds = g_engine->m_systemClock->GetDeltaSeconds();
+
 	if ( m_map->HasLineOfSight( player->m_position, m_position ) && m_map->IsPlayerAlive() )
 	{
 		m_targetPos = player->m_position;
@@ -53,51 +110,18 @@ void Enemy::Update( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Enemy::Render() const
+void Enemy::RenderSpawnX() const
 {
-	if ( m_isDead )
-		return;
+	float halfWidth = 0.5f;
+	float halfHeight = 0.5f;
 
-	Entity::Render();
+	Vec2 mins( m_position.x - halfWidth, m_position.y - halfHeight );
+	Vec2 maxs( m_position.x + halfWidth, m_position.y + halfHeight );
+	AABB2 localBox( mins, maxs );
 
-	if ( m_game->g_drawDebug )
-	{
-		DebugRender();
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
-bool Enemy::TakeDamage()
-{
-	//if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
-	//{
-	//	//m_game->m_bulletBounce = g_engine->m_audio->StartSound( 5, false, 2.8f );
-	//	return false;
-	//}
-	//else
-	//{
-	//	m_health -= 1;
-
-	//	if ( m_health <= 0 )
-	//	{
-	//		m_isDead = true;
-	//		return true;
-	//	}
-	//	return true;
-	//}
-
-	m_health -= 1;
-
-	if ( m_health <= 0 )
-	{
-		m_isDead = true;
-		return true;
-	}
-	return true;
-}
-
-//-----------------------------------------------------------------------------------------------
-void Enemy::Respawn()
-{
-
+	std::vector<Vertex> spriteVerts;
+	AddVertsForAABB2D( spriteVerts, localBox, Rgba8( 255, 255, 255 ) );
+	g_engine->m_render->BindTexture( m_spawnTexture );
+	g_engine->m_render->DrawVertexArray( spriteVerts );
+	g_engine->m_render->BindTexture( nullptr );
 }

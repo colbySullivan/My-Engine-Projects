@@ -19,6 +19,7 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	m_heatMap = new TileHeatMap( m_dimensions );
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
+	g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/x_mark.png" ); // #todo Not used here but fixes stutter frame in entity
 	BuildMapTiles();
 	//CreateInitialEntities();
 }
