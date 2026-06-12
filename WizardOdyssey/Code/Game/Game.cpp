@@ -84,7 +84,6 @@ void Game::Update(float deltaSeconds)
 
 	XboxController const& controller = g_engine->m_input->GetController( 0 );
 
-	UpdateCameras( deltaSeconds );
 	UpdateKeyboardInput( controller );
 	UpdateMousePosition();
 	UpdateUIButtons();
@@ -374,24 +373,6 @@ void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) c
 	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
 }
 
-
-//-----------------------------------------------------------------------------------------------
-void Game::UpdateCameras( float deltaSeconds )
-{
-	// Random camera shake
-	//float shakeHorizontal = g_rng->RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
-	//float shakeVertical = g_rng->RollRandomFloatInRange( -m_camShakeAmount, m_camShakeAmount );
-
-	//m_worldCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( WORLD_SIZE_X + shakeHorizontal, WORLD_SIZE_Y + shakeVertical ) );
-	//m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
-
-	//if ( m_camShakeAmount > 0 )
-	//{
-	//	m_camShakeAmount -= deltaSeconds;
-	//}
-
-}
-
 //-----------------------------------------------------------------------------------------------
 // Attract Mode
 //-----------------------------------------------------------------------------------------------
@@ -592,7 +573,7 @@ void Game::InitializeButtonsAndEvents()
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Game::AdvanceGameMode( EventArgs& args )
+bool Game::AdvanceGameMode( [[maybe_unused]] EventArgs& args )
 {
 	g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
 	return false;

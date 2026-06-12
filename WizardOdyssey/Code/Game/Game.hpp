@@ -167,7 +167,6 @@ private:
 	void RenderWinLoseSreen( Texture* texture ) const;
 
 	void UpdateUIButtons();
-	void UpdateCameras( float deltaSeconds );
 	void UpdateEntities( float deltaSeconds );
 
 	void LoadSounds();

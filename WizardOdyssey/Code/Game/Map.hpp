@@ -34,7 +34,6 @@ class Map
 	RandomNumberGenerator g_rng;
 public:
 	std::vector< Tile > m_tiles; // Note: this is NOT a 2D array!
-	//std::vector< Entity* > m_entities;
 	IntVec2 m_dimensions; // # of tiles wide (x) and high (y)
 	int m_numTilesInViewVertically;
 	bool m_debugCamera;
@@ -70,7 +69,6 @@ public:
 	void UpdatePlayerDevControls( XboxController const& controller );
 
 	// Utility
-	void AddToEntityVector( Entity* e );
 	bool HasLineOfSight( Vec2 posA, Vec2 posB) const;
 	RaycastResult2D RaycastVsTiles( Vec2 startPos, Vec2 fwdNormal, float maxDist ) const;
 	Entity* SpawnNewEntity( EntityType type, Vec2 const& position, float orientationDegrees, EntityFaction faction );
@@ -95,7 +93,6 @@ private:
 	void UpdateEntities( float deltaSeconds );
 	Vec2 GetRandomValidPointInMapVec2();
 	IntVec2 GetRandomValidPointInMapIntVec2();
-	void CheckLineOfSights();
 	std::string m_fillTileType;
 	std::string m_sprinkle1TileType;
 	std::string m_sprinkle2TileType;
@@ -103,6 +100,5 @@ private:
 	std::string m_barrierTileType;
 	TileHeatMap* m_heatMap;
 	void SwtichMapRenderMode() const;
-	void CreateValidMapWithEntities();
-	void FillInImpossibleTiles();
+	void UpdateHandlePlayerHitCollisions();
 };

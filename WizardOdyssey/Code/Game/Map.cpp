@@ -24,16 +24,17 @@ Map::Map(Game* game, MapDef const& mapDefinition)
 	m_heatMap = new TileHeatMap( m_dimensions );
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
-	CreateValidMapWithEntities();
+	BuildMapTiles();
+	CreateInitialEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
 void Map::Update( float deltaSeconds)
 {
 	PushEntityOutOfEachOther();
-	CheckLineOfSights();
 	UpdateCameras();
 	UpdateEntities( deltaSeconds );
+	UpdateHandlePlayerHitCollisions();
 	DestroyGarbageEntities();
 	PopulateDijkstraMap( *m_heatMap, IntVec2(1,1), 999999.f);
 }
@@ -75,9 +76,7 @@ void Map::PushEntityOutOfEachOther() const
 				Entity* otherEntity = m_allEntities[otherEntityIndex];
 				if ( otherEntity )
 				{
-					bool sameFaction = ( firstEntity->m_faction == otherEntity->m_faction );
 					bool eitherIsBullet = ( firstEntity->m_entityType == ENTITY_TYPE_GOOD_BULLET ) || ( otherEntity->m_entityType == ENTITY_TYPE_GOOD_BULLET );
-					//if ( sameFaction && eitherIsBullet )
 					if ( eitherIsBullet )
 						continue;
 
@@ -95,18 +94,6 @@ void Map::PushEntityOutOfEachOther() const
 					else if ( isBPushed && isAPushed )
 					{
 						PushDiscsOutOfEachOther2D( firstEntity->m_position, firstEntity->m_physicsRadius, otherEntity->m_position, otherEntity->m_physicsRadius );
-					}
-					Player* player = dynamic_cast< Player* >( firstEntity );
-					if ( player )
-					{
-						player->PlayerHit();
-						continue;
-					}
-
-					player = dynamic_cast< Player* >( otherEntity );
-					if ( player )
-					{
-						player->PlayerHit();
 					}
 
 				}
@@ -459,22 +446,6 @@ IntVec2 Map::GetRandomValidPointInMapIntVec2()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::CheckLineOfSights()
-{
-	for ( int playerIndex = 0; playerIndex < static_cast<int>(m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER].size()); ++playerIndex )
-	{
-		Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][playerIndex];
-		if ( player )
-		{
-			for (int enemyIndex = 0; enemyIndex < static_cast<int>(m_allEntities.size()) ; ++enemyIndex)
-			{
-				
-			}
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
 void Map::SwtichMapRenderMode() const
 {
 	switch ( m_game->m_mapRenderMode )
@@ -489,37 +460,19 @@ void Map::SwtichMapRenderMode() const
 }
 
 //-----------------------------------------------------------------------------------------------
-void Map::CreateValidMapWithEntities()
+void Map::UpdateHandlePlayerHitCollisions()
 {
-	IntVec2 endCheckpoint = IntVec2( m_dimensions.x - 2, m_dimensions.y - 2 );
-	bool notValid = true;
-	int invalidTries = 0;
-	while ( notValid &&  invalidTries < 1000 )
+	for ( auto* player : m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER] )
 	{
-		BuildMapTiles();
-		PopulateDijkstraMap( *m_heatMap, IntVec2( 1, 1 ), 999999.f );
-		if ( m_heatMap->Get( endCheckpoint ) < 999999.f ) //TODO don't hardcode // special
+		for ( auto* enemy : m_allEntities )
 		{
-			FillInImpossibleTiles();
-			CreateInitialEntities();
-			notValid = false;
-		}
-		invalidTries++;
-	}
-
-}
-
-//-----------------------------------------------------------------------------------------------
-void Map::FillInImpossibleTiles()
-{
-	for ( int tileY = 0; tileY < m_dimensions.y; ++tileY )
-	{
-		for ( int tileX = 0; tileX < m_dimensions.x; ++tileX )
-		{
-			int tileIndex = GetTileIndexForTileCoords( IntVec2( tileX, tileY ) );
-			if ( m_heatMap->Get( IntVec2( tileX, tileY ) ) == 999999.f && m_tiles[tileIndex].m_type == m_fillTileType )
+			if ( player != enemy )
 			{
-				m_tiles[tileIndex].m_type = m_sprinkle2TileType;
+				if ( DoDiscsOverlap( player->m_position, player->m_physicsRadius, enemy->m_position, enemy->m_physicsRadius ) )
+				{
+					Player* playerCast = dynamic_cast<Player*>( player );
+					playerCast->PlayerHit();
+				}
 			}
 		}
 	}
@@ -528,12 +481,6 @@ void Map::FillInImpossibleTiles()
 //-----------------------------------------------------------------------------------------------
 void Map::CreateInitialEntities()
 {
-	/*for ( int Index = 0; Index < 10; ++Index )
-	{
-		SpawnNewEntity( ENTITY_TYPE_EVIL_SCORPIO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
-		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
-	}*/
 	SpawnNewEntity( ENTITY_TYPE_EVIL_SMALL_BALD_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_ARM_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_DUDE_EATING, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
