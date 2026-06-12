@@ -39,6 +39,7 @@ void Enemy::Update( float deltaSeconds )
 	{
 		Entity::Update( deltaSeconds );
 		UpdateMoveIfSpawned();
+		//SearchForPlayerAndTryToShoot( deltaSeconds ); // #todo this logic still works // Change the texture and radius // Attach to ranged definitions
 	}
 	
 }

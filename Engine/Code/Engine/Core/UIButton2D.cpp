@@ -74,3 +74,9 @@ bool UIButton2D::IsHovered() const
 {
 	return m_isCurrentlyHovered;
 }
+
+//-----------------------------------------------------------------------------------------------
+void UIButton2D::AddArg( std::string argValue, std::string argName )
+{
+	m_eventArgs.SetValue( argValue, argName );
+}

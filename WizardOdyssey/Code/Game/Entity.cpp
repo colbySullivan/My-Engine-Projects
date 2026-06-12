@@ -160,35 +160,6 @@ void Entity::WrapAroundScreen()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Entity::spawnRandomEdge()
-{
-	int spawnEdge = g_rng.RollRandomIntInRange( 0, 3 );
-
-	switch ( spawnEdge )
-	{
-	case 0: // Left
-		m_position.x = -m_cosmeticRadius;
-		m_position.y = g_rng.RollRandomFloatInRange( 0, WORLD_SIZE_Y );
-		break;
-
-	case 1: // Right
-		m_position.x = WORLD_SIZE_X + m_cosmeticRadius;
-		m_position.y = g_rng.RollRandomFloatInRange( 0, WORLD_SIZE_Y );
-		break;
-
-	case 2: // Top
-		m_position.x = g_rng.RollRandomFloatInRange( 0, WORLD_SIZE_X );
-		m_position.y = WORLD_SIZE_Y + m_cosmeticRadius;
-		break;
-
-	case 3: // Bottom
-		m_position.x = g_rng.RollRandomFloatInRange( 0, WORLD_SIZE_X );
-		m_position.y = -m_cosmeticRadius;
-		break;
-	}
-}
-
-//-----------------------------------------------------------------------------------------------
 void Entity::SearchForPlayerAndTryToShoot( float deltaSeconds )
 {
 	m_targetPos = Vec2( 0.f, 0.f );

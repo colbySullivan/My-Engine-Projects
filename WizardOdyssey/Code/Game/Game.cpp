@@ -116,6 +116,11 @@ void Game::Update(float deltaSeconds)
 		m_currentMapNumber = 0;
 	}
 
+	if ( m_currentGameState == GAMESTATE_CHARACTER_SELECT )
+	{
+		UpdateCharacterSelectMode( deltaSeconds );
+	}
+
 	if ( m_currentGameState == GAMESTATE_PLAY )
 	{
 		if ( m_endGame )
@@ -168,6 +173,12 @@ void Game::Render() const
 	{
 		g_engine->m_render->BindTexture( nullptr );
 		RenderAttractMode();
+		RenderUI();
+	}
+
+	if ( m_currentGameState == GAMESTATE_CHARACTER_SELECT )
+	{
+		RenderCharacterSelectMode();
 		RenderUI();
 	}
 
@@ -382,6 +393,12 @@ void Game::UpdateEntities(float deltaSeconds)
 }
 
 //-----------------------------------------------------------------------------------------------
+void Game::UpdateCharacterSelectMode( float deltaSeconds )
+{
+	
+}
+
+//-----------------------------------------------------------------------------------------------
 void Game::RenderAttractMode() const
 {
 	m_screenCamera->SetOrthoView( Vec2( 0.f, 0.f ), Vec2( SCREEN_SIZE_X, SCREEN_SIZE_Y ) );
@@ -397,6 +414,12 @@ void Game::RenderAttractMode() const
 	g_engine->m_render->BindTexture( nullptr );
 
 	g_engine->m_render->EndCamera( *m_screenCamera );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderCharacterSelectMode() const
+{
+
 }
 
 //------------------------------------------------------------------------------
@@ -557,23 +580,38 @@ void Game::UpdateMousePosition()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeButtonsAndEvents()
 {
+	// Attract screen
 	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
+	SubscribeEventCallbackFunction("CharacterSelect", Game::CharacterSelect);
 	GameUIButton* startButton = new GameUIButton;
 	startButton->buttonRef = new UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f, "Start Game", "StartGame", Rgba8( 120, 0, 0 ) );
 	startButton->gameState = GAMESTATE_ATTRACT;
 	m_buttons.push_back( startButton );
 
+	// Character select
+	GameUIButton* characterSelectButton1 = new GameUIButton;
+	characterSelectButton1->buttonRef = new UIButton2D( Vec2( 400.f, 200.f ), 200.f, 100.f, "Character Select 1", "CharacterSelect", Rgba8( 0, 120, 0 ) );
+	characterSelectButton1->gameState = GAMESTATE_CHARACTER_SELECT;
+	characterSelectButton1->buttonRef->AddArg( "CharacterOption", "1" );
+	m_buttons.push_back( characterSelectButton1 );
+
+	GameUIButton* characterSelectButton2 = new GameUIButton;
+	characterSelectButton2->buttonRef = new UIButton2D( Vec2( 800.f, 200.f ), 200.f, 100.f, "Character Select 2", "CharacterSelect", Rgba8( 0, 120, 0 ) );
+	characterSelectButton2->gameState = GAMESTATE_CHARACTER_SELECT;
+	characterSelectButton2->buttonRef->AddArg( "CharacterOption", "2" );
+	m_buttons.push_back( characterSelectButton2 );
+
+	GameUIButton* characterSelectButton3 = new GameUIButton;
+	characterSelectButton3->buttonRef = new UIButton2D( Vec2( 1200.f, 200.f ), 200.f, 100.f, "Character Select 3", "CharacterSelect", Rgba8( 0, 120, 0 ) );
+	characterSelectButton3->gameState = GAMESTATE_CHARACTER_SELECT;
+	characterSelectButton3->buttonRef->AddArg( "CharacterOption", "3" );
+	m_buttons.push_back( characterSelectButton3 );
+
+	// Game buttons
 	GameUIButton* backButton = new GameUIButton;
 	backButton->buttonRef = new UIButton2D( Vec2( 100.f, 700.f ), 200.f, 100.f, "Go Back?", "StartGame", Rgba8( 120, 0, 0 ) );
 	backButton->gameState = GAMESTATE_PLAY;
 	m_buttons.push_back( backButton );
-}
-
-//-----------------------------------------------------------------------------------------------
-bool Game::AdvanceGameMode( [[maybe_unused]] EventArgs& args )
-{
-	g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
-	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -608,4 +646,35 @@ void Game::LoadTextures()
 	m_explosionSpriteSheet = new SpriteSheet( *spriteSheetTextureExplosion, IntVec2( 5, 5 ) );
 	m_tilesSpriteSheetAnim = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::ONCE );
 	m_tilesSpriteSheetAnimPingPong = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::PINGPONG);
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Game::AdvanceGameMode( [[maybe_unused]] EventArgs& args )
+{
+	g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
+	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool Game::CharacterSelect( [[maybe_unused]] EventArgs& args )
+{
+	int characterNum = args.GetValue( "CharacterOption", -1 );
+	if ( characterNum == 1 )
+	{
+		g_app->m_game->m_playerDefChosen = "WizardBase";
+		g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
+	}
+
+	if ( characterNum == 2 )
+	{
+		g_app->m_game->m_playerDefChosen = "WizardMelee";
+		g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
+	}
+
+	if ( characterNum == 3 )
+	{
+		g_app->m_game->m_playerDefChosen = "WizardRanged";
+		g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
+	}
+	return false;
 }

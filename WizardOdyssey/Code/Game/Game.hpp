@@ -25,6 +25,7 @@ struct MapDef;
 enum Game_State
 {
 	GAMESTATE_ATTRACT,
+	GAMESTATE_CHARACTER_SELECT,
 	GAMESTATE_PLAY,
 	NUM_GAMESTATES
 };
@@ -152,6 +153,8 @@ public:
 	float				m_soundDurationTimer = 0.f;
 	float				m_shotSoundDurationTimer = 0.f;
 
+	std::string			m_playerDefChosen;
+
 
 private:
 	App* m_app = nullptr;
@@ -162,12 +165,14 @@ private:
 	void RenderUIButtons() const;
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void RenderAttractMode() const;
+	void RenderCharacterSelectMode() const;
 	void RenderEntities() const;
 	void RenderPauseSreen() const;
 	void RenderWinLoseSreen( Texture* texture ) const;
 
 	void UpdateUIButtons();
 	void UpdateEntities( float deltaSeconds );
+	void UpdateCharacterSelectMode( float deltaSeconds );
 
 	void LoadSounds();
 	void InitializePauseVerts();
@@ -182,4 +187,5 @@ private:
 
 	// Events
 	static bool AdvanceGameMode( EventArgs& args );
+	static bool CharacterSelect( EventArgs& args );
 };

@@ -15,7 +15,7 @@ Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_bulletCooldown = 0.1f;
-	m_defName = "Wizard";
+	m_defName = m_game->m_playerDefChosen;
 	InitializeDefitionStats();
 	InitializeSpriteSheet();
 	InitializePlayerVerts();

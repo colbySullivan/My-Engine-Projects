@@ -1,8 +1,34 @@
 <Definitions>
 	<!-- SpawnPoint -->
 	<ActorDefinition name="SpawnPoint" />
-	<!-- Wizard -->
-	<ActorDefinition name="Wizard" health="5" visible="true">
+	<!-- WizardBase -->
+	<ActorDefinition name="WizardBase" health="5" visible="true">
+		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
+		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
+		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
+		<Visuals size="1.5,1.5" pivot="0.0,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data/Textures/TheWizard.png" cellCount="4,3">
+			<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.1" playbackMode="Loop">
+				<Direction vector="1,0">
+					<Animation startFrame="0" endFrame="3"/>
+				</Direction>
+
+				<Direction vector="-1,0">
+					<Animation startFrame="3" endFrame="5"/>
+				</Direction>
+			</AnimationGroup>
+		</Visuals>
+		<Sounds>
+			<Sound sound="Hurt" name="Data/Audio/PlayerHurt.wav"/>
+			<Sound sound="Death" name="Data/Audio/PlayerDeath1.wav"/>
+		</Sounds>
+		<Inventory>
+			<Weapon name="Pistol" />
+			<Weapon name="PAPRPD" />
+		</Inventory>
+	</ActorDefinition>
+
+	<!-- WizardMelee -->
+	<ActorDefinition name="WizardMelee" health="50" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
 		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
@@ -27,6 +53,33 @@
 		</Inventory>
 	</ActorDefinition>
 	
+	<!-- WizardRanged -->
+	<ActorDefinition name="WizardRanged" health="500" visible="true">
+		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
+		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
+		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
+		<Visuals size="1.5,1.5" pivot="0.0,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data/Textures/TheWizard.png" cellCount="4,3">
+			<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.1" playbackMode="Loop">
+				<Direction vector="1,0">
+					<Animation startFrame="0" endFrame="3"/>
+				</Direction>
+
+				<Direction vector="-1,0">
+					<Animation startFrame="3" endFrame="5"/>
+				</Direction>
+			</AnimationGroup>
+		</Visuals>
+		<Sounds>
+			<Sound sound="Hurt" name="Data/Audio/PlayerHurt.wav"/>
+			<Sound sound="Death" name="Data/Audio/PlayerDeath1.wav"/>
+		</Sounds>
+		<Inventory>
+			<Weapon name="Pistol" />
+			<Weapon name="PAPRPD" />
+		</Inventory>
+	</ActorDefinition>
+	
+	<!-- Wizard -->
 	<!-- SmallBaldDude -->
 	<ActorDefinition name="SmallBaldDude" health="100" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
