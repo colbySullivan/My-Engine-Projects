@@ -57,6 +57,14 @@ void Entity::Render() const
 	Vec2 wizardUVMins, wizardUVMaxs;
 	wizardSprite.GetUVs( wizardUVMins, wizardUVMaxs );
 
+	// Flip sprite when moving left
+	if ( m_velocity.x < 0 )
+	{
+		float minSave = wizardUVMins.x;
+		wizardUVMins.x = wizardUVMaxs.x;
+		wizardUVMaxs.x = minSave;
+	}
+
 	float halfWidth = 0.5f * m_scale.x;
 	float halfHeight = 0.5f * m_scale.y;
 

@@ -593,7 +593,7 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 		case ENTITY_TYPE_GOOD_BULLET:	newEntity = new Bullet( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_BULLET );	break;
 		case ENTITY_TYPE_GOOD_PLAYER:	newEntity = new Player( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_PLAYER );	break;
 
-		// Enemies
+		// Enemies - This hurts my eyes but it works so let is be written
 		case ENTITY_TYPE_EVIL_SMALL_BALD_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_BALD_DUDE,	"SmallBaldDude" );	break;
 		case ENTITY_TYPE_EVIL_BIG_ARM_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_ARM_DUDE,		"ENTITY_TYPE_EVIL_BIG_ARM_DUDE" );	break;
 		case ENTITY_TYPE_EVIL_BIG_DUDE_EATING:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_DUDE_EATING,	"ENTITY_TYPE_EVIL_BIG_DUDE_EATING" );	break;
