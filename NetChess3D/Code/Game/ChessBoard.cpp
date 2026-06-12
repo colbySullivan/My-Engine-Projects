@@ -225,6 +225,14 @@ bool ChessBoard::IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& to
 	return ( manhattanX * manhattanY == 2 );
 }
 
+bool ChessBoard::isDiaganol( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const
+{
+	int manhattanX = abs( toSquare.x - fromSquare.x );
+	int manhattanY = abs( toSquare.y - fromSquare.y );
+
+	return ( manhattanX * manhattanY == 0 );
+}
+
 //-----------------------------------------------------------------------------------------------
 void ChessBoard::SetBoardFromString( std::string boardString )
 {
@@ -361,16 +369,6 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 			return false;
 		}
 	}
-
-	// "Sliding" pieces path check
-	if ( piece->m_definition->m_type != Knight )
-	{
-		if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
-		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
-			return false;
-		}
-	}
 	
 	// Pawn movement
 	if ( piece->m_definition->m_type == Pawn )
@@ -390,6 +388,22 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 			}
 		}
 
+		// "Sliding" pieces path check
+		if ( piece->m_definition->m_type != Knight )
+		{
+			if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
+				return false;
+			}
+			bool movingDiagonal = g_activeChessBoard->isDiaganol( fromSquare, toSquare );
+			if ( piece->m_definition->m_type == Rook && movingDiagonal )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks can only move in a straight line!" );
+				return false;
+			}
+		}
+
 		// Moving forward not empty
 		if ( manhattanX == 0 && targetPiece != nullptr )
 		{
@@ -405,6 +419,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		}
 	}
 
+	// King movement
 	if ( piece->m_definition->m_type == King )
 	{
 		int manhattanX = toSquare.x - fromSquare.x;
@@ -427,7 +442,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
 
-	// Move piece
+	// Move pieces
 	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
 	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
 	piece->m_firstMove = false;	

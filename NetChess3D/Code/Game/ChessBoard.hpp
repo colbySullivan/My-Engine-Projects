@@ -32,6 +32,7 @@ public:
 	bool IsValidTargetSquare( IntVec2 const& toSquare, int currentPlayer ) const;
 	bool IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
 	bool IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
+	bool isDiaganol( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
 	void SetBoardFromString( std::string boardString );
 
 	static bool Command_ChessMove( [[maybe_unused]] EventArgs& args );
