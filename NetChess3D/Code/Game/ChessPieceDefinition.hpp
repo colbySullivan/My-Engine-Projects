@@ -40,6 +40,7 @@ public:
 
 	ChessPieceType GetTypeFromString( const std::string& typeName );
 	void CreateBuffersAndCopy();
+
 public:
 	ChessPieceType m_type = Count; // #todo might need to convert name to this
 	std::string m_name;

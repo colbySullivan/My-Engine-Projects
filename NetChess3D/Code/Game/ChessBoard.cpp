@@ -6,7 +6,8 @@
 static ChessBoard* g_activeChessBoard = nullptr;
 
 //-----------------------------------------------------------------------------------------------
-ChessBoard::ChessBoard()
+ChessBoard::ChessBoard( Game* game )
+	: m_game( game )
 {
 	for ( int row = 0; row < 8; ++row )
 	{
@@ -19,6 +20,8 @@ ChessBoard::ChessBoard()
 	m_gameOver = false;
 	SubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
 	SubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
+	SubscribeEventCallbackFunction( "ChessOverride", Command_ChessOverride );
+
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
 	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_d.png" );
@@ -132,7 +135,7 @@ Vec3 ChessBoard::GetWorldPositionFromSquare( IntVec2 const& square ) const
 
 void ChessBoard::UpdateDebugConstants()
 {
-	m_debugConstants.time = g_engine->m_systemClock->GetTotalSeconds();
+	m_debugConstants.time = (float)g_engine->m_systemClock->GetTotalSeconds();
 	m_debugConstants.debugFloat = m_debugFloat;
 	m_debugConstants.debugInt = m_debugInt;
 }
@@ -220,6 +223,49 @@ bool ChessBoard::IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& to
 	int deltaY = abs( toSquare.y - fromSquare.y );
 
 	return ( deltaX * deltaY == 2 );
+}
+
+//-----------------------------------------------------------------------------------------------
+void ChessBoard::SetBoardFromString( std::string boardString )
+{
+	if ( boardString.length() < 64 )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "SetBoardFromString: Board string must be at least 64 characters long!" );
+		return;
+	}
+
+	for ( int row = 0; row < 8; ++row )
+	{
+		for ( int column = 0; column < 8; ++column )
+		{
+			ChessPiece* lingeringPiece = GetPieceAt( row, column );
+			if ( lingeringPiece )
+			{
+				m_game->RemoveChessPiece( lingeringPiece );
+				SetPieceAt( row, column, nullptr );
+				delete lingeringPiece;
+			}
+
+			int stringPosition = ( row * 8 ) + column;
+			int playerNum = 1;
+			char pieceChar = boardString[stringPosition];
+			if ( pieceChar == '.' )
+			{
+				continue;
+			}
+
+			std::string defName = GetTypeFromChar( pieceChar, playerNum );
+			ChessPieceDefinition const* pieceDef = ChessPieceDefinition::GetByName( defName );
+
+			if ( pieceDef )
+			{
+				Vec3 position = GetWorldPositionFromSquare( IntVec2( column, row ) );
+				ChessPiece* newPiece = new ChessPiece( m_game, pieceDef, position, playerNum );
+				SetPieceAt( row, column, newPiece );
+				m_game->m_chessPieces.push_back( newPiece );
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -400,6 +446,25 @@ void ChessBoard::ChangePlayer()
 }
 
 //-----------------------------------------------------------------------------------------------
+std::string ChessBoard::GetTypeFromChar( const char& typeName, int& playerNum )
+{
+	char typeNameUpper = ( char )toupper( typeName );
+	if ( typeName != typeNameUpper )
+	{
+		playerNum = 2;
+	}
+
+	if ( typeNameUpper == 'P' )   return "Pawn";
+	if ( typeNameUpper == 'R' )   return "Rook";
+	if ( typeNameUpper == 'N' ) return "Knight";
+	if ( typeNameUpper == 'B' ) return "Bishop";
+	if ( typeNameUpper == 'Q' )  return "Queen";
+	if ( typeNameUpper == 'K' )   return "King";
+
+	return "";
+}
+
+//-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_ChessMove( EventArgs& args )
 {
 	if ( g_activeChessBoard )
@@ -417,6 +482,17 @@ bool ChessBoard::Command_DisplayBoard( [[maybe_unused]] EventArgs& args )
 	if ( g_activeChessBoard )
 	{
 		g_activeChessBoard->PrintBoardStateToConsole();
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::Command_ChessOverride( [[maybe_unused]] EventArgs& args )
+{
+	if ( g_activeChessBoard )
+	{
+		std::string boardString = args.GetValue( "board", "" );
+		g_activeChessBoard->SetBoardFromString( boardString );
 	}
 	return false;
 }

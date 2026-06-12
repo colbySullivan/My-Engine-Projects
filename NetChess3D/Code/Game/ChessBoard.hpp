@@ -12,11 +12,12 @@ struct DebugConstants
 };
 
 class ChessPiece;
+class Game;
 
 class ChessBoard
 {
 public:
-	ChessBoard();
+	ChessBoard( Game* game );
 	~ChessBoard();
 	virtual void Update();
 	virtual void Render() const;
@@ -26,14 +27,16 @@ public:
 	Vec3 GetWorldPositionFromSquare( IntVec2 const& square ) const;
 	void UpdateDebugConstants();
 	void SetDebugConstant() const;
-
 	ChessPiece* GetPieceAt( int row, int col ) const;
 	void SetPieceAt( int row, int col, ChessPiece* piece );
 	bool IsValidTargetSquare( IntVec2 const& toSquare, int currentPlayer ) const;
 	bool IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
 	bool IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
+	void SetBoardFromString( std::string boardString );
+
 	static bool Command_ChessMove( [[maybe_unused]] EventArgs& args );
 	static bool Command_DisplayBoard( [[maybe_unused]] EventArgs& args );
+	static bool Command_ChessOverride( [[maybe_unused]] EventArgs& args );
 
 public:
 	// Buffers
@@ -42,6 +45,7 @@ public:
 	IndexBuffer* m_ibo = nullptr;
 	ConstantBuffer* m_debugConstant;
 	unsigned int  m_indexCount = 0;
+	Game* m_game = nullptr;
 
 	// Debug
 	DebugConstants	m_debugConstants = { };
@@ -66,4 +70,5 @@ private:
 	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
 	void ChangePlayer();
+	std::string GetTypeFromChar( const char& typeName, int& playerNum );
 };

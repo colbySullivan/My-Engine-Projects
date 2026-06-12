@@ -687,7 +687,7 @@ void Game::RestartGame()
 	m_chessPieces.clear();
 
 	delete m_chessBoard;
-	m_chessBoard = new ChessBoard();
+	m_chessBoard = new ChessBoard( this );
 	CreateChessPieces();
 	ChangePlayerCamera( 1 );
 }
