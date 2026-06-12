@@ -20,4 +20,5 @@ public:
 	float m_scale = 1.0f;
 	Rgba8 m_color = Rgba8::WHITE;
 	int m_playernum;
+	bool m_firstMove = true;
 };

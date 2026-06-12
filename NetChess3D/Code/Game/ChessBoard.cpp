@@ -219,10 +219,10 @@ bool ChessBoard::IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare
 //------------------------------------------------------------------------------
 bool ChessBoard::IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const
 {
-	int deltaX = abs( toSquare.x - fromSquare.x );
-	int deltaY = abs( toSquare.y - fromSquare.y );
+	int manhattanX = abs( toSquare.x - fromSquare.x );
+	int manhattanY = abs( toSquare.y - fromSquare.y );
 
-	return ( deltaX * deltaY == 2 );
+	return ( manhattanX * manhattanY == 2 );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -375,21 +375,52 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	// Pawn movement
 	if ( piece->m_definition->m_type == Pawn )
 	{
-		int deltaX = toSquare.x - fromSquare.x;
+		int manhattanX = toSquare.x - fromSquare.x;
+		int manhattanY = toSquare.y - fromSquare.y;
+
 		ChessPiece* targetPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 
+		// Can only move 2 on first move
+		if ( abs( manhattanY ) > 1 )
+		{
+			if ( (fromSquare.y != 1 && fromSquare.y != 6) || abs( manhattanY ) > 2 )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move 2 spaces on their first turn!" );
+				return false;
+			}
+		}
+
 		// Moving forward not empty
-		if ( deltaX == 0 && targetPiece != nullptr )
+		if ( manhattanX == 0 && targetPiece != nullptr )
 		{
 			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns cannot capture forward!" );
 			return false;
 		}
 
 		// Diagonal capture check
-		if ( deltaX != 0 && targetPiece == nullptr )
+		if ( manhattanX != 0 && targetPiece == nullptr )
 		{
 			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move diagonally to capture!" );
 			return false;
+		}
+	}
+
+	if ( piece->m_definition->m_type == King )
+	{
+		int manhattanX = toSquare.x - fromSquare.x;
+		int manhattanY = toSquare.y - fromSquare.y;
+		if ( manhattanX > 1 || manhattanY > 1 )
+		{
+			if ( manhattanX == 2 && manhattanY == 0 && g_activeChessBoard->TryExecuteCastling( fromSquare, toSquare, piece ) )
+			{
+				g_activeChessBoard->ChangePlayer( piece );
+				return false;
+			}
+			else
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Kings can only move 1 square in any direction!" );
+				return false;
+			}
 		}
 	}
 
@@ -399,6 +430,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	// Move piece
 	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
 	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+	piece->m_firstMove = false;	
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
 	// Capture piece
@@ -417,15 +449,8 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	}
 
 	// Switch player
-	if ( !g_activeChessBoard->m_gameOver )
-	{
-		g_activeChessBoard->ChangePlayer();
-		piece->m_game->ChangePlayerCamera( g_activeChessBoard->m_currentPlayerNum );
-		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "" );
-		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
+	g_activeChessBoard->ChangePlayer( piece );
 
-		g_activeChessBoard->PrintBoardStateToConsole();
-	}
 	return false;
 }
 
@@ -440,9 +465,17 @@ bool ChessBoard::MoveValidInsideBoard( IntVec2 moveSquare )
 }
 
 //-----------------------------------------------------------------------------------------------
-void ChessBoard::ChangePlayer()
+void ChessBoard::ChangePlayer( ChessPiece* piece )
 {
 	m_currentPlayerNum = ( m_currentPlayerNum % 2 ) + 1;
+	if ( !g_activeChessBoard->m_gameOver )
+	{
+		piece->m_game->ChangePlayerCamera( g_activeChessBoard->m_currentPlayerNum );
+		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "" );
+		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
+
+		g_activeChessBoard->PrintBoardStateToConsole();
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -462,6 +495,46 @@ std::string ChessBoard::GetTypeFromChar( const char& typeName, int& playerNum )
 	if ( typeNameUpper == 'K' )   return "King";
 
 	return "";
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* king )
+{
+	if ( !king->m_firstMove )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Cannot castle because the King has already moved!" );
+		return false;
+	}
+
+	// #todo will do check detection here next assignment
+
+	bool isKingside = ( toSquare.x > fromSquare.x );
+	int rookStartCol = isKingside ? 7 : 0;
+	int rookEndCol = isKingside ? 5 : 3;
+
+	ChessPiece* rook = GetPieceAt( fromSquare.y, rookStartCol );
+	if ( rook == nullptr || rook->m_definition->m_type != Rook )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Matching Rook not found on starting square!" );
+		return false;
+	}
+	if ( !rook->m_firstMove )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Cannot castle because this Rook has already moved!" );
+		return false;
+	}
+
+	SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
+	SetPieceAt( toSquare.y, toSquare.x, king );
+	king->m_firstMove = false;
+
+	SetPieceAt( fromSquare.y, rookStartCol, nullptr );
+	SetPieceAt( fromSquare.y, rookEndCol, rook );
+	rook->m_firstMove = false;
+
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Castling executed successfully!" );
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------
