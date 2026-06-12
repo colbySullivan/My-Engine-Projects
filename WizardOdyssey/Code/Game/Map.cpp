@@ -14,18 +14,13 @@
 Map::Map(Game* game, MapDef const& mapDefinition)
 	: m_game( game )
 	, m_dimensions( mapDefinition.m_dimensions )
-	, m_fillTileType( mapDefinition.m_fillTileType)
-	, m_edgeTileType( mapDefinition.m_edgeTileType )
-	, m_sprinkle1TileType( mapDefinition.m_sprinkle1TileType )
-	, m_sprinkle2TileType( mapDefinition.m_sprinkle2TileType )
-	, m_barrierTileType( mapDefinition.m_barrierTileType )
-	//, m_distMapFromStartToPlayer( mapDefinition.m_dimensions )
+	, m_mapDef( mapDefinition )
 {
 	m_heatMap = new TileHeatMap( m_dimensions );
 	m_numTilesInViewVertically = 10;
 	m_debugCamera = false;
 	BuildMapTiles();
-	CreateInitialEntities();
+	//CreateInitialEntities();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -36,6 +31,7 @@ void Map::Update( float deltaSeconds)
 	UpdateEntities( deltaSeconds );
 	UpdateHandlePlayerHitCollisions();
 	DestroyGarbageEntities();
+	UpdateSpawners();
 	PopulateDijkstraMap( *m_heatMap, IntVec2(1,1), 999999.f);
 }
 
@@ -282,7 +278,6 @@ void Map::BuildMapTiles()
 	m_tiles.resize(totalTiles);
 
 	FillTile1Setup();
-	SprinkleTileSetup();
 	OutEdgeTileSetup();
 }
 
@@ -301,29 +296,7 @@ void Map::OutEdgeTileSetup()
 			if (isEdge)
 			{
 				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
-				m_tiles[tileIndex].m_type = m_edgeTileType;
-			}
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-void Map::SprinkleTileSetup()
-{
-	for (int tileY = 1; tileY < m_dimensions.y - 1; ++tileY)
-	{
-		for (int tileX = 1; tileX < m_dimensions.x - 1; ++tileX)
-		{
-
-			if (g_rng.RollRandomFloatZeroToOne() < 0.15f && (tileX > 5 || tileY > 5))
-			{
-				int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
-				m_tiles[tileIndex].m_type = m_sprinkle1TileType;
-			}
-			else if( g_rng.RollRandomFloatZeroToOne() < 0.05f && ( tileX > 5 || tileY > 5 ) )
-			{
-				int tileIndex = GetTileIndexForTileCoords( IntVec2( tileX, tileY ) );
-				m_tiles[tileIndex].m_type = m_sprinkle2TileType;
+				m_tiles[tileIndex].m_type = m_mapDef.m_edgeTileType;
 			}
 		}
 	}
@@ -338,7 +311,7 @@ void Map::FillTile1Setup()
 		{
 			int tileIndex = GetTileIndexForTileCoords(IntVec2(tileX, tileY));
 			m_tiles[tileIndex].m_tileCoords = IntVec2(tileX, tileY);
-			m_tiles[tileIndex].m_type = m_fillTileType;
+			m_tiles[tileIndex].m_type = m_mapDef.m_fillTileType;
 		}
 	}
 }
@@ -571,7 +544,6 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 		default:																										return nullptr;
 	}
 
-		
 	if ( newEntity )
 	{
 		AddEntityToMap( *newEntity );
@@ -616,4 +588,45 @@ bool Map::IsPlayerAlive()
 {
 	Entity* player = m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
 	return !player->m_isDead;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void Map::UpdateSpawners()
+{
+	if ( m_hordeTimer == nullptr )
+	{
+		m_hordeType = ( EntityType )g_rng.RollRandomIntInRange( 1, 7 );
+		m_hordeTimer = new Timer( m_mapDef.m_hordeTimer / m_mapDef.m_difficultyMultiplier );
+		m_hordeTimer->Start();
+	}
+
+	if ( m_bigBoyTimer == nullptr )
+	{
+		m_bigBoyType = ( EntityType )g_rng.RollRandomIntInRange( 8, 13 );
+		m_bigBoyTimer = new Timer( m_mapDef.m_bigBoyTimer / m_mapDef.m_difficultyMultiplier );
+		m_bigBoyTimer->Start();
+	}
+	SpawnSmallHorde();
+	SpawnBigBoy();
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::SpawnSmallHorde()
+{
+	if ( m_hordeTimer->DecrementPeriodIfElapsed() )
+	{
+		SpawnNewEntity( m_hordeType, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+		m_hordeTimer->Start();
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+void Map::SpawnBigBoy()
+{
+	if ( m_hordeTimer->DecrementPeriodIfElapsed() )
+	{
+		SpawnNewEntity( m_bigBoyType, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+		m_hordeTimer->Start();
+	}
 }

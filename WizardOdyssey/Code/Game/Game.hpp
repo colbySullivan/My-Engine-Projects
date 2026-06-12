@@ -174,7 +174,7 @@ private:
 	void InitializeWinLoseVerts();
 	void MovePlayerToNewMap();
 	void LoadTextures();
-	MapDef CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile );
+	MapDef CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, float hordeTimer, float bigBoyTimer, float difficultyMultiplier );
 	void ConstructMapFromXML();
 	SpriteAnimDefinition* m_tilesSpriteSheetAnimPingPong;
 	void UpdateMousePosition();

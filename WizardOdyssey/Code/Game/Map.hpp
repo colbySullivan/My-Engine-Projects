@@ -14,15 +14,9 @@ struct MapDef
 	IntVec2		m_dimensions;
 	std::string	m_fillTileType		= "INVALID_TILE_TYPE";
 	std::string	m_edgeTileType		= "INVALID_TILE_TYPE";
-	std::string	m_barrierTileType	= "INVALID_TILE_TYPE";
-	std::string	m_sprinkle1TileType = "INVALID_TILE_TYPE";
-	std::string	m_sprinkle2TileType = "INVALID_TILE_TYPE";
-	std::string	m_worm1TileType		= "INVALID_TILE_TYPE";
-	std::string	m_worm2TileType		= "INVALID_TILE_TYPE";
-	int			m_worm1Count		= 15;
-	int			m_worm1MaxLength	= 12;
-	int			m_worm2Count		= 60;
-	int			m_worm2MaxLength	= 8;
+	float		m_hordeTimer;
+	float		m_bigBoyTimer;
+	float		m_difficultyMultiplier;
 };
 
 //-----------------------------------------------------------------------------------------------
@@ -61,7 +55,6 @@ public:
 	void UpdateCameras();
 	void BuildMapTiles();
 	void OutEdgeTileSetup();
-	void SprinkleTileSetup();
 	void FillTile1Setup();
 
 	// Update
@@ -83,6 +76,7 @@ public:
 
 	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
 	EntityList m_allEntities;
+	MapDef m_mapDef;
 
 	//TileHeatMap		m_distMapFromStartToPlayer;
 	//TileHeatMap		m_visibilityMap;
@@ -93,12 +87,17 @@ private:
 	void UpdateEntities( float deltaSeconds );
 	Vec2 GetRandomValidPointInMapVec2();
 	IntVec2 GetRandomValidPointInMapIntVec2();
-	std::string m_fillTileType;
-	std::string m_sprinkle1TileType;
-	std::string m_sprinkle2TileType;
-	std::string m_edgeTileType;
-	std::string m_barrierTileType;
 	TileHeatMap* m_heatMap;
 	void SwtichMapRenderMode() const;
 	void UpdateHandlePlayerHitCollisions();
+
+private:
+	void UpdateSpawners();
+	void SpawnSmallHorde();
+	void SpawnBigBoy();
+	Timer* m_hordeTimer = nullptr;
+	Timer* m_bigBoyTimer = nullptr;
+	EntityType m_hordeType;
+	EntityType m_bigBoyType;
+
 };

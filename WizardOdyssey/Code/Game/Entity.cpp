@@ -260,6 +260,7 @@ void Entity::PlayDeathExplosion() const
  	g_engine->m_render->BindTexture(nullptr);
 }
 
+
 //-----------------------------------------------------------------------------------------------
 void Entity::InitializeSpriteSheet()
 {

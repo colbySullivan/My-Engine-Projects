@@ -481,16 +481,16 @@ void Game::InitializeWinLoseVerts()
 }
 
 //-----------------------------------------------------------------------------------------------
-MapDef Game::CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, std::string sprinkleTile1, std::string sprinkleTile2, std::string barrierTile )
+MapDef Game::CreateMapDef( IntVec2 dimensions, std::string fillTile, std::string edgeTile, float hordeTimer, float bigBoyTimer, float difficultyMultiplier )
 {
 	MapDef mapDef;
 
 	mapDef.m_dimensions = dimensions;
 	mapDef.m_fillTileType = fillTile;
 	mapDef.m_edgeTileType = edgeTile;
-	mapDef.m_sprinkle1TileType = sprinkleTile1;
-	mapDef.m_sprinkle2TileType = sprinkleTile2;
-	mapDef.m_barrierTileType = barrierTile;
+	mapDef.m_hordeTimer = hordeTimer;
+	mapDef.m_bigBoyTimer = bigBoyTimer;
+	mapDef.m_difficultyMultiplier = difficultyMultiplier;
 
 	return mapDef;
 }
@@ -513,14 +513,11 @@ void Game::ConstructMapFromXML()
 				std::string wormTile;
 				std::string fillTileType = m_xml.ParseXmlAttribute( *mapDefElement, "fileTileType", "LongGrass" );
 				std::string edgeTileType = m_xml.ParseXmlAttribute( *mapDefElement, "edgeTileType", "LongGrass" );
-				std::string worm1TileType = m_xml.ParseXmlAttribute( *mapDefElement, "worm1TileType", "LongGrass" );	/*worm1Count = "15"	worm1MaxLength = "12"*/
-				std::string worm2TileType = m_xml.ParseXmlAttribute( *mapDefElement, "worm2TileType", "LongGrass" );	/*worm2Count = "60"	worm2MaxLength = "8"*/
-				std::string startFloorTileType = m_xml.ParseXmlAttribute( *mapDefElement, "startFloorTileType", "LongGrass" );
-				std::string startBunkerTileType = m_xml.ParseXmlAttribute( *mapDefElement, "startBunkerTileType", "LongGrass" );
-				std::string endFloorTileType = m_xml.ParseXmlAttribute( *mapDefElement, "endFloorTileType", "LongGrass" );
-				std::string endBunkerTileType = m_xml.ParseXmlAttribute( *mapDefElement, "endBunkerTileType", "LongGrass" );
+				float hordeTimer = m_xml.ParseXmlAttribute( *mapDefElement, "hordeTimer", 2.0f );
+				float bigBoyTimer = m_xml.ParseXmlAttribute( *mapDefElement, "bigBoyTimer", 5.0f );
+				float difficultyMultiplier = m_xml.ParseXmlAttribute( *mapDefElement, "difficultyMultiplier", 1.0f );
 
-				MapDef mapDef = CreateMapDef( dimensions, fillTileType, edgeTileType, worm1TileType, worm2TileType, startBunkerTileType );
+				MapDef mapDef = CreateMapDef( dimensions, fillTileType, edgeTileType, hordeTimer, bigBoyTimer, difficultyMultiplier );
 				m_maps.push_back( new Map( g_game, mapDef ) );
 
 				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
