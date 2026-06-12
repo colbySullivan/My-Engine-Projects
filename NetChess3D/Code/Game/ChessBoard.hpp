@@ -29,6 +29,9 @@ public:
 
 	ChessPiece* GetPieceAt( int row, int col ) const;
 	void SetPieceAt( int row, int col, ChessPiece* piece );
+	bool IsValidTargetSquare( IntVec2 const& toSquare, int currentPlayer ) const;
+	bool IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
+	bool IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
 	static bool Command_ChessMove( [[maybe_unused]] EventArgs& args );
 	static bool Command_DisplayBoard( [[maybe_unused]] EventArgs& args );
 

@@ -168,6 +168,59 @@ void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
 	}
 }
 
+//------------------------------------------------------------------------------
+bool ChessBoard::IsValidTargetSquare( IntVec2 const& toSquare, int currentPlayer ) const
+{
+	ChessPiece* targetPiece = GetPieceAt( toSquare.y, toSquare.x );
+	if ( targetPiece != nullptr && targetPiece->m_playernum == currentPlayer )
+	{
+		return false;
+	}
+	return true;
+}
+
+//------------------------------------------------------------------------------
+bool ChessBoard::IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const
+{
+	int manhattanX = toSquare.x - fromSquare.x;
+	int manhattanY = toSquare.y - fromSquare.y;
+
+	int stepX = 0;
+	int stepY = 0;
+	if ( manhattanX != 0 )
+	{
+		stepX = manhattanX > 0 ? 1 : -1;
+	}
+	if ( manhattanY != 0 )
+	{
+		stepY = manhattanY > 0 ? 1 : -1;
+	}
+
+	int currentX = fromSquare.x + stepX;
+	int currentY = fromSquare.y + stepY;
+
+	while ( currentX != toSquare.x || currentY != toSquare.y )
+	{
+		if ( GetPieceAt( currentY, currentX ) != nullptr )
+		{
+			return false;
+		}
+		currentX += stepX;
+		currentY += stepY;
+	}
+
+	return true;
+}
+
+//------------------------------------------------------------------------------
+bool ChessBoard::IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const
+{
+	int deltaX = std::abs( toSquare.x - fromSquare.x );
+	int deltaY = std::abs( toSquare.y - fromSquare.y );
+
+	return ( deltaX * deltaY == 2 );
+}
+
 //-----------------------------------------------------------------------------------------------
 void ChessBoard::CreateBoardGeometry()
 {
@@ -230,6 +283,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	}
 
 	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
+
 	// No piece at to location
 	if ( piece == nullptr )
 	{
@@ -244,7 +298,54 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		return false;
 	}
 
+	// No friendly fire
+	if ( !g_activeChessBoard->IsValidTargetSquare( toSquare, piece->m_playernum ) )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Cannot capture your own piece!" );
+		return false;
+	}
+
+	// Ensure L movement
+	if ( piece->m_definition->m_type == Knight )
+	{
+		if ( !g_activeChessBoard->IsValidKnightMove( fromSquare, toSquare ) )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Knights must move in an L-shape!" );
+			return false;
+		}
+	}
+
+	// "Sliding" pieces path check
+	if ( piece->m_definition->m_type != Knight )
+	{
+		if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
+			return false;
+		}
+	}
 	
+	// Pawn movement
+	if ( piece->m_definition->m_type == Pawn )
+	{
+		int deltaX = toSquare.x - fromSquare.x;
+		ChessPiece* targetPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
+
+		// Moving forward not empty
+		if ( deltaX == 0 && targetPiece != nullptr )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns cannot capture forward!" );
+			return false;
+		}
+
+		// Diagonal capture check
+		if ( deltaX != 0 && targetPiece == nullptr )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move diagonally to capture!" );
+			return false;
+		}
+	}
+
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
 
@@ -253,7 +354,8 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
-	if ( toPiece ) // Capture piece
+	// Capture piece
+	if ( toPiece ) 
 	{
 		capturedType = toPiece->m_definition->m_type;
 		piece->m_game->RemoveChessPiece( toPiece );
@@ -267,6 +369,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		toPiece = nullptr;
 	}
 
+	// Switch player
 	if ( !g_activeChessBoard->m_gameOver )
 	{
 		g_activeChessBoard->ChangePlayer();
