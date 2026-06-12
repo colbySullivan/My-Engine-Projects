@@ -24,6 +24,16 @@ Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	m_gunTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/goldgun.png" );
 	m_wizardTexture = m_game->m_playerTurretTexture;
 	m_map = map;
+	if ( !m_hitTimer )
+	{
+		m_hitTimer = new Timer( 2.2f );
+	}
+	else
+	{
+		delete m_hitTimer;
+		m_hitTimer = new Timer( 2.2f );
+	}
+	m_hitTimer->Start();
 }
 
 //------------------------------------------------------------------------------
@@ -72,6 +82,8 @@ void Player::Render() const
 		return;
 	}
 	Entity::Render();
+	std::string hudText = Stringf( "Player health: %i", m_health );
+	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) ), 15.f, Vec2( 0.f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 	RenderGun();
 }
 
@@ -176,6 +188,16 @@ void Player::Respawn()
 	}
 	m_lives -= 1;
 	m_health = PLAYER_HEALTH;
+}
+
+//-----------------------------------------------------------------------------------------------
+void Player::PlayerHit()
+{
+	if ( m_hitTimer && m_hitTimer->DecrementPeriodIfElapsed() )
+	{
+		m_hitTimer->Start();
+		TakeDamage();
+	}
 }
 
 //------------------------------------------------------------------------------

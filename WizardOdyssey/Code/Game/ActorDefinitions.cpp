@@ -33,8 +33,8 @@ void ActorDefinitions::LoadActorDefsFromFile( char const* filePath )
 		XmlElement* collisionElem = actorElem->FirstChildElement( "Collision" );
 		if ( collisionElem )
 		{
-			def.m_collision.m_radius = xml.ParseXmlAttribute( *collisionElem, "radius", 0.25f );
-			def.m_collision.m_height = xml.ParseXmlAttribute( *collisionElem, "height", 0.6f );
+			def.m_collision.m_physicRadius = xml.ParseXmlAttribute( *collisionElem, "physicRadius", 0.f );
+			def.m_collision.m_cosmeticRadius = xml.ParseXmlAttribute( *collisionElem, "cosmeticRadius", 0.f );
 		}
 
 		XmlElement* physicsElem = actorElem->FirstChildElement( "Physics" );

@@ -65,7 +65,7 @@ public:
 	virtual void Respawn();
 	virtual EntityType GetEntityType() const;
 	virtual void TryShoot( float fireOrientation, float deltaSeconds, EntityFaction faction );
-	virtual bool TakeDamage( Vec2 bulletPos );
+	virtual bool TakeDamage();
 
 	void		Wander( float deltaSeconds );
 	bool        IsOffscreen() const;
@@ -93,8 +93,8 @@ public:
 	float			m_orientationDegrees = 0.f;  // counter-clockwise from +x/east
 	float			m_turretOrientationDegrees = 0.f;
 	float			m_angularVelocity = 0.f;  // (signed) spin rate, in degrees per second, + is counter-clockwise
-	float			m_physicsRadius = 5.f;
-	float			m_cosmeticRadius = 10.f;
+	float			m_physicsRadius;
+	float			m_cosmeticRadius;
 	int				m_health = 3;
 	int				m_startingHealth = 1;
 	int				m_debrisAmount = 3;

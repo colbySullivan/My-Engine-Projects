@@ -104,7 +104,7 @@ void Bullet::CheckEntityCollisions()
 		{
 			if ( DoDiscsOverlap( m_position, m_physicsRadius, other->m_position, other->m_physicsRadius ) )
 			{
-				if ( other->TakeDamage( m_position ) )
+				if ( other->TakeDamage() )
 				{
 					m_isDead = true;
 				}

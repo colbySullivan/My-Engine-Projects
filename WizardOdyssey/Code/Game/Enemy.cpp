@@ -10,13 +10,11 @@
 Enemy::Enemy( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
-	m_physicsRadius = g_gameConfig->GetValue( "AriesPhysicsRadius", 0.3f );
-	m_cosmeticRadius = g_gameConfig->GetValue( "AriesCosmeticRadius", 0.5f );
 	m_entityType = type;
+	m_defName = defName;
 	InitializeDefitionStats();
 	m_bulletCooldown = 1.3f;
 	m_gunTexture = m_game->m_ariesBodyTexture;
-	m_defName = defName;
 	InitializeSpriteSheet();
 }
 
@@ -69,7 +67,7 @@ void Enemy::Render() const
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Enemy::TakeDamage( Vec2 bulletPos )
+bool Enemy::TakeDamage()
 {
 	//if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
 	//{

@@ -7,8 +7,8 @@
 
 struct ActorCollisionDef
 {
-	float m_radius = 0.f;
-	float m_height = 0.f;
+	float m_physicRadius = 0.f;
+	float m_cosmeticRadius = 0.f;
 };
 
 struct ActorPhysicsDef

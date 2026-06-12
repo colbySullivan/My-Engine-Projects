@@ -280,8 +280,8 @@ void Entity::InitializeDefitionStats()
 	const ActorDefinitions* actorDef = ActorDefinitions::GetByName( m_defName );
 	if ( actorDef )
 	{
-		m_physicsRadius = actorDef->m_collision.m_radius;
-		m_cosmeticRadius = actorDef->m_collision.m_radius;
+		m_physicsRadius = actorDef->m_collision.m_physicRadius;
+		m_cosmeticRadius = actorDef->m_collision.m_cosmeticRadius;
 		m_isPushedByWalls = true;
 		m_isPushedByEntities = true;
 		m_doesPushEntities = true;
@@ -346,7 +346,7 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Entity::TakeDamage( [[maybe_unused]] Vec2 bulletPos )
+bool Entity::TakeDamage()
 {
 	if ( m_health <= 0 )
 	{

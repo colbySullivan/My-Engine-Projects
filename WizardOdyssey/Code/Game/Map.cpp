@@ -77,7 +77,8 @@ void Map::PushEntityOutOfEachOther() const
 				{
 					bool sameFaction = ( firstEntity->m_faction == otherEntity->m_faction );
 					bool eitherIsBullet = ( firstEntity->m_entityType == ENTITY_TYPE_GOOD_BULLET ) || ( otherEntity->m_entityType == ENTITY_TYPE_GOOD_BULLET );
-					if ( sameFaction && eitherIsBullet )
+					//if ( sameFaction && eitherIsBullet )
+					if ( eitherIsBullet )
 						continue;
 
 					bool isBPushed = firstEntity->m_doesPushEntities && otherEntity->m_isPushedByEntities;
@@ -95,7 +96,19 @@ void Map::PushEntityOutOfEachOther() const
 					{
 						PushDiscsOutOfEachOther2D( firstEntity->m_position, firstEntity->m_physicsRadius, otherEntity->m_position, otherEntity->m_physicsRadius );
 					}
-					
+					Player* player = dynamic_cast< Player* >( firstEntity );
+					if ( player )
+					{
+						player->PlayerHit();
+						continue;
+					}
+
+					player = dynamic_cast< Player* >( otherEntity );
+					if ( player )
+					{
+						player->PlayerHit();
+					}
+
 				}
 			}
 	}

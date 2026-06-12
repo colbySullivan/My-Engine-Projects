@@ -24,6 +24,7 @@ public:
 
 	int					m_lives = 1;
 	void Respawn() override;
+	void PlayerHit();
 
 private:
 	void InitializePlayerVerts();
@@ -42,4 +43,5 @@ private:
 	std::vector<Vertex>		m_turretVerts;
 	float					m_thrustFraction = -5.f;
 	bool					m_isMoving = false;
+	Timer*					m_hitTimer = nullptr;
 };
