@@ -30,6 +30,7 @@ Enemy::~Enemy()
 //-----------------------------------------------------------------------------------------------
 void Enemy::Update( float deltaSeconds )
 {
+	// Enemies spawn with X marker and do not update yet
 	if ( m_spawnTimer->DecrementPeriodIfElapsed() )
 	{
 		m_spawnTimer->Stop();
@@ -85,7 +86,7 @@ void Enemy::UpdateMoveIfSpawned()
 	m_targetPos = Vec2( 0.f, 0.f );
 	Entity* player = m_map->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
 
-	float deltaSeconds = g_engine->m_systemClock->GetDeltaSeconds();
+	float deltaSeconds = (float)g_engine->m_systemClock->GetDeltaSeconds();
 
 	if ( m_map->HasLineOfSight( player->m_position, m_position ) && m_map->IsPlayerAlive() )
 	{

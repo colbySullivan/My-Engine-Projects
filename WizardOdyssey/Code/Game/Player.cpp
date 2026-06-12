@@ -114,7 +114,7 @@ void Player::RenderGun() const
 void Player::UpdateLinearMovement()
 {
 	Vec2 moveDirection = Vec2( 0.f, 0.f );
-	float playerSpeed = g_gameConfig->GetValue( "playerSpeed", 1.0f );
+	float playerSpeed = m_walkSpeed * m_actorDef->m_gameStats.m_speedBoost;
 
 	if ( g_engine->m_input->IsKeyDown( 'W' ) || g_engine->m_input->IsKeyDown( 'E' ) )
 	{

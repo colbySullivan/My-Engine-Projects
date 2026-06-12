@@ -78,10 +78,6 @@ public:
 	EntityList m_allEntities;
 	MapDef m_mapDef;
 
-	//TileHeatMap		m_distMapFromStartToPlayer;
-	//TileHeatMap		m_visibilityMap;
-
-
 private:
 	Game* m_game = nullptr;
 	void UpdateEntities( float deltaSeconds );

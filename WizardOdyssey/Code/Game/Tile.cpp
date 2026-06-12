@@ -35,6 +35,5 @@ bool Tile::IsSolid() const
 //-----------------------------------------------------------------------------------------------
 std::string const& Tile::GetDefinition() const
 {
-	//return TileDefinition::s_definitions[m_type];
 	return m_type;
 }

@@ -6,6 +6,7 @@
 #include "Game/SpriteAnimationDefinition.hpp"
 #include "Engine/Core/Timer.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
+#include "ActorDefinitions.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -124,7 +125,7 @@ public:
 	bool			m_isProtected = false;
 	float			m_frameTimeEntity = 0.f;
 	bool			m_justDied = false;
-
+	const ActorDefinitions* m_actorDef = nullptr;
 	// Animations
 	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
 	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;

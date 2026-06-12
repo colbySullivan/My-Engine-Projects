@@ -278,18 +278,18 @@ void Entity::InitializeSpriteSheet()
 //-----------------------------------------------------------------------------------------------
 void Entity::InitializeDefitionStats()
 {
-	const ActorDefinitions* actorDef = ActorDefinitions::GetByName( m_defName );
-	if ( actorDef )
+	m_actorDef = ActorDefinitions::GetByName( m_defName );
+	if ( m_actorDef )
 	{
-		m_physicsRadius = actorDef->m_collision.m_physicRadius;
-		m_cosmeticRadius = actorDef->m_collision.m_cosmeticRadius;
+		m_physicsRadius = m_actorDef->m_collision.m_physicRadius;
+		m_cosmeticRadius = m_actorDef->m_collision.m_cosmeticRadius;
 		m_isPushedByWalls = true;
 		m_isPushedByEntities = true;
 		m_doesPushEntities = true;
 		m_isHitByBullets = true;
-		m_health = actorDef->m_health;
-		m_walkSpeed = actorDef->m_physics.m_walkSpeed;
-		m_scale = actorDef->m_visuals.m_visualSize;
+		m_health = m_actorDef->m_health;
+		m_walkSpeed = m_actorDef->m_physics.m_walkSpeed;
+		m_scale = m_actorDef->m_visuals.m_visualSize;
 	}
 	
 }

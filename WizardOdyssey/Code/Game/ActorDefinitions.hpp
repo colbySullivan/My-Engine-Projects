@@ -29,6 +29,18 @@ struct ActorSoundDef
 	std::string m_deathSoundPath = "";
 };
 
+struct GameStats
+{
+	int		m_healing;
+	float	m_rangeBoost;
+	float	m_meleeBoost;
+	int		m_armor;
+	int		m_magicResistance;
+	float	m_lifeSteal;
+	float	m_dodge;
+	float	m_speedBoost;
+};
+
 class ActorDefinitions
 {
 public:
@@ -48,6 +60,7 @@ public:
 	ActorPhysicsDef   m_physics;
 	ActorVisualDef	  m_visuals;
 	ActorSoundDef     m_sounds;
+	GameStats		  m_gameStats;
 
 	static std::map<std::string, ActorDefinitions> s_definitions;
 };

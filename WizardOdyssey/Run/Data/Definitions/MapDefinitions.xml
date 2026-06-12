@@ -1,7 +1,7 @@
 <MapDefinitions>
 
 	<MapDefinition
-		name="Approach"
+		name="Base"
 		dimensions="30,15"
 		fillTileType="LongGrass"
 		edgeTileType="RockWall"
@@ -9,6 +9,17 @@
 		bigBoyTimer="5.0f"
 		difficultyMultiplier="1.0f"
    />
+
+	<MapDefinition
+		name="Base2"
+		dimensions="20,10"
+		fillTileType="LongGrass"
+		edgeTileType="RockWall"
+		hordeTimer="0.5f"
+		bigBoyTimer="2.0f"
+		difficultyMultiplier="1.1f"
+   />
+	
 </MapDefinitions>
 
 
