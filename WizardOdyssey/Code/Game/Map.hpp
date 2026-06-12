@@ -1,4 +1,4 @@
-#pragma once
+	#pragma once
 #include "Engine/Math/IntVec2.hpp"
 #include "Engine/Math/AABB2.hpp"
 #include "Engine/Math/RandomNumberGenerator.hpp"

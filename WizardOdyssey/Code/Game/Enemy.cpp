@@ -1,4 +1,4 @@
-#include "Game/Aries.hpp"
+#include "Game/Enemy.hpp"
 #include "Game/Game.hpp"
 #include "Game/Map.hpp"
 #include "Engine/Core/Engine.hpp"
@@ -7,7 +7,7 @@
 #include "Engine/Core/EngineCommon.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName )
+Enemy::Enemy( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_physicsRadius = g_gameConfig->GetValue( "AriesPhysicsRadius", 0.3f );
@@ -21,13 +21,13 @@ Aries::Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, Entit
 }
 
 //-----------------------------------------------------------------------------------------------
-Aries::~Aries()
+Enemy::~Enemy()
 {
 
 }
 
 //-----------------------------------------------------------------------------------------------
-void Aries::Update( float deltaSeconds )
+void Enemy::Update( float deltaSeconds )
 {
 	Entity::Update( deltaSeconds );
 	m_targetPos = Vec2( 0.f, 0.f );
@@ -55,7 +55,7 @@ void Aries::Update( float deltaSeconds )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Aries::Render() const
+void Enemy::Render() const
 {
 	if ( m_isDead )
 		return;
@@ -69,7 +69,7 @@ void Aries::Render() const
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Aries::TakeDamage( Vec2 bulletPos )
+bool Enemy::TakeDamage( Vec2 bulletPos )
 {
 	//if ( IsPointInsideOrientedSector2D( bulletPos, m_position, m_orientationDegrees, 90.f, m_physicsRadius * 5.f ) )
 	//{
@@ -99,7 +99,7 @@ bool Aries::TakeDamage( Vec2 bulletPos )
 }
 
 //-----------------------------------------------------------------------------------------------
-void Aries::Respawn()
+void Enemy::Respawn()
 {
 
 }

@@ -46,7 +46,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Aries.cpp">
+    <ClCompile Include="Enemy.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
@@ -87,7 +87,7 @@
     <ClInclude Include="Player.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Aries.hpp">
+    <ClInclude Include="Enemy.hpp">
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.hpp">

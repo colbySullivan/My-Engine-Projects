@@ -2,11 +2,11 @@
 #include "Game/Entity.hpp"
 
 
-class Aries : public Entity
+class Enemy : public Entity
 {
 public:
-	Aries( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName );
-	~Aries();
+	Enemy( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName );
+	~Enemy();
 
 public:
 	virtual void Update( float deltaSeconds ) override;

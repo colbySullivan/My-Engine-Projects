@@ -5,7 +5,7 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/HeatMaps.hpp"
-#include "Game/Aries.hpp"
+#include "Game/Enemy.hpp"
 #include "Game/Bullet.hpp"
 
 
@@ -257,16 +257,6 @@ void Map::RenderSolidMapTiles() const
 	AABB2 mapbox = AABB2( 0.0f, 0.0f, static_cast< float >( m_dimensions.x ), static_cast< float >( m_dimensions.y ) );
 	FloatRange mapFloatRange = FloatRange( 0.0f, 0.0f );
 	m_heatMap->AddVertsForDebugDraw( tileVerts2, mapbox, mapFloatRange );
-
-	for ( int i = 0; i < static_cast< int >( m_entityListsByType[ENTITY_TYPE_EVIL_SCORPIO].size() ); i++ )
-	{
-		Entity* entity = m_entityListsByType[ENTITY_TYPE_EVIL_SCORPIO][i];
-		if ( entity == nullptr )
-			continue;
-
-		Vec2 solidPosition = entity->m_position;
-		m_heatMap->Set(IntVec2((int)solidPosition.x, (int)solidPosition.y ), 999999.f );
-	}
 
 	g_engine->m_render->DrawVertexArray( static_cast< int >( tileVerts2.size() ), tileVerts2.data() );
 }
@@ -531,7 +521,18 @@ void Map::CreateInitialEntities()
 		SpawnNewEntity( ENTITY_TYPE_EVIL_LEO, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 		SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 	}*/
-	SpawnNewEntity( ENTITY_TYPE_EVIL_ARIES, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SMALL_BALD_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_ARM_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_DUDE_EATING, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SMALL_FISH_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_SMALL_LASER_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
+	SpawnNewEntity( ENTITY_TYPE_EVIL_BIG_MAMA_DUDE, GetRandomValidPointInMapVec2(), 0.f, FACTION_EVIL );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -589,12 +590,28 @@ Entity* Map::SpawnNewEntity( EntityType type, Vec2 const& position, float orient
 
 	switch ( type )
 	{
-		case ENTITY_TYPE_GOOD_PLAYER:	newEntity = new Player( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_PLAYER );	break;
-		case ENTITY_TYPE_EVIL_ARIES:	newEntity = new Aries( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_ARIES, "SmallBaldDude" );	break;
 		case ENTITY_TYPE_GOOD_BULLET:	newEntity = new Bullet( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_BULLET );	break;
+		case ENTITY_TYPE_GOOD_PLAYER:	newEntity = new Player( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_GOOD_PLAYER );	break;
+
+		// Enemies
+		case ENTITY_TYPE_EVIL_SMALL_BALD_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_BALD_DUDE,	"SmallBaldDude" );	break;
+		case ENTITY_TYPE_EVIL_BIG_ARM_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_ARM_DUDE,		"ENTITY_TYPE_EVIL_BIG_ARM_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_BIG_DUDE_EATING:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_DUDE_EATING,	"ENTITY_TYPE_EVIL_BIG_DUDE_EATING" );	break;
+		case ENTITY_TYPE_EVIL_SMALL_BONE_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_BONE_DUDE,	"ENTITY_TYPE_EVIL_SMALL_BONE_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_SMALL_FISH_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_FISH_DUDE,	"ENTITY_TYPE_EVIL_SMALL_FISH_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE,	"ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE,	"ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE,	"ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE,	"ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE,	"ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE,	"ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_SMALL_LASER_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_SMALL_LASER_DUDE,	"ENTITY_TYPE_EVIL_SMALL_LASER_DUDE" );	break;
+		case ENTITY_TYPE_EVIL_BIG_MAMA_DUDE:	newEntity = new Enemy( m_game, position, orientationDegrees, faction, this, ENTITY_TYPE_EVIL_BIG_MAMA_DUDE,	"ENTITY_TYPE_EVIL_BIG_MAMA_DUDE" );	break;
+
 		default:																										return nullptr;
 	}
 
+		
 	if ( newEntity )
 	{
 		AddEntityToMap( *newEntity );
