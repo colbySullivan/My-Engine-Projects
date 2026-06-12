@@ -16,7 +16,7 @@ public:
 
 	void UpdateHoverState( const Vec2& mousePos );
 	bool IsHovered() const;
-	void isHovered( Vec2 mousePos );
+	void isHovered( Vec2 mousePos ) const;
 
 private:
 	AABB2       m_bounds;

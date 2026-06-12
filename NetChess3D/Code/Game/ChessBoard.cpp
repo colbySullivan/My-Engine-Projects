@@ -161,6 +161,7 @@ void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
 	{
 		return;
 	}
+
 	m_board[row][col] = piece;
 	if ( piece )
 	{
@@ -215,8 +216,8 @@ bool ChessBoard::IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare
 //------------------------------------------------------------------------------
 bool ChessBoard::IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const
 {
-	int deltaX = std::abs( toSquare.x - fromSquare.x );
-	int deltaY = std::abs( toSquare.y - fromSquare.y );
+	int deltaX = abs( toSquare.x - fromSquare.x );
+	int deltaY = abs( toSquare.y - fromSquare.y );
 
 	return ( deltaX * deltaY == 2 );
 }
