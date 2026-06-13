@@ -41,6 +41,16 @@ float Interpolate(float start, float end, float fractionTowardEnd)
 }
 
 //-----------------------------------------------------------------------------------------------
+Vec3 Interpolate( Vec3 const& start, Vec3 const& end, float fractionTowardEnd )
+{
+	return Vec3(
+		Interpolate( start.x, end.x, fractionTowardEnd ),
+		Interpolate( start.y, end.y, fractionTowardEnd ),
+		Interpolate( start.z, end.z, fractionTowardEnd )
+	);
+}
+
+//-----------------------------------------------------------------------------------------------
 float InterpolateShortestDis(float start, float end, float fractionTowardEnd)
 {
 	float delta = GetShortestAngularDispDegrees(start, end);
