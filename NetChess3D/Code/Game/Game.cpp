@@ -102,6 +102,13 @@ void Game::Update()
 				m_props[propIndex]->Update( deltaSeconds );
 			}
 		}
+		for ( int i = 0; i < m_chessPieces.size(); ++i )
+		{
+			if ( m_chessPieces[i] != nullptr )
+			{
+				m_chessPieces[i]->Update();
+			}
+		}
 		m_chessBoard->Update();
 
 		unsigned char elapsedFraction = static_cast<unsigned char>(50 + ( m_cubeBlinkTimer->GetElapsedFraction() * 200 ));

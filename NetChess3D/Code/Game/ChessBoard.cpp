@@ -33,6 +33,7 @@ ChessBoard::~ChessBoard()
 {
 	UnsubscribeEventCallbackFunction( "ChessMove", Command_ChessMove );
 	UnsubscribeEventCallbackFunction( "DisplayBoard", Command_DisplayBoard );
+	UnsubscribeEventCallbackFunction( "ChessOverride", Command_ChessOverride );
 
 	if ( g_activeChessBoard == this )
 	{
@@ -230,7 +231,7 @@ bool ChessBoard::isDiaganol( IntVec2 const& fromSquare, IntVec2 const& toSquare 
 	int manhattanX = abs( toSquare.x - fromSquare.x );
 	int manhattanY = abs( toSquare.y - fromSquare.y );
 
-	return ( manhattanX * manhattanY == 0 );
+	return ( manhattanX != 0 && manhattanX == manhattanY );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -370,6 +371,22 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		}
 	}
 	
+	// "Sliding" pieces path check
+	if ( piece->m_definition->m_type != Knight )
+	{
+		if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
+			return false;
+		}
+		bool movingDiagonal = g_activeChessBoard->isDiaganol( fromSquare, toSquare );
+		if ( piece->m_definition->m_type == Rook && movingDiagonal )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks can only move in a straight line!" );
+			return false;
+		}
+	}
+
 	// Pawn movement
 	if ( piece->m_definition->m_type == Pawn )
 	{
@@ -384,22 +401,6 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 			if ( (fromSquare.y != 1 && fromSquare.y != 6) || abs( manhattanY ) > 2 )
 			{
 				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move 2 spaces on their first turn!" );
-				return false;
-			}
-		}
-
-		// "Sliding" pieces path check
-		if ( piece->m_definition->m_type != Knight )
-		{
-			if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
-				return false;
-			}
-			bool movingDiagonal = g_activeChessBoard->isDiaganol( fromSquare, toSquare );
-			if ( piece->m_definition->m_type == Rook && movingDiagonal )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks can only move in a straight line!" );
 				return false;
 			}
 		}
@@ -439,12 +440,60 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		}
 	}
 
+	// Rook, Bishop, Queen movement
+	if ( piece->m_definition->m_type == Rook || piece->m_definition->m_type == Bishop || piece->m_definition->m_type == Queen )
+	{
+		int manhattanX = abs( toSquare.x - fromSquare.x );
+		int manhattanY = abs( toSquare.y - fromSquare.y );
+
+		// No movement
+		if ( manhattanX == 0 && manhattanY == 0 )
+		{
+			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Destination square is the same as origin!" );
+			return false;
+		}
+
+		// Rook Movement
+		if ( piece->m_definition->m_type == Rook )
+		{
+			if ( manhattanX != 0 && manhattanY != 0 )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks cannot move diagonally!" );
+				return false;
+			}
+		}
+		// Bishop movement
+		else if ( piece->m_definition->m_type == Bishop )
+		{
+			if ( manhattanX == 0 || manhattanX != manhattanY )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Bishops must move diagonally!" );
+				return false;
+			}
+		}
+		
+		// Queen movement
+		else 
+		{
+			if ( !( manhattanX == manhattanY || manhattanX == 0 || manhattanY == 0 ) )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Queens move like Rooks or Bishops (straight or diagonal)!" );
+				return false;
+			}
+		}
+	}
+
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
 
-	// Move pieces
-	g_activeChessBoard->SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
-	g_activeChessBoard->SetPieceAt( toSquare.y, toSquare.x, piece );
+	// Move pieces in console
+	g_activeChessBoard->m_board[fromSquare.y][fromSquare.x] = nullptr;
+	g_activeChessBoard->m_board[toSquare.y][toSquare.x] = piece;
+
+	// Move pieces on board
+	ChessPiece::MoveStyle movesyle = ( piece->m_definition->m_type == Knight ) ? ChessPiece::MoveStyle::Hop : ChessPiece::MoveStyle::Slide;
+	piece->StartMove( g_activeChessBoard->GetWorldPositionFromSquare(toSquare), movesyle );
+
 	piece->m_firstMove = false;	
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 

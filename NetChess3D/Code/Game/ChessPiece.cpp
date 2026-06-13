@@ -25,7 +25,34 @@ ChessPiece::~ChessPiece()
 //-----------------------------------------------------------------------------------------------
 void ChessPiece::Update()
 {
+	if ( m_moveTimer && !m_moveTimer->DecrementPeriodIfElapsed() )
+	{
+		float t = m_moveTimer->GetElapsedFraction();
+		if ( m_moveStyle == MoveStyle::Slide )
+		{
+			float eased = SmoothStep5( t );
+			m_position = Interpolate( m_moveStart, m_moveEnd, eased );
+		}
+		else if ( m_moveStyle == MoveStyle::Hop )
+		{
+			float horizontalProgress = SmoothStep3( t );
+			Vec3 base = Interpolate( m_moveStart, m_moveEnd, horizontalProgress );
 
+			const float hopHeight = 0.6f;
+			float arc = 4.0f * t * ( 1.0f - t ) * hopHeight;
+
+			m_position = base + Vec3( 0.f, 0.f, arc );
+		}
+		else
+		{
+			m_position = m_moveEnd;
+		}
+	}
+	else 
+	{
+		delete m_moveTimer;
+		m_moveTimer = nullptr;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -69,3 +96,21 @@ void ChessPiece::Render() const
 	g_engine->m_render->BindShader( nullptr );
 }
 
+//-----------------------------------------------------------------------------------------------
+void ChessPiece::StartMove( Vec3 const& targetWorldPosition, MoveStyle style, float durationSeconds /*= 0.5f */ )
+{
+	if ( m_moveTimer == nullptr )
+	{
+		m_moveTimer = new Timer( durationSeconds );
+		m_moveTimer->Start();
+	}
+	else
+	{
+		delete m_moveTimer;
+		m_moveTimer = new Timer( durationSeconds );
+		m_moveTimer->Start();
+	}
+	m_moveStart = m_position;
+	m_moveEnd = targetWorldPosition;
+	m_moveStyle = style;
+}
