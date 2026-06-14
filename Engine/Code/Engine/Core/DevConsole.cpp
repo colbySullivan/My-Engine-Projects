@@ -39,6 +39,7 @@ void DevConsole::Startup()
 	AddLine( WARNING_COLOR, "Type help for list of commands", 20.f, 0.f );
 	m_commandHistory.push_back( "ChessOverride board=RNBQK..RPPP..PPP................................pppppppprnbqkbnr" ); //#todo remove this and implement a command history file
 	m_commandHistory.push_back( "ChessOverride board=RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr" ); //#todo remove this and implement a command history file
+	m_commandHistory.push_back( "ChessOverride board=RNBQKBNR........................................pppppppprnbqkbnr" ); //#todo remove this and implement a command history file
 	m_commandHistory.push_back( "ChessMove from=a2 to=a3" ); //#todo remove this and implement a command history file
 	m_commandHistory.push_back( "ChessMove from=a2 to=e8"); //#todo remove this and implement a command history file
 }

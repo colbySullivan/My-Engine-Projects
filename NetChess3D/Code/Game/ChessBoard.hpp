@@ -70,6 +70,7 @@ private:
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
 	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
+	bool IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int kingPlayer ) const;
 	void ChangePlayer( ChessPiece* piece );
 	std::string GetTypeFromChar( const char& typeName, int& playerNum );
 	bool TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* king );

@@ -88,7 +88,7 @@ void ChessBoard::CreateBuffersAndCopy()
 //-----------------------------------------------------------------------------------------------
 void ChessBoard::PrintBoardStateToConsole() const
 {
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "   A  B  C  D  E  F  G  H" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "    A  B  C  D  E  F  G  H" );
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "  ------------------------" );
 
 	for ( int row = 7; row >= 0; --row )
@@ -117,7 +117,7 @@ void ChessBoard::PrintBoardStateToConsole() const
 	}
 
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "  ------------------------" );
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "   A  B  C  D  E  F  G  H" );
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "    A  B  C  D  E  F  G  H" );
 }
 //-----------------------------------------------------------------------------------------------
 IntVec2 ChessBoard::GetSquareFromWorldPosition( Vec3 const& worldPos ) const
@@ -428,6 +428,14 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		{
 			int manhattanX = toSquare.x - fromSquare.x;
 			int manhattanY = toSquare.y - fromSquare.y;
+
+			// king adjacent check
+			if ( g_activeChessBoard->IsKingAdjacentToAnotherKing( toSquare, piece->m_playernum ) )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Kings cannot be adjacent to each other!" );
+				return false;
+			}
+
 			if ( manhattanX > 1 || manhattanY > 1 )
 			{
 				if ( manhattanX == 2 && manhattanY == 0 && g_activeChessBoard->TryExecuteCastling( fromSquare, toSquare, piece ) )
@@ -529,6 +537,34 @@ bool ChessBoard::MoveValidInsideBoard( IntVec2 moveSquare )
 		return false;
 	}
 	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int kingPlayer ) const
+{
+	std::vector<IntVec2> adjacentSquares;
+	adjacentSquares.push_back(IntVec2( -1, -1 )); //topLeft
+	adjacentSquares.push_back(IntVec2( -1, 0 )); //topCenter
+	adjacentSquares.push_back(IntVec2( -1, 1 )); //topRight
+
+	adjacentSquares.push_back(IntVec2( 0, -1 )); //leftCenter
+	adjacentSquares.push_back(IntVec2( 0, 1 )); //rightCenter
+
+	adjacentSquares.push_back(IntVec2( 1, -1 )); //bottomLeft
+	adjacentSquares.push_back(IntVec2( 1, 0 )); //bottomCenter
+	adjacentSquares.push_back(IntVec2( 1, 1 )); //bottomRight
+
+	for ( IntVec2 squareOffset : adjacentSquares )
+	{
+		IntVec2 checkSquare = kingPosition + squareOffset;
+
+		ChessPiece* adjacentPiece = GetPieceAt( checkSquare.y, checkSquare.x );
+		if ( adjacentPiece != nullptr && adjacentPiece->m_definition->m_type == King && adjacentPiece->m_playernum != kingPlayer )
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -634,6 +670,7 @@ bool ChessBoard::Command_ChessOverride( [[maybe_unused]] EventArgs& args )
 	{
 		std::string boardString = args.GetValue( "board", "" );
 		g_activeChessBoard->SetBoardFromString( boardString );
+		g_activeChessBoard->PrintBoardStateToConsole();
 	}
 	return false;
 }

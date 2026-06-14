@@ -27,7 +27,7 @@ void ChessPiece::Update()
 {
 	if ( m_moveTimer && !m_moveTimer->DecrementPeriodIfElapsed() )
 	{
-		float t = m_moveTimer->GetElapsedFraction();
+		float t = (float)m_moveTimer->GetElapsedFraction();
 		if ( m_moveStyle == MoveStyle::Slide )
 		{
 			float eased = SmoothStep5( t );
