@@ -2,6 +2,7 @@
 #include "Engine/Renderer/VertexBuffer.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Core/EventSystem.hpp"
+#include "ChessPieceDefinition.hpp"
 
 struct DebugConstants
 {
@@ -68,9 +69,12 @@ public:
 private:
 	void CreateBoardGeometry();
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
-	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport );
+	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport = false, std::string promoteTo = "" );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
 	bool IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int kingPlayer ) const;
+	ChessPieceType GetPieceTypeFromString( std::string const& typeName ) const;
+	bool IsPawnPromotionRow( int row, int playerNum ) const;
+	bool PromotePawn( ChessPiece* pawn, ChessPieceType promotionType, IntVec2 const& square );
 	void ChangePlayer( ChessPiece* piece );
 	std::string GetTypeFromChar( const char& typeName, int& playerNum );
 	bool TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* king );

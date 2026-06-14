@@ -2,6 +2,8 @@
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/VertexUtils.hpp"
 #include "Game/ChessPiece.hpp"
+#include "ChessPieceDefinition.hpp"
+#include <algorithm>
 
 static ChessBoard* g_activeChessBoard = nullptr;
 
@@ -313,7 +315,7 @@ IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport )
+bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport, std::string promoteTo )
 {
 	IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
 	IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
@@ -421,7 +423,9 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move diagonally to capture!" );
 				return false;
 			}
+
 		}
+
 
 		// King movement
 		if ( piece->m_definition->m_type == King )
@@ -494,6 +498,19 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		}
 	}
 	}
+
+	// pawn promotion 
+	// Can put this in pawn movement but removed so we can test with teleport
+	if ( piece->m_definition->m_type == Pawn && g_activeChessBoard->IsPawnPromotionRow( toSquare.y, piece->m_playernum ) )
+	{
+		ChessPieceType promotionType = g_activeChessBoard->GetPieceTypeFromString( promoteTo );
+		if ( !g_activeChessBoard->PromotePawn( piece, promotionType, toSquare ) )
+		{
+			// Unable to promote. logic handled in function
+			return false;
+		}
+	}
+
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
 
@@ -565,6 +582,54 @@ bool ChessBoard::IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int k
 		}
 	}
 	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+ChessPieceType ChessBoard::GetPieceTypeFromString( std::string const& typeName ) const
+{
+	char firstChar = tolower(typeName[0]);
+
+	if ( firstChar == 'q' )  return Queen; // #todo this feels too hacky keep eye on this
+	if ( firstChar == 'r' )   return Rook;
+	if ( firstChar == 'k' ) return Knight;
+	if ( firstChar == 'b' ) return Bishop;
+
+	return Count;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::IsPawnPromotionRow( int row, int playerNum ) const
+{
+	if ( playerNum == 1 && row == 7 ) return true;
+	if ( playerNum == 2 && row == 0 ) return true;
+	return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::PromotePawn( ChessPiece* pawn, ChessPieceType promotionType, IntVec2 const& square )
+{
+	if ( promotionType == Count || promotionType == Pawn || promotionType == King )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "promoteTo: Must be Queen, Rook, Knight, or Bishop!" );
+		return false;
+	}
+
+	std::string newTypeName;
+	if ( promotionType == Queen )  newTypeName = "Queen";
+	else if ( promotionType == Rook )   newTypeName = "Rook";
+	else if ( promotionType == Knight ) newTypeName = "Knight";
+	else if ( promotionType == Bishop ) newTypeName = "Bishop";
+
+	ChessPieceDefinition const* newDef = ChessPieceDefinition::GetByName( newTypeName );
+	if ( !newDef )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "Could not find definition for %s", newTypeName.c_str() ) );
+		return false;
+	}
+
+	pawn->m_definition = newDef;
+	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Pawn promoted to %s!", newTypeName.c_str() ) );
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -648,7 +713,8 @@ bool ChessBoard::Command_ChessMove( EventArgs& args )
 		std::string fromSquareString = args.GetValue( "from", "" );
 		std::string toSquareString = args.GetValue( "to", "" );
 		bool teleport = args.GetValue( "teleport", false );
-		return TryToDoMovePiece( fromSquareString, toSquareString, teleport );
+		std::string promoteTo = args.GetValue( "promoteTo", "" );
+		return TryToDoMovePiece( fromSquareString, toSquareString, teleport, promoteTo );
 	}
 	return false;
 }
