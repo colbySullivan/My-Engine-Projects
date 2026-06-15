@@ -43,6 +43,9 @@ void DevConsole::Startup()
 	m_commandHistory.push_back( "ChessMove from=a2 to=a8 teleport=true promoteTo=queen" ); //#todo remove this and implement a command history file
 	m_commandHistory.push_back( "ChessMove from=a2 to=a3" ); //#todo remove this and implement a command history file
 	m_commandHistory.push_back( "ChessMove from=a2 to=e8"); //#todo remove this and implement a command history file
+	m_commandHistory.push_back( "ChessMove from=a2 to=a5 teleport=true"); //#todo remove this and implement a command history file
+	m_commandHistory.push_back( "ChessMove from=b7 to=b5"); //#todo remove this and implement a command history file
+	m_commandHistory.push_back( "ChessMove from=a5 to=b6"); //#todo remove this and implement a command history file
 }
 
 //-----------------------------------------------------------------------------------------------
