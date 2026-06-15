@@ -395,35 +395,45 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		// Pawn movement
 		if ( piece->m_definition->m_type == Pawn )
 		{
-			int manhattanX = toSquare.x - fromSquare.x;
-			int manhattanY = toSquare.y - fromSquare.y;
+			int manhattanX = abs(toSquare.x - fromSquare.x);
+			int manhattanY = abs(toSquare.y - fromSquare.y);
 
 			ChessPiece* targetPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 
-			// Can only move 2 on first move
-			if ( abs( manhattanY ) > 1 )
+			if ( manhattanX == 1 && manhattanY == 1 && targetPiece == nullptr )
 			{
-				if ( (fromSquare.y != 1 && fromSquare.y != 6) || abs( manhattanY ) > 2 )
+				if ( !g_activeChessBoard->IsValidEnPassantMove( fromSquare, toSquare, piece ) )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move 2 spaces on their first turn!" );
+					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Invalid en passant move!" );
 					return false;
 				}
 			}
-
-			// Moving forward not empty
-			if ( manhattanX == 0 && targetPiece != nullptr )
+			else
 			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns cannot capture forward!" );
-				return false;
-			}
+				// Can only move 2 on first move
+				if ( manhattanY > 1 )
+				{
+					if ( (fromSquare.y != 1 && fromSquare.y != 6) || manhattanY > 2 )
+					{
+						g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move 2 spaces on their first turn!" );
+						return false;
+					}
+				}
 
-			// Diagonal capture check
-			if ( manhattanX != 0 && targetPiece == nullptr )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move diagonally to capture!" );
-				return false;
-			}
+				// Moving forward not empty
+				if ( manhattanX == 0 && targetPiece != nullptr )
+				{
+					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns cannot capture forward!" );
+					return false;
+				}
 
+				// Diagonal capture check
+				if ( manhattanX != 0 && targetPiece == nullptr )
+				{
+					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move diagonally to capture!" );
+					return false;
+				}
+			}
 		}
 
 
@@ -509,6 +519,26 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 			// Unable to promote. logic handled in function
 			return false;
 		}
+	}
+
+	// En Passant capture
+	if ( piece->m_definition->m_type == Pawn && g_activeChessBoard->IsValidEnPassantMove( fromSquare, toSquare, piece ) )
+	{
+		g_activeChessBoard->TryExecuteEnPassant( fromSquare, toSquare, piece );
+		g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "En passant capture!" );
+	}
+
+	// Track pawn moves for en passant eligibility
+	if ( piece->m_definition->m_type == Pawn )
+	{
+		g_activeChessBoard->m_lastPawnMoveFrom = fromSquare;
+		g_activeChessBoard->m_lastPawnMoveTo = toSquare;
+	}
+	else
+	{
+		// Reset en passant tracking if non-pawn moves
+		g_activeChessBoard->m_lastPawnMoveFrom = IntVec2( -1, -1 );
+		g_activeChessBoard->m_lastPawnMoveTo = IntVec2( -1, -1 );
 	}
 
 	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
@@ -701,6 +731,55 @@ bool ChessBoard::TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& t
 	rook->m_firstMove = false;
 
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Castling executed successfully!" );
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::IsValidEnPassantMove( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn ) const
+{
+	// victim JUST moved two 
+	ChessPiece* enPassantVictim = GetPieceAt( m_lastPawnMoveTo.y, m_lastPawnMoveTo.x );
+	if ( enPassantVictim == nullptr || enPassantVictim->m_definition->m_type != Pawn )
+	{
+		return false;
+	}
+
+	// victim must belong to opponent
+	if ( enPassantVictim->m_playernum == pawn->m_playernum )
+	{
+		return false;
+	}
+
+	// Victim must be in the same row and column as the attacking pawn
+	if ( m_lastPawnMoveTo.y != fromSquare.y || m_lastPawnMoveTo.x != toSquare.x )
+	{
+		return false;
+	}
+
+	// victim moved exactly 2 squares
+	int pawnMove = abs( m_lastPawnMoveTo.y - m_lastPawnMoveFrom.y );
+	if ( pawnMove != 2 )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::TryExecuteEnPassant( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn )
+{
+	ChessPiece* capturedPawn = GetPieceAt( m_lastPawnMoveTo.y, m_lastPawnMoveTo.x );
+
+	if ( capturedPawn == nullptr )
+	{
+		return false;
+	}
+
+	m_board[m_lastPawnMoveTo.y][m_lastPawnMoveTo.x] = nullptr;
+	pawn->m_game->RemoveChessPiece( capturedPawn );
+	delete capturedPawn;
 
 	return true;
 }

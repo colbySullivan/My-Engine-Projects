@@ -65,6 +65,10 @@ public:
 	int m_currentPlayerNum = 1;
 	bool m_gameOver = false;
 
+	// En Passant tracking
+	IntVec2 m_lastPawnMoveFrom = IntVec2( -1, -1 );
+	IntVec2 m_lastPawnMoveTo = IntVec2( -1, -1 );
+
 	ChessPiece* m_board[8][8] = { nullptr };
 private:
 	void CreateBoardGeometry();
@@ -78,4 +82,6 @@ private:
 	void ChangePlayer( ChessPiece* piece );
 	std::string GetTypeFromChar( const char& typeName, int& playerNum );
 	bool TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* king );
+	bool IsValidEnPassantMove( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn ) const;
+	bool TryExecuteEnPassant( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn );
 };
