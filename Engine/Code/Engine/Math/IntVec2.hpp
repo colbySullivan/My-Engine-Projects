@@ -31,5 +31,6 @@ public:
 
 	// Operators (self-mutating / non-const)
 	void operator=(const IntVec2& copyFrom);           // IntVec2 = IntVec2
+	bool operator==(IntVec2 const& compare) const;        // IntVec2 == IntVec2
 	IntVec2 const operator+(IntVec2 const& vecToAdd) const;  // IntVec2 + IntVec2
 };

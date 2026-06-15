@@ -92,6 +92,11 @@ void IntVec2::operator=(const IntVec2& copyFrom)
 	y = copyFrom.y;
 }
 
+bool IntVec2::operator==( IntVec2 const& compare ) const
+{
+	return x == compare.x && y == compare.y;
+}
+
 //-----------------------------------------------------------------------------------------------
 IntVec2 const IntVec2::operator+( IntVec2 const& vecToAdd ) const
 {
