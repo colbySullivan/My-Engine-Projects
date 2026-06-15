@@ -47,6 +47,7 @@ public:
 	IndexBuffer* m_ibo = nullptr;
 	ConstantBuffer* m_debugConstant;
 	unsigned int  m_indexCount = 0;
+	Shader* m_shader = nullptr;
 	Game* m_game = nullptr;
 
 	// Debug

@@ -28,6 +28,7 @@ ChessBoard::ChessBoard( Game* game )
 	CreateBuffersAndCopy();
 	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_d.png" );
 	m_normalTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_n.png" );
+	m_shader = g_engine->m_render->CreateOrGetShader( "Data/Shaders/SunlightShader" );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -66,8 +67,10 @@ void ChessBoard::Render() const
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->BindTexture(m_texture, 0);
 	g_engine->m_render->BindTexture(m_normalTexture, 1);
+	g_engine->m_render->BindShader( m_shader );
 	SetDebugConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
+	g_engine->m_render->BindShader( nullptr );
 
 }
 
