@@ -78,10 +78,10 @@ private:
 	bool IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int kingPlayer ) const;
 	ChessPieceType GetPieceTypeFromString( std::string const& typeName ) const;
 	bool IsPawnPromotionRow( int row, int playerNum ) const;
-	bool PromotePawn( ChessPiece* pawn, ChessPieceType promotionType, IntVec2 const& square );
+	bool PromotePawn( ChessPiece* pawn, ChessPieceType promotionType );
 	void ChangePlayer( ChessPiece* piece );
 	std::string GetTypeFromChar( const char& typeName, int& playerNum );
 	bool TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* king );
 	bool IsValidEnPassantMove( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn ) const;
-	bool TryExecuteEnPassant( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn );
+	bool TryExecuteEnPassant();
 };

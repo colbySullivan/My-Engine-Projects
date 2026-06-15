@@ -514,7 +514,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	if ( piece->m_definition->m_type == Pawn && g_activeChessBoard->IsPawnPromotionRow( toSquare.y, piece->m_playernum ) )
 	{
 		ChessPieceType promotionType = g_activeChessBoard->GetPieceTypeFromString( promoteTo );
-		if ( !g_activeChessBoard->PromotePawn( piece, promotionType, toSquare ) )
+		if ( !g_activeChessBoard->PromotePawn( piece, promotionType ) )
 		{
 			// Unable to promote. logic handled in function
 			return false;
@@ -524,7 +524,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 	// En Passant capture
 	if ( piece->m_definition->m_type == Pawn && g_activeChessBoard->IsValidEnPassantMove( fromSquare, toSquare, piece ) )
 	{
-		g_activeChessBoard->TryExecuteEnPassant( fromSquare, toSquare, piece );
+		g_activeChessBoard->TryExecuteEnPassant();
 		g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "En passant capture!" );
 	}
 
@@ -617,7 +617,7 @@ bool ChessBoard::IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int k
 //-----------------------------------------------------------------------------------------------
 ChessPieceType ChessBoard::GetPieceTypeFromString( std::string const& typeName ) const
 {
-	char firstChar = tolower(typeName[0]);
+	char firstChar = (char)tolower(typeName[0]);
 
 	if ( firstChar == 'q' )  return Queen; // #todo this feels too hacky keep eye on this
 	if ( firstChar == 'r' )   return Rook;
@@ -636,7 +636,7 @@ bool ChessBoard::IsPawnPromotionRow( int row, int playerNum ) const
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::PromotePawn( ChessPiece* pawn, ChessPieceType promotionType, IntVec2 const& square )
+bool ChessBoard::PromotePawn( ChessPiece* pawn, ChessPieceType promotionType )
 {
 	if ( promotionType == Count || promotionType == Pawn || promotionType == King )
 	{
@@ -768,7 +768,7 @@ bool ChessBoard::IsValidEnPassantMove( IntVec2 const& fromSquare, IntVec2 const&
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::TryExecuteEnPassant( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn )
+bool ChessBoard::TryExecuteEnPassant()
 {
 	ChessPiece* capturedPawn = GetPieceAt( m_lastPawnMoveTo.y, m_lastPawnMoveTo.x );
 
@@ -778,7 +778,7 @@ bool ChessBoard::TryExecuteEnPassant( IntVec2 const& fromSquare, IntVec2 const& 
 	}
 
 	m_board[m_lastPawnMoveTo.y][m_lastPawnMoveTo.x] = nullptr;
-	pawn->m_game->RemoveChessPiece( capturedPawn );
+	m_game->RemoveChessPiece( capturedPawn );
 	delete capturedPawn;
 
 	return true;
