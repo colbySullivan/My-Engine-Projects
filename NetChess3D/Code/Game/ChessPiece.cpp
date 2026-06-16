@@ -53,6 +53,7 @@ void ChessPiece::Update()
 		delete m_moveTimer;
 		m_moveTimer = nullptr;
 	}
+	m_isHighlight = false;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -63,7 +64,8 @@ void ChessPiece::Render() const
 		return;
 	}
 	Mat44 modelMatrix = Mat44::MakeTranslation3D( m_position );
-	g_engine->m_render->SetModelConstants( modelMatrix, m_color );
+	Rgba8 color = ( !m_isHighlight ) ? m_color : Rgba8::BLUE;
+	g_engine->m_render->SetModelConstants( modelMatrix, color );
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindShader( m_definition->m_shader );

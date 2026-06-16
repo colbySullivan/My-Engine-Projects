@@ -36,4 +36,5 @@ public:
 	Vec3 m_moveEnd = Vec3::ZERO;
 	Timer* m_moveTimer = nullptr;
 	MoveStyle m_moveStyle = MoveStyle::Instant;
+	bool m_isHighlight = false;
 };
