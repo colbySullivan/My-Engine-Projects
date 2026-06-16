@@ -3,6 +3,8 @@
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Core/Engine.hpp"
 #include "Engine/Core/Clock.hpp"
+#include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Renderer/DebugRender.hpp"
 
 
 //-----------------------------------------------------------------------------------------------
@@ -31,11 +33,36 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 	}
 
 	m_worldCamera->SetPositionAndOrientation( m_position, m_orientation );
+
+	// #todo move this to a permanent place
+	ChessPiece* hitPiece = nullptr;
+	IntVec2 hitSquare = IntVec2( -1, -1 );
+	m_game->m_chessBoard->GetImpactedPieceOrSquare( m_worldCamera->GetPosition(), m_worldCamera->GetOrientation().GetForwardDir_IFwd_JLeft_KUp(), 1000.f, hitPiece, hitSquare );
+	if ( hitPiece )
+	{
+		hitPiece->m_color = Rgba8( 0, 0, 255 );
+		DebugAddMessage( "Hit piece!", 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 0, 0 ) );
+	}
 }
 
 //------------------------------------------------------------------------------
 void Player::Render() const
 {
+	std::vector<Vertex> crossHair;
+	const float halfLength = 10.f;  
+	const float thickness = 2.f;    
+	Vec2 center( SCREEN_CENTER_X, SCREEN_CENTER_Y );
+
+	AABB2 horiz( Vec2( center.x - halfLength, center.y - ( thickness * 0.5f ) ), Vec2( center.x + halfLength, center.y + ( thickness * 0.5f ) ) );
+	AABB2 vert( Vec2( center.x - ( thickness * 0.5f ), center.y - halfLength ), Vec2( center.x + ( thickness * 0.5f ), center.y + halfLength ) );
+
+	AddVertsForAABB2D( crossHair, horiz, Rgba8( 255, 255, 255, 255 ) );
+	AddVertsForAABB2D( crossHair, vert, Rgba8( 255, 255, 255, 255 ) );
+
+	g_engine->m_render->BeginCamera( *m_game->m_screenCamera );
+	g_engine->m_render->BindShader( nullptr );
+	g_engine->m_render->DrawVertexArray( ( int )crossHair.size(), crossHair.data() );
+	g_engine->m_render->EndCamera( *m_game->m_screenCamera );
 }
 
 //------------------------------------------------------------------------------

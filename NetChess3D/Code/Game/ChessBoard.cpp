@@ -4,6 +4,7 @@
 #include "Game/ChessPiece.hpp"
 #include "ChessPieceDefinition.hpp"
 #include <algorithm>
+#include "Engine/Renderer/DebugRender.hpp"
 
 static ChessBoard* g_activeChessBoard = nullptr;
 
@@ -176,6 +177,71 @@ void ChessBoard::SetPieceAt( int row, int col, ChessPiece* piece )
 	{
 		piece->m_position = GetWorldPositionFromSquare( IntVec2( col, row ) );
 	}
+}
+
+//------------------------------------------------------------------------------
+void ChessBoard::GetImpactedPieceOrSquare( Vec3 const& rayStart, Vec3 const& rayDirection, float maxDistance, ChessPiece*& outPiece, IntVec2& outSquare ) const
+{
+	outPiece = nullptr;
+	outSquare = IntVec2( -1, -1 );
+
+	float closestDistance = maxDistance;
+	ChessPiece* closestPiece = nullptr;
+	IntVec2 closestSquare = IntVec2( -1, -1 );
+
+	Vec3 halfCylinderOffset = Vec3( 0.f, 0.f, 0.9f );
+	float approximationRadius = 0.25f;
+
+	// Check pieces
+	for ( int row = 0; row < 8; ++row )
+	{
+		for ( int col = 0; col < 8; ++col )
+		{
+			ChessPiece* piece = m_board[row][col];
+			if ( piece )
+			{
+				Vec3 cylinderStart = piece->m_position - halfCylinderOffset;
+				Vec3 cylinderEnd = piece->m_position + halfCylinderOffset;
+
+				RaycastResult3D hitResult = RaycastVsCylinder( rayStart, rayDirection, closestDistance, cylinderStart, cylinderEnd, approximationRadius );
+
+				if ( hitResult.m_didImpact && hitResult.m_impactDist < closestDistance )
+				{
+					closestDistance = hitResult.m_impactDist;
+					closestPiece = piece;
+					closestSquare = IntVec2( col, row );
+				}
+			}
+		}
+	}
+
+	// Piece hit
+	if ( closestPiece )
+	{
+		outPiece = closestPiece;
+		outSquare = closestSquare;
+		return;
+	}
+
+	// Check board squares
+	for ( int row = 0; row < 8; ++row )
+	{
+		for ( int col = 0; col < 8; ++col )
+		{
+			Vec3 squareMins = m_position + Vec3( ( float )col, ( float )row, 0.f );
+			Vec3 squareMaxs = m_position + Vec3( ( float )col + 1.f, ( float )row + 1.f, 0.f );
+
+			RaycastResult3D hitResult = RaycastVsAABB3( rayStart, rayDirection, closestDistance, squareMins, squareMaxs );
+
+			if ( hitResult.m_didImpact && hitResult.m_impactDist < closestDistance )
+			{
+				closestDistance = hitResult.m_impactDist;
+				closestSquare = IntVec2( col, row );
+			}
+		}
+	}
+
+	outSquare = closestSquare;
 }
 
 //------------------------------------------------------------------------------

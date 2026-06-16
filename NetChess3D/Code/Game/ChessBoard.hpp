@@ -30,6 +30,7 @@ public:
 	void SetDebugConstant() const;
 	ChessPiece* GetPieceAt( int row, int col ) const;
 	void SetPieceAt( int row, int col, ChessPiece* piece );
+	void GetImpactedPieceOrSquare( Vec3 const& rayStart, Vec3 const& rayDirection, float maxDistance, ChessPiece*& outPiece, IntVec2& outSquare ) const;
 	bool IsValidTargetSquare( IntVec2 const& toSquare, int currentPlayer ) const;
 	bool IsPathClear( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;
 	bool IsValidKnightMove( IntVec2 const& fromSquare, IntVec2 const& toSquare ) const;

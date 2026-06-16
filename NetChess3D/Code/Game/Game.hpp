@@ -85,6 +85,7 @@ public:
 	std::vector<Prop*> m_props;
 	std::vector<ChessPiece*> m_chessPieces;
 	ChessBoard* m_chessBoard;
+	Camera* m_screenCamera = nullptr;
 
 	// CameraModes
 	std::vector<CameraMode*> m_cameraModes;
@@ -110,7 +111,6 @@ private:
 	void CreateChessPieces();
 
 	App* m_app = nullptr;
-	Camera*			m_screenCamera = nullptr;
 	Texture*		m_testTexture = nullptr;
 	// Black hole
 	Vertex			m_blackHoleVerts[NUM_BLACK_HOLE_VERTS];

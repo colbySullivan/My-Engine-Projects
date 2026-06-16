@@ -165,6 +165,7 @@ void Game::Render() const
 			}
 		}
 		m_chessBoard->Render();
+		m_player->Render();
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
