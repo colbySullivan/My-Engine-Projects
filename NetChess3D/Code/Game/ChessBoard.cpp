@@ -61,10 +61,14 @@ void ChessBoard::Update()
 		TryAllMoves();
 		m_tryAllMovesRequested = false;
 	}
+
+	bool teleport = g_engine->m_input->IsKeyDown( KEYCODE_LEFT_CONTROL ) ? true : false;
+
 	if ( m_selectedPiece )
 	{
 		IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
-		if ( CheckBoardSquareValid( playerPos, m_currentRaycastedSquare ) )
+		std::string errorMessage;
+		if ( CheckBoardSquareValid( playerPos, m_currentRaycastedSquare, errorMessage, teleport ) )
 		{
 			Vec3 worldPos = GetWorldPositionFromSquare( m_currentRaycastedSquare );
 			DebugAddWorldSphere( worldPos, 0.5f, 0.f, Rgba8( 255, 0, 255 ) );
@@ -73,7 +77,7 @@ void ChessBoard::Update()
 	if ( m_moveRequested && m_selectedPiece )
 	{
 		IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
-		MovePiece( GetIntVec2ToString(playerPos), GetIntVec2ToString(m_currentRaycastedSquare) );
+		MovePiece( GetIntVec2ToString(playerPos), GetIntVec2ToString(m_currentRaycastedSquare), teleport );
 		m_moveRequested = false;
 	}
 }
@@ -414,41 +418,41 @@ std::string ChessBoard::GetIntVec2ToString( IntVec2 boardPosition )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bool teleport, std::string promoteTo )
+bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, std::string& errorMessage, bool teleport, std::string promoteTo )
 {
 	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
 
 	// No piece at to location
 	if ( piece == nullptr )
 	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at from square" ) );
+		errorMessage = "No piece at from square";
 		return false;
 	}
 
 	if ( g_activeChessBoard->m_gameOver )
 	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Game over use the ChessBegin command to restart" );
+		errorMessage = "ChessMove: Game over use the ChessBegin command to restart";
 		return false;
 	}
 
 	// Tried to move outside of board
 	if ( !MoveValidInsideBoard( fromSquare ) || !MoveValidInsideBoard( toSquare ) )
 	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: move invalid please ensure it is within the board" );
+		errorMessage = "ChessMove: move invalid please ensure it is within the board";
 		return false;
 	}
 
 	// Wrong player piece
 	if ( piece->m_playernum != g_activeChessBoard->m_currentPlayerNum )
 	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "Piece at 'from' square is not player %i", g_activeChessBoard->m_currentPlayerNum ) );
+		errorMessage = Stringf( "Piece at 'from' square is not player %i", g_activeChessBoard->m_currentPlayerNum );
 		return false;
 	}
 
 	// No friendly fire
 	if ( !g_activeChessBoard->IsValidTargetSquare( toSquare, piece->m_playernum ) )
 	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Cannot capture your own piece!" );
+		errorMessage = "ChessMove: Cannot capture your own piece!";
 		return false;
 	}
 
@@ -460,7 +464,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 		{
 			if ( !g_activeChessBoard->IsValidKnightMove( fromSquare, toSquare ) )
 			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Knights must move in an L-shape!" );
+				errorMessage = "ChessMove: Knights must move in an L-shape!";
 				return false;
 			}
 		}
@@ -477,7 +481,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			{
 				if ( !g_activeChessBoard->IsValidEnPassantMove( fromSquare, toSquare, piece ) )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Invalid en passant move!" );
+					errorMessage = "ChessMove: Invalid en passant move!";
 					return false;
 				}
 			}
@@ -488,7 +492,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 				{
 					if ( ( fromSquare.y != 1 && fromSquare.y != 6 ) || manhattanY > 2 )
 					{
-						g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move 2 spaces on their first turn!" );
+						errorMessage = "ChessMove: Pawns can only move 2 spaces on their first turn!";
 						return false;
 					}
 				}
@@ -496,14 +500,14 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 				// Moving forward not empty
 				if ( manhattanX == 0 && targetPiece != nullptr )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns cannot capture forward!" );
+					errorMessage = "ChessMove: Pawns cannot capture forward!";
 					return false;
 				}
 
 				// Diagonal capture check
 				if ( manhattanX != 0 && targetPiece == nullptr )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move diagonally to capture!" );
+					errorMessage = "ChessMove: Pawns can only move diagonally to capture!";
 					return false;
 				}
 			}
@@ -519,7 +523,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			// king adjacent check
 			if ( g_activeChessBoard->IsKingAdjacentToAnotherKing( toSquare, piece->m_playernum ) )
 			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Kings cannot be adjacent to each other!" );
+				errorMessage = "ChessMove: Kings cannot be adjacent to each other!";
 				return false;
 			}
 
@@ -532,7 +536,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 				}
 				else
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Kings can only move 1 square in any direction!" );
+					errorMessage = "ChessMove: Kings can only move 1 square in any direction!";
 					return false;
 				}
 			}
@@ -547,7 +551,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			// No movement
 			if ( manhattanX == 0 && manhattanY == 0 )
 			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Destination square is the same as origin!" );
+				errorMessage = "ChessMove: Destination square is the same as origin!";
 				return false;
 			}
 
@@ -556,7 +560,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			{
 				if ( manhattanX != 0 && manhattanY != 0 )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks cannot move diagonally!" );
+					errorMessage = "ChessMove: Rooks cannot move diagonally!";
 					return false;
 				}
 			}
@@ -565,7 +569,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			{
 				if ( manhattanX == 0 || manhattanX != manhattanY )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Bishops must move diagonally!" );
+					errorMessage = "ChessMove: Bishops must move diagonally!";
 					return false;
 				}
 			}
@@ -575,7 +579,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			{
 				if ( !( manhattanX == manhattanY || manhattanX == 0 || manhattanY == 0 ) )
 				{
-					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Queens move like Rooks or Bishops (straight or diagonal)!" );
+					errorMessage = "ChessMove: Queens move like Rooks or Bishops (straight or diagonal)!";
 					return false;
 				}
 			}
@@ -583,7 +587,7 @@ bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bo
 			// Moved this towards the end as it was slowing down checks
 			if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
 			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
+				errorMessage = "ChessMove: Path is blocked by another piece!";
 				return false;
 			}
 		}
@@ -614,8 +618,10 @@ bool ChessBoard::MovePiece( std::string fromSquareString, std::string toSquareSt
 	}
 
 	// Error statements are handle in function
-	if ( !CheckBoardSquareValid( fromSquare, toSquare, teleport, promoteTo ) )
+	std::string errorMessage;
+	if ( !CheckBoardSquareValid( fromSquare, toSquare, errorMessage, teleport, promoteTo ) )
 	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, errorMessage );
 		return false;
 	}
 	
@@ -910,7 +916,8 @@ void ChessBoard::TryAllMoves()
 		for ( int column = 0; column < 8; ++column )
 		{
 			IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
-			if ( CheckBoardSquareValid( playerPos, IntVec2( column, row ) ) )
+			std::string errorMessage;
+			if ( CheckBoardSquareValid( playerPos, IntVec2( column, row ), errorMessage ) )
 			{
 				Vec3 worldPos = GetWorldPositionFromSquare( IntVec2( column, row ) );
 				DebugAddWorldSphere( worldPos, 0.5f, 10.f, Rgba8( 255, 0, 255 ) );

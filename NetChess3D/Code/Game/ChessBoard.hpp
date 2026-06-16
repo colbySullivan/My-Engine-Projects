@@ -82,7 +82,7 @@ private:
 	void CreateBoardGeometry();
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
 	std::string GetIntVec2ToString( IntVec2 boardPosition );
-	static bool CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bool teleport = false, std::string promoteTo = "" );
+	static bool CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, std::string& errorMessage, bool teleport = false, std::string promoteTo = "" );
 	static bool MovePiece( std::string fromSquareString, std::string toSquareString, bool teleport = false, std::string promoteTo = "" );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
 	bool IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int kingPlayer ) const;
