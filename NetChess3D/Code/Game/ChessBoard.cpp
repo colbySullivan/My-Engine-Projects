@@ -61,6 +61,21 @@ void ChessBoard::Update()
 		TryAllMoves();
 		m_tryAllMovesRequested = false;
 	}
+	if ( m_selectedPiece )
+	{
+		IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
+		if ( CheckBoardSquareValid( playerPos, m_currentRaycastedSquare ) )
+		{
+			Vec3 worldPos = GetWorldPositionFromSquare( m_currentRaycastedSquare );
+			DebugAddWorldSphere( worldPos, 0.5f, 0.f, Rgba8( 255, 0, 255 ) );
+		}
+	}
+	if ( m_moveRequested && m_selectedPiece )
+	{
+		IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
+		MovePiece( GetIntVec2ToString(playerPos), GetIntVec2ToString(m_currentRaycastedSquare) );
+		m_moveRequested = false;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -598,7 +613,11 @@ bool ChessBoard::MovePiece( std::string fromSquareString, std::string toSquareSt
 		return false;
 	}
 
-	CheckBoardSquareValid( fromSquare, toSquare, teleport, promoteTo );
+	// Error statements are handle in function
+	if ( !CheckBoardSquareValid( fromSquare, toSquare, teleport, promoteTo ) )
+	{
+		return false;
+	}
 	
 	// pawn promotion 
 	// Can put this in pawn movement but removed so we can test with teleport
@@ -895,19 +914,8 @@ void ChessBoard::TryAllMoves()
 			{
 				Vec3 worldPos = GetWorldPositionFromSquare( IntVec2( column, row ) );
 				DebugAddWorldSphere( worldPos, 0.5f, 10.f, Rgba8( 255, 0, 255 ) );
-
-
 			}
 		}
-	}
-	IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
-	if ( CheckBoardSquareValid( playerPos, IntVec2( 0, 2 ) ) )
-	{
-		Vec3 worldPos = GetWorldPositionFromSquare( IntVec2( 0, 2 ) );
-		AddVertsForQuad3D( m_vertexes, m_indexes, worldPos + Vec3( 0.f, 0.f, 0.01f ), worldPos + Vec3( 1.f, 0.f, 0.01f ), worldPos + Vec3( 1.f, 1.f, 1.01f ), worldPos + Vec3( 0.f, 1.f, 1.01f ), Rgba8( 255, 255, 0, 128 ), AABB2::ZERO_TO_ONE );
-		std::string target = GetIntVec2ToString( IntVec2( 0, 2 ) );
-		//g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Highlight: %s", target.c_str() ) );
-
 	}
 	m_selectedPiece = nullptr;
 

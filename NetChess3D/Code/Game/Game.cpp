@@ -240,7 +240,8 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
-		m_chessBoard->m_tryAllMovesRequested = true;
+		//m_chessBoard->m_tryAllMovesRequested = true
+		m_chessBoard->m_moveRequested = true;
 	}
 
 	DebugInput();

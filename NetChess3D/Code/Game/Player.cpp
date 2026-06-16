@@ -195,4 +195,5 @@ void Player::UpdateRaycastMovePieces()
 	{
 		hitPiece->m_currentlyRaycasted = true;
 	}
+	m_game->m_chessBoard->m_currentRaycastedSquare = hitSquare;
 }
