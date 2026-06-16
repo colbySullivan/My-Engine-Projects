@@ -144,16 +144,16 @@ Vec3 ChessBoard::GetWorldPositionFromSquare( IntVec2 const& square ) const
 
 void ChessBoard::UpdateDebugConstants()
 {
-	m_debugConstants.time = (float)g_engine->m_systemClock->GetTotalSeconds();
-	m_debugConstants.debugFloat = m_debugFloat;
-	m_debugConstants.debugInt = m_debugInt;
+	m_debugConstantValues.time = (float)g_engine->m_systemClock->GetTotalSeconds();
+	m_debugConstantValues.debugFloat = m_debugFloat;
+	m_debugConstantValues.debugInt = m_debugInt;
 }
 
 //-----------------------------------------------------------------------------------------------
 void ChessBoard::SetDebugConstant() const
 {
 	g_engine->m_render->BindConstantBuffer( 1, m_debugConstant );
-	g_engine->m_render->CopyCPUToGPU( &m_debugConstants, sizeof( DebugConstants ), m_debugConstant );
+	g_engine->m_render->CopyCPUToGPU( &m_debugConstantValues, sizeof( DebugConstants ), m_debugConstant );
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -19,6 +19,13 @@ public:
 		Hop
 	};
 
+	struct EffectConstants
+	{
+		int		effectInt = 0;
+		int		padding[3];
+	};
+
+
 	virtual void Update();
 	virtual void Render() const;
 
@@ -36,5 +43,11 @@ public:
 	Vec3 m_moveEnd = Vec3::ZERO;
 	Timer* m_moveTimer = nullptr;
 	MoveStyle m_moveStyle = MoveStyle::Instant;
-	bool m_isHighlight = false;
+
+	// Effects
+	EffectConstants	m_effectConstantValues = { };
+	ConstantBuffer* m_effectConstant;
+private:
+	void BindEffectConstant() const;
+	void UpdateMovePiece();
 };

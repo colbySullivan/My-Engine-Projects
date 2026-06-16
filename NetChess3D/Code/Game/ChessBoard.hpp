@@ -52,7 +52,7 @@ public:
 	Game* m_game = nullptr;
 
 	// Debug
-	DebugConstants	m_debugConstants = { };
+	DebugConstants	m_debugConstantValues = { };
 	int				m_debugInt = 0;
 	float			m_debugFloat = 0.f;
 

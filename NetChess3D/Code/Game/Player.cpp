@@ -40,7 +40,7 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 	m_game->m_chessBoard->GetImpactedPieceOrSquare( m_worldCamera->GetPosition(), m_worldCamera->GetOrientation().GetForwardDir_IFwd_JLeft_KUp(), 1000.f, hitPiece, hitSquare );
 	if ( hitPiece )
 	{
-		hitPiece->m_isHighlight = true;
+		hitPiece->m_effectConstantValues.effectInt = 1;
 	}
 }
 

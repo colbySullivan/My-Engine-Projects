@@ -24,6 +24,12 @@ cbuffer ModelConstants : register(b3)
     float4   ModelColor;
 };
 
+cbuffer GameConstants : register(b8)
+{
+	int		effectsInt;
+	int		padding2[3];
+};
+
 struct vs_input_t
 {
     float3 modelSpacePosition : POSITION;
@@ -52,6 +58,17 @@ float3 encodeXYZToRGB8( float3 xyzVec )
 float3 decodeRGB8ToXYZ( float3 color )
 {
     return ( color * 2.0 ) - 1.0;
+}
+
+float3 SmoothStart3( float3 v )
+{
+	return v * v * v;
+}
+
+float3 SmoothStop3( float3 v )
+{
+	float3 inv = 1.0 - v;
+	return 1.0 - (inv * inv * inv);
 }
 
 v2p_t VertexMain(vs_input_t input)
@@ -176,5 +193,13 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float4 outColor = float4( litColor, diffuseColor.a );
     clip(outColor.a - 0.01f);
     
+    // Special effects -----------------------------------------------------------------------
+    if ( effectsInt == 1 )
+	{
+		float t = 0.5 + 0.5f * sin( 10.f * time );
+		outColor.rgb = lerp( SmoothStart3( outColor.rgb), SmoothStop3( outColor.rgb ), t );
+	}
+
+
     return outColor;
 }

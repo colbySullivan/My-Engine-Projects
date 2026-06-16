@@ -12,6 +12,7 @@ ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec
 	{
 		m_color = Rgba8( 120, 120, 120 );
 	}
+	m_effectConstant = g_engine->m_render->CreateConstantBuffer( sizeof( EffectConstants ) );
 	IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
 	m_game->m_chessBoard->SetPieceAt( square.y, square.x, this );
 }
@@ -19,41 +20,20 @@ ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec
 //-----------------------------------------------------------------------------------------------
 ChessPiece::~ChessPiece()
 {
-
+	delete m_moveTimer;
+	m_moveTimer = nullptr;
+	delete m_effectConstant;
+	m_effectConstant = nullptr;
+	IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
+	m_game->m_chessBoard->SetPieceAt( square.y, square.x, nullptr );
 }
 
 //-----------------------------------------------------------------------------------------------
 void ChessPiece::Update()
 {
-	if ( m_moveTimer && !m_moveTimer->DecrementPeriodIfElapsed() )
-	{
-		float t = (float)m_moveTimer->GetElapsedFraction();
-		if ( m_moveStyle == MoveStyle::Slide )
-		{
-			float eased = SmoothStep5( t );
-			m_position = Interpolate( m_moveStart, m_moveEnd, eased );
-		}
-		else if ( m_moveStyle == MoveStyle::Hop )
-		{
-			float horizontalProgress = SmoothStep3( t );
-			Vec3 base = Interpolate( m_moveStart, m_moveEnd, horizontalProgress );
-
-			const float hopHeight = 0.6f;
-			float arc = 4.0f * t * ( 1.0f - t ) * hopHeight;
-
-			m_position = base + Vec3( 0.f, 0.f, arc );
-		}
-		else
-		{
-			m_position = m_moveEnd;
-		}
-	}
-	else 
-	{
-		delete m_moveTimer;
-		m_moveTimer = nullptr;
-	}
-	m_isHighlight = false;
+	UpdateMovePiece();
+	// Rest the highlight effect every frame
+	m_effectConstantValues.effectInt = 0;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -64,11 +44,11 @@ void ChessPiece::Render() const
 		return;
 	}
 	Mat44 modelMatrix = Mat44::MakeTranslation3D( m_position );
-	Rgba8 color = ( !m_isHighlight ) ? m_color : Rgba8::BLUE;
-	g_engine->m_render->SetModelConstants( modelMatrix, color );
+	g_engine->m_render->SetModelConstants( modelMatrix, m_color );
 	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindShader( m_definition->m_shader );
+	BindEffectConstant();
 
 	if ( m_definition->m_iboPlayerOne && m_definition->m_iboPlayerTwo )
 	{
@@ -115,4 +95,44 @@ void ChessPiece::StartMove( Vec3 const& targetWorldPosition, MoveStyle style, fl
 	m_moveStart = m_position;
 	m_moveEnd = targetWorldPosition;
 	m_moveStyle = style;
+}
+
+//-----------------------------------------------------------------------------------------------
+void ChessPiece::BindEffectConstant() const
+{
+	g_engine->m_render->BindConstantBuffer( 8, m_effectConstant );
+	g_engine->m_render->CopyCPUToGPU( &m_effectConstantValues, sizeof( EffectConstants ), m_effectConstant );
+}
+
+//-----------------------------------------------------------------------------------------------
+void ChessPiece::UpdateMovePiece()
+{
+	if ( m_moveTimer && !m_moveTimer->DecrementPeriodIfElapsed() )
+	{
+		float t = ( float )m_moveTimer->GetElapsedFraction();
+		if ( m_moveStyle == MoveStyle::Slide )
+		{
+			float eased = SmoothStep5( t );
+			m_position = Interpolate( m_moveStart, m_moveEnd, eased );
+		}
+		else if ( m_moveStyle == MoveStyle::Hop )
+		{
+			float horizontalProgress = SmoothStep3( t );
+			Vec3 base = Interpolate( m_moveStart, m_moveEnd, horizontalProgress );
+
+			const float hopHeight = 0.6f;
+			float arc = 4.0f * t * ( 1.0f - t ) * hopHeight;
+
+			m_position = base + Vec3( 0.f, 0.f, arc );
+		}
+		else
+		{
+			m_position = m_moveEnd;
+		}
+	}
+	else
+	{
+		delete m_moveTimer;
+		m_moveTimer = nullptr;
+	}
 }
