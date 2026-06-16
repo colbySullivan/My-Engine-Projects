@@ -68,6 +68,8 @@ void ChessBoard::Render() const
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->BindTexture(m_texture, 0);
 	g_engine->m_render->BindTexture(m_normalTexture, 1);
+	g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 0 );
+	g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 1 );
 	g_engine->m_render->BindShader( m_shader );
 	SetDebugConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );

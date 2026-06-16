@@ -91,7 +91,10 @@ void Renderer::Shutdown()
 void Renderer::BeginFrame()
 {
 	m_deviceContext->OMSetRenderTargets( 1, &m_renderTargetView, m_depthStencilDSV );
-	BindTexture( nullptr );
+	BindTexture( nullptr, 0 ); 
+	BindTexture( nullptr, 1 );
+	BindSampler( SamplerMode::POINT_CLAMP, 0 );
+	BindSampler( SamplerMode::POINT_CLAMP, 1 );
 }
 
 //------------------------------------------------------------------------------
@@ -637,7 +640,6 @@ void Renderer::SetStatesIfChanged()
 	{
 		m_samplerState = m_samplerStates[( int )m_desiredSamplerMode];
 		m_deviceContext->PSSetSamplers( 0, 1, &m_samplerState );
-		m_deviceContext->PSSetSamplers( 1, 1, &m_samplerState ); // #TODO this was a temp fix for binding normal samples
 	}
 
 	if ( m_rasterizerStates[( int )m_desiredRasterizerMode] != m_rasterizerState )
@@ -757,6 +759,12 @@ void Renderer::BindTexture( Texture* texture, int textureRegisterSlot )
 		m_currentTexture = texture;
 		m_deviceContext->PSSetShaderResources( textureRegisterSlot, 1, &m_currentTexture->m_shaderResourceView );
 	}
+}
+
+//------------------------------------------------------------------------------
+void Renderer::BindSampler( SamplerMode mode, int samplerRegisterSlot/*=0 */ )
+{
+	m_deviceContext->PSSetSamplers( samplerRegisterSlot, 1, &m_samplerStates[(int)mode] );
 }
 
 //------------------------------------------------------------------------------
