@@ -27,4 +27,5 @@ public:
 	Camera*				m_worldCamera = nullptr;
 private:
 	void SetUpCamera();
+	void UpdateRaycastMovePieces();
 };

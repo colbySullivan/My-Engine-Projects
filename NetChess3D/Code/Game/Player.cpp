@@ -33,15 +33,7 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 	}
 
 	m_worldCamera->SetPositionAndOrientation( m_position, m_orientation );
-
-	// #todo move this to a permanent place
-	ChessPiece* hitPiece = nullptr;
-	IntVec2 hitSquare = IntVec2( -1, -1 );
-	m_game->m_chessBoard->GetImpactedPieceOrSquare( m_worldCamera->GetPosition(), m_worldCamera->GetOrientation().GetForwardDir_IFwd_JLeft_KUp(), 1000.f, hitPiece, hitSquare );
-	if ( hitPiece )
-	{
-		hitPiece->m_effectConstantValues.effectInt = 1;
-	}
+	UpdateRaycastMovePieces();
 }
 
 //------------------------------------------------------------------------------
@@ -192,4 +184,15 @@ void Player::SetUpCamera()
 	Mat44 cameraToRenderMatrix;
 	cameraToRenderMatrix.SetIJK3D( Vec3( 0.f, 0.f, 1.f ), Vec3( -1.f, 0.f, 0.f ), Vec3( 0.f, 1.f, 0.f ) );
 	m_worldCamera->SetCameraToRenderTransform( cameraToRenderMatrix );
+}
+
+void Player::UpdateRaycastMovePieces()
+{
+	ChessPiece* hitPiece = nullptr;
+	IntVec2 hitSquare = IntVec2( -1, -1 );
+	m_game->m_chessBoard->GetImpactedPieceOrSquare( m_worldCamera->GetPosition(), m_worldCamera->GetOrientation().GetForwardDir_IFwd_JLeft_KUp(), 1000.f, hitPiece, hitSquare );
+	if ( hitPiece )
+	{
+		hitPiece->m_currentlyRaycasted = true;
+	}
 }

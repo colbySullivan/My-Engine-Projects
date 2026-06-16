@@ -32,8 +32,7 @@ ChessPiece::~ChessPiece()
 void ChessPiece::Update()
 {
 	UpdateMovePiece();
-	// Rest the highlight effect every frame
-	m_effectConstantValues.effectInt = 0;
+	UpdateHighlight();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -135,4 +134,26 @@ void ChessPiece::UpdateMovePiece()
 		delete m_moveTimer;
 		m_moveTimer = nullptr;
 	}
+}
+
+void ChessPiece::UpdateHighlight()
+{
+	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
+	{
+		m_selected = ( m_currentlyRaycasted ) ? true : false;
+	}
+
+	if ( m_selected )
+	{
+		m_effectConstantValues.effectInt = 2;
+	}
+	else if ( m_currentlyRaycasted )
+	{
+		m_effectConstantValues.effectInt = 1;
+	}
+	else
+	{
+		m_effectConstantValues.effectInt = 0;
+	}
+	m_currentlyRaycasted = false;
 }

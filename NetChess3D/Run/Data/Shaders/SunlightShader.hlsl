@@ -200,6 +200,11 @@ float4 PixelMain(v2p_t input) : SV_Target0
 		outColor.rgb = lerp( SmoothStart3( outColor.rgb), SmoothStop3( outColor.rgb ), t );
 	}
 
+    if ( effectsInt == 2 )
+	{
+		outColor.r = outColor.r * 0.5f;
+	}
+
 
     return outColor;
 }

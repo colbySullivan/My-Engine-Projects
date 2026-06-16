@@ -47,7 +47,10 @@ public:
 	// Effects
 	EffectConstants	m_effectConstantValues = { };
 	ConstantBuffer* m_effectConstant;
+	bool			m_currentlyRaycasted = false;
+	bool			m_selected = false;
 private:
 	void BindEffectConstant() const;
 	void UpdateMovePiece();
+	void UpdateHighlight();
 };
