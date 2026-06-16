@@ -146,6 +146,7 @@ void ChessPiece::UpdateHighlight()
 	if ( m_selected )
 	{
 		m_effectConstantValues.effectInt = 2;
+		m_game->m_chessBoard->m_selectedPiece = this;
 	}
 	else if ( m_currentlyRaycasted )
 	{

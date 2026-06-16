@@ -56,6 +56,11 @@ ChessBoard::~ChessBoard()
 void ChessBoard::Update()
 {
 	UpdateDebugConstants();
+	if ( m_tryAllMovesRequested )
+	{
+		TryAllMoves();
+		m_tryAllMovesRequested = false;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -386,10 +391,24 @@ IntVec2 ChessBoard::GetBoardToIntVec2( std::string chessString )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport, std::string promoteTo )
+std::string ChessBoard::GetIntVec2ToString( IntVec2 boardPosition )
 {
-	IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
-	IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
+	char fileChar = static_cast<char>( 'a' + boardPosition.x );
+	int rank = boardPosition.y + 1;
+	return Stringf( "%c%d", fileChar, rank );
+}
+
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bool teleport, std::string promoteTo )
+{
+	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
+
+	// No piece at to location
+	if ( piece == nullptr )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at from square" ) );
+		return false;
+	}
 
 	if ( g_activeChessBoard->m_gameOver )
 	{
@@ -397,26 +416,10 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 		return false;
 	}
 
-	// Missing one or both to / from
-	if ( fromSquareString.empty() || toSquareString.empty() )
-	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
-		return false;
-	}
-
 	// Tried to move outside of board
 	if ( !MoveValidInsideBoard( fromSquare ) || !MoveValidInsideBoard( toSquare ) )
 	{
 		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: move invalid please ensure it is within the board" );
-		return false;
-	}
-
-	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
-
-	// No piece at to location
-	if ( piece == nullptr )
-	{
-		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at %s", fromSquareString.c_str() ) );
 		return false;
 	}
 
@@ -446,28 +449,12 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 				return false;
 			}
 		}
-	
-		// "Sliding" pieces path check
-		if ( piece->m_definition->m_type != Knight )
-		{
-			if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
-				return false;
-			}
-			bool movingDiagonal = g_activeChessBoard->isDiaganol( fromSquare, toSquare );
-			if ( piece->m_definition->m_type == Rook && movingDiagonal )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks can only move in a straight line!" );
-				return false;
-			}
-		}
 
 		// Pawn movement
 		if ( piece->m_definition->m_type == Pawn )
 		{
-			int manhattanX = abs(toSquare.x - fromSquare.x);
-			int manhattanY = abs(toSquare.y - fromSquare.y);
+			int manhattanX = abs( toSquare.x - fromSquare.x );
+			int manhattanY = abs( toSquare.y - fromSquare.y );
 
 			ChessPiece* targetPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 
@@ -484,7 +471,7 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 				// Can only move 2 on first move
 				if ( manhattanY > 1 )
 				{
-					if ( (fromSquare.y != 1 && fromSquare.y != 6) || manhattanY > 2 )
+					if ( ( fromSquare.y != 1 && fromSquare.y != 6 ) || manhattanY > 2 )
 					{
 						g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Pawns can only move 2 spaces on their first turn!" );
 						return false;
@@ -538,48 +525,81 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 
 		// Rook, Bishop, Queen movement
 		if ( piece->m_definition->m_type == Rook || piece->m_definition->m_type == Bishop || piece->m_definition->m_type == Queen )
+		{
+			int manhattanX = abs( toSquare.x - fromSquare.x );
+			int manhattanY = abs( toSquare.y - fromSquare.y );
+
+			// No movement
+			if ( manhattanX == 0 && manhattanY == 0 )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Destination square is the same as origin!" );
+				return false;
+			}
+
+			// Rook Movement
+			if ( piece->m_definition->m_type == Rook )
+			{
+				if ( manhattanX != 0 && manhattanY != 0 )
+				{
+					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks cannot move diagonally!" );
+					return false;
+				}
+			}
+			// Bishop movement
+			else if ( piece->m_definition->m_type == Bishop )
+			{
+				if ( manhattanX == 0 || manhattanX != manhattanY )
+				{
+					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Bishops must move diagonally!" );
+					return false;
+				}
+			}
+
+			// Queen movement
+			else
+			{
+				if ( !( manhattanX == manhattanY || manhattanX == 0 || manhattanY == 0 ) )
+				{
+					g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Queens move like Rooks or Bishops (straight or diagonal)!" );
+					return false;
+				}
+			}
+
+			// Moved this towards the end as it was slowing down checks
+			if ( !g_activeChessBoard->IsPathClear( fromSquare, toSquare ) )
+			{
+				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Path is blocked by another piece!" );
+				return false;
+			}
+		}
+
+	}
+	return true;
+}
+//-----------------------------------------------------------------------------------------------
+bool ChessBoard::MovePiece( std::string fromSquareString, std::string toSquareString, bool teleport, std::string promoteTo )
+{
+	IntVec2 fromSquare = GetBoardToIntVec2( fromSquareString );
+	IntVec2 toSquare = GetBoardToIntVec2( toSquareString );
+
+	// Missing one or both to / from
+	if ( fromSquareString.empty() || toSquareString.empty() )
 	{
-		int manhattanX = abs( toSquare.x - fromSquare.x );
-		int manhattanY = abs( toSquare.y - fromSquare.y );
-
-		// No movement
-		if ( manhattanX == 0 && manhattanY == 0 )
-		{
-			g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Destination square is the same as origin!" );
-			return false;
-		}
-
-		// Rook Movement
-		if ( piece->m_definition->m_type == Rook )
-		{
-			if ( manhattanX != 0 && manhattanY != 0 )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Rooks cannot move diagonally!" );
-				return false;
-			}
-		}
-		// Bishop movement
-		else if ( piece->m_definition->m_type == Bishop )
-		{
-			if ( manhattanX == 0 || manhattanX != manhattanY )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Bishops must move diagonally!" );
-				return false;
-			}
-		}
-		
-		// Queen movement
-		else 
-		{
-			if ( !( manhattanX == manhattanY || manhattanX == 0 || manhattanY == 0 ) )
-			{
-				g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: Queens move like Rooks or Bishops (straight or diagonal)!" );
-				return false;
-			}
-		}
-	}
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, "ChessMove: requires 'from' and 'to' parameter (e.g., ChessMove from=a2 to=a3)" );
+		return false;
 	}
 
+	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
+
+	// No piece at to location
+	if ( piece == nullptr )
+	{
+		g_engine->m_console->AddLine( DevConsole::ERROR_COLOR, Stringf( "No piece at %s", fromSquareString.c_str() ) );
+		return false;
+	}
+
+	CheckBoardSquareValid( fromSquare, toSquare, teleport, promoteTo );
+	
 	// pawn promotion 
 	// Can put this in pawn movement but removed so we can test with teleport
 	if ( piece->m_definition->m_type == Pawn && g_activeChessBoard->IsPawnPromotionRow( toSquare.y, piece->m_playernum ) )
@@ -621,13 +641,13 @@ bool ChessBoard::TryToDoMovePiece( std::string fromSquareString, std::string toS
 
 	// Move pieces on board
 	ChessPiece::MoveStyle movesyle = ( piece->m_definition->m_type == Knight ) ? ChessPiece::MoveStyle::Hop : ChessPiece::MoveStyle::Slide;
-	piece->StartMove( g_activeChessBoard->GetWorldPositionFromSquare(toSquare), movesyle );
+	piece->StartMove( g_activeChessBoard->GetWorldPositionFromSquare( toSquare ), movesyle );
 
-	piece->m_firstMove = false;	
-	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
+	piece->m_firstMove = false;
+	//g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
 
 	// Capture piece
-	if ( toPiece ) 
+	if ( toPiece )
 	{
 		capturedType = toPiece->m_definition->m_type;
 		piece->m_game->RemoveChessPiece( toPiece );
@@ -793,13 +813,16 @@ bool ChessBoard::TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& t
 		return false;
 	}
 
-	SetPieceAt( fromSquare.y, fromSquare.x, nullptr );
-	SetPieceAt( toSquare.y, toSquare.x, king );
+	ChessPiece::MoveStyle movesyle = ( king->m_definition->m_type == Knight ) ? ChessPiece::MoveStyle::Hop : ChessPiece::MoveStyle::Slide;
+	king->StartMove( g_activeChessBoard->GetWorldPositionFromSquare( toSquare ), movesyle );
 	king->m_firstMove = false;
 
-	SetPieceAt( fromSquare.y, rookStartCol, nullptr );
-	SetPieceAt( fromSquare.y, rookEndCol, rook );
+	movesyle = ( rook->m_definition->m_type == Knight ) ? ChessPiece::MoveStyle::Hop : ChessPiece::MoveStyle::Slide;
+	IntVec2 rookTargetSquare = IntVec2( rookEndCol, fromSquare.y );
+	rook->StartMove( g_activeChessBoard->GetWorldPositionFromSquare( rookTargetSquare ), movesyle );
 	rook->m_firstMove = false;
+	g_activeChessBoard->m_board[fromSquare.y][rookStartCol] = nullptr;
+	g_activeChessBoard->m_board[rookTargetSquare.y][rookTargetSquare.x] = rook;
 
 	g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "Castling executed successfully!" );
 
@@ -856,6 +879,41 @@ bool ChessBoard::TryExecuteEnPassant()
 }
 
 //-----------------------------------------------------------------------------------------------
+void ChessBoard::TryAllMoves()
+{
+	if ( !m_selectedPiece )
+	{
+		return;
+	}
+
+	for ( int row = 0; row < 8; ++row )
+	{
+		for ( int column = 0; column < 8; ++column )
+		{
+			IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
+			if ( CheckBoardSquareValid( playerPos, IntVec2( column, row ) ) )
+			{
+				Vec3 worldPos = GetWorldPositionFromSquare( IntVec2( column, row ) );
+				DebugAddWorldSphere( worldPos, 0.5f, 10.f, Rgba8( 255, 0, 255 ) );
+
+
+			}
+		}
+	}
+	IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
+	if ( CheckBoardSquareValid( playerPos, IntVec2( 0, 2 ) ) )
+	{
+		Vec3 worldPos = GetWorldPositionFromSquare( IntVec2( 0, 2 ) );
+		AddVertsForQuad3D( m_vertexes, m_indexes, worldPos + Vec3( 0.f, 0.f, 0.01f ), worldPos + Vec3( 1.f, 0.f, 0.01f ), worldPos + Vec3( 1.f, 1.f, 1.01f ), worldPos + Vec3( 0.f, 1.f, 1.01f ), Rgba8( 255, 255, 0, 128 ), AABB2::ZERO_TO_ONE );
+		std::string target = GetIntVec2ToString( IntVec2( 0, 2 ) );
+		//g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Highlight: %s", target.c_str() ) );
+
+	}
+	m_selectedPiece = nullptr;
+
+}
+
+//-----------------------------------------------------------------------------------------------
 bool ChessBoard::Command_ChessMove( EventArgs& args )
 {
 	if ( g_activeChessBoard )
@@ -864,7 +922,7 @@ bool ChessBoard::Command_ChessMove( EventArgs& args )
 		std::string toSquareString = args.GetValue( "to", "" );
 		bool teleport = args.GetValue( "teleport", false );
 		std::string promoteTo = args.GetValue( "promoteTo", "" );
-		return TryToDoMovePiece( fromSquareString, toSquareString, teleport, promoteTo );
+		return MovePiece( fromSquareString, toSquareString, teleport, promoteTo );
 	}
 	return false;
 }

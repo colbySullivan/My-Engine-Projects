@@ -71,11 +71,17 @@ public:
 	IntVec2 m_lastPawnMoveFrom = IntVec2( -1, -1 );
 	IntVec2 m_lastPawnMoveTo = IntVec2( -1, -1 );
 
+	// Moves
+	ChessPiece* m_selectedPiece = nullptr;
+	bool m_tryAllMovesRequested;
+
 	ChessPiece* m_board[8][8] = { nullptr };
 private:
 	void CreateBoardGeometry();
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
-	static bool TryToDoMovePiece( std::string fromSquareString, std::string toSquareString, bool teleport = false, std::string promoteTo = "" );
+	std::string GetIntVec2ToString( IntVec2 boardPosition );
+	static bool CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, bool teleport = false, std::string promoteTo = "" );
+	static bool MovePiece( std::string fromSquareString, std::string toSquareString, bool teleport = false, std::string promoteTo = "" );
 	static bool MoveValidInsideBoard( IntVec2 moveSquare );
 	bool IsKingAdjacentToAnotherKing( IntVec2 const& kingPosition, int kingPlayer ) const;
 	ChessPieceType GetPieceTypeFromString( std::string const& typeName ) const;
@@ -86,4 +92,5 @@ private:
 	bool TryExecuteCastling( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* king );
 	bool IsValidEnPassantMove( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn ) const;
 	bool TryExecuteEnPassant();
+	void TryAllMoves();
 };

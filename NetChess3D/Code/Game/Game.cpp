@@ -238,6 +238,11 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		g_drawDebug = !g_drawDebug;
 	}
 
+	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	{
+		m_chessBoard->m_tryAllMovesRequested = true;
+	}
+
 	DebugInput();
 
 	g_engine->m_input->EndFrame();
