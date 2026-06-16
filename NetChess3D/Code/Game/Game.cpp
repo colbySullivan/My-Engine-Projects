@@ -638,6 +638,7 @@ void Game::CreateChessPieces()
 void Game::CreateCameraModes()
 {
 	CameraMode* playerCameraMode1 = new CameraMode;
+	playerCameraMode1->freeCamera = true;
 	playerCameraMode1->position = Vec3( 4, -3, 4 );
 	playerCameraMode1->orientation = EulerAngles( 90.f, 30.f, 0.f );
 	playerCameraMode1->modeName = "Player One Camera";
@@ -646,6 +647,7 @@ void Game::CreateCameraModes()
 	CameraMode* playerCameraMode2 = new CameraMode;
 	playerCameraMode2->position = Vec3( 4, 11, 4 );
 	playerCameraMode2->orientation = EulerAngles( -90.f, 30.f, 0.f );
+	playerCameraMode2->freeCamera = true;
 	playerCameraMode2->modeName = "Payer Two Camera";
 	m_cameraModes.push_back( playerCameraMode2 );
 
@@ -710,4 +712,6 @@ void Game::RestartGame()
 void Game::ChangePlayerCamera( int player )
 {
 	m_currentCameraMode = m_cameraModes[ player - 1 ];
+	m_player->m_position = m_currentCameraMode->position;
+	m_player->m_orientation = m_currentCameraMode->orientation;
 }
