@@ -196,13 +196,13 @@ float4 PixelMain(v2p_t input) : SV_Target0
     // Special effects -----------------------------------------------------------------------
     if ( effectsInt == 1 )
 	{
-		float t = 0.5 + 0.5f * sin( 10.f * time );
+		float t = 0.5f + ( 0.5f * sin( 5.f * time ) );
 		outColor.rgb = lerp( SmoothStart3( outColor.rgb), SmoothStop3( outColor.rgb ), t );
 	}
 
     if ( effectsInt == 2 )
 	{
-		outColor.r = outColor.r * 0.5f;
+		outColor.a = outColor.a * 0.5f;
 	}
 
 

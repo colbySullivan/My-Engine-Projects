@@ -52,7 +52,7 @@ void ChessPiece::Render() const
 	}
 	Mat44 modelMatrix = Mat44::MakeTranslation3D( m_position );
 	g_engine->m_render->SetModelConstants( modelMatrix, m_color );
-	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+	g_engine->m_render->m_desiredBlendMode = BlendMode::ALPHA;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->BindShader( m_definition->m_shader );
 	BindEffectConstant();
@@ -146,6 +146,12 @@ void ChessPiece::UpdateMovePiece()
 
 void ChessPiece::UpdateHighlight()
 {
+	if ( !m_registeredOnBoard )
+	{
+		m_effectConstantValues.effectInt = 2;
+		return;
+	}
+
 	if ( g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE ) )
 	{
 		m_selected = ( m_currentlyRaycasted ) ? true : false;
@@ -153,7 +159,7 @@ void ChessPiece::UpdateHighlight()
 
 	if ( m_selected )
 	{
-		m_effectConstantValues.effectInt = 2;
+		m_effectConstantValues.effectInt = 1;
 		m_game->m_chessBoard->m_nextSelectedPiece = this;
 	}
 	else if ( m_currentlyRaycasted )
