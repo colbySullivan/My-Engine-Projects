@@ -56,8 +56,10 @@ public:
 	int				m_debugInt = 0;
 	float			m_debugFloat = 0.f;
 
+	// Drawing
 	Texture* m_texture = nullptr;
 	Texture* m_normalTexture = nullptr;
+	Texture* m_sgaTexture = nullptr;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;
 

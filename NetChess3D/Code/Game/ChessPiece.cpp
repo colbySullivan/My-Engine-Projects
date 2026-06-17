@@ -65,11 +65,19 @@ void ChessPiece::Render() const
 		{
 			g_engine->m_render->BindTexture( m_definition->m_texturePlayerOne, 0 );
 			g_engine->m_render->BindTexture( m_definition->m_normalTexturePlayerOne, 1 );
+			g_engine->m_render->BindTexture( m_definition->m_sgaTexturePlayerOne, 2 );
+			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 0 );
+			g_engine->m_render->BindSampler(SamplerMode::BILINEAR_WRAP, 1);
+			g_engine->m_render->BindSampler(SamplerMode::BILINEAR_WRAP, 2);
 		}
 		else if ( m_playernum == 2 )
 		{
 			g_engine->m_render->BindTexture( m_definition->m_texturePlayerTwo, 0 );
 			g_engine->m_render->BindTexture( m_definition->m_normalTexturePlayerTwo, 1 );
+			g_engine->m_render->BindTexture( m_definition->m_sgaTexturePlayerTwo, 2 );
+			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 0 );
+			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 1 );
+			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 2 );
 
 			playerVbo = m_definition->m_vboPlayerTwo;
 			playerIbo = m_definition->m_iboPlayerTwo;

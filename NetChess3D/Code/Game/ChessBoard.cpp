@@ -27,8 +27,9 @@ ChessBoard::ChessBoard( Game* game )
 
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
-	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_d.png" );
-	m_normalTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/woodfloor_n.png" );
+	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/Bricks_d.png" );
+	m_normalTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/Bricks_n.png" );
+	m_sgaTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/Bricks_sge.png" );
 	m_shader = g_engine->m_render->CreateOrGetShader( "Data/Shaders/SunlightShader" );
 }
 
@@ -110,18 +111,21 @@ void ChessBoard::Render() const
 {
 	Mat44 modelMatrix = Mat44::MakeTranslation3D( m_position );
 	g_engine->m_render->SetModelConstants( modelMatrix, m_color );
-	g_engine->m_render->m_desiredBlendMode = BlendMode::OPAQUE;
+	g_engine->m_render->m_desiredBlendMode = BlendMode::ALPHA;
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	unsigned int indexCount = ( unsigned int )m_indexes.size();
 	g_engine->m_render->BindTexture(m_texture, 0);
 	g_engine->m_render->BindTexture(m_normalTexture, 1);
+	g_engine->m_render->BindTexture(m_sgaTexture, 2);
 	g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 0 );
 	g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 1 );
+	g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 2 );
 	g_engine->m_render->BindShader( m_shader );
 	SetDebugConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
 	g_engine->m_render->BindTexture( nullptr, 0 );
 	g_engine->m_render->BindTexture( nullptr, 1 );
+	g_engine->m_render->BindTexture( nullptr, 2);
 	g_engine->m_render->BindShader( nullptr );
 
 	DrawOutLine();

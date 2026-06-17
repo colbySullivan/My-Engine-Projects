@@ -1,7 +1,9 @@
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
+Texture2D specGlossEmitTexture : register(t2);
 SamplerState diffuseSampler : register(s0);
 SamplerState normalSampler : register(s1);
+SamplerState specGlossEmitSampler : register(s2);
 
 cbuffer DebugConstants : register(b1)
 {
@@ -104,6 +106,8 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float4 normalColor = normalTexture.Sample(normalSampler, input.uv);
     float4 vertexColor = input.color;
     float4 diffuseColor = textureColor * vertexColor;
+
+    float4 specGlossEmitColor = specGlossEmitTexture.Sample( specGlossEmitSampler, input.uv );
         
     // Decode tangent space normal map
     float3 normalColorToXYZ = normalize( decodeRGB8ToXYZ( normalColor.rgb ) );

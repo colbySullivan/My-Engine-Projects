@@ -83,11 +83,17 @@ void ChessPieceDefinition::LoadPiecesDefsFromFile( char const* filePath )
 		std::string normalTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "normal_texture_PlayerOne", "Data/Textures/TestUV.png" );
 		def.m_normalTexturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
 
+		std::string sgaTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "sga_PlayerOne", "Data/Textures/TestUV.png" );
+		def.m_sgaTexturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( sgaTexturePath.c_str() );
+
 		texturePath = xml.ParseXmlAttribute( *tileElemTextures, "texturePlayerTwo", "Data/Textures/TestUV.png" );
 		def.m_texturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
 
 		normalTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "normal_texture_PlayerTwo", "Data/Textures/TestUV.png" );
 		def.m_normalTexturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
+
+		sgaTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "sga_PlayerTwo", "Data/Textures/TestUV.png" );
+		def.m_sgaTexturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( sgaTexturePath.c_str() );
 	}
 }
 

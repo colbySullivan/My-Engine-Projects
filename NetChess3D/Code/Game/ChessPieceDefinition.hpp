@@ -56,6 +56,8 @@ public:
 	Texture* m_texturePlayerTwo = nullptr;
 	Texture* m_normalTexturePlayerOne = nullptr;
 	Texture* m_normalTexturePlayerTwo = nullptr;
+	Texture* m_sgaTexturePlayerOne = nullptr;
+	Texture* m_sgaTexturePlayerTwo = nullptr;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;
