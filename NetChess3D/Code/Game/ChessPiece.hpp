@@ -9,7 +9,7 @@ class Game;
 class ChessPiece
 {
 public:
-	ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, int playernum );
+	ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, int playernum, bool registerOnBoard = true );
 	virtual ~ChessPiece();
 
 	enum class MoveStyle
@@ -49,6 +49,7 @@ public:
 	ConstantBuffer* m_effectConstant;
 	bool			m_currentlyRaycasted = false;
 	bool			m_selected = false;
+	bool			m_registeredOnBoard = false;
 private:
 	void BindEffectConstant() const;
 	void UpdateMovePiece();

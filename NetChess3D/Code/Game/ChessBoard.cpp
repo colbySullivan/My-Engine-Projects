@@ -68,17 +68,40 @@ void ChessBoard::Update()
 	{
 		IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
 		std::string errorMessage;
-		if ( CheckBoardSquareValid( playerPos, m_currentRaycastedSquare, errorMessage, teleport ) )
+		if ( m_selectedPieceCopy )
 		{
-			Vec3 worldPos = GetWorldPositionFromSquare( m_currentRaycastedSquare );
-			DebugAddWorldSphere( worldPos, 0.5f, 0.f, Rgba8( 255, 0, 255 ) );
+			if ( CheckBoardSquareValid( playerPos, m_currentRaycastedSquare, errorMessage, teleport ) )
+			{
+				Vec3 worldPos = GetWorldPositionFromSquare( m_currentRaycastedSquare );
+				m_selectedPieceCopy->m_position = worldPos;
+				m_selectedPieceCopy->Update();
+			}
+			else
+			{
+				// Hide piece in the shadow realm when hover is not valid
+				m_selectedPieceCopy->m_position = Vec3( 5, 5, -100 );
+			}
 		}
+
 	}
 	if ( m_moveRequested && m_selectedPiece )
 	{
 		IntVec2 playerPos = GetSquareFromWorldPosition( m_selectedPiece->m_position );
 		MovePiece( GetIntVec2ToString(playerPos), GetIntVec2ToString(m_currentRaycastedSquare), teleport );
 		m_moveRequested = false;
+	}
+
+	if ( m_selectedPiece != m_nextSelectedPiece )
+	{
+		delete m_selectedPieceCopy;
+		m_selectedPieceCopy = nullptr;
+
+		m_selectedPiece = m_nextSelectedPiece;
+
+		if ( m_selectedPiece )
+		{
+			m_selectedPieceCopy = new ChessPiece( m_game, m_selectedPiece->m_definition, m_selectedPiece->m_position, m_selectedPiece->m_playernum, false );
+		}
 	}
 }
 
@@ -102,6 +125,11 @@ void ChessBoard::Render() const
 	g_engine->m_render->BindShader( nullptr );
 
 	DrawOutLine();
+
+	if ( m_selectedPieceCopy )
+	{
+		m_selectedPieceCopy->Render();
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -790,7 +818,8 @@ void ChessBoard::ChangePlayer( ChessPiece* piece )
 		piece->m_game->ChangePlayerCamera( g_activeChessBoard->m_currentPlayerNum );
 		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, "" );
 		g_engine->m_console->AddLine( DevConsole::INFO_MINOR_COLOR, Stringf( "Player %i turn", g_activeChessBoard->m_currentPlayerNum ) );
-
+		delete m_selectedPieceCopy;
+		m_selectedPieceCopy = nullptr;
 		g_activeChessBoard->PrintBoardStateToConsole();
 	}
 }

@@ -2,19 +2,23 @@
 #include "Engine/Core/Engine.hpp"
 
 //-----------------------------------------------------------------------------------------------
-ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, int playernum )
+ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec3 const& position, int playernum, bool registerOnBoard )
 	: m_game( owner )
 	, m_definition( definition )
 	, m_position( position )
 	, m_playernum( playernum )
+	, m_registeredOnBoard( registerOnBoard )
 {
 	if ( playernum == 2 ) // #todo this needs to be handled easier
 	{
 		m_color = Rgba8( 120, 120, 120 );
 	}
 	m_effectConstant = g_engine->m_render->CreateConstantBuffer( sizeof( EffectConstants ) );
-	IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
-	m_game->m_chessBoard->SetPieceAt( square.y, square.x, this );
+	if ( m_registeredOnBoard )
+	{
+		IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
+		m_game->m_chessBoard->SetPieceAt( square.y, square.x, this );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -24,8 +28,12 @@ ChessPiece::~ChessPiece()
 	m_moveTimer = nullptr;
 	delete m_effectConstant;
 	m_effectConstant = nullptr;
-	IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
-	m_game->m_chessBoard->SetPieceAt( square.y, square.x, nullptr );
+
+	if ( m_registeredOnBoard )
+	{
+		IntVec2 square = m_game->m_chessBoard->GetSquareFromWorldPosition( m_position );
+		m_game->m_chessBoard->SetPieceAt( square.y, square.x, nullptr );
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -146,7 +154,7 @@ void ChessPiece::UpdateHighlight()
 	if ( m_selected )
 	{
 		m_effectConstantValues.effectInt = 2;
-		m_game->m_chessBoard->m_selectedPiece = this;
+		m_game->m_chessBoard->m_nextSelectedPiece = this;
 	}
 	else if ( m_currentlyRaycasted )
 	{

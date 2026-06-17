@@ -73,6 +73,8 @@ public:
 
 	// Moves
 	ChessPiece* m_selectedPiece = nullptr;
+	ChessPiece* m_nextSelectedPiece = nullptr;
+	ChessPiece* m_selectedPieceCopy = nullptr;
 	bool m_tryAllMovesRequested;
 	bool m_moveRequested = false;
 	IntVec2 m_currentRaycastedSquare = IntVec2( -1, -1 );
