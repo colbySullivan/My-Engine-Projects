@@ -18,6 +18,8 @@ cbuffer CameraConstants : register(b2)
     float4x4 WorldToCameraTransform;
     float4x4 CameraToRenderTransform;
     float4x4 RenderToClipTransform;
+    float3   cameraWorldPos;
+    float    camera_padding;
 };
 
 cbuffer ModelConstants : register(b3)
@@ -108,7 +110,10 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float4 diffuseColor = textureColor * vertexColor;
 
     float4 specGlossEmitColor = specGlossEmitTexture.Sample( specGlossEmitSampler, input.uv );
-        
+    float specularity = specGlossEmitColor.r;
+    float glossiness = specGlossEmitColor.g;
+    float emissivity = specGlossEmitColor.b;
+
     // Decode tangent space normal map
     float3 normalColorToXYZ = normalize( decodeRGB8ToXYZ( normalColor.rgb ) );
 

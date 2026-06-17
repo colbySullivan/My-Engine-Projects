@@ -42,6 +42,8 @@ struct CameraConstants
 	Mat44 WorldToCameraTransform;
 	Mat44 CameraToRenderTransform;
 	Mat44 RenderToClipTransform;
+	Vec3  CameraWorldPos;
+	float padding = 0.f;
 };
 static const int k_cameraConstantsSlot = 2;
 
@@ -143,6 +145,7 @@ void Renderer::BeginCamera( Camera const& camera )
 	camConstants.WorldToCameraTransform = camera.GetWorldToCameraTransform();
 	camConstants.CameraToRenderTransform = camera.GetCameraToRenderTransform();
 	camConstants.RenderToClipTransform = camera.GetRenderToClipTransform();
+	camConstants.CameraWorldPos = camera.GetPosition();
 
 	CopyCPUToGPU( &camConstants, sizeof( camConstants ), m_cameraCBO );
 	BindConstantBuffer( k_cameraConstantsSlot, m_cameraCBO );
