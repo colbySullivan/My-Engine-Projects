@@ -95,4 +95,5 @@ private:
 	bool IsValidEnPassantMove( IntVec2 const& fromSquare, IntVec2 const& toSquare, ChessPiece* pawn ) const;
 	bool TryExecuteEnPassant();
 	void TryAllMoves();
+	void DrawOutLine() const;
 };

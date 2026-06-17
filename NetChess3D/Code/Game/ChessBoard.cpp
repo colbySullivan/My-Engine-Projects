@@ -97,8 +97,11 @@ void ChessBoard::Render() const
 	g_engine->m_render->BindShader( m_shader );
 	SetDebugConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
+	g_engine->m_render->BindTexture( nullptr, 0 );
+	g_engine->m_render->BindTexture( nullptr, 1 );
 	g_engine->m_render->BindShader( nullptr );
 
+	DrawOutLine();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -926,6 +929,28 @@ void ChessBoard::TryAllMoves()
 	}
 	m_selectedPiece = nullptr;
 
+}
+
+void ChessBoard::DrawOutLine() const
+{
+	float lineThickness = 0.005f;
+	float zOffset = 0.01f;
+
+	std::vector<Vertex> squareVerts;
+	Vec3 worldPos = GetWorldPositionFromSquare( m_currentRaycastedSquare );
+	Vec3 origin = Vec3( worldPos.x - 0.5f, worldPos.y - 0.5f, zOffset );
+
+	Vec3 bl = origin;
+	Vec3 br = Vec3( origin.x + 1.f, origin.y, zOffset );
+	Vec3 tr = Vec3( origin.x + 1.f, origin.y + 1.f, zOffset );
+	Vec3 tl = Vec3( origin.x, origin.y + 1.f, zOffset );
+
+	AddVertsForQuad3D( squareVerts, bl, br, Vec3( br.x, br.y + lineThickness, zOffset ), Vec3( bl.x, bl.y + lineThickness, zOffset ), Rgba8::GREEN );
+	AddVertsForQuad3D( squareVerts, Vec3( tl.x, tl.y - lineThickness, zOffset ), Vec3( tr.x, tr.y - lineThickness, zOffset ), tr, tl, Rgba8::GREEN );
+	AddVertsForQuad3D( squareVerts, Vec3( bl.x, bl.y + lineThickness, zOffset ), Vec3( bl.x + lineThickness, bl.y + lineThickness, zOffset ), Vec3( tl.x + lineThickness, tl.y - lineThickness, zOffset ), Vec3( tl.x, tl.y - lineThickness, zOffset ), Rgba8::GREEN );
+	AddVertsForQuad3D( squareVerts, Vec3( br.x - lineThickness, br.y + lineThickness, zOffset ), Vec3( br.x, br.y + lineThickness, zOffset ), Vec3( tr.x, tr.y - lineThickness, zOffset ), Vec3( tr.x - lineThickness, tr.y - lineThickness, zOffset ), Rgba8::GREEN );
+
+	g_engine->m_render->DrawVertexArray( squareVerts );
 }
 
 //-----------------------------------------------------------------------------------------------
