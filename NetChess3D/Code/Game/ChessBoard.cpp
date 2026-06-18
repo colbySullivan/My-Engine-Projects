@@ -3,7 +3,6 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Game/ChessPiece.hpp"
 #include "ChessPieceDefinition.hpp"
-#include <algorithm>
 #include "Engine/Renderer/DebugRender.hpp"
 
 static ChessBoard* g_activeChessBoard = nullptr;

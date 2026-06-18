@@ -84,9 +84,10 @@ void App::UpdateCursorMode()
 	bool windowHasFocus = ( GetForegroundWindow() == hwnd );
 	bool devConsoleOpen = g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL );
 	bool inAttractMode = m_game && ( m_game->m_currentGameState == GAMESTATE_ATTRACT );
+	bool imguiActive = m_game && ( m_game->m_showImGui );
 	bool imguiWantsMouse = g_engine->m_imgui && g_engine->m_imgui->WantCaptureMouse();
 
-	if ( !windowHasFocus || devConsoleOpen || inAttractMode || imguiWantsMouse )
+	if ( !windowHasFocus || devConsoleOpen || inAttractMode || imguiWantsMouse || imguiActive )
 	{
 		g_engine->m_input->SetCursorMode( CursorMode::POINTER );
 	}
