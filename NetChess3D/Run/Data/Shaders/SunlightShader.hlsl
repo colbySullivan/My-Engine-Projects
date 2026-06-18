@@ -52,6 +52,7 @@ struct v2p_t
     float3 worldTangent : TANGENT;
     float3 worldBitangent : BITANGENT;
     float3 worldNormal : NORMAL;
+    float3 worldPos : WORLD_POSITION;
 };
 
 float3 encodeXYZToRGB8( float3 xyzVec )
@@ -99,6 +100,7 @@ v2p_t VertexMain(vs_input_t input)
     v2p.worldNormal = worldNormal.xyz;
     v2p.worldTangent = worldTangent.xyz;
     v2p.worldBitangent = worldBitangent.xyz;
+    v2p.worldPos = worldSpacePosition.xyz;
     return v2p;
 }
 
@@ -139,9 +141,28 @@ float4 PixelMain(v2p_t input) : SV_Target0
         
     // clamped to some minimum ambient value (e.g. 0.2f)
     float lightStrength = max( normalMapDot, 0.2 );
+
+    // get normal pixel to camera
+    float3 pixelToCameraDir = normalize( cameraWorldPos - input.worldPos );
+
+    // ideal sun reflection
+    float3 halfVec = normalize( pixelToLightDir + pixelToCameraDir );
+
+    // specular dot, raise to exponent derived from glossiness [0,1] -> power [1,32]
+    float specDot = saturate( dot( halfVec, perPixelNormalToWorld ) );
+
+    // higher range 1-32 for more control
+    // 0 = chalky surface
+    // 32 = mirror surface
+    float specularRange = lerp( 1.0f, 32.0f, glossiness );
+
+    // strength falls off when Specular angle increases multiplying glossiness scale intentensity down with rough surfaces
+    float specStrength = glossiness * pow( specDot, specularRange );
+
+    float3 specularLight = specStrength * specularity * sunColor;
         
     // multiplied by the light’s color and the surface (chess piece triangle) diffuse color
-    float3 litColor = diffuseColor.rgb * lightStrength * sunColor;
+    float3 litColor = diffuseColor.rgb * lightStrength * sunColor + specularLight;
 
     // 1. Diffuse map texel only
     if (debugInt == 1)
