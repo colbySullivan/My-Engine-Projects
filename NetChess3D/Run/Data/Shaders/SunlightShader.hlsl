@@ -11,6 +11,8 @@ cbuffer DebugConstants : register(b1)
     int     debugInt;
     float   debugFloat;
     float   padding;
+    float3  sunDir;
+    float   padding3;
 };
 
 cbuffer CameraConstants : register(b2)
@@ -120,7 +122,8 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float3 normalColorToXYZ = normalize( decodeRGB8ToXYZ( normalColor.rgb ) );
 
     // A single fixed directional white sunlight shines diagonally ESE and downward across the board e.g. {3,1,-2} normalized
-    float3 sunDirection = normalize( float3( 3.0, 1.0, -2.0 ) );
+    // float3 sunDirection = normalize( float3( 3.0, 1.0, -2.0 ) );
+    float3 sunDirection = normalize( sunDir );
     float3 sunColor = float3( 1.0, 1.0, 1.0 );
     float3 pixelToLightDir = -sunDirection;
         

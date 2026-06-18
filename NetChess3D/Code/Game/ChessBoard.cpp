@@ -205,6 +205,7 @@ void ChessBoard::UpdateDebugConstants()
 	m_debugConstantValues.time = (float)g_engine->m_systemClock->GetTotalSeconds();
 	m_debugConstantValues.debugFloat = m_debugFloat;
 	m_debugConstantValues.debugInt = m_debugInt;
+	m_debugConstantValues.sunDir = m_sunDir;
 }
 
 //-----------------------------------------------------------------------------------------------

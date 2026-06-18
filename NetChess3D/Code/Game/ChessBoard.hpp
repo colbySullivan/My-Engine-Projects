@@ -10,6 +10,8 @@ struct DebugConstants
 	int		debugInt;
 	float	debugFloat;
 	float	padding;
+	Vec3	sunDir;
+	float	padding2;
 };
 
 class ChessPiece;
@@ -55,6 +57,7 @@ public:
 	DebugConstants	m_debugConstantValues = { };
 	int				m_debugInt = 0;
 	float			m_debugFloat = 0.f;
+	Vec3			m_sunDir = Vec3( 3.0f, 1.0f, -2.0f );
 
 	// Drawing
 	Texture* m_texture = nullptr;

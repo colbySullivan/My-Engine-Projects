@@ -95,7 +95,7 @@ public:
 	bool        m_showImGui = false;
 
 private:
-	void RenderImGui() const;
+	void UpdateImGui();
 	void UpdateKeyboardInput( XboxController const& controller );
 	void DebugInput();
 

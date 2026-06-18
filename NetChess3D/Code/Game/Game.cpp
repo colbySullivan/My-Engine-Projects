@@ -74,6 +74,7 @@ void Game::Update()
 
 	UpdateKeyboardInput( controller );
 
+
 	if ( m_currentGameState != m_nextGameState )
 	{
 		m_currentGameState = m_nextGameState;
@@ -111,6 +112,7 @@ void Game::Update()
 			}
 		}
 		m_chessBoard->Update();
+		UpdateImGui();
 
 		unsigned char elapsedFraction = static_cast<unsigned char>(50 + ( m_cubeBlinkTimer->GetElapsedFraction() * 200 ));
 		m_props[1]->m_color = Rgba8(elapsedFraction, elapsedFraction, elapsedFraction);
@@ -169,7 +171,6 @@ void Game::Render() const
 		m_player->Render();
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
-		RenderImGui();
 		DebugRenderWorld( *m_player->m_worldCamera );
 		
 	}
@@ -240,7 +241,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		m_showImGui = !m_showImGui;
 	}
 
-	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
+	if ( m_chessBoard && g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
 	{
 		//m_chessBoard->m_tryAllMovesRequested = true
 		m_chessBoard->m_moveRequested = true;
@@ -711,12 +712,12 @@ void Game::RestartGame()
 }
 
 //-----------------------------------------------------------------------------------------------
-void Game::RenderImGui() const
+void Game::UpdateImGui()
 {
 	if ( !m_showImGui )
 		return;
 
-	ImGui::Begin( "Shader Debug (F1 to hide)" );
+	ImGui::Begin( "Shader Debug (F1 to hide)", &m_showImGui );
 
 	ImGui::SeparatorText( "Debug View Mode" );
 	const char* modeNames[] = {
@@ -735,6 +736,11 @@ void Game::RenderImGui() const
 
 	ImGui::SeparatorText( "Debug Values" );
 	ImGui::SliderFloat( "debugFloat", &m_chessBoard->m_debugFloat, 0.0f, 1.0f );
+
+	ImGui::SeparatorText( "Sun Dir" );
+	ImGui::SliderFloat( "Sun Direction x", &m_chessBoard->m_sunDir.x, 0.0f, 90.0f );
+	ImGui::SliderFloat( "Sun Direction y", &m_chessBoard->m_sunDir.y, 0.0f, 90.0f );
+	ImGui::SliderFloat( "Sun Direction z", &m_chessBoard->m_sunDir.z, 0.0f, 90.0f );
 
 	ImGui::End();
 }
