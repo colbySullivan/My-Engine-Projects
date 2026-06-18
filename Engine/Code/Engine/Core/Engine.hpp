@@ -6,16 +6,18 @@
 #include "Engine/Core/DevConsole.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Engine/Core/Clock.hpp"
+#include "Engine/Core/ImGuiSystem.hpp"
 
 //------------------------------------------------------------------------------
-class Engine;   // Forward declaration; simply states that "an Engine class exists"
-class Window;   // Forward declaration; simply states that "a Renderer class exists"
-class Renderer; // Forward declaration; simply states that "a Renderer class exists"
-class InputSystem; // Forward declaration; simply states that "an InputSystem class exists" 
+class Engine;
+class Window;
+class Renderer;
+class InputSystem;
 class AudioSystem;
 class DevConsole;
 class EventSystem;
 class Clock;
+class ImGuiSystem;
 
 //------------------------------------------------------------------------------
 extern Engine* g_engine; // Advertisement that this global exists, so external people can use it
@@ -23,12 +25,13 @@ extern Engine* g_engine; // Advertisement that this global exists, so external p
 //-----------------------------------------------------------------------------------------------
 struct EngineConfig
 {
-    AudioConfig m_audioConfig;
-    InputConfig m_inputConfig;
-    RenderConfig m_renderConfig;
-    WindowConfig m_windowConfig;
-	DevConsoleConfig m_devConsoleConfig;
+    AudioConfig       m_audioConfig;
+    InputConfig       m_inputConfig;
+    RenderConfig      m_renderConfig;
+    WindowConfig      m_windowConfig;
+	DevConsoleConfig  m_devConsoleConfig;
 	EventSystemConfig m_eventSystemConfig;
+	ImGuiConfig       m_imguiConfig;
 };
 
 //------------------------------------------------------------------------------
@@ -43,9 +46,10 @@ public:
 public:
     Window*         m_window        = nullptr;
     Renderer*       m_render        = nullptr;
-	InputSystem*    m_input         = nullptr; 
+	InputSystem*    m_input         = nullptr;
     AudioSystem*    m_audio         = nullptr;
     DevConsole*     m_console       = nullptr;
     EventSystem*    m_eventSystem   = nullptr;
     Clock*          m_systemClock   = nullptr;
+    ImGuiSystem*    m_imgui         = nullptr;
 };

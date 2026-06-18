@@ -50,8 +50,13 @@ void Window::EndFrame()
 //
 // #SD1ToDo: Eventually, we will move this function to a more appropriate place (Engine/Window/Window.cpp) later on...
 //
+extern LRESULT ImGui_ImplWin32_WndProcHandler( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
+
 LRESULT CALLBACK WindowsMessageHandlingProcedure( HWND windowHandle, UINT wmMessageCode, WPARAM wParam, LPARAM lParam )
 {
+	if ( ImGui_ImplWin32_WndProcHandler( windowHandle, wmMessageCode, wParam, lParam ) )
+		return true;
+
 	switch ( wmMessageCode )
 	{
 		// App close requested via "X" button, or right-click "Close Window" on task bar, or "Close" from system menu, or Alt-F4
@@ -181,7 +186,7 @@ void Window::CreateOSWindow()
 	clientRect.top = ( int )clientMarginY;
 	clientRect.bottom = clientRect.top + ( int )clientHeight;
 
-	m_clientDimensions = IntVec2( clientRect.right, clientRect.bottom );
+	m_clientDimensions = IntVec2( clientRect.right - clientRect.left, clientRect.bottom - clientRect.top );
 
 	// Calculate the outer dimensions of the physical window, including frame et. al.
 	RECT windowRect = clientRect;

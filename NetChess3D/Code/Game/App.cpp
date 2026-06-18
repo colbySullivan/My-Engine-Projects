@@ -1,6 +1,6 @@
 #include "App.hpp"
 #include "Engine/Core/Engine.hpp"
-#include "Engine/Renderer/Renderer.hpp"  
+#include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Renderer/Camera.hpp"
 #include "Engine/Core/Time.hpp"
 #include "Engine/Input/InputSystem.hpp"
@@ -84,8 +84,9 @@ void App::UpdateCursorMode()
 	bool windowHasFocus = ( GetForegroundWindow() == hwnd );
 	bool devConsoleOpen = g_engine->m_console && ( g_engine->m_console->GetMode() == OPEN_FULL );
 	bool inAttractMode = m_game && ( m_game->m_currentGameState == GAMESTATE_ATTRACT );
+	bool imguiWantsMouse = g_engine->m_imgui && g_engine->m_imgui->WantCaptureMouse();
 
-	if ( !windowHasFocus || devConsoleOpen || inAttractMode )
+	if ( !windowHasFocus || devConsoleOpen || inAttractMode || imguiWantsMouse )
 	{
 		g_engine->m_input->SetCursorMode( CursorMode::POINTER );
 	}

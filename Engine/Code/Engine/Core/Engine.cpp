@@ -13,12 +13,15 @@ Engine::Engine( EngineConfig const& config )
 	if ( config.m_eventSystemConfig.m_isEnabled )	m_eventSystem = new EventSystem( config.m_eventSystemConfig );
 	if( config.m_devConsoleConfig.m_isEnabled )		m_console = new DevConsole( config.m_devConsoleConfig );
 
+	if( config.m_imguiConfig.m_isEnabled )	m_imgui = new ImGuiSystem( config.m_imguiConfig );
+
 	if( m_window )			m_window->Startup();
 	if( m_render )			m_render->Startup();
+	if( m_imgui )			m_imgui->Startup();
 	if( m_audio )			m_audio->Startup();
 	if( m_console )			m_console->Startup();
-	if ( m_input )			m_input->Startup();
-	if ( m_eventSystem )		m_eventSystem->Startup();
+	if( m_input )			m_input->Startup();
+	if( m_eventSystem )		m_eventSystem->Startup();
 
 	m_systemClock = &Clock::GetSystemClock();
 }
@@ -30,6 +33,7 @@ Engine::~Engine()
 	if (m_eventSystem)      m_eventSystem->Shutdown();
 	if (m_audio)            m_audio->Shutdown();
 	if (m_input)            m_input->Shutdown();
+	if (m_imgui)            m_imgui->Shutdown();
 	if (m_render)           m_render->Shutdown();
 	if (m_window)           m_window->Shutdown();
 	delete m_console;
@@ -40,6 +44,8 @@ Engine::~Engine()
 	m_audio = nullptr;
 	delete m_input;
 	m_input = nullptr;
+	delete m_imgui;
+	m_imgui = nullptr;
 	delete m_render;
 	m_render = nullptr;
 	delete m_window;
@@ -51,14 +57,16 @@ void Engine::BeginFrame()
 	if( m_window )			m_window->BeginFrame();
 	if( m_input )			m_input->BeginFrame();
 	if( m_render )			m_render->BeginFrame();
+	if( m_imgui )			m_imgui->BeginFrame();
 	if( m_audio )			m_audio->BeginFrame();
 	if( m_console )			m_console->BeginFrame();
 	if( m_eventSystem )		m_eventSystem->BeginFrame();
-	if ( m_systemClock )	m_systemClock->TickSystemClock();
+	if( m_systemClock )		m_systemClock->TickSystemClock();
 }
 
 void Engine::EndFrame()
 {
+	if( m_imgui )			m_imgui->EndFrame();
 	if( m_render )			m_render->EndFrame();
 	if( m_window )			m_window->EndFrame();
 	if( m_input )			m_input->EndFrame();

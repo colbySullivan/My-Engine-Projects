@@ -131,6 +131,9 @@ public:
 
 	void BindShader( Shader* shader );
 
+	ID3D11Device*        GetDevice()        const { return m_device; }
+	ID3D11DeviceContext* GetDeviceContext()  const { return m_deviceContext; }
+
 	RenderConfig m_config;
 	std::vector<Texture*> m_loadedTextures;
 	std::vector<BitmapFont*> m_loadedFonts;

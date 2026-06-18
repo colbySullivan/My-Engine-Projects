@@ -10,6 +10,7 @@
 #include "Engine/Renderer/DebugRender.hpp"
 #include "Engine/Core/EventSystem.hpp"
 #include "Game/App.hpp"
+#include "ThirdParty/imgui/imgui.h"
 #include "Game/Game.hpp"
 #include "Game/GameCommon.hpp"
 #include "Game/Entity.hpp"
@@ -168,6 +169,7 @@ void Game::Render() const
 		m_player->Render();
 		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 		RenderUI();
+		RenderImGui();
 		DebugRenderWorld( *m_player->m_worldCamera );
 		
 	}
@@ -235,7 +237,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 
 	if (g_engine->m_input->WasKeyJustPressed(KEYCODE_F1))
 	{
-		g_drawDebug = !g_drawDebug;
+		m_showImGui = !m_showImGui;
 	}
 
 	if ( g_engine->m_input->WasKeyJustPressed( KEYCODE_LEFT_MOUSE ) )
@@ -706,6 +708,35 @@ void Game::RestartGame()
 	m_chessBoard = new ChessBoard( this );
 	CreateChessPieces();
 	ChangePlayerCamera( 1 );
+}
+
+//-----------------------------------------------------------------------------------------------
+void Game::RenderImGui() const
+{
+	if ( !m_showImGui )
+		return;
+
+	ImGui::Begin( "Shader Debug (F1 to hide)" );
+
+	ImGui::SeparatorText( "Debug View Mode" );
+	const char* modeNames[] = {
+		"0: Normal Rendering",
+		"1: Diffuse Map Only",
+		"2: Normal Map Only",
+		"3: UV Coordinates",
+		"4: World Tangents",
+		"5: World Bitangents",
+		"6: World Normals",
+		"7: Normal Map (World)",
+		"8: Surface Lighting Only",
+		"9: Normal Map Lighting Only"
+	};
+	ImGui::Combo( "Mode", &m_chessBoard->m_debugInt, modeNames, sizeof( modeNames ) );
+
+	ImGui::SeparatorText( "Debug Values" );
+	ImGui::SliderFloat( "debugFloat", &m_chessBoard->m_debugFloat, 0.0f, 1.0f );
+
+	ImGui::End();
 }
 
 //-----------------------------------------------------------------------------------------------

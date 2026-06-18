@@ -92,8 +92,10 @@ public:
 	CameraMode* m_currentCameraMode = nullptr;
 	int m_currentCameraNum = 0;
 	std::string m_modeName = "Mode 0: Normal rendering";
+	bool        m_showImGui = false;
 
 private:
+	void RenderImGui() const;
 	void UpdateKeyboardInput( XboxController const& controller );
 	void DebugInput();
 
