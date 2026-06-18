@@ -6,6 +6,6 @@
 	<ChessPieceDefinition name="Bishop" symbol="B" shader="Data/Shaders/SunlightShader"/>
 	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader"/>
 
-	<Textures texturePlayerOne="Data/Textures/Cobblestone_Diffuse.png" normal_texture_PlayerOne="Data/Textures/Cobblestone_Normal.png"  sga_PlayerOne="Data/Textures/Cobblestone_SpecGlossEmit.png" 
+	<Textures texturePlayerOne="Data/Textures/Cobblestone_Diffuse.png" normal_texture_PlayerOne="Data/Textures/Cobblestone_Normal.png"  sga_PlayerOne="Data/Textures/Cobblestone_SpecGlossEmit_Test.png" 
 			  texturePlayerTwo="Data/Textures/Bricks_d.png" normal_texture_PlayerTwo="Data/Textures/Bricks_n.png"  sga_PlayerTwo="Data/Textures/Bricks_sge.png" />
 </Definitions>

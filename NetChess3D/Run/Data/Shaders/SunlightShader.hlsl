@@ -164,6 +164,9 @@ float4 PixelMain(v2p_t input) : SV_Target0
     // multiplied by the light’s color and the surface (chess piece triangle) diffuse color
     float3 litColor = diffuseColor.rgb * lightStrength * sunColor + specularLight;
 
+    // emissivity = 1.0 looks glowing
+    litColor += emissivity * diffuseColor.rgb;
+
     // 1. Diffuse map texel only
     if (debugInt == 1)
     {
