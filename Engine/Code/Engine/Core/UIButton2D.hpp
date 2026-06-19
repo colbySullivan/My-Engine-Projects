@@ -18,6 +18,9 @@ public:
 	bool IsHovered() const;
 	void AddArg( std::string argValue, std::string argName );
 
+	// Todo maybe add these to the constructor
+	Texture* m_defaultTexture = nullptr;
+	Texture* m_hoveredTexture = nullptr;
 private:
 	AABB2       m_bounds;
 	std::string m_buttonText;

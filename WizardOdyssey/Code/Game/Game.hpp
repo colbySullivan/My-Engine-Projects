@@ -49,13 +49,6 @@ enum MapRenderMode
 };
 
 //-----------------------------------------------------------------------------------------------
-struct GameUIButton
-{
-	Game_State	gameState = NUM_GAMESTATES;
-	UIButton2D* buttonRef = nullptr;
-};
-
-//-----------------------------------------------------------------------------------------------
 class Game
 {
 public:
@@ -109,11 +102,6 @@ public:
 	// Buttons
 	Vec2						m_mouseScreenWindowPosition;
 	Vec2						m_mouseWorldWindowPosition;
-	std::vector<GameUIButton*>	m_buttons;
-	//UIButton2D*					m_startButton = nullptr;
-
-
-
 
 	// Entities
 	Texture* m_playerBodyTexture;

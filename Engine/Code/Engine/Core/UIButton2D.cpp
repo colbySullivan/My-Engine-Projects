@@ -54,7 +54,9 @@ void UIButton2D::Render() const
 
 	std::vector<Vertex> boxVerts;
 	Rgba8 color = ( m_isCurrentlyHovered ) ? m_hoveredColor : m_baseColor;
+	Texture* texture = ( m_isCurrentlyHovered ) ? m_hoveredTexture : m_defaultTexture;
 	AddVertsForAABB2D( boxVerts, m_bounds, color );
+	g_engine->m_render->BindTexture( texture );
 	g_engine->m_render->DrawVertexArray( boxVerts );
 
 	std::vector<Vertex> textVerts;

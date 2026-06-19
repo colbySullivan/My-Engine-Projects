@@ -58,6 +58,9 @@
     <ClCompile Include="ActorDefinitions.cpp">
       <Filter>Definitons</Filter>
     </ClCompile>
+    <ClCompile Include="GameButtonDefinitions.cpp">
+      <Filter>Definitons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -99,6 +102,9 @@
     <ClInclude Include="ActorDefinitions.hpp">
       <Filter>Definitons</Filter>
     </ClInclude>
+    <ClInclude Include="GameButtonDefinitions.hpp">
+      <Filter>Definitons</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml">
@@ -111,6 +117,9 @@
       <Filter>Data</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\GameButtons.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>
