@@ -682,6 +682,68 @@ bool Game::Command_BeginGame( [[maybe_unused]] EventArgs& args )
 	return false;
 }
 
+//-----------------------------------------------------------------------------------------------
+void Game::CreateImGuiStyle()
+{
+	ImGuiStyle& style = ImGui::GetStyle();
+	ImVec4* colors = style.Colors;
+
+	// Base colors
+	const ImVec4 bg_color = ImVec4( 0.4f, 0.5f, 0.4f, 1.00f );
+	const ImVec4 bg_color_light = ImVec4( 0.2f, 0.4f, 0.2f, 1.00f );
+	const ImVec4 accent = ImVec4( 0.2f, 1.f, 0.2f, 1.f );
+	const ImVec4 accent_light = ImVec4( 0.f, 1.f, 0.f, 1.f );
+	const ImVec4 accent_dark = ImVec4( 0.4f, 1.f, 0.5f, 1.f );
+
+	// Window
+	colors[ImGuiCol_WindowBg] = bg_color;
+	colors[ImGuiCol_ChildBg] = bg_color;
+	colors[ImGuiCol_PopupBg] = bg_color_light;
+
+	// Text
+	colors[ImGuiCol_Text] = ImVec4( 0.95f, 0.96f, 0.98f, 1.00f );
+	colors[ImGuiCol_TextDisabled] = ImVec4( 0.50f, 0.50f, 0.50f, 1.00f );
+
+	// Frames
+	colors[ImGuiCol_FrameBg] = bg_color_light;
+	colors[ImGuiCol_FrameBgHovered] = accent;
+	colors[ImGuiCol_FrameBgActive] = accent_dark;
+
+	// Buttons
+	colors[ImGuiCol_Button] = accent;
+	colors[ImGuiCol_ButtonHovered] = accent_light;
+	colors[ImGuiCol_ButtonActive] = accent_dark;
+
+	// Headers
+	colors[ImGuiCol_Header] = accent;
+	colors[ImGuiCol_HeaderHovered] = accent_light;
+	colors[ImGuiCol_HeaderActive] = accent_dark;
+
+	// Tabs
+	colors[ImGuiCol_Tab] = bg_color_light;
+	colors[ImGuiCol_TabHovered] = accent_light;
+	colors[ImGuiCol_TabSelected] = accent;
+	colors[ImGuiCol_TabSelectedOverline] = accent_light;
+
+	// Title
+	colors[ImGuiCol_TitleBg] = bg_color;
+	colors[ImGuiCol_TitleBgActive] = bg_color_light;
+	colors[ImGuiCol_TitleBgCollapsed] = bg_color;
+
+	// Scrollbar
+	colors[ImGuiCol_ScrollbarBg] = bg_color;
+	colors[ImGuiCol_ScrollbarGrab] = bg_color_light;
+	colors[ImGuiCol_ScrollbarGrabHovered] = accent;
+	colors[ImGuiCol_ScrollbarGrabActive] = accent_dark;
+
+	// Style properties
+	style.WindowRounding = 6.0f;
+	style.FrameRounding = 4.0f;
+	style.ScrollbarRounding = 6.0f;
+	style.GrabRounding = 4.0f;
+	style.TabRounding = 4.0f;
+}
+
 //------------------------------------------------------------------------------
 void Game::RemoveChessPiece( ChessPiece* piece )
 {
@@ -717,6 +779,8 @@ void Game::UpdateImGui()
 	if ( !m_showImGui )
 		return;
 
+	CreateImGuiStyle();
+
 	ImGui::Begin( "Shader Debug (F1 to hide)", &m_showImGui );
 
 	ImGui::SeparatorText( "Debug View Mode" );
@@ -732,15 +796,15 @@ void Game::UpdateImGui()
 		"8: Surface Lighting Only",
 		"9: Normal Map Lighting Only"
 	};
-	ImGui::Combo( "Mode", &m_chessBoard->m_debugInt, modeNames, sizeof( modeNames ) );
+	ImGui::Combo( "Mode", &m_chessBoard->m_debugInt, modeNames, 10 );
 
 	ImGui::SeparatorText( "Debug Values" );
 	ImGui::SliderFloat( "debugFloat", &m_chessBoard->m_debugFloat, 0.0f, 1.0f );
 
 	ImGui::SeparatorText( "Sun Dir" );
-	ImGui::SliderFloat( "Sun Direction x", &m_chessBoard->m_sunDir.x, 0.0f, 90.0f );
-	ImGui::SliderFloat( "Sun Direction y", &m_chessBoard->m_sunDir.y, 0.0f, 90.0f );
-	ImGui::SliderFloat( "Sun Direction z", &m_chessBoard->m_sunDir.z, 0.0f, 90.0f );
+	ImGui::SliderFloat( "Sun Direction x", &m_chessBoard->m_sunDir.x, -90.0f, 90.0f );
+	ImGui::SliderFloat( "Sun Direction y", &m_chessBoard->m_sunDir.y, -90.0f, 90.0f );
+	ImGui::SliderFloat( "Sun Direction z", &m_chessBoard->m_sunDir.z, -90.0f, 90.0f );
 
 	ImGui::End();
 }

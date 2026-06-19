@@ -120,4 +120,7 @@ private:
 	int				m_roundBlackHoleAmount = 2;
 	void CreateCameraModes();
 	static bool Command_BeginGame( [[maybe_unused]] EventArgs& args );
+
+	void CreateImGuiStyle();
+
 };

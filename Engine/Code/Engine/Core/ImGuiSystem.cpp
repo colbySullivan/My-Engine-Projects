@@ -15,7 +15,7 @@ void ImGuiSystem::Startup()
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsDark();
 	HWND hwnd = (HWND)g_engine->m_window->GetHwnd();
 	ImGui_ImplWin32_Init( hwnd );
 	ImGui_ImplDX11_Init( g_engine->m_render->GetDevice(), g_engine->m_render->GetDeviceContext() );
