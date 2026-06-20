@@ -39,8 +39,8 @@ void GameButtonDefinitions::LoadButtonDefsFromFile( char const* filePath )
 		def.argName = xml.ParseXmlAttribute( *buttonElem, "argName", "" );
 		def.argValue = xml.ParseXmlAttribute( *buttonElem, "argValue", "" );
 		def.gameState = xml.ParseXmlAttribute( *buttonElem, "gameState", 0 );
-		def.defaultTexture = xml.ParseXmlAttribute( *buttonElem, "defaultTexture", "" );
-		def.hoveredTexture = xml.ParseXmlAttribute( *buttonElem, "hoveredTexture", "" );
+		def.defaultTexture = xml.ParseXmlAttribute( *buttonElem, "defaultTexture", "Data/Textures/UI/png@4x/Button/Rect/Default@4x.png" );
+		def.hoveredTexture = xml.ParseXmlAttribute( *buttonElem, "hoveredTexture", "Data/Textures/UI/png@4x/Button/Rect/Hover@4x.png" );
 
 		// Set button position based on xy fraction
 		float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 800.f );
