@@ -28,7 +28,7 @@ void ActorDefinitions::LoadActorDefsFromFile( char const* filePath )
 		ActorDefinitions def;
 
 		def.m_name = xml.ParseXmlAttribute( *actorElem, "name", "" );
-		def.m_health = xml.ParseXmlAttribute( *actorElem, "health", 100 );
+		def.m_health = xml.ParseXmlAttribute( *actorElem, "health", 5 );
 
 		XmlElement* collisionElem = actorElem->FirstChildElement( "Collision" );
 		if ( collisionElem )
