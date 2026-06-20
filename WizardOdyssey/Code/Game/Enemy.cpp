@@ -94,7 +94,7 @@ void Enemy::UpdateMoveIfSpawned()
 		m_targetPos = player->m_position;
 		Vec2 toPlayerPos = player->m_position - m_position;
 		Vec2 directionToPlayer = toPlayerPos.GetNormalized();
-		m_orientationDegrees = GetTurnedTowardDegrees( m_orientationDegrees, Atan2Degrees( directionToPlayer.y, directionToPlayer.x ), .5f );
+		m_orientationDegrees = Atan2Degrees( directionToPlayer.y, directionToPlayer.x );
 	}
 	if ( m_targetPos != Vec2( 0.f, 0.f ) && m_position != m_targetPos )
 	{

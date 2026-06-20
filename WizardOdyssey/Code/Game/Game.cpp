@@ -284,7 +284,7 @@ void Game::UpdateKeyboardInput( XboxController const& controller )
 		m_isPaused = true;
 		m_pauseAfterNextUpdate = true; // Consumed to false after one run of update
 	}
-	if ( g_engine->m_input->WasKeyJustPressed( ' ' ) || g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
+	if ( g_engine->m_input->WasKeyJustPressed( 'N' ) || controller.WasButtonJustPressed( XboxButtonID::START ) )
 	{
 		if ( m_currentGameState != GAMESTATE_PLAY )
 		{
