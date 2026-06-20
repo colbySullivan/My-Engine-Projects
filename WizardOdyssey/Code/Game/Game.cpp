@@ -22,6 +22,7 @@
 #include "Game/App.hpp"
 #include "Game/ActorDefinitions.hpp"
 #include "Game/GameButtonDefinitions.hpp"
+#include "Game/ItemDefinitions.hpp"
 #include <cmath>
 
 XmlUtils m_xml;
@@ -43,7 +44,7 @@ Game::Game()
 	ActorDefinitions::InitializeActorDefs();
 	TileDefinition::InitializeTileDefs();
 	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
-	GameButtonDefinitions::InitializeButtonDefs();
+	ItemDefinitions::InitializeItemDefs();
 	LoadTextures();
 }
 
@@ -102,6 +103,12 @@ void Game::Update(float deltaSeconds)
 		{
 			Startup();
 		}
+
+		if ( m_nextGameState == GAMESTATE_ITEM )
+		{
+			InitializeShopCards();
+		}
+
 		m_currentGameState = m_nextGameState;
 	}
 
@@ -121,6 +128,11 @@ void Game::Update(float deltaSeconds)
 	if ( m_currentGameState == GAMESTATE_CHARACTER_SELECT )
 	{
 		UpdateCharacterSelectMode( deltaSeconds );
+	}
+
+	if ( m_currentGameState == GAMESTATE_ITEM )
+	{
+		UpdateItemMode( deltaSeconds );
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
@@ -170,18 +182,22 @@ void Game::Render() const
 	Rgba8 backgroundColor = Rgba8(static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(0.f), static_cast<unsigned char>(255.f)); // Suppresses error with conversion
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
 	g_engine->m_render->ClearScreen( backgroundColor );
+	RenderUI();
 
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		g_engine->m_render->BindTexture( nullptr );
 		RenderAttractMode();
-		RenderUI();
 	}
 
 	if ( m_currentGameState == GAMESTATE_CHARACTER_SELECT )
 	{
 		RenderCharacterSelectMode();
-		RenderUI();
+	}
+
+	if ( m_currentGameState == GAMESTATE_ITEM )
+	{
+		RenderItemMode();
 	}
 
 	if ( m_currentGameState == GAMESTATE_PLAY )
@@ -402,6 +418,17 @@ void Game::UpdateCharacterSelectMode( float deltaSeconds )
 	
 }
 
+//------------------------------------------------------------------------------
+void Game::UpdateItemMode( float deltaSeconds )
+{
+	bool mousePressed = g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE );
+
+	for ( ShopItemCard* card : m_shopCards )
+	{
+		card->Update( m_mouseScreenWindowPosition, mousePressed );
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 void Game::RenderAttractMode() const
 {
@@ -424,6 +451,19 @@ void Game::RenderAttractMode() const
 void Game::RenderCharacterSelectMode() const
 {
 
+}
+
+//------------------------------------------------------------------------------
+void Game::RenderItemMode() const
+{
+	g_engine->m_render->BeginCamera( *m_screenCamera );
+
+	for ( ShopItemCard* card : m_shopCards )
+	{
+		card->Render();
+	}
+
+	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
 //------------------------------------------------------------------------------
@@ -454,39 +494,6 @@ void Game::LoadSounds()
 	//m_victorySound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );		//	SoundID = 8
 	//m_lossSound = g_engine->m_audio->CreateOrGetSound( "Data/Audio/Victory.mp3" );			//	SoundID = 9
 
-}
-
-//-----------------------------------------------------------------------------------------------
-void Game::HandleSound(SoundPlaybackID soundID, SoundPriority priority, float soundDuration)
-{
-	if (soundID == MISSING_SOUND_ID)
-		return;
-
-	if (priority == PRIORITY_LOW)
-	{
-		if (m_shootSound != MISSING_SOUND_ID)
- 			//g_engine->m_audio->StopSound(m_shootSound);
-
- 		m_shootSound = soundID;
-		m_shotSoundDurationTimer = soundDuration;
-		return;
-	}
-
-	if (m_currentSound != MISSING_SOUND_ID && m_soundDurationTimer > 0.f)
-	{
-		if (priority < m_currentSoundPriority)
-		{
-			//g_engine->m_audio->StopSound(soundID);
-			return;
-		}
-	}
-
-	if (m_currentSound != MISSING_SOUND_ID)
-		//g_engine->m_audio->StopSound(m_currentSound);
-
-	m_currentSound = soundID;
-	m_currentSoundPriority = priority;
-	m_soundDurationTimer = soundDuration;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -584,38 +591,9 @@ void Game::UpdateMousePosition()
 //-----------------------------------------------------------------------------------------------
 void Game::InitializeButtonsAndEvents()
 {
-	// Attract screen
+	GameButtonDefinitions::InitializeButtonDefs();
 	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
 	SubscribeEventCallbackFunction("CharacterSelect", Game::CharacterSelect);
-	//GameUIButton* startButton = new GameUIButton;
-	//startButton->buttonRef = new UIButton2D( Vec2( 800.f, 400.f ), 200.f, 100.f, "Start Game", "StartGame", Rgba8( 120, 0, 0 ) );
-	//startButton->gameState = GAMESTATE_ATTRACT;
-	//m_buttons.push_back( startButton );
-
-	//// Character select
-	//GameUIButton* characterSelectButton1 = new GameUIButton;
-	//characterSelectButton1->buttonRef = new UIButton2D( Vec2( 400.f, 200.f ), 200.f, 100.f, "Character Select 1", "CharacterSelect", Rgba8( 0, 120, 0 ) );
-	//characterSelectButton1->gameState = GAMESTATE_CHARACTER_SELECT;
-	//characterSelectButton1->buttonRef->AddArg( "CharacterOption", "1" );
-	//m_buttons.push_back( characterSelectButton1 );
-
-	//GameUIButton* characterSelectButton2 = new GameUIButton;
-	//characterSelectButton2->buttonRef = new UIButton2D( Vec2( 800.f, 200.f ), 200.f, 100.f, "Character Select 2", "CharacterSelect", Rgba8( 0, 120, 0 ) );
-	//characterSelectButton2->gameState = GAMESTATE_CHARACTER_SELECT;
-	//characterSelectButton2->buttonRef->AddArg( "CharacterOption", "2" );
-	//m_buttons.push_back( characterSelectButton2 );
-
-	//GameUIButton* characterSelectButton3 = new GameUIButton;
-	//characterSelectButton3->buttonRef = new UIButton2D( Vec2( 1200.f, 200.f ), 200.f, 100.f, "Character Select 3", "CharacterSelect", Rgba8( 0, 120, 0 ) );
-	//characterSelectButton3->gameState = GAMESTATE_CHARACTER_SELECT;
-	//characterSelectButton3->buttonRef->AddArg( "CharacterOption", "3" );
-	//m_buttons.push_back( characterSelectButton3 );
-
-	//// Game buttons
-	//GameUIButton* backButton = new GameUIButton;
-	//backButton->buttonRef = new UIButton2D( Vec2( 100.f, 700.f ), 200.f, 100.f, "Go Back?", "StartGame", Rgba8( 120, 0, 0 ) );
-	//backButton->gameState = GAMESTATE_PLAY;
-	//m_buttons.push_back( backButton );
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -681,4 +659,33 @@ bool Game::CharacterSelect( [[maybe_unused]] EventArgs& args )
 		g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
 	}
 	return false;
+}
+
+//------------------------------------------------------------------------------
+void Game::InitializeShopCards()
+{
+	for ( ShopItemCard* card : m_shopCards )
+	{
+		delete card;
+	}
+
+	m_shopCards.clear();
+
+	float cardSizeX = 260.f;
+	float cardSizeY = 350.f;
+	float cardCenterY = 400.f;
+	float cardStartingCenter = 280.f;
+	float cardOffset = 300.f;
+
+	int cardIndex = 0;
+	for ( auto& [name, item] : ItemDefinitions::s_definitions )
+	{
+		if ( cardIndex >= 4 )
+		{
+			break;
+		}
+
+		m_shopCards.push_back( new ShopItemCard( &item, Vec2( cardStartingCenter + ( cardOffset * cardIndex ), cardCenterY), cardSizeX, cardSizeY));
+		cardIndex++;
+	}
 }

@@ -201,9 +201,11 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameButtonDefinitions.cpp" />
     <ClCompile Include="GameCommon.cpp" />
+    <ClCompile Include="ItemDefinitions.cpp" />
     <ClCompile Include="Main_Windows.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ShopItemCard.cpp" />
     <ClCompile Include="SpriteAnimationDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinitions.cpp" />
@@ -218,8 +220,10 @@
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameButtonDefinitions.hpp" />
     <ClInclude Include="GameCommon.hpp" />
+    <ClInclude Include="ItemDefinitions.hpp" />
     <ClInclude Include="Map.hpp" />
     <ClInclude Include="Player.hpp" />
+    <ClInclude Include="ShopItemCard.hpp" />
     <ClInclude Include="SpriteAnimationDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinitions.hpp" />
@@ -228,6 +232,7 @@
     <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\GameButtons.xml" />
     <Xml Include="..\..\Run\Data\Definitions\GameConfig.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\ItemDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
   </ItemGroup>

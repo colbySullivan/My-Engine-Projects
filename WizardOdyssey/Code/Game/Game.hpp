@@ -1,12 +1,12 @@
 #pragma once
 #include "App.hpp"
 #include "GameCommon.hpp"
-#include "Engine/Audio/AudioSystem.hpp"
-#include "Engine/Core/Vertex.hpp"
 #include "Game/Player.hpp"
 #include "Game/Tile.hpp"
+#include "Game/ShopItemCard.hpp"
+#include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
-
+#include "Engine/Core/Vertex.hpp"
 
 class App;
 class Entity;
@@ -27,17 +27,8 @@ enum Game_State
 	GAMESTATE_ATTRACT,
 	GAMESTATE_CHARACTER_SELECT,
 	GAMESTATE_PLAY,
+	GAMESTATE_ITEM,
 	NUM_GAMESTATES
-};
-
-//------------------------------------------------------------------------------
-enum SoundPriority
-{
-	PRIORITY_LOW,			// Shoot
-	PRIORITY_MEDIUM,		// Hit/hurt / Alien death
-	PRIORITY_HIGH,			// Respawn / Final death
-	PRIORITY_MUSIC,			// Background music game and lobby
-	NUM_SOUND_PRIORITIES
 };
 
 enum MapRenderMode
@@ -65,7 +56,6 @@ public:
 	void Render() const;
 	void Shutdown();
 
-	void HandleSound( SoundPlaybackID soundID, SoundPriority priority = PRIORITY_LOW, float soundDuration = 0.2f);
 
 	// Game State
 	bool				m_isQuitting = false;
@@ -103,6 +93,9 @@ public:
 	Vec2						m_mouseScreenWindowPosition;
 	Vec2						m_mouseWorldWindowPosition;
 
+	// Items
+	std::vector<ShopItemCard*> m_shopCards;
+
 	// Entities
 	Texture* m_playerBodyTexture;
 	Texture* m_playerTurretTexture;
@@ -137,7 +130,6 @@ public:
 
 	Clock*				m_gameClock = nullptr;
 
-	SoundPriority		m_currentSoundPriority = PRIORITY_LOW;
 	float				m_soundDurationTimer = 0.f;
 	float				m_shotSoundDurationTimer = 0.f;
 
@@ -154,6 +146,7 @@ private:
 	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void RenderAttractMode() const;
 	void RenderCharacterSelectMode() const;
+	void RenderItemMode() const;
 	void RenderEntities() const;
 	void RenderPauseSreen() const;
 	void RenderWinLoseSreen( Texture* texture ) const;
@@ -161,6 +154,7 @@ private:
 	void UpdateUIButtons();
 	void UpdateEntities( float deltaSeconds );
 	void UpdateCharacterSelectMode( float deltaSeconds );
+	void UpdateItemMode( float deltaSeconds );
 
 	void LoadSounds();
 	void InitializePauseVerts();
@@ -176,4 +170,5 @@ private:
 	// Events
 	static bool AdvanceGameMode( EventArgs& args );
 	static bool CharacterSelect( EventArgs& args );
+	void InitializeShopCards();
 };

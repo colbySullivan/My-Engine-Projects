@@ -28,7 +28,7 @@
 	</ActorDefinition>
 
 	<!-- WizardMelee -->
-	<ActorDefinition name="WizardMelee" health="50" visible="true">
+	<ActorDefinition name="WizardMelee" health="5" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
 		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
@@ -54,7 +54,7 @@
 	</ActorDefinition>
 	
 	<!-- WizardRanged -->
-	<ActorDefinition name="WizardRanged" health="500" visible="true">
+	<ActorDefinition name="WizardRanged" health="5" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
 		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
@@ -81,7 +81,7 @@
 	
 	<!-- Wizard -->
 	<!-- SmallBaldDude -->
-	<ActorDefinition name="SmallBaldDude" health="100" visible="true">
+	<ActorDefinition name="SmallBaldDude" health="2" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -98,7 +98,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_BIG_ARM_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_ARM_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_ARM_DUDE" health="10" visible="true">
 		<Collision physicRadius="0.55" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -115,7 +115,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_BIG_DUDE_EATING -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_DUDE_EATING" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_DUDE_EATING" health="10" visible="true">
 		<Collision physicRadius="0.55" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -132,7 +132,7 @@
 	</ActorDefinition>
 	
 	<!-- ENTITY_TYPE_EVIL_SMALL_BONE_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_BONE_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_BONE_DUDE" health="1" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -149,7 +149,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_SMALL_FISH_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_FISH_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_FISH_DUDE" health="3" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -166,7 +166,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_MEDIUM_GOBLIN_DUDE" health="5" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -183,7 +183,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_GOBLIN_DUDE" health="2" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -200,7 +200,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_ARMOURED_GOBLIN_DUDE" health="15" visible="true">
 		<Collision physicRadius="0.55" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -217,7 +217,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_PISTACHIO_DUDE" health="2" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -234,7 +234,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_CHIEF_DUDE" health="10" visible="true">
 		<Collision physicRadius="0.55" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -251,7 +251,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_KNIFE_DUDE" health="10" visible="true">
 		<Collision physicRadius="0.55" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -268,7 +268,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_SMALL_LASER_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_LASER_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_SMALL_LASER_DUDE" health="2" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">
@@ -285,7 +285,7 @@
 	</ActorDefinition>
 
 	<!-- ENTITY_TYPE_EVIL_BIG_MAMA_DUDE -->
-	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_MAMA_DUDE" health="100" visible="true">
+	<ActorDefinition name="ENTITY_TYPE_EVIL_BIG_MAMA_DUDE" health="10" visible="true">
 		<Collision physicRadius="0.55" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="1.5f" runSpeed="6.0f"/>
 		<Visuals size="2.0,2.0" pivot="0.0,0.0" spriteSheet="Data/Textures/BrotatoEnemies.png" cellCount="6,6">

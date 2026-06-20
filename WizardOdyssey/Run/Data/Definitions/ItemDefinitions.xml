@@ -1,0 +1,6 @@
+<ItemDefs>
+	<ItemDefinition name="Iron Staff" type="Weapon" iconTexture="Data\Textures\Items\Decapitator_item.png" cost="15" bonusMeleeBoost="0.15"/>
+	<ItemDefinition name="Arcane Tome" type="Relic"  iconTexture="Data\Textures\Items\ArcaneTome.png" cost="25" bonusRangeBoost="0.20" bonusMagicResistance="2"/>
+	<ItemDefinition name="Rageblade" type="Weapon" iconTexture="Data\Textures\Items\Guinsoo's_Rageblade_item.png" cost="100" bonusRangeBoost="1.20"/>
+	<ItemDefinition name="Mercenary Armor" type="Relic"  iconTexture="Data\Textures\Items\Warmog's_Armor_item.png" cost="20" bonusMagicResistance="2" bonusArmor="2"/>
+</ItemDefs>
