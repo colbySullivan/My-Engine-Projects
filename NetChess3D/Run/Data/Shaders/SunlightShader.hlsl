@@ -11,8 +11,6 @@ cbuffer DebugConstants : register(b1)
     int     debugInt;
     float   debugFloat;
     float   padding;
-    float3  sunDir;
-    float   padding3;
 };
 
 cbuffer CameraConstants : register(b2)
@@ -34,6 +32,27 @@ cbuffer GameConstants : register(b8)
 {
 	int		effectsInt;
 	int		padding2[3];
+};
+struct s_Light
+{
+    float4  color;
+    float3  position;
+    float   padding_pl;
+    float   minRadius;
+    float   maxRadius;
+    float   innerConeDotThreshold;
+    float   outerConeDotThreshold;
+    float4  colorAndIntensity;
+
+};
+#define MAX_LIGHTS 8
+cbuffer LightConstants : register(b4)
+{
+    s_Light     lights[MAX_LIGHTS];
+    float3      sunDir;
+    int	        numLights;
+    float4      sunColorConstant;
+    int         paddingInt[12];
 };
 
 struct vs_input_t
@@ -124,7 +143,7 @@ float4 PixelMain(v2p_t input) : SV_Target0
     // A single fixed directional white sunlight shines diagonally ESE and downward across the board e.g. {3,1,-2} normalized
     // float3 sunDirection = normalize( float3( 3.0, 1.0, -2.0 ) );
     float3 sunDirection = normalize( sunDir );
-    float3 sunColor = float3( 1.0, 1.0, 1.0 );
+    float3 sunColor = sunColorConstant.rgb;
     float3 pixelToLightDir = -sunDirection;
         
      // Get normalized world-space normal (interpolated from vertex shader)
@@ -169,6 +188,10 @@ float4 PixelMain(v2p_t input) : SV_Target0
 
     // emissivity = 1.0 looks glowing
     litColor += emissivity * diffuseColor.rgb;
+
+    // -----------------------------------------------------------------------
+    // Debug view modes
+    // -----------------------------------------------------------------------
 
     // 1. Diffuse map texel only
     if (debugInt == 1)
@@ -229,7 +252,10 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float4 outColor = float4( litColor, diffuseColor.a );
     clip(outColor.a - 0.01f);
     
-    // Special effects -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Special effects
+    // -----------------------------------------------------------------------
     if ( effectsInt == 1 )
 	{
 		float t = 0.5f + ( 0.5f * sin( 5.f * time ) );

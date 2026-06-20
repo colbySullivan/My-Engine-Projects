@@ -806,6 +806,18 @@ void Game::UpdateImGui()
 	ImGui::SliderFloat( "Sun Direction y", &m_chessBoard->m_sunDir.y, -90.0f, 90.0f );
 	ImGui::SliderFloat( "Sun Direction z", &m_chessBoard->m_sunDir.z, -90.0f, 90.0f );
 
+	ImGui::SeparatorText( "Sun Color" );
+	float color[4];
+	m_chessBoard->m_sunColor.GetAsFloats( color );
+	if ( ImGui::ColorEdit4( "Sun Color", color ) )
+	{
+		m_chessBoard->m_sunColor = Rgba8(
+			( unsigned char )( color[0] * 255.f ),
+			( unsigned char )( color[1] * 255.f ),
+			( unsigned char )( color[2] * 255.f ),
+			( unsigned char )( color[3] * 255.f ) );
+	}
+
 	ImGui::End();
 }
 

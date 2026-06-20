@@ -10,8 +10,26 @@ struct DebugConstants
 	int		debugInt;
 	float	debugFloat;
 	float	padding;
-	Vec3	sunDir;
-	float	padding2;
+};
+
+struct Light
+{
+	Vec4	color;
+	Vec3	position;
+	float   padding_pl;
+	float   minRadius;
+	float   maxRadius;
+	float   innerConeDotThreshold; // use -1 for point light
+	float   outerConeDotThreshold; // use -2 for point light
+	Vec4	colorAndIntensity;
+};
+
+struct LightConstants
+{
+	Light		lights[8];
+	Vec3		sunDir;
+	int	        numLights;
+	Vec4		sunColor;
 };
 
 class ChessPiece;
@@ -29,6 +47,8 @@ public:
 	IntVec2 GetSquareFromWorldPosition( Vec3 const& worldPos ) const;
 	Vec3 GetWorldPositionFromSquare( IntVec2 const& square ) const;
 	void UpdateDebugConstants();
+	void UpdateLightConstants();
+	void SetLightConstant() const;
 	void SetDebugConstant() const;
 	ChessPiece* GetPieceAt( int row, int col ) const;
 	void SetPieceAt( int row, int col, ChessPiece* piece );
@@ -48,7 +68,9 @@ public:
 	void CreateBuffersAndCopy();
 	VertexBuffer* m_vbo = nullptr;
 	IndexBuffer* m_ibo = nullptr;
-	ConstantBuffer* m_debugConstant;
+	ConstantBuffer* m_debugConstant = nullptr;
+	ConstantBuffer*  m_lightConstant = nullptr;
+	LightConstants   m_lightConstantValues = {};
 	unsigned int  m_indexCount = 0;
 	Shader* m_shader = nullptr;
 	Game* m_game = nullptr;
@@ -58,6 +80,7 @@ public:
 	int				m_debugInt = 0;
 	float			m_debugFloat = 0.f;
 	Vec3			m_sunDir = Vec3( 3.0f, 1.0f, -2.0f );
+	Rgba8			m_sunColor = Rgba8::WHITE;
 
 	// Drawing
 	Texture* m_texture = nullptr;

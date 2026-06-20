@@ -56,6 +56,7 @@ ChessBoard::~ChessBoard()
 void ChessBoard::Update()
 {
 	UpdateDebugConstants();
+	UpdateLightConstants();
 	if ( m_tryAllMovesRequested )
 	{
 		TryAllMoves();
@@ -121,6 +122,7 @@ void ChessBoard::Render() const
 	g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 2 );
 	g_engine->m_render->BindShader( m_shader );
 	SetDebugConstant();
+	SetLightConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
 	g_engine->m_render->BindTexture( nullptr, 0 );
 	g_engine->m_render->BindTexture( nullptr, 1 );
@@ -139,6 +141,7 @@ void ChessBoard::Render() const
 void ChessBoard::CreateBuffersAndCopy()
 {
 	m_debugConstant = g_engine->m_render->CreateConstantBuffer( sizeof( DebugConstants ) );
+	m_lightConstant = g_engine->m_render->CreateConstantBuffer( sizeof( LightConstants ) );
 
 	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );
@@ -205,7 +208,22 @@ void ChessBoard::UpdateDebugConstants()
 	m_debugConstantValues.time = (float)g_engine->m_systemClock->GetTotalSeconds();
 	m_debugConstantValues.debugFloat = m_debugFloat;
 	m_debugConstantValues.debugInt = m_debugInt;
-	m_debugConstantValues.sunDir = m_sunDir;
+}
+
+//------------------------------------------------------------------------------
+void ChessBoard::UpdateLightConstants()
+{
+	float floatColor[4];
+	m_sunColor.GetAsFloats( floatColor );
+	m_lightConstantValues.sunColor = Vec4( floatColor[0], floatColor[1], floatColor[2], floatColor[3] );
+	m_lightConstantValues.sunDir = m_sunDir;
+}
+
+//------------------------------------------------------------------------------
+void ChessBoard::SetLightConstant() const
+{
+	g_engine->m_render->BindConstantBuffer( 4, m_lightConstant );
+	g_engine->m_render->CopyCPUToGPU( &m_lightConstantValues, sizeof( LightConstants ), m_lightConstant );
 }
 
 //-----------------------------------------------------------------------------------------------
