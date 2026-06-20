@@ -217,6 +217,20 @@ void ChessBoard::UpdateLightConstants()
 	m_sunColor.GetAsFloats( floatColor );
 	m_lightConstantValues.sunColor = Vec4( floatColor[0], floatColor[1], floatColor[2], floatColor[3] );
 	m_lightConstantValues.sunDir = m_sunDir;
+	m_lightConstantValues.numLights = m_numLights;
+
+	m_numLights = 1;
+	m_lightConstantValues.numLights = m_numLights;
+
+	Light& test = m_lightConstantValues.lights[0];
+	test.position = Vec3( 4.f, 4.f, 4.f );
+	test.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 1.f ); 
+	test.minRadius = 1.f;
+	test.maxRadius = 1.f;
+	test.ambience = 0.f;
+	test.innerConeDotThreshold = -1.f;
+	test.outerConeDotThreshold = -2.f;
+	test.forwardNormal = Vec3( 0.f, 0.f, -1.f );
 }
 
 //------------------------------------------------------------------------------

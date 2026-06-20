@@ -16,12 +16,14 @@ struct Light
 {
 	Vec4	color;
 	Vec3	position;
-	float   padding_pl;
+	float   ambience;
 	float   minRadius;
 	float   maxRadius;
 	float   innerConeDotThreshold; // use -1 for point light
 	float   outerConeDotThreshold; // use -2 for point light
 	Vec4	colorAndIntensity;
+	Vec3	forwardNormal;
+	float	padding;
 };
 
 struct LightConstants
@@ -79,8 +81,12 @@ public:
 	DebugConstants	m_debugConstantValues = { };
 	int				m_debugInt = 0;
 	float			m_debugFloat = 0.f;
+
+	// Lighting
 	Vec3			m_sunDir = Vec3( 3.0f, 1.0f, -2.0f );
 	Rgba8			m_sunColor = Rgba8::WHITE;
+	int				m_numLights = 8;
+
 
 	// Drawing
 	Texture* m_texture = nullptr;

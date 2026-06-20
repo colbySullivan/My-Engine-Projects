@@ -5,6 +5,7 @@ SamplerState diffuseSampler : register(s0);
 SamplerState normalSampler : register(s1);
 SamplerState specGlossEmitSampler : register(s2);
 
+//------------------------------------------------------------------------------------------------
 cbuffer DebugConstants : register(b1)
 {
     float   time;
@@ -13,6 +14,7 @@ cbuffer DebugConstants : register(b1)
     float   padding;
 };
 
+//------------------------------------------------------------------------------------------------
 cbuffer CameraConstants : register(b2)
 {
     float4x4 WorldToCameraTransform;
@@ -22,29 +24,36 @@ cbuffer CameraConstants : register(b2)
     float    camera_padding;
 };
 
+//------------------------------------------------------------------------------------------------
 cbuffer ModelConstants : register(b3)
 {
     float4x4 ModelToWorldTransform;
     float4   ModelColor;
 };
 
+//------------------------------------------------------------------------------------------------
 cbuffer GameConstants : register(b8)
 {
 	int		effectsInt;
 	int		padding2[3];
 };
+
+//------------------------------------------------------------------------------------------------
 struct s_Light
 {
     float4  color;
     float3  position;
-    float   padding_pl;
+    float   ambience;
     float   minRadius;
     float   maxRadius;
     float   innerConeDotThreshold;
     float   outerConeDotThreshold;
     float4  colorAndIntensity;
-
+    float3  forwardNormal;
+    float   paddingLight;
 };
+
+//------------------------------------------------------------------------------------------------
 #define MAX_LIGHTS 8
 cbuffer LightConstants : register(b4)
 {
@@ -52,9 +61,9 @@ cbuffer LightConstants : register(b4)
     float3      sunDir;
     int	        numLights;
     float4      sunColorConstant;
-    int         paddingInt[12];
 };
 
+//------------------------------------------------------------------------------------------------
 struct vs_input_t
 {
     float3 modelSpacePosition : POSITION;
@@ -65,6 +74,7 @@ struct vs_input_t
     float3 normal : NORMAL;
 };
 
+//------------------------------------------------------------------------------------------------
 struct v2p_t
 {
     float4 clipSpacePosition : SV_Position;
@@ -76,27 +86,86 @@ struct v2p_t
     float3 worldPos : WORLD_POSITION;
 };
 
+//------------------------------------------------------------------------------------------------
 float3 encodeXYZToRGB8( float3 xyzVec )
 {
     return ( xyzVec + 1.0 ) * 0.5;
 }
 
+//------------------------------------------------------------------------------------------------
 float3 decodeRGB8ToXYZ( float3 color )
 {
     return ( color * 2.0 ) - 1.0;
 }
 
+//------------------------------------------------------------------------------------------------
 float3 SmoothStart3( float3 v )
 {
 	return v * v * v;
 }
 
+//------------------------------------------------------------------------------------------------
 float3 SmoothStop3( float3 v )
 {
 	float3 inv = 1.0 - v;
 	return 1.0 - (inv * inv * inv);
 }
 
+//-----------------------------------------------------------------------------------------------
+float InterpolateFloat(float start, float end, float fractionTowardEnd)
+{
+	return start + (fractionTowardEnd * (end - start));
+}
+
+//-----------------------------------------------------------------------------------------------
+float3 Interpolate( float3 start, float3 end, float fractionTowardEnd )
+{
+	return float3(
+		InterpolateFloat( start.x, end.x, fractionTowardEnd ),
+		InterpolateFloat( start.y, end.y, fractionTowardEnd ),
+		InterpolateFloat( start.z, end.z, fractionTowardEnd )
+	);
+}
+
+//-----------------------------------------------------------------------------------------------
+float GetFractionWithinRange(float value, float rangeStart, float rangeEnd)
+{
+    float range = rangeEnd - rangeStart;
+    float fraction = 0.5f;
+    if (range != 0.0f)
+    {
+        fraction = (value - rangeStart) / range;
+    }
+    return fraction;
+}
+
+//-----------------------------------------------------------------------------------------------
+float RangeMap(float inValue, float inStart, float inEnd, float outStart, float outEnd)
+{
+    return InterpolateFloat(outStart, outEnd, GetFractionWithinRange(inValue, inStart, inEnd));
+}
+
+//------------------------------------------------------------------------------
+float SmoothStop2( float t )
+{
+	float inv = 1.f - t;
+	return 1.f - ( inv * inv );
+}
+
+//------------------------------------------------------------------------------
+float SmoothStart2( float t )
+{
+	return t * t;
+}
+
+
+//------------------------------------------------------------------------------
+float SmoothStep3( float t )
+{
+	return InterpolateFloat( SmoothStart2(t), SmoothStop2(t), t );
+}
+
+//------------------------------------------------------------------------------------------------
 v2p_t VertexMain(vs_input_t input)
 {
     float4 modelSpacePosition  = float4(input.modelSpacePosition, 1);
@@ -125,6 +194,7 @@ v2p_t VertexMain(vs_input_t input)
     return v2p;
 }
 
+//------------------------------------------------------------------------------------------------
 float4 PixelMain(v2p_t input) : SV_Target0
 {
     float4 textureColor = diffuseTexture.Sample(diffuseSampler, input.uv);
@@ -140,6 +210,13 @@ float4 PixelMain(v2p_t input) : SV_Target0
     // Decode tangent space normal map
     float3 normalColorToXYZ = normalize( decodeRGB8ToXYZ( normalColor.rgb ) );
 
+
+    float3 totalDiffuseLight = float3( 0.f, 0.f, 0.f );
+    float3 totalSpecularLight = float3( 0.f, 0.f, 0.f );
+
+    //------------------------------------------------------------------------------------------------	
+	// Sun
+	//------------------------------------------------------------------------------------------------	
     // A single fixed directional white sunlight shines diagonally ESE and downward across the board e.g. {3,1,-2} normalized
     // float3 sunDirection = normalize( float3( 3.0, 1.0, -2.0 ) );
     float3 sunDirection = normalize( sunDir );
@@ -163,6 +240,7 @@ float4 PixelMain(v2p_t input) : SV_Target0
         
     // clamped to some minimum ambient value (e.g. 0.2f)
     float lightStrength = max( normalMapDot, 0.2 );
+    totalDiffuseLight += lightStrength * sunColor;
 
     // get normal pixel to camera
     float3 pixelToCameraDir = normalize( cameraWorldPos - input.worldPos );
@@ -182,12 +260,52 @@ float4 PixelMain(v2p_t input) : SV_Target0
     float specStrength = glossiness * pow( specDot, specularRange );
 
     float3 specularLight = specStrength * specularity * sunColor;
-        
-    // multiplied by the light’s color and the surface (chess piece triangle) diffuse color
-    float3 litColor = diffuseColor.rgb * lightStrength * sunColor + specularLight;
+    totalSpecularLight += specularLight;
 
     // emissivity = 1.0 looks glowing
-    litColor += emissivity * diffuseColor.rgb;
+    float3 emissiveLight = emissivity * diffuseColor.rgb;
+
+     //------------------------------------------------------------------------------------------------	
+	// Non-sun lights
+	//------------------------------------------------------------------------------------------------	
+	for( int lightIndex = 0; lightIndex < numLights; ++ lightIndex )
+    {
+        float   ambience = lights[lightIndex].ambience;
+        float3  position = lights[lightIndex].position;
+        float   minRadius = lights[lightIndex].minRadius;
+        float   maxRadius = lights[lightIndex].maxRadius;
+        float   innerConeDotThreshold = lights[lightIndex].innerConeDotThreshold;
+        float   outerConeDotThreshold = lights[lightIndex].outerConeDotThreshold;
+        float3  color = lights[lightIndex].colorAndIntensity.rgb;
+		float   brightness = lights[lightIndex].colorAndIntensity.a;
+
+        float3 pixelToLight = normalize( position - input.worldPos );
+        float distanceToLight = length( position - input.worldPos );
+        
+        // saturate insures 0-1 
+        // ease into smooth s-curve
+        float pixelPosFallOf = saturate( RangeMap( distanceToLight, minRadius, maxRadius, 1.f, 0.f ) );
+        pixelPosFallOf = SmoothStep3(pixelPosFallOf);
+
+        // pixel alignment with light point direction
+        float pixelAlignment = dot(lights[lightIndex].forwardNormal, -pixelToLight);
+        float penumbra = saturate( RangeMap( pixelAlignment, outerConeDotThreshold, innerConeDotThreshold, 0.f, 1.f ) );
+        penumbra = SmoothStep3( penumbra );
+        
+        // How closely the surface faces the light
+        float surfaceDot = saturate( RangeMap( dot( pixelToLight, perPixelNormalToWorld), -ambience, 1.f, 0.f, 1.f ) );
+        
+        float lightStrength = penumbra * pixelPosFallOf * brightness * surfaceDot;
+        
+        // Additive light
+		float3 diffuseLight = lightStrength * color;
+		totalDiffuseLight += diffuseLight;
+    }
+
+    // multiplied by the light’s color and the surface (chess piece triangle) diffuse color
+    // float3 litColor = (saturate(totalDiffuseLight) * diffuseColor.rgb) * lightStrength * sunColor + specularLight;
+    // float3 litColor = diffuseColor.rgb * ( lightStrength * sunColor + totalDiffuseLight ) + specularLight;
+    float3 litColor = ( saturate( totalDiffuseLight ) * diffuseColor.rgb ) + totalSpecularLight + emissiveLight;
 
     // -----------------------------------------------------------------------
     // Debug view modes
@@ -249,6 +367,10 @@ float4 PixelMain(v2p_t input) : SV_Target0
         litColor = float3( normalMapLight, normalMapLight, normalMapLight );
     }
 
+
+    //------------------------------------------------------------------------------------------------	
+	// Final output color
+	//------------------------------------------------------------------------------------------------		
     float4 outColor = float4( litColor, diffuseColor.a );
     clip(outColor.a - 0.01f);
     
