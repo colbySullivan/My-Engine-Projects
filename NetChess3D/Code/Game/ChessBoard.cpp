@@ -219,18 +219,30 @@ void ChessBoard::UpdateLightConstants()
 	m_lightConstantValues.sunDir = m_sunDir;
 	m_lightConstantValues.numLights = m_numLights;
 
-	m_numLights = 1;
+	m_numLights = 2;
 	m_lightConstantValues.numLights = m_numLights;
 
-	Light& test = m_lightConstantValues.lights[0];
-	test.position = Vec3( 4.f, 4.f, 4.f );
-	test.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 1.f ); 
-	test.minRadius = 1.f;
-	test.maxRadius = 1.f;
-	test.ambience = 0.f;
-	test.innerConeDotThreshold = -1.f;
-	test.outerConeDotThreshold = -2.f;
-	test.forwardNormal = Vec3( 0.f, 0.f, -1.f );
+	// Light above board
+	Light& light = m_lightConstantValues.lights[0];
+	light.position = Vec3( 4.f, 4.f, 4.f );
+	light.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 1.f ); 
+	light.minRadius = 1.f;
+	light.maxRadius = 6.f;
+	light.ambience = 0.f;
+	light.innerConeDotThreshold = -1.f;
+	light.outerConeDotThreshold = -2.f;
+	light.forwardNormal = Vec3( 0.f, 0.f, -1.f );
+
+	// Light behind black king/queen
+	Light& light2 = m_lightConstantValues.lights[1];
+	light2.position = Vec3( 4.f, 13.f, 2.f );
+	light2.forwardNormal = Vec3( 0, -1, 0 );
+	light2.innerConeDotThreshold = CosDegrees( 30.f );
+	light2.outerConeDotThreshold = CosDegrees( 50.f );
+	light2.minRadius = 1.f;
+	light2.maxRadius = 8.f;
+	light2.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 10.f ); 
+	light2.ambience = 1.f;
 }
 
 //------------------------------------------------------------------------------
