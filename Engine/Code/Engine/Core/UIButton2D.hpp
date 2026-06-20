@@ -8,8 +8,8 @@
 class UIButton2D
 {
 public:
-	UIButton2D( const Vec2& min, const Vec2& max, const std::string& buttonText, const std::string& onClickEvent, Rgba8 baseColor, Rgba8 hoveredColor=Rgba8(255,255,255,100) );
-	UIButton2D( const Vec2& centerPosition, const float sizeX, const float sizeY, const std::string& buttonText, const std::string& onClickEvent, Rgba8 baseColor, Rgba8 hoveredColor=Rgba8(255,255,255,100) );
+	UIButton2D( const Vec2& min, const Vec2& max, const std::string& buttonText, const std::string& onClickEvent, Rgba8 baseColor=Rgba8(255,255,255,100), Rgba8 hoveredColor=Rgba8(255,255,255,100) );
+	UIButton2D( const Vec2& centerPosition, const float sizeX, const float sizeY, const std::string& buttonText, const std::string& onClickEvent, Rgba8 baseColor=Rgba8(255,255,255,100), Rgba8 hoveredColor=Rgba8(255,255,255,100) );
 	
 	void Update( const Vec2& mousePos, bool isMouseLeftJustPressed );
 	void Render() const;
