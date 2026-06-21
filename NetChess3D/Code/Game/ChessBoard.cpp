@@ -104,6 +104,9 @@ void ChessBoard::Update()
 			m_selectedPieceCopy = new ChessPiece( m_game, m_selectedPiece->m_definition, m_selectedPiece->m_position, m_selectedPiece->m_playernum, false );
 		}
 	}
+
+	// Fixes error with dangling pointer after piece capture
+	m_nextSelectedPiece = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -717,7 +720,8 @@ bool ChessBoard::MovePiece( std::string fromSquareString, std::string toSquareSt
 	}
 
 	// En Passant capture
-	if ( piece->m_definition->m_type == Pawn && g_activeChessBoard->IsValidEnPassantMove( fromSquare, toSquare, piece ) )
+	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
+	if ( piece->m_definition->m_type == Pawn && toPiece == nullptr && g_activeChessBoard->IsValidEnPassantMove( fromSquare, toSquare, piece ) )
 	{
 		g_activeChessBoard->TryExecuteEnPassant();
 		g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, "En passant capture!" );
@@ -736,26 +740,17 @@ bool ChessBoard::MovePiece( std::string fromSquareString, std::string toSquareSt
 		g_activeChessBoard->m_lastPawnMoveTo = IntVec2( -1, -1 );
 	}
 
-	ChessPiece* toPiece = g_activeChessBoard->GetPieceAt( toSquare.y, toSquare.x );
 	ChessPieceType capturedType = Count;
 
-	// Move pieces in console
+	// Clear the capturing piece's source square
 	g_activeChessBoard->m_board[fromSquare.y][fromSquare.x] = nullptr;
-	g_activeChessBoard->m_board[toSquare.y][toSquare.x] = piece;
 
-	// Move pieces on board
-	ChessPiece::MoveStyle movesyle = ( piece->m_definition->m_type == Knight ) ? ChessPiece::MoveStyle::Hop : ChessPiece::MoveStyle::Slide;
-	piece->StartMove( g_activeChessBoard->GetWorldPositionFromSquare( toSquare ), movesyle );
-
-	piece->m_firstMove = false;
-	//g_engine->m_console->AddLine( DevConsole::INFO_MAJOR_COLOR, Stringf( "Moved piece from %s to %s", fromSquareString.c_str(), toSquareString.c_str() ) );
-
-	// Capture piece
+	// Delete the captured piece 
 	if ( toPiece )
 	{
 		capturedType = toPiece->m_definition->m_type;
 		piece->m_game->RemoveChessPiece( toPiece );
-		if ( toPiece && capturedType == King )
+		if ( capturedType == King )
 		{
 			g_activeChessBoard->m_gameOver = true;
 			piece->m_game->ChangePlayerCamera( 3 ); // Change to fly over
@@ -765,10 +760,19 @@ bool ChessBoard::MovePiece( std::string fromSquareString, std::string toSquareSt
 		toPiece = nullptr;
 	}
 
+	// place the capturing piece at toSquare
+	g_activeChessBoard->m_board[toSquare.y][toSquare.x] = piece;
+
+	// Move pieces on board animation
+	ChessPiece::MoveStyle movesyle = ( piece->m_definition->m_type == Knight ) ? ChessPiece::MoveStyle::Hop : ChessPiece::MoveStyle::Slide;
+	piece->StartMove( g_activeChessBoard->GetWorldPositionFromSquare( toSquare ), movesyle );
+
+	piece->m_firstMove = false;
+
 	// Switch player
 	g_activeChessBoard->ChangePlayer( piece );
 
-	return false;
+	return true;
 }
 
 //-----------------------------------------------------------------------------------------------
