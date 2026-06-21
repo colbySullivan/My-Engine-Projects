@@ -23,6 +23,7 @@
 #include "Game/ActorDefinitions.hpp"
 #include "Game/GameButtonDefinitions.hpp"
 #include "Game/ItemDefinitions.hpp"
+#include "Game/WeaponDefinition.hpp"
 #include <cmath>
 
 XmlUtils m_xml;
@@ -41,10 +42,7 @@ Game::Game()
 	InitializeButtonsAndEvents();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
-	ActorDefinitions::InitializeActorDefs();
-	TileDefinition::InitializeTileDefs();
-	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
-	ItemDefinitions::InitializeItemDefs();
+	InitializeDefinitions();
 	LoadTextures();
 }
 
@@ -594,6 +592,16 @@ void Game::InitializeButtonsAndEvents()
 	GameButtonDefinitions::InitializeButtonDefs();
 	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
 	SubscribeEventCallbackFunction("CharacterSelect", Game::CharacterSelect);
+}
+
+//------------------------------------------------------------------------------
+void Game::InitializeDefinitions()
+{
+	ActorDefinitions::InitializeActorDefs();
+	TileDefinition::InitializeTileDefs();
+	SpriteAnimationDefinition::InitializeSpriteAnimationDefs();
+	ItemDefinitions::InitializeItemDefs();
+	WeaponDefinition::InitializeWeaponDefs();
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -1,11 +1,13 @@
 #pragma once
 #include "Engine/Math/Vec2.hpp"
-#include "Game/Entity.hpp"
-#include "Game/GameCommon.hpp"
-#include "SpriteAnimationDefinition.hpp"
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
 #include "Engine/Core/Timer.hpp"
+#include "Game/Entity.hpp"
+#include "Game/GameCommon.hpp"
+#include "Game/SpriteAnimationDefinition.hpp"
+#include "Game/Weapon.hpp"
+
 
 //------------------------------------------------------------------------------
 class Game;
@@ -44,4 +46,8 @@ private:
 	float					m_thrustFraction = -5.f;
 	bool					m_isMoving = false;
 	Timer*					m_hitTimer = nullptr;
+	static constexpr int   MAX_WEAPONS = 6;
+	static constexpr float ORBIT_RADIUS = 1.0f;
+
+	Weapon* m_weapons[MAX_WEAPONS] = {};
 };

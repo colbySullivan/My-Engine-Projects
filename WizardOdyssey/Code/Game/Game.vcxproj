@@ -209,6 +209,8 @@
     <ClCompile Include="SpriteAnimationDefinition.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileDefinitions.cpp" />
+    <ClCompile Include="Weapon.cpp" />
+    <ClCompile Include="WeaponDefinition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActorDefinitions.hpp" />
@@ -227,6 +229,8 @@
     <ClInclude Include="SpriteAnimationDefinition.hpp" />
     <ClInclude Include="Tile.hpp" />
     <ClInclude Include="TileDefinitions.hpp" />
+    <ClInclude Include="Weapon.hpp" />
+    <ClInclude Include="WeaponDefinition.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\Definitions\ActorDefinitions.xml" />
@@ -235,6 +239,7 @@
     <Xml Include="..\..\Run\Data\Definitions\ItemDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml" />
     <Xml Include="..\..\Run\Data\Definitions\TileDefinitions.xml" />
+    <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

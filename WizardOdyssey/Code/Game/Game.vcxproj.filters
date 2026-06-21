@@ -67,6 +67,12 @@
     <ClCompile Include="ShopItemCard.cpp">
       <Filter>Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponDefinition.cpp">
+      <Filter>Definitons</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommon.hpp">
@@ -117,6 +123,12 @@
     <ClInclude Include="ShopItemCard.hpp">
       <Filter>Gameplay</Filter>
     </ClInclude>
+    <ClInclude Include="WeaponDefinition.hpp">
+      <Filter>Definitons</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.hpp">
+      <Filter>Entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Run\Data\Definitions\MapDefinitions.xml">
@@ -135,6 +147,9 @@
       <Filter>Data</Filter>
     </Xml>
     <Xml Include="..\..\Run\Data\Definitions\ItemDefinitions.xml">
+      <Filter>Data</Filter>
+    </Xml>
+    <Xml Include="..\..\Run\Data\Definitions\WeaponDefinitions.xml">
       <Filter>Data</Filter>
     </Xml>
   </ItemGroup>

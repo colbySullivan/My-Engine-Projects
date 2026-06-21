@@ -1,0 +1,45 @@
+<Definitions>
+
+	<!-- GoldPistol-->
+	<WeaponDefinition name="GoldPistol"
+        damage="100"
+        fireRate="1.0"
+        bulletSpeed="8.0"
+        sprite="Data/Textures/Weapons/goldgun.png"/>
+	
+	<!-- Pistol-->
+	<WeaponDefinition name="Pistol"
+        damage="1"
+        fireRate="1.0"
+        bulletSpeed="8.0"
+        sprite="Data/Textures/Weapons/Pistol.png"/>
+
+	<!-- AutoRifle -->
+	<WeaponDefinition name="AutoRifle"
+        damage="1"
+        fireRate="0.7"
+        bulletSpeed="10.0"
+        sprite="Data/Textures/Weapons/AutoRifle.png"/>
+
+	<!-- Shotgun -->
+	<WeaponDefinition name="Shotgun"
+        damage="3"
+        fireRate="1.5"
+        bulletSpeed="6.0"
+        sprite="Data/Textures/Weapons/Shotgun.png"/>
+
+	<!-- Minigun -->
+	<WeaponDefinition name="Minigun"
+        damage="2"
+        fireRate="0.3"
+        bulletSpeed="9.0"
+        sprite="Data/Textures/Weapons/Minigun.png"/>
+
+	<!-- RPG -->
+	<WeaponDefinition name="RPG"
+        damage="8"
+        fireRate="3.5"
+        bulletSpeed="5.0"
+        sprite="Data/Textures/Weapons/RPG.png"/>
+
+</Definitions>

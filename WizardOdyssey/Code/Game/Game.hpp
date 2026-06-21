@@ -135,7 +135,6 @@ public:
 
 	std::string			m_playerDefChosen;
 
-
 private:
 	App* m_app = nullptr;
 
@@ -166,7 +165,7 @@ private:
 	SpriteAnimDefinition* m_tilesSpriteSheetAnimPingPong;
 	void UpdateMousePosition();
 	void InitializeButtonsAndEvents();
-
+	void InitializeDefinitions();
 	// Events
 	static bool AdvanceGameMode( EventArgs& args );
 	static bool CharacterSelect( EventArgs& args );
