@@ -818,6 +818,35 @@ void Game::UpdateImGui()
 			( unsigned char )( color[3] * 255.f ) );
 	}
 
+	static int selectedLight = 0;
+	ImGui::SeparatorText( "Lights" );
+	ImGui::SliderInt( "Light Index", &selectedLight, 0, m_chessBoard->m_numLights - 1 );
+
+	ImGui::PushID( selectedLight );
+	Light* light = &m_chessBoard->m_lightConstantValues.lights[selectedLight];
+
+	ImGui::ColorEdit4( "Color", &light->color.x );
+	ImGui::ColorEdit4( "Color & Intensity", &light->colorAndIntensity.x );
+
+	ImGui::SeparatorText( "Position" );
+	ImGui::SliderFloat( "Pos X", &light->position.x, -20.f, 20.f );
+	ImGui::SliderFloat( "Pos Y", &light->position.y, -20.f, 20.f );
+	ImGui::SliderFloat( "Pos Z", &light->position.z, -20.f, 20.f );
+
+	ImGui::SeparatorText( "Attenuation" );
+	ImGui::SliderFloat( "Ambience", &light->ambience, 0.f, 1.f );
+	ImGui::SliderFloat( "Min Radius", &light->minRadius, 0.f, 50.f );
+	ImGui::SliderFloat( "Max Radius", &light->maxRadius, 0.f, 100.f );
+
+	ImGui::SeparatorText( "Cone" );
+	ImGui::SliderFloat( "Inner Cone Dot", &light->innerConeDotThreshold, -1.f, 1.f );
+	ImGui::SliderFloat( "Outer Cone Dot", &light->outerConeDotThreshold, -2.f, 1.f );
+	ImGui::SliderFloat( "Forward X", &light->forwardNormal.x, -1.f, 1.f );
+	ImGui::SliderFloat( "Forward Y", &light->forwardNormal.y, -1.f, 1.f );
+	ImGui::SliderFloat( "Forward Z", &light->forwardNormal.z, -1.f, 1.f );
+
+	ImGui::PopID();
+
 	ImGui::End();
 }
 

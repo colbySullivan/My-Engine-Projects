@@ -116,6 +116,7 @@ public:
 	ChessPiece* m_board[8][8] = { nullptr };
 private:
 	void CreateBoardGeometry();
+	void InitializeLightDefaults();
 	static IntVec2 GetBoardToIntVec2( std::string chessString );
 	std::string GetIntVec2ToString( IntVec2 boardPosition );
 	static bool CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, std::string& errorMessage, bool teleport = false, std::string promoteTo = "" );

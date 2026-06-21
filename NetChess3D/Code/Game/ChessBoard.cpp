@@ -26,6 +26,7 @@ ChessBoard::ChessBoard( Game* game )
 
 	CreateBoardGeometry();
 	CreateBuffersAndCopy();
+	InitializeLightDefaults();
 	m_texture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/Bricks_d.png" );
 	m_normalTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/Bricks_n.png" );
 	m_sgaTexture = g_engine->m_render->CreateTextureFromImage( "Data/Textures/Bricks_sge.png" );
@@ -214,21 +215,14 @@ void ChessBoard::UpdateDebugConstants()
 }
 
 //------------------------------------------------------------------------------
-void ChessBoard::UpdateLightConstants()
+void ChessBoard::InitializeLightDefaults()
 {
-	float floatColor[4];
-	m_sunColor.GetAsFloats( floatColor );
-	m_lightConstantValues.sunColor = Vec4( floatColor[0], floatColor[1], floatColor[2], floatColor[3] );
-	m_lightConstantValues.sunDir = m_sunDir;
-	m_lightConstantValues.numLights = m_numLights;
-
 	m_numLights = 2;
-	m_lightConstantValues.numLights = m_numLights;
 
 	// Light above board
 	Light& light = m_lightConstantValues.lights[0];
 	light.position = Vec3( 4.f, 4.f, 4.f );
-	light.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 1.f ); 
+	light.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 1.f );
 	light.minRadius = 1.f;
 	light.maxRadius = 6.f;
 	light.ambience = 0.f;
@@ -244,8 +238,18 @@ void ChessBoard::UpdateLightConstants()
 	light2.outerConeDotThreshold = CosDegrees( 50.f );
 	light2.minRadius = 1.f;
 	light2.maxRadius = 8.f;
-	light2.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 10.f ); 
+	light2.colorAndIntensity = Vec4( 1.f, 1.f, 1.f, 10.f );
 	light2.ambience = 1.f;
+}
+
+//------------------------------------------------------------------------------
+void ChessBoard::UpdateLightConstants()
+{
+	float floatColor[4];
+	m_sunColor.GetAsFloats( floatColor );
+	m_lightConstantValues.sunColor = Vec4( floatColor[0], floatColor[1], floatColor[2], floatColor[3] );
+	m_lightConstantValues.sunDir = m_sunDir;
+	m_lightConstantValues.numLights = m_numLights;
 }
 
 //------------------------------------------------------------------------------
