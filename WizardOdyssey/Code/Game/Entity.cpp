@@ -312,23 +312,46 @@ void Entity::TryShoot( float fireOrientation, float deltaSeconds, EntityFaction 
 		Vec2 bulletSpawnPos = m_position + ( turretForward * bulletSpawnDist );
 
 		//m_game->m_shootSound = g_engine->m_audio->StartSound( 3, false, 0.8f );
-		m_map->SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, bulletSpawnPos, fireOrientation, faction );
+		Entity* bullet = m_map->SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, bulletSpawnPos, fireOrientation, faction );
+		if ( m_actorDef )
+		{
+			bullet->m_damage = max( 1, ( int )roundf( m_actorDef->m_gameStats.m_rangeBoost ) );
+			m_shooter = this;
+		}
+
 		m_timeSinceLastShot = m_bulletCooldown;
 	}
 }
 
-//-----------------------------------------------------------------------------------------------
-bool Entity::TakeDamage()
+//------------------------------------------------------------------------------
+bool Entity::TakeDamage( int incomingDamage /*= 1*/, bool isMagic /*= false*/ )
 {
-	if ( m_health <= 0 )
+	if ( m_isDead || m_isProtected )
 	{
-		m_isDead = true;
+		return true;
 	}
-	if ( !m_isProtected )
+
+	int effectiveDamage = incomingDamage;
+
+	if ( m_actorDef )
 	{
-		m_health -= 1;
+		GameStats entityStats = m_actorDef->m_gameStats;
+
+		// Dodge check
+		if ( entityStats.m_dodge > 0 )
+		{
+			float roll = g_rng.RollRandomFloatInRange( 0.f, 1.f );
+			if ( roll < entityStats.m_dodge )
+			{
+				//dodge successful
+				return true;
+			}
+		}
+		
+		int effectiveDamage = incomingDamage - ( isMagic ? entityStats.m_magicResistance : entityStats.m_armor );
+		effectiveDamage = (effectiveDamage < 0) ? 0 : effectiveDamage;
 	}
-	//m_game->m_playerHit = g_engine->m_audio->StartSound( 7, false, 0.8f );
+	m_health -= effectiveDamage;
 	return true;
 }
 

@@ -31,14 +31,14 @@ struct ActorSoundDef
 
 struct GameStats
 {
-	int		m_healing;
-	float	m_rangeBoost;
-	float	m_meleeBoost;
-	int		m_armor;
-	int		m_magicResistance;
-	float	m_lifeSteal;
-	float	m_dodge;
-	float	m_speedBoost;
+	int     m_healing = 0;
+	float   m_rangeBoost = 1.0f;
+	float   m_meleeBoost = 1.0f;
+	int     m_armor = 0;
+	int     m_magicResistance = 0;
+	float   m_lifeSteal = 0.0f;
+	float   m_dodge = 0.0f;
+	float   m_speedBoost = 1.0f;
 };
 
 class ActorDefinitions

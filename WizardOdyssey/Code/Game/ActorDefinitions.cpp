@@ -47,13 +47,13 @@ void ActorDefinitions::LoadActorDefsFromFile( char const* filePath )
 		XmlElement* statsElem = actorElem->FirstChildElement( "Stats" );
 		if ( statsElem )
 		{
-			def.m_gameStats.m_healing = xml.ParseXmlAttribute( *statsElem, "Healing", 1 );
+			def.m_gameStats.m_healing = xml.ParseXmlAttribute( *statsElem, "Healing", 0 );
 			def.m_gameStats.m_rangeBoost = xml.ParseXmlAttribute( *statsElem, "RangeBoost", 1.f );
 			def.m_gameStats.m_meleeBoost = xml.ParseXmlAttribute( *statsElem, "MeleeBoost", 1.f );
-			def.m_gameStats.m_armor = xml.ParseXmlAttribute( *statsElem, "Armor", 1 );
-			def.m_gameStats.m_magicResistance = xml.ParseXmlAttribute( *statsElem, "MagicResistance", 1 );
-			def.m_gameStats.m_lifeSteal = xml.ParseXmlAttribute( *statsElem, "LifeSteal", 1.f );
-			def.m_gameStats.m_dodge = xml.ParseXmlAttribute( *statsElem, "Dodge", 1.f );
+			def.m_gameStats.m_armor = xml.ParseXmlAttribute( *statsElem, "Armor", 0 );
+			def.m_gameStats.m_magicResistance = xml.ParseXmlAttribute( *statsElem, "MagicResistance", 0 );
+			def.m_gameStats.m_lifeSteal = xml.ParseXmlAttribute( *statsElem, "LifeSteal", 0.f );
+			def.m_gameStats.m_dodge = xml.ParseXmlAttribute( *statsElem, "Dodge", 0.f );
 			def.m_gameStats.m_speedBoost = xml.ParseXmlAttribute( *statsElem, "SpeedBoost", 1.f );
 		}
 

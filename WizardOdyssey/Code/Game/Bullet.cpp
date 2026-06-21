@@ -104,9 +104,13 @@ void Bullet::CheckEntityCollisions()
 		{
 			if ( DoDiscsOverlap( m_position, m_physicsRadius, other->m_position, other->m_physicsRadius ) )
 			{
-				if ( other->TakeDamage() )
+				if ( other->TakeDamage(m_damage, false) )
 				{
 					m_isDead = true;
+					if ( m_shooter && !m_shooter->m_isDead && m_shooter->m_actorDef->m_gameStats.m_lifeSteal > 0 )
+					{
+						m_shooter->m_health += ceil(m_damage * m_shooter->m_actorDef->m_gameStats.m_lifeSteal);
+					}
 				}
 				else
 				{

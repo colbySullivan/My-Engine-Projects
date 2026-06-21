@@ -13,7 +13,7 @@ Enemy::Enemy( Game* owner, Vec2 const& startPos, float orientationDegrees, Entit
 	m_entityType = type;
 	m_defName = defName;
 	InitializeDefitionStats();
-	m_bulletCooldown = 1.3f;
+	m_bulletCooldown = 3.3f;
 	m_gunTexture = m_game->m_ariesBodyTexture;
 	InitializeSpriteSheet();
 	m_spawnTimer = new Timer( 1.f );
@@ -39,7 +39,7 @@ void Enemy::Update( float deltaSeconds )
 	{
 		Entity::Update( deltaSeconds );
 		UpdateMoveIfSpawned();
-		//SearchForPlayerAndTryToShoot( deltaSeconds ); // #todo this logic still works // Change the texture and radius // Attach to ranged definitions
+		SearchForPlayerAndTryToShoot( deltaSeconds ); // #todo this logic still works // Change the texture and radius // Attach to ranged definitions
 	}
 	
 }
@@ -64,16 +64,9 @@ void Enemy::Render() const
 }
 
 //-----------------------------------------------------------------------------------------------
-bool Enemy::TakeDamage()
+bool Enemy::TakeDamage(int incomingDamage , bool isMagic )
 {
-	m_health -= 1;
-
-	if ( m_health <= 0 )
-	{
-		m_isDead = true;
-		return true;
-	}
-	return true;
+	return Entity::TakeDamage(incomingDamage, isMagic);
 }
 
 //-----------------------------------------------------------------------------------------------

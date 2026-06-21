@@ -69,13 +69,12 @@ public:
 	virtual void Respawn();
 	virtual EntityType GetEntityType() const;
 	virtual void TryShoot( float fireOrientation, float deltaSeconds, EntityFaction faction );
-	virtual bool TakeDamage();
+	virtual bool TakeDamage(int incomingDamage = 1, bool isMagic = false);
 
 	void		Wander( float deltaSeconds );
 	bool        IsOffscreen() const;
 	Vec2        GetForwardNormal() const;
 	void		WrapAroundScreen();
-	void		spawnRandomEdge();
 	void		SearchForPlayerAndTryToShoot( float deltaSeconds );
 
 	void InitializeBoxes();
@@ -125,6 +124,8 @@ public:
 	bool			m_isProtected = false;
 	float			m_frameTimeEntity = 0.f;
 	bool			m_justDied = false;
+	int				m_damage = 1;
+	Entity*			m_shooter = nullptr;
 	const ActorDefinitions* m_actorDef = nullptr;
 	// Animations
 	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;

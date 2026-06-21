@@ -11,7 +11,7 @@ public:
 public:
 	virtual void Update( float deltaSeconds ) override;
 	virtual void Render() const override;
-	virtual bool TakeDamage() override;
+	virtual bool TakeDamage(int incomingDamage = 1, bool isMagic = false);
 
 	void Respawn() override;
 
