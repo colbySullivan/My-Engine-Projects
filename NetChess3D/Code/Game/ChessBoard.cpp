@@ -504,7 +504,7 @@ std::string ChessBoard::GetIntVec2ToString( IntVec2 boardPosition )
 }
 
 //-----------------------------------------------------------------------------------------------
-bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, std::string& errorMessage, bool teleport, std::string promoteTo )
+bool ChessBoard::CheckBoardSquareValid( IntVec2 fromSquare, IntVec2 toSquare, std::string& errorMessage, bool teleport, [[maybe_unused]] std::string promoteTo )
 {
 	ChessPiece* piece = g_activeChessBoard->GetPieceAt( fromSquare.y, fromSquare.x );
 
