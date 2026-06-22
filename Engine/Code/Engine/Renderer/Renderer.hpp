@@ -7,6 +7,7 @@
 #include "Engine/Renderer/IndexBuffer.hpp"
 #include "Engine/Core/Image.hpp"
 #include "Engine/Math/Mat44.hpp"
+#include "Engine/Renderer/Model.hpp"
 #include "Game/EngineBuildPreferences.hpp"
 #include <vector>
 
@@ -26,6 +27,7 @@ struct IDXGISwapChain;
 class VertexBuffer;
 class IndexBuffer;
 class ConstantBuffer;
+class Model;
 struct Mat44;
 
 struct RenderConfig
@@ -109,6 +111,11 @@ public:
 	BitmapFont* CreateOrGetBitmapFont( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* GetFontForFileName( char const* bitmapFontFilePathWithNoExtension );
 	BitmapFont* CreateFontFromFile( char const* bitmapFontFilePathWithNoExtension );
+
+	Model* CreateOrGetModelFromFile( char const* modelFilePath );
+	Model* GetModelForFileName( char const* modelFilePath );
+	Model* CreateModelFromFile( char const* modelFilePath );
+
 
 	void CreateDepthStencilTexture();
 	void CreateDepthStencilStates();
@@ -197,4 +204,6 @@ private:
 	ID3D11SamplerState* m_samplerStates[( int )( SamplerMode::COUNT )] = {};
 
 	ID3D11RasterizerState* m_rasterizerStates[( int )( RasterizerMode::COUNT )] = {};
+
+	std::vector<Model*> m_loadedModels;
 };

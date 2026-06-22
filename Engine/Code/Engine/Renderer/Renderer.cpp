@@ -809,6 +809,40 @@ BitmapFont* Renderer::CreateFontFromFile( char const* bitmapFontFilePathWithNoEx
 }
 
 //------------------------------------------------------------------------------
+Model* Renderer::CreateOrGetModelFromFile( char const* modelFilePath )
+{
+	Model* existingModel = GetModelForFileName( modelFilePath );
+	if ( existingModel )
+	{
+		return existingModel;
+	}
+
+	Model* newModel = CreateModelFromFile( modelFilePath );
+	return newModel;
+}
+
+//------------------------------------------------------------------------------
+Model* Renderer::GetModelForFileName( char const* modelFilePath )
+{
+	for ( int modelIndex = 0; modelIndex < static_cast< int >( m_loadedModels.size() ); ++modelIndex )
+	{
+		Model* model = m_loadedModels[modelIndex];
+		if ( model->m_filepath == modelFilePath )
+		{
+			return model;
+		}
+	}
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+Model* Renderer::CreateModelFromFile( char const* modelFilePath )
+{
+	// #todo need to implement parser and return model
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
 void Renderer::DeleteReleaseAll()
 {
 	for ( int i = 0; i < m_loadedShaders.size(); i++ )
