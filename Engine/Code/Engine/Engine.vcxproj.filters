@@ -190,9 +190,6 @@
     <ClCompile Include="Core\Vertex_PCUTBN.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer\OBJLoader.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Plane2D.cpp">
       <Filter>Math\Planes</Filter>
     </ClCompile>
@@ -410,9 +407,6 @@
     </ClInclude>
     <ClInclude Include="Core\Vertex_PCUTBN.hpp">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer\OBJLoader.hpp">
-      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Math\Plane2D.hpp">
       <Filter>Math\Planes</Filter>
