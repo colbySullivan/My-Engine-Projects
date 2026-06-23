@@ -216,10 +216,43 @@ void Player::AddWeapon( std::string weaponName )
 	const WeaponDefinition* newWeaponDef = WeaponDefinition::GetByName( weaponName );
 	if ( newWeaponDef )
 	{
-		this->m_weapons[m_numEquipedWeapons] = new Weapon( newWeaponDef, m_numEquipedWeapons );
-		this->m_numEquipedWeapons++;
+		m_weapons[m_numEquipedWeapons] = new Weapon( newWeaponDef, m_numEquipedWeapons );
+		m_numEquipedWeapons++;
 	}	
 }
+
+//-----------------------------------------------------------------------------------------------
+Strings Player::GetStats()
+{
+	Strings statsStrings;
+
+	std::string statsToString = Stringf(" Dodge: %.2f%%", m_actorDef->m_gameStats.m_dodge * 100.f );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Armor: %i", m_actorDef->m_gameStats.m_armor );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Magic Resistance: %i", m_actorDef->m_gameStats.m_magicResistance );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Life Steal: %.2f%%", m_actorDef->m_gameStats.m_lifeSteal );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Passive Healing: %i", m_actorDef->m_gameStats.m_healing );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Range Boost: %.2f%%", m_actorDef->m_gameStats.m_rangeBoost * 100.f );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Melee Boost: %.2f%%", m_actorDef->m_gameStats.m_meleeBoost * 100.f );
+	statsStrings.push_back( statsToString );
+
+	statsToString = Stringf( " Speed Boost: %.2f%%", m_actorDef->m_gameStats.m_speedBoost * 100.f );
+	statsStrings.push_back( statsToString );
+
+	return statsStrings;
+}
+
 //------------------------------------------------------------------------------
 void Player::UpdateFromController( [[maybe_unused]] float deltaSeconds )
 {

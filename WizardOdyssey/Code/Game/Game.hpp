@@ -89,6 +89,7 @@ public:
 	SpriteAnimDefinition* m_tilesSpriteSheetAnim;
 	Vec2				m_textOffset = Vec2(0.f, 0.f);
 	float				m_frameTime = 0.0f;
+	BitmapFont*			m_font;
 
 	// Buttons
 	Vec2						m_mouseScreenWindowPosition;
@@ -168,7 +169,9 @@ private:
 	void UpdateMousePosition();
 	void InitializeButtonsAndEvents();
 	void InitializeDefinitions();
-	void InitializeShopCards();
+	void InitializeShopCards();	
+	void ClearAndCountEnemies();
+	
 	// Events
 	static bool AdvanceGameMode( EventArgs& args );
 	static bool CharacterSelect( EventArgs& args );

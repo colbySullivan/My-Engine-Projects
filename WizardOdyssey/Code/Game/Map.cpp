@@ -559,6 +559,15 @@ void Map::AddEntityToMap( Entity& e )
 {
 	EntityType type = e.GetEntityType();
 	m_entityListsByType[type].push_back( &e );
+	//for ( int entityIndex = 0; entityIndex < m_allEntities.size(); ++entityIndex )
+	//{
+	//	Entity* entity = m_allEntities[entityIndex];
+	//	if ( entity == nullptr )
+	//	{
+	//		m_allEntities[entityIndex] = &e;
+	//		return;
+	//	}
+	//}
 	m_allEntities.push_back( &e );
 }
 

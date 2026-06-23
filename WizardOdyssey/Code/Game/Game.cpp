@@ -44,6 +44,7 @@ Game::Game()
 	m_gameClock = new Clock( *g_engine->m_systemClock );
 	m_roundLimit = 30.f;
 	m_roundTimer = new Timer( m_roundLimit );
+	m_font = g_engine->m_render->CreateOrGetBitmapFont( "Data/Fonts/SquirrelFixedFont" );
 	InitializeDefinitions();
 	LoadTextures();
 }
@@ -108,11 +109,11 @@ void Game::Update(float deltaSeconds)
 		if ( m_nextGameState == GAMESTATE_ITEM )
 		{
 			InitializeShopCards();
+			ClearAndCountEnemies();
 		}
 
 		if ( m_nextGameState == PURGATORY )
 		{
-			m_roundTimer->Start();
 			m_currentGameState = GAMESTATE_PLAY;
 		}
 		else
@@ -469,6 +470,38 @@ void Game::RenderItemMode() const
 		card->Render();
 	}
 
+	// Player Stats
+	Player* player = nullptr;
+	if ( !m_currentMap->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER].empty() )
+	{
+		Entity* entity = m_currentMap->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+		player = dynamic_cast< Player* >( entity );
+		if ( !player )
+		{
+			g_engine->m_render->EndCamera( *m_screenCamera );
+			return;
+		}
+	}
+
+	float screenSizeY = g_gameConfig->GetValue( "screenSizeY", 800.f );
+	float screenSizeX = g_gameConfig->GetValue( "screenSizeX", 1600.f );
+	AABB2 bounds = AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) );
+	std::vector<Vertex> textVerts;
+	AABB2 statsBounds( Vec2( bounds.m_mins.x, bounds.m_mins.y ), Vec2( bounds.m_maxs.x, bounds.m_maxs.y ) );
+	float lineHeight = 13.f;
+	float padding = 6.f;
+	float statY = statsBounds.m_maxs.y - lineHeight - padding;
+
+	for ( const std::string& line : player->GetStats() )
+	{
+		AABB2 lineBounds( Vec2( statsBounds.m_mins.x + padding, statY ), Vec2( statsBounds.m_maxs.x - padding, statY + lineHeight ) );
+		m_font->AddVertsForTextInBox2D( textVerts, line, lineBounds, lineHeight, Rgba8( 100, 220, 100 ), 0.7f, Vec2( 0.f, 0.5f ) );
+		statY -= lineHeight + 3.f;
+	}
+
+	g_engine->m_render->BindTexture( &m_font->GetTexture() );
+	g_engine->m_render->DrawVertexArray( textVerts );
+
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
@@ -558,7 +591,10 @@ void Game::ConstructMapFromXML()
 				float difficultyMultiplier = m_xml.ParseXmlAttribute( *mapDefElement, "difficultyMultiplier", 1.0f );
 
 				MapDef mapDef = CreateMapDef( dimensions, fillTileType, edgeTileType, hordeTimer, bigBoyTimer, difficultyMultiplier );
-				m_maps.push_back( new Map( g_game, mapDef ) );
+				for (int i = 0; i < 5 ; ++i)
+				{
+					m_maps.push_back( new Map( g_game, mapDef ) );
+				}
 
 				mapDefElement = mapDefElement->NextSiblingElement( "MapDefinition" );
 			}
@@ -677,6 +713,19 @@ void Game::InitializeShopCards()
 }
 
 //-----------------------------------------------------------------------------------------------
+void Game::ClearAndCountEnemies()
+{
+	for ( int i = 0; i < static_cast< int >( m_currentMap->m_allEntities.size() ); i++ )
+	{
+		Entity* entity = m_currentMap->m_allEntities[i];
+		if ( entity && entity->GetEntityType() != ENTITY_TYPE_GOOD_PLAYER )
+		{
+			m_currentMap->RemoveEntityFromMap(*entity);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
 bool Game::AdvanceGameMode( [[maybe_unused]] EventArgs& args )
 {
 	g_app->m_game->m_nextGameState = ( Game_State )( ( g_app->m_game->m_currentGameState + 1 ) % NUM_GAMESTATES );
@@ -728,5 +777,6 @@ bool Game::BuyItem( EventArgs& args )
 		}
 	}
 	g_app->m_game->m_nextGameState = PURGATORY;
+	//g_app->m_game->MovePlayerToNewMap();
 	return false;
 }

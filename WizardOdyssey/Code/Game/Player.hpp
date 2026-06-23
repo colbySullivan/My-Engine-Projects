@@ -28,6 +28,7 @@ public:
 	void Respawn() override;
 	void PlayerHit();
 	void AddWeapon( std::string weaponName );
+	Strings GetStats();
 
 private:
 	void InitializePlayerVerts();
