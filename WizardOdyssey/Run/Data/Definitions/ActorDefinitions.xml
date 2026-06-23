@@ -31,7 +31,7 @@
 	<ActorDefinition name="WizardMelee" health="5" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
-		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
+		<Stats Healing="1" RangeBoost="0.3f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge=".5f" SpeedBoost="1.1f"/>
 		<Visuals size="1.5,1.5" pivot="0.0,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data/Textures/TheWizard.png" cellCount="4,3">
 			<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.1" playbackMode="Loop">
 				<Direction vector="1,0">
@@ -57,7 +57,7 @@
 	<ActorDefinition name="WizardRanged" health="5" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
 		<Physics walkSpeed="2.5f" runSpeed="6.0f"/>
-		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="10.f" SpeedBoost="1.1f"/>
+		<Stats Healing="1" RangeBoost="1.0f" MeleeBoost="1.0f" Armor="10" MagicResistance="10" LifeSteal="10.f" Dodge="0.f" SpeedBoost="1.1f"/>
 		<Visuals size="1.5,1.5" pivot="0.0,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data/Textures/TheWizard.png" cellCount="4,3">
 			<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.1" playbackMode="Loop">
 				<Direction vector="1,0">

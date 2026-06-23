@@ -49,7 +49,7 @@ public:
 
 	static void InitializeActorDefs();
 	static void LoadActorDefsFromFile( char const* filePath );
-	static const ActorDefinitions* GetByName( const std::string& name );
+	static ActorDefinitions* GetByName( const std::string& name );
 
 public:
 	std::string m_name = "";

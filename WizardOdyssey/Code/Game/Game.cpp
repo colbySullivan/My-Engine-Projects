@@ -776,10 +776,63 @@ bool Game::BuyItem( EventArgs& args )
 			player = dynamic_cast< Player* >( entity );
 		}
 
+		// Weapon
 		std::string weaponName = args.GetValue( "ItemName", "" );
 		if ( itemType == "Weapon" && !weaponName.empty() )
 		{
 			player->AddWeapon( weaponName );
+		}
+
+		// Relic
+		if ( itemType == "Relic" && !weaponName.empty() )
+		{
+			std::string stat = args.GetValue( "m_healing", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_healing += std::stoi( stat );
+			}
+
+			stat = args.GetValue( "m_armor", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_armor += std::stoi( stat );
+			}
+
+			stat = args.GetValue( "m_dodge", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_dodge += std::stof( stat );
+			}
+
+			stat = args.GetValue( "m_lifeSteal", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_lifeSteal += std::stof( stat );
+			}
+
+			stat = args.GetValue( "m_magicResistance", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_magicResistance += std::stoi( stat );
+			}
+
+			stat = args.GetValue( "m_meleeBoost", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_meleeBoost += std::stof( stat );
+			}
+
+			stat = args.GetValue( "m_rangeBoost", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_rangeBoost += std::stof( stat );
+			}
+
+			stat = args.GetValue( "m_speedBoost", "" );
+			if ( !stat.empty() )
+			{
+				player->m_actorDef->m_gameStats.m_speedBoost += std::stof( stat );
+			}
 		}
 	}
 	g_app->m_game->m_nextGameState = PURGATORY;

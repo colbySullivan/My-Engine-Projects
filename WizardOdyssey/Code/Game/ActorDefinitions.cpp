@@ -86,7 +86,7 @@ void ActorDefinitions::LoadActorDefsFromFile( char const* filePath )
 }
 
 //-----------------------------------------------------------------------------------------------
-const ActorDefinitions* ActorDefinitions::GetByName( const std::string& name )
+ActorDefinitions* ActorDefinitions::GetByName( const std::string& name )
 {
 	auto it = s_definitions.find( name );
 	if ( it == s_definitions.end() )

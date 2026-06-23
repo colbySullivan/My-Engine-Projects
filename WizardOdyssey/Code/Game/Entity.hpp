@@ -82,11 +82,12 @@ public:
 	void InitializeDefitionStats();
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
 	void PlayDeathExplosion() const;
+	ActorDefinitions* m_actorDef = nullptr;
 
 	RandomNumberGenerator g_rng;
 
 public:
-	Game* m_game = nullptr;
+	Game*			m_game = nullptr;
 	Vec2			m_position;
 	Vec2			m_velocity;
 	Vec2			m_scale;
@@ -126,7 +127,6 @@ public:
 	bool			m_justDied = false;
 	int				m_damage = 1;
 	Entity*			m_shooter = nullptr;
-	const ActorDefinitions* m_actorDef = nullptr;
 	// Animations
 	const SpriteAnimationDefinition* m_spriteAnimationDef = nullptr;
 	const SpriteAnimationGroupDefinition* m_currentAnimGroup = nullptr;
