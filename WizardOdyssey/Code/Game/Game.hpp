@@ -7,6 +7,7 @@
 #include "Engine/Audio/AudioSystem.hpp"
 #include "Engine/Renderer/SpriteAnimDefinition.hpp"
 #include "Engine/Core/Vertex.hpp"
+#include "Engine/Math/RandomNumberGenerator.hpp"
 
 class App;
 class Entity;
@@ -20,6 +21,7 @@ class Clock;
 class UIButton2D;
 //class EventArgs;
 struct MapDef;
+class RandomNumberGenerator;
 
 //-----------------------------------------------------------------------------------------------
 enum Game_State
@@ -44,6 +46,8 @@ enum MapRenderMode
 class Game
 {
 public:
+	RandomNumberGenerator g_rng;
+
 	Game();
 	~Game();
 

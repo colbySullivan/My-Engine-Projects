@@ -699,16 +699,23 @@ void Game::InitializeShopCards()
 	float cardStartingCenter = 280.f;
 	float cardOffset = 300.f;
 
-	int cardIndex = 0;
-	for ( auto& [name, item] : ItemDefinitions::s_definitions )
+	std::vector< decltype( &ItemDefinitions::s_definitions.begin()->second ) > candidates;
+	for ( auto& itemDef : ItemDefinitions::s_definitions )
 	{
-		if ( cardIndex >= 4 )
-		{
-			break;
-		}
+		candidates.push_back( &itemDef.second );
+	}
 
-		m_shopCards.push_back( new ShopItemCard( &item, Vec2( cardStartingCenter + ( cardOffset * cardIndex ), cardCenterY ), cardSizeX, cardSizeY ) );
-		cardIndex++;
+	std::vector<int> chosenIndices;
+	for (int i = 0; i < 4 ; ++i)
+	{
+		chosenIndices.push_back( g_rng.RollRandomIntInRange( 0, candidates.size() - 1 ) );
+	}
+
+	for ( int i = 0; i < chosenIndices.size(); ++i )
+	{
+		auto* itemDefPtr = candidates[ chosenIndices[i] ];
+		Vec2 center( cardStartingCenter + ( cardOffset * static_cast<float>( i ) ), cardCenterY );
+		m_shopCards.push_back( new ShopItemCard( itemDefPtr, center, cardSizeX, cardSizeY ) );
 	}
 }
 
@@ -769,8 +776,7 @@ bool Game::BuyItem( EventArgs& args )
 			player = dynamic_cast< Player* >( entity );
 		}
 
-		std::string weaponName = "GoldPistol";
-		//std::string weaponName = args.GetValue( "ItemType", "" );
+		std::string weaponName = args.GetValue( "ItemName", "" );
 		if ( itemType == "Weapon" && !weaponName.empty() )
 		{
 			player->AddWeapon( weaponName );

@@ -20,7 +20,7 @@
 #include "Game/ChessPieceDefinition.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
-RandomNumberGenerator g_rng;
+//RandomNumberGenerator g_rng;
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
