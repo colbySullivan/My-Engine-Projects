@@ -13,11 +13,14 @@ Model::~Model()
 //------------------------------------------------------------------------------
 void Model::Render() const
 {
-	Texture* testTex = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/TestUV.png" );
-	g_engine->m_render->BindTexture( testTex );
-	g_engine->m_render->SetModelConstants( Mat44::MakeTranslation3D( m_position ), Rgba8::WHITE );
+	g_engine->m_render->BindTexture( m_texture );
+	Mat44 correction = Mat44::MakeTranslation3D( m_position ); 
+	correction.AppendXRotation( 90.f ); // #todo need to find a better way to flip models                       
+	correction.AppendScaleUniform3D( m_scale );
+	g_engine->m_render->SetModelConstants( correction, Rgba8::WHITE );
 	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );
 	g_engine->m_render->DrawIndexBuffer( m_vertexBuffer, m_indexBuffer, (unsigned int)m_indexes.size() );
+	g_engine->m_render->BindTexture( nullptr );
 }
 
 //------------------------------------------------------------------------------

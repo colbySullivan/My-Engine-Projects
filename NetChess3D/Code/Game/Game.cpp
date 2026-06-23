@@ -42,7 +42,10 @@ Game::Game()
 	SubscribeEventCallbackFunction( "ChessBegin", Command_BeginGame );
 	ChessPieceDefinition::InitializeChessPieceDefs();
 
-	m_testModel = g_engine->m_render->CreateOrGetModelFromFile("Data/Models/cube.obj");
+	m_testModel = g_engine->m_render->CreateOrGetModelFromFile("Data/Models/Teemo.obj");
+	m_testModel->m_texture = g_engine->m_render->CreateOrGetTextureFromFile("Data/Textures/teemo_texture.png");
+	m_testModel->m_position = Vec3( 4.f, 4.f, 0.f );
+	m_testModel->m_scale = 0.01f;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -169,9 +172,9 @@ void Game::Render() const
 			}
 		}
 		m_chessBoard->Render();
-		m_testModel->Render();
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
+		//m_testModel->Render();
 		
 	}
 

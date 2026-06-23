@@ -13,6 +13,8 @@ public:
 	void Render() const;
 
 	Vec3 m_position = Vec3( 0.f, 0.f, 0.f );
+	float m_scale = 1.f;
+	Texture* m_texture = nullptr;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int>  m_indexes;
 

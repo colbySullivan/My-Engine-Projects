@@ -6,6 +6,7 @@
 #include "Engine/Core/Rgba8.hpp"
 #include "Engine/Core/Vertex_PCUTBN.hpp"
 #include "Engine/Renderer/Model.hpp"
+#include <unordered_map>
 
 //------------------------------------------------------------------------------
 void OBJLoader::Load( std::string const& filepath, Model& model )
@@ -19,6 +20,7 @@ void OBJLoader::Load( std::string const& filepath, Model& model )
 	std::vector<Vec3> normals;
 	std::vector<Vertex_PCUTBN> vertices;
 	std::vector<unsigned int> indices;
+	std::unordered_map<std::string, int> savedVertices;
 	int indexCount = 0;
 
 	// Get file by line
@@ -69,9 +71,10 @@ void OBJLoader::Load( std::string const& filepath, Model& model )
 				}
 
 				// Insure vt line was only 2 floats (uv)
-				if ( uvFloats.size() == 2 )
+				if ( uvFloats.size() == 3 )
 				{
-					uvs.push_back( Vec2( uvFloats[0], uvFloats[1] ) );
+					// Reflect V across the middle
+					uvs.push_back( Vec2( uvFloats[0], 1.0f - uvFloats[1] ) );
 				}
 			}
 
@@ -114,9 +117,21 @@ void OBJLoader::Load( std::string const& filepath, Model& model )
 						int ui = std::stoi( posTanNormal[1] ) - 1;
 						int ni = std::stoi( posTanNormal[2] ) - 1;
 
-						vertices.push_back( Vertex_PCUTBN( positions[pi], Rgba8::WHITE, uvs[ui], Vec3(), Vec3(), normals[ni] ) );
-						indices.push_back( indexCount );
-						indexCount++;
+						// Find duplicate vertices (vertCouple)
+						auto it = savedVertices.find( vertCouple );
+						if ( it == savedVertices.end() )
+						{
+							vertices.push_back( Vertex_PCUTBN( positions[pi], Rgba8::WHITE, uvs[ui], Vec3(), Vec3(), normals[ni] ) );
+							savedVertices.insert( { vertCouple, indexCount } );
+							indices.push_back( indexCount );
+							indexCount++;
+						}
+
+						// Vertex duplicate
+						else
+						{
+							indices.push_back( it->second );
+						}
 					}
 				}
 			}

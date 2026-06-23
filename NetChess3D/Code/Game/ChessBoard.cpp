@@ -128,6 +128,7 @@ void ChessBoard::Render() const
 	SetDebugConstant();
 	SetLightConstant();
 	g_engine->m_render->DrawIndexBuffer( m_vbo, m_ibo, indexCount );
+	m_game->m_testModel->Render();
 	g_engine->m_render->BindTexture( nullptr, 0 );
 	g_engine->m_render->BindTexture( nullptr, 1 );
 	g_engine->m_render->BindTexture( nullptr, 2);
