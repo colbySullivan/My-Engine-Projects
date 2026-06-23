@@ -42,6 +42,8 @@ Game::Game()
 	InitializeButtonsAndEvents();
 	//m_lobbyPlaybackID = g_engine->m_audio->StartSound( 0 );
 	m_gameClock = new Clock( *g_engine->m_systemClock );
+	m_roundLimit = 30.f;
+	m_roundTimer = new Timer( m_roundLimit );
 	InitializeDefinitions();
 	LoadTextures();
 }
@@ -99,6 +101,7 @@ void Game::Update(float deltaSeconds)
 	{
 		if ( m_nextGameState == GAMESTATE_PLAY )
 		{
+			m_roundTimer->Start();
 			Startup();
 		}
 
@@ -109,6 +112,7 @@ void Game::Update(float deltaSeconds)
 
 		if ( m_nextGameState == PURGATORY )
 		{
+			m_roundTimer->Start();
 			m_currentGameState = GAMESTATE_PLAY;
 		}
 		else
@@ -166,6 +170,11 @@ void Game::Update(float deltaSeconds)
 			m_endGame = true;
 			m_isPaused = true;
 			return;
+		}
+
+		if ( m_roundTimer->DecrementPeriodIfElapsed() )
+		{
+			m_nextGameState = GAMESTATE_ITEM;
 		}
 
 		if ( !m_isPaused || m_pauseAfterNextUpdate )
@@ -383,6 +392,9 @@ void Game::RenderUI() const
 	float totalTime = ( float )g_engine->m_systemClock->GetTotalSeconds();
 	std::string hudText = Stringf( "Time: %.2f FPS: %6.1f Scale: %.2f", totalTime, fps, scale );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 1.f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
+
+	std::string roundTimer = Stringf( "Time: %.2f ", m_roundLimit - m_roundTimer->GetElapsedTime() );
+	DebugAddScreenText( roundTimer, AABB2( Vec2( 0.f, 0.f ), Vec2( screenSizeX, screenSizeY ) ), 15.f, Vec2( 0.5f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 }
 
 //-----------------------------------------------------------------------------------------------

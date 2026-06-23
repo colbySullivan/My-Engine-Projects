@@ -130,6 +130,8 @@ public:
 	SoundPlaybackID		m_lossSound = MISSING_SOUND_ID;
 
 	Clock*				m_gameClock = nullptr;
+	Timer*				m_roundTimer = nullptr;
+	float				m_roundLimit;
 
 	float				m_soundDurationTimer = 0.f;
 	float				m_shotSoundDurationTimer = 0.f;
