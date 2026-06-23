@@ -34,18 +34,6 @@ Player::Player( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 		m_hitTimer = new Timer( 2.2f );
 	}
 	m_hitTimer->Start();
-	const WeaponDefinition* pistolDef = WeaponDefinition::GetByName( "Pistol" );
-	const WeaponDefinition* GoldPistolDef = WeaponDefinition::GetByName( "GoldPistol" );
-	const WeaponDefinition* AutoRifleDef = WeaponDefinition::GetByName( "AutoRifle" );
-	const WeaponDefinition* ShotgunDef = WeaponDefinition::GetByName( "Shotgun" );
-	const WeaponDefinition* MinigunDef = WeaponDefinition::GetByName( "Minigun" );
-	const WeaponDefinition* RPGDef = WeaponDefinition::GetByName( "RPG" );
-	m_weapons[0] = new Weapon( pistolDef, 0 );
-	m_weapons[1] = new Weapon( GoldPistolDef, 1 );
-	m_weapons[2] = new Weapon( AutoRifleDef, 2 );
-	m_weapons[3] = new Weapon( ShotgunDef, 3 );
-	m_weapons[4] = new Weapon( MinigunDef, 4 );
-	m_weapons[5] = new Weapon( RPGDef, 5 );
 }
 
 //------------------------------------------------------------------------------
@@ -81,10 +69,10 @@ void Player::Update( [[maybe_unused]] float deltaSeconds )
 	}
 
 	//TryShoot( m_turretOrientationDegrees, deltaSeconds, m_faction );
-	for ( int i = 0; i < 6; i++ )
+	for ( int i = 0; i < MAX_WEAPONS; i++ )
 	{
 		if ( m_weapons[i] )
-			m_weapons[i]->Update( deltaSeconds, m_position, m_turretOrientationDegrees, m_faction, m_map, this );
+			m_weapons[i]->Update( deltaSeconds, m_position, m_turretOrientationDegrees, m_faction, m_map, this, m_numEquipedWeapons );
 	}
 
 	m_position += m_velocity * m_walkSpeed * deltaSeconds;
@@ -102,10 +90,10 @@ void Player::Render() const
 	std::string hudText = Stringf( "Player health: %i", m_health );
 	DebugAddScreenText( hudText, AABB2( Vec2( 0.f, 0.f ), Vec2( 1600.f, 800.f ) ), 15.f, Vec2( 0.f, 1.f ), 0.f, Rgba8( 255, 255, 255 ), Rgba8( 255, 255, 255 ) );
 	//RenderGun();
-	for ( int i = 0; i < 6; i++ )
+	for ( int i = 0; i < MAX_WEAPONS; i++ )
 	{
 		if ( m_weapons[i] )
-			m_weapons[i]->Render( m_position, m_game->m_mouseWorldWindowPosition );
+			m_weapons[i]->Render( m_position, m_game->m_mouseWorldWindowPosition, m_numEquipedWeapons );
 	}
 }
 
@@ -222,6 +210,16 @@ void Player::PlayerHit()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------
+void Player::AddWeapon( std::string weaponName )
+{
+	const WeaponDefinition* newWeaponDef = WeaponDefinition::GetByName( weaponName );
+	if ( newWeaponDef )
+	{
+		this->m_weapons[m_numEquipedWeapons] = new Weapon( newWeaponDef, m_numEquipedWeapons );
+		this->m_numEquipedWeapons++;
+	}	
+}
 //------------------------------------------------------------------------------
 void Player::UpdateFromController( [[maybe_unused]] float deltaSeconds )
 {

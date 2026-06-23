@@ -10,9 +10,9 @@ ShopItemCard::ShopItemCard( const ItemDefinitions* item, Vec2 centerPos, float s
 	float halfX = sizeX * 0.5f;
 	float halfY = sizeY * 0.5f;
 	m_bounds = AABB2( Vec2( centerPos.x - halfX, centerPos.y - halfY ), Vec2( centerPos.x + halfX, centerPos.y + halfY ) );
-	//m_button = new UIButton2D( centerPos, sizeX, sizeY, "", "BuyItem", Rgba8( 30, 30, 50 ), Rgba8( 60, 60, 100 ) );
-	//m_button->AddArg( "ItemName", item->m_name ); // #todo need to make this event
-	m_button = new UIButton2D( centerPos, sizeX, sizeY, "", "StartGame" ); // placeholder for now
+	m_button = new UIButton2D( centerPos, sizeX, sizeY, "", "BuyItem", Rgba8( 30, 30, 50 ), Rgba8( 60, 60, 100 ) );
+	m_button->AddArg( "ItemType", item->m_type ); // #todo need to make this event
+	//m_button = new UIButton2D( centerPos, sizeX, sizeY, "", "StartGame" ); // placeholder for now
 	m_button->m_defaultTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/UI/png@4x/Button/Rect/Default@4x.png" );
 	m_button->m_hoveredTexture = g_engine->m_render->CreateOrGetTextureFromFile( "Data/Textures/UI/png@4x/Button/Rect/Hover@4x.png" );
 	if ( !item->m_iconTexture.empty() )

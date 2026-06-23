@@ -8,11 +8,11 @@ public:
 	Weapon( const WeaponDefinition* def, int slotIndex );
 	~Weapon();
 
-	void Update( float deltaSeconds, Vec2 playerPos, float fireOrientation, EntityFaction faction, Map* map, Entity* shooter );
-	void Render( Vec2 playerPos, Vec2 mouseWorldPos ) const;
+	void Update( float deltaSeconds, Vec2 playerPos, float fireOrientation, EntityFaction faction, Map* map, Entity* shooter, int numOfWeapons );
+	void Render( Vec2 playerPos, Vec2 mouseWorldPos, int numOfWeapons ) const;
 
 private:
-	Vec2 GetOrbitPosition( Vec2 playerPos ) const;
+	Vec2 GetOrbitPosition( Vec2 playerPos, int numOfWeapons ) const;
 
 	const WeaponDefinition* m_def = nullptr;
 	int                     m_slotIndex = 0;

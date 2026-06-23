@@ -27,6 +27,7 @@ public:
 	int					m_lives = 1;
 	void Respawn() override;
 	void PlayerHit();
+	void AddWeapon( std::string weaponName );
 
 private:
 	void InitializePlayerVerts();
@@ -46,8 +47,9 @@ private:
 	float					m_thrustFraction = -5.f;
 	bool					m_isMoving = false;
 	Timer*					m_hitTimer = nullptr;
-	static constexpr int   MAX_WEAPONS = 6;
+	static constexpr int   MAX_WEAPONS = 64;
 	static constexpr float ORBIT_RADIUS = 1.0f;
 
+	int m_numEquipedWeapons = 0;
 	Weapon* m_weapons[MAX_WEAPONS] = {};
 };

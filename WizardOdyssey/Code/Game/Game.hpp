@@ -28,7 +28,8 @@ enum Game_State
 	GAMESTATE_CHARACTER_SELECT,
 	GAMESTATE_PLAY,
 	GAMESTATE_ITEM,
-	NUM_GAMESTATES
+	NUM_GAMESTATES,
+	PURGATORY = -1
 };
 
 enum MapRenderMode
@@ -142,7 +143,6 @@ private:
 
 	void RenderUI() const;
 	void RenderUIButtons() const;
-	void RenderText( const char text[] , Vec2 pos, float height, Rgba8 color ) const;
 	void RenderAttractMode() const;
 	void RenderCharacterSelectMode() const;
 	void RenderItemMode() const;
@@ -166,8 +166,9 @@ private:
 	void UpdateMousePosition();
 	void InitializeButtonsAndEvents();
 	void InitializeDefinitions();
+	void InitializeShopCards();
 	// Events
 	static bool AdvanceGameMode( EventArgs& args );
 	static bool CharacterSelect( EventArgs& args );
-	void InitializeShopCards();
+	static bool BuyItem( EventArgs& args );
 };

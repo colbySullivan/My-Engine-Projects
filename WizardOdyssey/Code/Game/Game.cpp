@@ -107,7 +107,14 @@ void Game::Update(float deltaSeconds)
 			InitializeShopCards();
 		}
 
-		m_currentGameState = m_nextGameState;
+		if ( m_nextGameState == PURGATORY )
+		{
+			m_currentGameState = GAMESTATE_PLAY;
+		}
+		else
+		{
+			m_currentGameState = m_nextGameState;
+		}
 	}
 
 	if (m_soundDurationTimer > 0.f)
@@ -355,7 +362,6 @@ void Game::RenderWinLoseSreen( Texture* texture ) const
 void Game::UpdateUIButtons()
 {
 	bool mousePressed = g_engine->m_input->IsKeyDown( KEYCODE_LEFT_MOUSE );
-	// New version
 	for ( auto button : GameButtonDefinitions::s_definitions )
 	{
 		if ( button.buttonRef && button.gameState == m_currentGameState )
@@ -394,16 +400,6 @@ void Game::RenderUIButtons() const
 	g_engine->m_render->EndCamera( *m_screenCamera );
 }
 
-//-----------------------------------------------------------------------------------------------
-void Game::RenderText(const char text[] , Vec2 pos, float height, Rgba8 color) const
-{
-	std::vector<Vertex> textVerts;
-	AddVertsForTextTriangles2D( textVerts, text, pos, height, color, 1.f );
-	g_engine->m_render->DrawVertexArray( ( int )textVerts.size(), textVerts.data() );
-}
-
-//-----------------------------------------------------------------------------------------------
-// Attract Mode
 //-----------------------------------------------------------------------------------------------
 void Game::UpdateEntities(float deltaSeconds)
 {
@@ -592,6 +588,7 @@ void Game::InitializeButtonsAndEvents()
 	GameButtonDefinitions::InitializeButtonDefs();
 	SubscribeEventCallbackFunction("StartGame", Game::AdvanceGameMode);
 	SubscribeEventCallbackFunction("CharacterSelect", Game::CharacterSelect);
+	SubscribeEventCallbackFunction("BuyItem", Game::BuyItem);
 }
 
 //------------------------------------------------------------------------------
@@ -638,6 +635,35 @@ void Game::LoadTextures()
 	m_tilesSpriteSheetAnimPingPong = new SpriteAnimDefinition( *m_explosionSpriteSheet, 0, 24, .05f, SpriteAnimPlaybackType::PINGPONG);
 }
 
+//------------------------------------------------------------------------------
+void Game::InitializeShopCards()
+{
+	for ( ShopItemCard* card : m_shopCards )
+	{
+		delete card;
+	}
+
+	m_shopCards.clear();
+
+	float cardSizeX = 260.f;
+	float cardSizeY = 350.f;
+	float cardCenterY = 400.f;
+	float cardStartingCenter = 280.f;
+	float cardOffset = 300.f;
+
+	int cardIndex = 0;
+	for ( auto& [name, item] : ItemDefinitions::s_definitions )
+	{
+		if ( cardIndex >= 4 )
+		{
+			break;
+		}
+
+		m_shopCards.push_back( new ShopItemCard( &item, Vec2( cardStartingCenter + ( cardOffset * cardIndex ), cardCenterY ), cardSizeX, cardSizeY ) );
+		cardIndex++;
+	}
+}
+
 //-----------------------------------------------------------------------------------------------
 bool Game::AdvanceGameMode( [[maybe_unused]] EventArgs& args )
 {
@@ -669,31 +695,26 @@ bool Game::CharacterSelect( [[maybe_unused]] EventArgs& args )
 	return false;
 }
 
-//------------------------------------------------------------------------------
-void Game::InitializeShopCards()
+//-----------------------------------------------------------------------------------------------
+bool Game::BuyItem( EventArgs& args )
 {
-	for ( ShopItemCard* card : m_shopCards )
+	std::string itemType = args.GetValue( "ItemType", "");
+	if ( !itemType.empty() )
 	{
-		delete card;
-	}
-
-	m_shopCards.clear();
-
-	float cardSizeX = 260.f;
-	float cardSizeY = 350.f;
-	float cardCenterY = 400.f;
-	float cardStartingCenter = 280.f;
-	float cardOffset = 300.f;
-
-	int cardIndex = 0;
-	for ( auto& [name, item] : ItemDefinitions::s_definitions )
-	{
-		if ( cardIndex >= 4 )
+		Player* player = nullptr;
+		if ( !g_app->m_game->m_currentMap->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER].empty() )
 		{
-			break;
+			Entity* entity = g_app->m_game->m_currentMap->m_entityListsByType[ENTITY_TYPE_GOOD_PLAYER][0];
+			player = dynamic_cast< Player* >( entity );
 		}
 
-		m_shopCards.push_back( new ShopItemCard( &item, Vec2( cardStartingCenter + ( cardOffset * cardIndex ), cardCenterY), cardSizeX, cardSizeY));
-		cardIndex++;
+		std::string weaponName = "GoldPistol";
+		//std::string weaponName = args.GetValue( "ItemType", "" );
+		if ( itemType == "Weapon" && !weaponName.empty() )
+		{
+			player->AddWeapon( weaponName );
+		}
 	}
+	g_app->m_game->m_nextGameState = PURGATORY;
+	return false;
 }

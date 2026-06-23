@@ -17,6 +17,9 @@
     <Filter Include="Definitons">
       <UniqueIdentifier>{598b0834-41cf-4d51-9831-635f724d0913}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WeaponsAndItems">
+      <UniqueIdentifier>{ebc0d87e-e3f2-4dbb-a5de-174f3c45d57c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main_Windows.cpp">
@@ -64,14 +67,14 @@
     <ClCompile Include="ItemDefinitions.cpp">
       <Filter>Definitons</Filter>
     </ClCompile>
-    <ClCompile Include="ShopItemCard.cpp">
-      <Filter>Gameplay</Filter>
-    </ClCompile>
     <ClCompile Include="WeaponDefinition.cpp">
       <Filter>Definitons</Filter>
     </ClCompile>
+    <ClCompile Include="ShopItemCard.cpp">
+      <Filter>WeaponsAndItems</Filter>
+    </ClCompile>
     <ClCompile Include="Weapon.cpp">
-      <Filter>Entities</Filter>
+      <Filter>WeaponsAndItems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,14 +123,14 @@
     <ClInclude Include="ItemDefinitions.hpp">
       <Filter>Definitons</Filter>
     </ClInclude>
-    <ClInclude Include="ShopItemCard.hpp">
-      <Filter>Gameplay</Filter>
-    </ClInclude>
     <ClInclude Include="WeaponDefinition.hpp">
       <Filter>Definitons</Filter>
     </ClInclude>
+    <ClInclude Include="ShopItemCard.hpp">
+      <Filter>WeaponsAndItems</Filter>
+    </ClInclude>
     <ClInclude Include="Weapon.hpp">
-      <Filter>Entities</Filter>
+      <Filter>WeaponsAndItems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

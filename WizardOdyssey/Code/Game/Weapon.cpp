@@ -4,7 +4,7 @@
 #include "Engine/Core/VertexUtils.hpp"
 #include "Engine/Core/Engine.hpp"
 
-static constexpr int   MAX_SLOTS = 6;
+static constexpr int   MAX_SLOTS = 64;
 
 //------------------------------------------------------------------------------
 Weapon::Weapon( const WeaponDefinition* def, int slotIndex )
@@ -21,13 +21,13 @@ Weapon::~Weapon()
 }
 
 //------------------------------------------------------------------------------
-void Weapon::Update( float deltaSeconds, Vec2 playerPos, float fireOrientation, EntityFaction faction, Map* map, Entity* shooter )
+void Weapon::Update( float deltaSeconds, Vec2 playerPos, float fireOrientation, EntityFaction faction, Map* map, Entity* shooter, int numOfWeapons )
 {
 	m_timeSinceLastShot -= deltaSeconds;
 
 	if ( m_timeSinceLastShot <= 0.f )
 	{
-		Vec2 orbitPos = GetOrbitPosition( playerPos );
+		Vec2 orbitPos = GetOrbitPosition( playerPos, numOfWeapons );
 		Entity* bullet = map->SpawnNewEntity( ENTITY_TYPE_GOOD_BULLET, orbitPos, fireOrientation, faction );
 
 		if ( bullet )
@@ -41,9 +41,9 @@ void Weapon::Update( float deltaSeconds, Vec2 playerPos, float fireOrientation, 
 }
 
 //------------------------------------------------------------------------------
-void Weapon::Render( Vec2 playerPos, Vec2 mouseWorldPos ) const
+void Weapon::Render( Vec2 playerPos, Vec2 mouseWorldPos, int numOfWeapons ) const
 {
-	Vec2  orbitPos = GetOrbitPosition( playerPos );
+	Vec2  orbitPos = GetOrbitPosition( playerPos, numOfWeapons );
 	Vec2  toMouse = mouseWorldPos - orbitPos;
 	float angle = toMouse.GetOrientationDegrees();
 
@@ -59,8 +59,8 @@ void Weapon::Render( Vec2 playerPos, Vec2 mouseWorldPos ) const
 }
 
 //------------------------------------------------------------------------------
-Vec2 Weapon::GetOrbitPosition( Vec2 playerPos ) const
+Vec2 Weapon::GetOrbitPosition( Vec2 playerPos, int numOfWeapons ) const
 {
-	float angle = ( 360.f / MAX_SLOTS ) * m_slotIndex;
+	float angle = ( 360.f / numOfWeapons ) * m_slotIndex;
 	return playerPos + Vec2::MakeFromPolarDegrees( angle );
 }

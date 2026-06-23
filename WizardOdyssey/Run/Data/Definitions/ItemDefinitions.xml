@@ -3,4 +3,8 @@
 	<ItemDefinition name="Arcane Tome" type="Relic"  iconTexture="Data\Textures\Items\ArcaneTome.png" cost="25" bonusRangeBoost="0.20" bonusMagicResistance="2"/>
 	<ItemDefinition name="Rageblade" type="Weapon" iconTexture="Data\Textures\Items\Guinsoo's_Rageblade_item.png" cost="100" bonusRangeBoost="1.20"/>
 	<ItemDefinition name="Mercenary Armor" type="Relic"  iconTexture="Data\Textures\Items\Warmog's_Armor_item.png" cost="20" bonusMagicResistance="2" bonusArmor="2"/>
+	<ItemDefinition name="Pistol" type="Weapon" iconTexture="Data/Textures/Weapons/Pistol.png" cost="20" />
+	<ItemDefinition name="AutoRifle" type="Weapon" iconTexture="Data/Textures/Weapons/AutoRifle.png" cost="20" />
+	<ItemDefinition name="Shotgun" type="Weapon" iconTexture="Data/Textures/Weapons/Shotgun.png" cost="20" />
+	<ItemDefinition name="RPG" type="Weapon" iconTexture="Data/Textures/Weapons/RPG.png" cost="20" />
 </ItemDefs>
