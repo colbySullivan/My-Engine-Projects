@@ -223,6 +223,9 @@
     <ClCompile Include="Renderer\Model.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer\OBJLoader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Rgba8.hpp">
@@ -430,6 +433,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Renderer\Model.hpp">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\OBJLoader.hpp">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>

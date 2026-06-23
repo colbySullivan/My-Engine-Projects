@@ -94,6 +94,8 @@ public:
 	std::string m_modeName = "Mode 0: Normal rendering";
 	bool        m_showImGui = false;
 
+	Model* m_testModel = nullptr;
+
 private:
 	void UpdateImGui();
 	void UpdateKeyboardInput( XboxController const& controller );

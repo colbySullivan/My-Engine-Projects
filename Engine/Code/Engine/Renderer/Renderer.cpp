@@ -18,6 +18,7 @@
 #include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Input/InputSystem.hpp"
 #include "Engine/Audio/AudioSystem.hpp"
+#include "Engine/Renderer/OBJLoader.hpp"
 
 #if defined(_DEBUG)
 #define ENGINE_DEBUG_RENDER
@@ -838,8 +839,12 @@ Model* Renderer::GetModelForFileName( char const* modelFilePath )
 //------------------------------------------------------------------------------
 Model* Renderer::CreateModelFromFile( char const* modelFilePath )
 {
-	// #todo need to implement parser and return model
-	return nullptr;
+	Model* newModel = new Model();
+	newModel->m_filepath = modelFilePath;
+	OBJLoader::Load( modelFilePath, *newModel );
+	newModel->CreateBuffersAndCopy();
+	m_loadedModels.push_back( newModel );
+	return newModel;
 }
 
 //------------------------------------------------------------------------------
@@ -869,6 +874,13 @@ void Renderer::DeleteReleaseAll()
 		m_loadedFonts[i] = nullptr;
 	}
 	m_loadedFonts.clear();
+
+	for ( Model* model : m_loadedModels )
+	{
+		delete model;
+		model = nullptr;
+	}
+	m_loadedModels.clear();
 
 	delete m_immediateVBO;
 	m_immediateVBO = nullptr;

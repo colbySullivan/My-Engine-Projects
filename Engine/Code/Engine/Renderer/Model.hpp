@@ -12,6 +12,7 @@ public:
 	~Model();
 	void Render() const;
 
+	Vec3 m_position = Vec3( 0.f, 0.f, 0.f );
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int>  m_indexes;
 

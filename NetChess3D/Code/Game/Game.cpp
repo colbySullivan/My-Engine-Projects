@@ -41,6 +41,8 @@ Game::Game()
 	CreateCameraModes();
 	SubscribeEventCallbackFunction( "ChessBegin", Command_BeginGame );
 	ChessPieceDefinition::InitializeChessPieceDefs();
+
+	m_testModel = g_engine->m_render->CreateOrGetModelFromFile("Data/Models/cube.obj");
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -136,7 +138,6 @@ void Game::Render() const
 	//g_engine->m_render->BindTexture( nullptr );
 	g_engine->m_render->BeginCamera( *m_player->m_worldCamera );
 	g_engine->m_render->m_desiredRasterizerMode = RasterizerMode::SOLID_CULL_BACK;
-
 	if ( m_currentGameState == GAMESTATE_ATTRACT )
 	{
 		Rgba8 backgroundColor = Rgba8( static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ), static_cast< unsigned char >( 0.f ), static_cast< unsigned char >( 255.f ) ); // Suppresses error with conversion
@@ -168,13 +169,13 @@ void Game::Render() const
 			}
 		}
 		m_chessBoard->Render();
-		m_player->Render();
-		g_engine->m_render->EndCamera( *m_player->m_worldCamera );
+		m_testModel->Render();
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
 		
 	}
 
+	g_engine->m_render->EndCamera( *m_player->m_worldCamera );
 	g_engine->m_render->SetBlendMode( BlendMode::OPAQUE );
 	g_engine->m_render->SetDepthMode( DepthMode::READ_WRITE_LESS_EQUAL );
 	g_engine->m_render->SetRasterizerMode( RasterizerMode::SOLID_CULL_BACK );

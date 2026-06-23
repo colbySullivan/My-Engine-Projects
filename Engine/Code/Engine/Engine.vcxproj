@@ -376,6 +376,7 @@
     <ClCompile Include="Renderer\DebugRender.cpp" />
     <ClCompile Include="Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
+    <ClCompile Include="Renderer\OBJLoader.cpp" />
     <ClCompile Include="Renderer\Renderer.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />
     <ClCompile Include="Renderer\SimpleTriangleFont.cpp" />
@@ -446,6 +447,7 @@
     <ClInclude Include="Renderer\DiffuseShader.hpp" />
     <ClInclude Include="Renderer\IndexBuffer.hpp" />
     <ClInclude Include="Renderer\Model.hpp" />
+    <ClInclude Include="Renderer\OBJLoader.hpp" />
     <ClInclude Include="Renderer\Renderer.hpp" />
     <ClInclude Include="Renderer\Shader.hpp" />
     <ClInclude Include="Renderer\SimpleTriangleFont.hpp" />

@@ -116,7 +116,6 @@ public:
 	Model* GetModelForFileName( char const* modelFilePath );
 	Model* CreateModelFromFile( char const* modelFilePath );
 
-
 	void CreateDepthStencilTexture();
 	void CreateDepthStencilStates();
 	void CreateDepthStencilState( DepthMode mode, D3D11_DEPTH_WRITE_MASK writeMask = D3D11_DEPTH_WRITE_MASK_ZERO, D3D11_COMPARISON_FUNC func = D3D11_COMPARISON_ALWAYS );
