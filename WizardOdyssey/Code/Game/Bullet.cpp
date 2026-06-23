@@ -7,7 +7,7 @@
 #include "Game/Map.hpp"
 
 //-----------------------------------------------------------------------------------------------
-Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type )
+Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName )
 	: Entity( owner, startPos, orientationDegrees, faction, map, type )
 {
 	m_physicsRadius = g_gameConfig->GetValue("bulletPhysicsRadius", 0.1f);
@@ -16,6 +16,12 @@ Bullet::Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, Ent
 	m_isPushedByEntities = false;
 	m_doesPushEntities = false;
 	m_isHitByBullets = false;
+	m_entityType = type;
+	m_defName = defName;
+	InitializeDefitionStats();
+	InitializeSpriteSheet();
+	m_bulletTimer = new Timer( 1.4f );
+	m_bulletTimer->Start();
 	if ( faction == FACTION_EVIL )
 	{
 		m_gunTexture = m_game->m_badBulletTexture;
@@ -37,7 +43,8 @@ Bullet::~Bullet()
 //-----------------------------------------------------------------------------------------------
 void Bullet::Update( float deltaSeconds )
 {
-	if ( m_isDead )
+	
+	if ( m_isDead || m_bulletTimer->DecrementPeriodIfElapsed() )
 	{
 		m_isDead = true;
 		Die();
@@ -55,13 +62,15 @@ void Bullet::Render() const
 	if ( m_isDead )
 		return;
 
-	std::vector<Vertex> bodyVerts;
+	/*std::vector<Vertex> bodyVerts;
 	AddVertsForMe( bodyVerts );
 	TransformVertexArrayXY3D( ( int )bodyVerts.size(), bodyVerts.data(), .1f, m_orientationDegrees, m_position );
 	g_engine->m_render->BindTexture( m_gunTexture );
 	g_engine->m_render->DrawVertexArray( ( int )bodyVerts.size(), bodyVerts.data() );
 
-	g_engine->m_render->BindTexture( nullptr );
+	g_engine->m_render->BindTexture( nullptr );*/
+
+	Entity::Render();
 
 	if ( m_game->g_drawDebug )
 	{

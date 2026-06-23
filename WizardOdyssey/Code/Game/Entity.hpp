@@ -81,6 +81,7 @@ public:
 	void InitializeSpriteSheet();
 	void InitializeDefitionStats();
 	void AddVertsForMe( std::vector<Vertex>& verts ) const;
+	void SetCurrentAnimGroup( const std::string& groupName );
 	void PlayDeathExplosion() const;
 	ActorDefinitions* m_actorDef = nullptr;
 

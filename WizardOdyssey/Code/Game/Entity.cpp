@@ -355,3 +355,41 @@ bool Entity::TakeDamage( int incomingDamage /*= 1*/, bool isMagic /*= false*/ )
 	return true;
 }
 
+//-----------------------------------------------------------------------------------------------
+void Entity::SetCurrentAnimGroup( const std::string& groupName )
+{
+	if ( !m_spriteAnimationDef )
+	{
+		return;
+	}
+
+	for ( int i = 0; i < m_spriteAnimationDef->m_animationGroups.size(); ++i )
+	{
+		if ( m_spriteAnimationDef->m_animationGroups[i].m_name == groupName )
+		{
+			m_currentAnimGroup = &m_spriteAnimationDef->m_animationGroups[i];
+			m_currentAnimStartTime = g_engine->m_systemClock->GetTotalSeconds();
+
+			if ( !m_currentAnimGroup->m_directionalAnims.empty() )
+			{
+				const DirectionalAnimInfo& dirAnim = m_currentAnimGroup->m_directionalAnims[0];
+				int startFrame = dirAnim.startFrame;
+				int endFrame = dirAnim.endFrame;
+				float animDuration = ( endFrame - startFrame + 1 ) * m_currentAnimGroup->m_secondsPerFrame;
+
+				if ( !m_animTimer )
+				{
+					m_animTimer = new Timer( animDuration );
+				}
+				else
+				{
+					delete m_animTimer;
+					m_animTimer = new Timer( animDuration );
+				}
+				m_animTimer->Start();
+			}
+
+			return;
+		}
+	}
+}

@@ -34,7 +34,6 @@ private:
 	void InitializePlayerVerts();
 	void UpdateFromKeyboard( float deltaSeconds );
 	void UpdateFromController( float deltaSeconds );
-	void SetCurrentAnimGroup( const std::string& groupName );
 	void InitializeTurretVerts();
 	//void RenderPlayer() const;
 	void RenderGun() const;

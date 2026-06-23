@@ -1,6 +1,39 @@
 <Definitions>
 	<!-- SpawnPoint -->
 	<ActorDefinition name="SpawnPoint" />
+
+	<!-- WizardFireBall -->
+	<ActorDefinition name="WizardFireBall" health="5" visible="true">
+		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
+		<Visuals size="1.0,1.0" pivot="0.0,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data\Textures\BulletAnims\Wizard\Part 1\03.png" cellCount="13,9">
+			<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.1" playbackMode="Loop">
+				<Direction vector="1,0">
+					<Animation startFrame="0" endFrame="12"/>
+				</Direction>
+			</AnimationGroup>
+		</Visuals>
+		<Sounds>
+			<Sound sound="Hurt" name="Data/Audio/PlayerHurt.wav"/>
+			<Sound sound="Death" name="Data/Audio/PlayerDeath1.wav"/>
+		</Sounds>
+	</ActorDefinition>
+	
+	<!-- WizardBullet -->
+	<ActorDefinition name="WizardBullet" health="5" visible="true">
+		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>
+		<Visuals size="1.0,1.0" pivot="0.0,0.0" billboardType="WorldUpFacing" renderLit="true" renderRounded="true" shader="Data/Shaders/Diffuse" spriteSheet="Data\Textures\BulletAnims\Wizard\Part 1\06.png" cellCount="15,9">
+			<AnimationGroup name="Walk" scaleBySpeed="true" secondsPerFrame="0.1" playbackMode="Loop">
+				<Direction vector="1,0">
+					<Animation startFrame="0" endFrame="13"/>
+				</Direction>
+			</AnimationGroup>
+		</Visuals>
+		<Sounds>
+			<Sound sound="Hurt" name="Data/Audio/PlayerHurt.wav"/>
+			<Sound sound="Death" name="Data/Audio/PlayerDeath1.wav"/>
+		</Sounds>
+	</ActorDefinition>
+
 	<!-- WizardBase -->
 	<ActorDefinition name="WizardBase" health="5" visible="true">
 		<Collision physicRadius="0.25" cosmeticRadius="0.6" collidesWithWorld="true" collidesWithActors="true"/>

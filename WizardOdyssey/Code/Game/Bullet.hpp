@@ -4,7 +4,7 @@
 class Bullet : public Entity
 {
 public:
-	Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type );
+	Bullet( Game* owner, Vec2 const& startPos, float orientationDegrees, EntityFaction faction, Map* map, EntityType type, std::string defName );
 	~Bullet();
 
 public:
@@ -17,6 +17,7 @@ public:
 	void Wander( float deltaSeconds );
 
 private:
+	Timer*			m_bulletTimer = nullptr;
 	float			m_bulletLifeTime;
 	int				m_bouncesRemaining = 0;
 	void CheckEntityCollisions();
