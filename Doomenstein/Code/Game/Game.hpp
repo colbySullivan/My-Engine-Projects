@@ -6,7 +6,6 @@
 #include "Engine/Core/Vertex.hpp"
 #include "Engine/Renderer/BitmapFont.hpp"
 #include "Engine/Core/Clock.hpp"
-#include "Engine/Renderer/OBJLoader.hpp"
 #include "Game/Map.hpp"
 #include "PlayerController.hpp"
 
@@ -90,7 +89,6 @@ public:
 	Map* m_nextMap = nullptr;
 	int m_currentMapNumber = 0;
 	Texture* m_teemoTexture = nullptr;
-	OBJModel* m_teemoModel = nullptr;
 	//PlayerController* m_playerController = nullptr;
 	//Camera* m_worldCamera = nullptr;
 	Camera* m_screenCamera = nullptr;
@@ -129,7 +127,6 @@ private:
 
 	App* m_app = nullptr;
 	Texture*		m_testTexture = nullptr;
-	Shader*			m_riftShader = nullptr;
 
 
 	// Black hole

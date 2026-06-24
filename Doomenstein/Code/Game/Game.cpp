@@ -56,9 +56,6 @@ Game::Game()
 //-----------------------------------------------------------------------------------------------
 Game::~Game()
 {
-	delete m_teemoModel;
-	m_teemoModel = nullptr;
-
 	for ( int i = 0; i < m_maps.size(); ++i )
 	{
 		delete m_maps[i];
