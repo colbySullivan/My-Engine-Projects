@@ -43,6 +43,7 @@ public:
 	Vec3 m_moveEnd = Vec3::ZERO;
 	Timer* m_moveTimer = nullptr;
 	MoveStyle m_moveStyle = MoveStyle::Instant;
+	Model* m_model;
 
 	// Effects
 	EffectConstants	m_effectConstantValues = { };

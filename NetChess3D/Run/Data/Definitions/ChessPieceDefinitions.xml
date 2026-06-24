@@ -4,7 +4,7 @@
 	<ChessPieceDefinition name="Rook" symbol="R" shader="Data/Shaders/SunlightShader"/>
 	<ChessPieceDefinition name="Knight" symbol="N" shader="Data/Shaders/SunlightShader"/>
 	<ChessPieceDefinition name="Bishop" symbol="B" shader="Data/Shaders/SunlightShader"/>
-	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader"/>
+	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader" modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/Teemo.obj" textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Textures/teemo_texture.png" modelScale="0.01" modelRotationX="90"/>
 
 	<Textures texturePlayerOne="Data/Textures/Cobblestone_Diffuse.png" normal_texture_PlayerOne="Data/Textures/Cobblestone_Normal.png"  sga_PlayerOne="Data/Textures/Cobblestone_SpecGlossEmit_Test.png" 
 			  texturePlayerTwo="Data/Textures/Bricks_d.png" normal_texture_PlayerTwo="Data/Textures/Bricks_n.png"  sga_PlayerTwo="Data/Textures/Bricks_sge.png" />

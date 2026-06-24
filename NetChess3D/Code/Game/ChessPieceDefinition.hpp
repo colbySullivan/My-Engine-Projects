@@ -58,6 +58,12 @@ public:
 	Texture* m_normalTexturePlayerTwo = nullptr;
 	Texture* m_sgaTexturePlayerOne = nullptr;
 	Texture* m_sgaTexturePlayerTwo = nullptr;
+	Model* m_playerOneModel = nullptr;
+	Model* m_playerTwoModel = nullptr;
+	unsigned int m_indexCountPlayerOne = 0;
+	unsigned int m_indexCountPlayerTwo = 0;
+	float m_modelScale = 1.f;
+	float m_modelRotationX = 0.f;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;

@@ -9,15 +9,23 @@ std::map<std::string, ChessPieceDefinition> ChessPieceDefinition::s_definitions;
 //-----------------------------------------------------------------------------------------------
 ChessPieceDefinition::~ChessPieceDefinition()
 {
-	delete m_vboPlayerOne;
-	m_vboPlayerOne = nullptr;
-	delete m_iboPlayerOne;
-	m_iboPlayerOne = nullptr;
+	//if ( m_vboPlayerOne )
+	//{
+	//	delete m_vboPlayerOne;
+	//	m_vboPlayerOne = nullptr;
+	//}
 
-	delete m_vboPlayerTwo;
-	m_vboPlayerTwo = nullptr;
-	delete m_iboPlayerTwo;
-	m_iboPlayerTwo = nullptr;
+	//if ( m_vboPlayerTwo )
+	//{
+	//	delete m_vboPlayerTwo;
+	//	m_vboPlayerTwo = nullptr;
+	//}
+
+	//delete m_iboPlayerOne;
+	//m_iboPlayerOne = nullptr;
+
+	//delete m_iboPlayerTwo;
+	//m_iboPlayerTwo = nullptr; // #TODO i belive this is handled by model now
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -43,6 +51,27 @@ void ChessPieceDefinition::LoadPiecesDefsFromFile( char const* filePath )
 		def.m_symbol = xml.ParseXmlAttribute( *tileElem, "symbol", ' ' );
 		def.m_type = def.GetTypeFromString( name );
 		def.m_shaderPath = xml.ParseXmlAttribute( *tileElem, "shader", "default");
+
+		std::string modelOnePath = xml.ParseXmlAttribute( *tileElem, "modelOne", "" );
+		std::string modelTwoPath = xml.ParseXmlAttribute( *tileElem, "modelTwo", "" );
+		def.m_modelScale = xml.ParseXmlAttribute( *tileElem, "modelScale", 1.f );
+		def.m_modelRotationX = xml.ParseXmlAttribute( *tileElem, "modelRotationX", 0.f );
+
+		if ( !modelOnePath.empty() )
+		{
+			def.m_playerOneModel = g_engine->m_render->CreateOrGetModelFromFile( modelOnePath.c_str() );
+			def.m_playerOneModel->CreateBuffersAndCopy();
+		}
+		if ( !modelTwoPath.empty() )
+		{
+			def.m_playerTwoModel = g_engine->m_render->CreateOrGetModelFromFile( modelTwoPath.c_str() );
+			def.m_playerTwoModel->CreateBuffersAndCopy();
+		}
+
+		std::string textureOnePath = xml.ParseXmlAttribute( *tileElem, "textureOne", "" );
+		std::string textureTwoPath = xml.ParseXmlAttribute( *tileElem, "textureTwo", "" );
+		if ( !textureOnePath.empty() ) def.m_texturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( textureOnePath.c_str() );
+		if ( !textureTwoPath.empty() ) def.m_texturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( textureTwoPath.c_str() );
 
 		switch ( def.m_type )
 		{
@@ -134,26 +163,49 @@ ChessPieceType ChessPieceDefinition::GetTypeFromString( const std::string& typeN
 void ChessPieceDefinition::CreateBuffersAndCopy()
 {
 	if ( m_shaderPath != "default" )
-	{
 		m_shader = g_engine->m_render->CreateOrGetShader( m_shaderPath.c_str(), VertexType::VERTEX_PCUTBN );
-	}
 
-	unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-	unsigned int vertexStride = ( unsigned int )sizeof( Vertex_PCUTBN );
-	m_vboPlayerOne = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
-	m_vboPlayerTwo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, vertexStride );
-
-	unsigned int indexBufferSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
-	if ( indexBufferSize > 0 )
+	// Player One 
+	if ( m_playerOneModel )
 	{
-		m_iboPlayerOne = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
-		m_iboPlayerTwo = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
-		g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_iboPlayerOne );
-		g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_iboPlayerTwo );
+		m_vboPlayerOne = m_playerOneModel->m_vertexBuffer;
+		m_iboPlayerOne = m_playerOneModel->m_indexBuffer;
+		m_indexCountPlayerOne = ( unsigned int )m_playerOneModel->m_indexes.size();
+	}
+	else
+	{
+		unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
+		unsigned int indexBufferSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
+		m_vboPlayerOne = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, ( unsigned int )sizeof( Vertex_PCUTBN ) );
+		g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vboPlayerOne );
+		if ( indexBufferSize > 0 )
+		{
+			m_iboPlayerOne = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
+			g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_iboPlayerOne );
+			m_indexCountPlayerOne = ( unsigned int )m_indexes.size();
+		}
 	}
 
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vboPlayerOne );
-	g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vboPlayerTwo );
+	// Player Two 
+	if ( m_playerTwoModel )
+	{
+		m_vboPlayerTwo = m_playerTwoModel->m_vertexBuffer;
+		m_iboPlayerTwo = m_playerTwoModel->m_indexBuffer;
+		m_indexCountPlayerTwo = ( unsigned int )m_playerTwoModel->m_indexes.size();
+	}
+	else
+	{
+		unsigned int vbSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
+		unsigned int ibSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
+		m_vboPlayerTwo = g_engine->m_render->CreateVertexBuffer( vbSize, ( unsigned int )sizeof( Vertex_PCUTBN ) );
+		g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vbSize, m_vboPlayerTwo );
+		if ( ibSize > 0 )
+		{
+			m_iboPlayerTwo = g_engine->m_render->CreateIndexBuffer( ibSize );
+			g_engine->m_render->CopyCPUToGPU( m_indexes.data(), ibSize, m_iboPlayerTwo );
+			m_indexCountPlayerTwo = ( unsigned int )m_indexes.size();
+		}
+	}
 }
 
 void ChessPieceDefinition::CreateGeometryForRook()
@@ -197,9 +249,9 @@ void ChessPieceDefinition::CreateGeometryForBishop()
 
 void ChessPieceDefinition::CreateGeometryForPawn()
 {
-	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.1f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.1f ), Vec3( 0.f, 0.f, 0.6f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
-	AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.75f ), 0.15f, 32, 32, Rgba8::WHITE );
+	//AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3::ZERO, Vec3( 0.f, 0.f, 0.1f ), 0.25f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	//AddVertsForCylinder3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.1f ), Vec3( 0.f, 0.f, 0.6f ), 0.15f, Rgba8::WHITE, AABB2::ZERO_TO_ONE, 32 );
+	//AddVertsForSphere3D( m_vertexes, m_indexes, Vec3( 0.f, 0.f, 0.75f ), 0.15f, 32, 32, Rgba8::WHITE );
 	CreateBuffersAndCopy();
 }
 

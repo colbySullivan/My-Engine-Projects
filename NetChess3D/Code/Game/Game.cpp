@@ -20,7 +20,7 @@
 #include "Game/ChessPieceDefinition.hpp"
 #include <ThirdParty/stb/stb_image.h>
 
-//RandomNumberGenerator g_rng;
+RandomNumberGenerator g_rng;
 
 //-----------------------------------------------------------------------------------------------
 Game::Game()
@@ -174,7 +174,7 @@ void Game::Render() const
 		m_chessBoard->Render();
 		RenderUI();
 		DebugRenderWorld( *m_player->m_worldCamera );
-		//m_testModel->Render();
+		m_player->Render();
 		
 	}
 

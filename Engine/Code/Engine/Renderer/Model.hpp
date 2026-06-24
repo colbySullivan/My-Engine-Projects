@@ -6,7 +6,8 @@
 class VertexBuffer;
 class IndexBuffer;
 
-class Model {
+class Model 
+{
 	friend class Renderer;
 public:
 	~Model();
@@ -17,12 +18,12 @@ public:
 	Texture* m_texture = nullptr;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int>  m_indexes;
-
-private:
-	Model() = default;
-	void CreateBuffersAndCopy();
-
 	VertexBuffer* m_vertexBuffer = nullptr;
 	IndexBuffer* m_indexBuffer = nullptr;
+	void CreateBuffersAndCopy();
+private:
+	Model() = default;
+
+
 	std::string   m_filepath;
 };

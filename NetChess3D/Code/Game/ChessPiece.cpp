@@ -83,7 +83,16 @@ void ChessPiece::Render() const
 			playerIbo = m_definition->m_iboPlayerTwo;
 		}
 
-		g_engine->m_render->DrawIndexBuffer( playerVbo, playerIbo, ( unsigned int )m_definition->m_indexes.size() );
+		if ( m_definition->m_playerOneModel || m_definition->m_playerTwoModel )
+		{
+			Mat44 correction = Mat44::MakeTranslation3D( m_position );
+			correction.AppendXRotation( m_definition->m_modelRotationX );
+			correction.AppendScaleUniform3D( m_definition->m_modelScale );
+			g_engine->m_render->SetModelConstants( correction, m_color );
+		}
+
+		unsigned int indexCount = ( m_playernum == 1 ) ? m_definition->m_indexCountPlayerOne : m_definition->m_indexCountPlayerTwo;
+		g_engine->m_render->DrawIndexBuffer( playerVbo, playerIbo, indexCount );
 	}
 	else
 	{
