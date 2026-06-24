@@ -622,6 +622,15 @@ void Map::UpdateSpawners()
 }
 
 //-----------------------------------------------------------------------------------------------
+void Map::ResetSpawners()
+{
+	delete m_hordeTimer;
+	m_hordeTimer = nullptr;
+	delete m_bigBoyTimer;
+	m_bigBoyTimer = nullptr;
+}
+
+//-----------------------------------------------------------------------------------------------
 void Map::SpawnSmallHorde()
 {
 	if ( m_hordeTimer->DecrementPeriodIfElapsed() )

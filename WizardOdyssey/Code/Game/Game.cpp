@@ -115,6 +115,8 @@ void Game::Update(float deltaSeconds)
 		if ( m_nextGameState == PURGATORY )
 		{
 			m_currentGameState = GAMESTATE_PLAY;
+			m_nextGameState = m_currentGameState;
+			m_currentMap->ResetSpawners();
 		}
 		else
 		{
@@ -722,12 +724,13 @@ void Game::InitializeShopCards()
 //-----------------------------------------------------------------------------------------------
 void Game::ClearAndCountEnemies()
 {
-	for ( int i = 0; i < static_cast< int >( m_currentMap->m_allEntities.size() ); i++ )
+	for ( int i = static_cast<int>( m_currentMap->m_allEntities.size() ) - 1; i >= 0; i-- )
 	{
 		Entity* entity = m_currentMap->m_allEntities[i];
 		if ( entity && entity->GetEntityType() != ENTITY_TYPE_GOOD_PLAYER )
 		{
-			m_currentMap->RemoveEntityFromMap(*entity);
+			m_currentMap->RemoveEntityFromMap( *entity );
+			delete entity;
 		}
 	}
 }

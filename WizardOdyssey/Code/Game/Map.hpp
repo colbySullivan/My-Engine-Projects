@@ -77,6 +77,7 @@ public:
 	EntityList m_entityListsByType[NUM_ENTITY_TYPES];
 	EntityList m_allEntities;
 	MapDef m_mapDef;
+	void ResetSpawners();
 
 private:
 	Game* m_game = nullptr;
