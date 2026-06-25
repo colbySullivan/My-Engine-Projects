@@ -54,24 +54,30 @@ void ChessPieceDefinition::LoadPiecesDefsFromFile( char const* filePath )
 
 		std::string modelOnePath = xml.ParseXmlAttribute( *tileElem, "modelOne", "" );
 		std::string modelTwoPath = xml.ParseXmlAttribute( *tileElem, "modelTwo", "" );
-		def.m_modelScale = xml.ParseXmlAttribute( *tileElem, "modelScale", 1.f );
-		def.m_modelRotationX = xml.ParseXmlAttribute( *tileElem, "modelRotationX", 0.f );
+		def.m_playerOneDef.m_modelScale = xml.ParseXmlAttribute( *tileElem, "modelOneScale", 1.f );
+		def.m_playerTwoDef.m_modelScale = xml.ParseXmlAttribute( *tileElem, "modelTwoScale", 1.f );
+		def.m_playerOneDef.m_modelRotationX = xml.ParseXmlAttribute( *tileElem, "modelOneRotationX", 0.f );
+		def.m_playerOneDef.m_modelRotationY = xml.ParseXmlAttribute( *tileElem, "modelOneRotationY", 0.f );
+		def.m_playerTwoDef.m_modelRotationX = xml.ParseXmlAttribute( *tileElem, "modelTwoRotationX", 0.f );
+		def.m_playerTwoDef.m_modelRotationY = xml.ParseXmlAttribute( *tileElem, "modelTwoRotationY", 0.f );
+		def.m_playerOneDef.m_modeOffset = xml.ParseXmlAttribute( *tileElem, "modelOneOffset", Vec3::ZERO );
+		def.m_playerTwoDef.m_modeOffset = xml.ParseXmlAttribute( *tileElem, "modelTwoOffset", Vec3::ZERO );
 
 		if ( !modelOnePath.empty() )
 		{
-			def.m_playerOneModel = g_engine->m_render->CreateOrGetModelFromFile( modelOnePath.c_str() );
-			def.m_playerOneModel->CreateBuffersAndCopy();
+			def.m_playerOneDef.m_model = g_engine->m_render->CreateOrGetModelFromFile( modelOnePath.c_str() );
+			def.m_playerOneDef.m_model->CreateBuffersAndCopy();
 		}
 		if ( !modelTwoPath.empty() )
 		{
-			def.m_playerTwoModel = g_engine->m_render->CreateOrGetModelFromFile( modelTwoPath.c_str() );
-			def.m_playerTwoModel->CreateBuffersAndCopy();
+			def.m_playerTwoDef.m_model = g_engine->m_render->CreateOrGetModelFromFile( modelTwoPath.c_str() );
+			def.m_playerTwoDef.m_model->CreateBuffersAndCopy();
 		}
 
 		std::string textureOnePath = xml.ParseXmlAttribute( *tileElem, "textureOne", "" );
 		std::string textureTwoPath = xml.ParseXmlAttribute( *tileElem, "textureTwo", "" );
-		if ( !textureOnePath.empty() ) def.m_texturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( textureOnePath.c_str() );
-		if ( !textureTwoPath.empty() ) def.m_texturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( textureTwoPath.c_str() );
+		if ( !textureOnePath.empty() ) def.m_playerOneDef.m_texture = g_engine->m_render->CreateOrGetTextureFromFile( textureOnePath.c_str() );
+		if ( !textureTwoPath.empty() ) def.m_playerTwoDef.m_texture = g_engine->m_render->CreateOrGetTextureFromFile( textureTwoPath.c_str() );
 
 		switch ( def.m_type )
 		{
@@ -107,22 +113,22 @@ void ChessPieceDefinition::LoadPiecesDefsFromFile( char const* filePath )
 		ChessPieceDefinition& def = ChessPieceDefinition::s_definitions[name.first];
 
 		std::string texturePath = xml.ParseXmlAttribute( *tileElemTextures, "texturePlayerOne", "Data/Textures/TestUV.png" );
-		def.m_texturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
+		if ( !def.m_playerOneDef.m_texture ) def.m_playerOneDef.m_texture = g_engine->m_render->CreateOrGetTextureFromFile(texturePath.c_str());
 
 		std::string normalTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "normal_texture_PlayerOne", "Data/Textures/TestUV.png" );
-		def.m_normalTexturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
+		def.m_playerTwoDef.m_normalTexture = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
 
 		std::string sgaTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "sga_PlayerOne", "Data/Textures/TestUV.png" );
-		def.m_sgaTexturePlayerOne = g_engine->m_render->CreateOrGetTextureFromFile( sgaTexturePath.c_str() );
+		def.m_playerTwoDef.m_sgaTexture = g_engine->m_render->CreateOrGetTextureFromFile( sgaTexturePath.c_str() );
 
 		texturePath = xml.ParseXmlAttribute( *tileElemTextures, "texturePlayerTwo", "Data/Textures/TestUV.png" );
-		def.m_texturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
+		if ( !def.m_playerTwoDef.m_texture ) def.m_playerTwoDef.m_texture= g_engine->m_render->CreateOrGetTextureFromFile( texturePath.c_str() );
 
 		normalTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "normal_texture_PlayerTwo", "Data/Textures/TestUV.png" );
-		def.m_normalTexturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
+		def.m_playerTwoDef.m_normalTexture = g_engine->m_render->CreateOrGetTextureFromFile( normalTexturePath.c_str() );
 
 		sgaTexturePath = xml.ParseXmlAttribute( *tileElemTextures, "sga_PlayerTwo", "Data/Textures/TestUV.png" );
-		def.m_sgaTexturePlayerTwo = g_engine->m_render->CreateOrGetTextureFromFile( sgaTexturePath.c_str() );
+		def.m_playerTwoDef.m_sgaTexture = g_engine->m_render->CreateOrGetTextureFromFile( sgaTexturePath.c_str() );
 	}
 }
 
@@ -166,44 +172,44 @@ void ChessPieceDefinition::CreateBuffersAndCopy()
 		m_shader = g_engine->m_render->CreateOrGetShader( m_shaderPath.c_str(), VertexType::VERTEX_PCUTBN );
 
 	// Player One 
-	if ( m_playerOneModel )
+	if ( m_playerOneDef.m_model )
 	{
-		m_vboPlayerOne = m_playerOneModel->m_vertexBuffer;
-		m_iboPlayerOne = m_playerOneModel->m_indexBuffer;
-		m_indexCountPlayerOne = ( unsigned int )m_playerOneModel->m_indexes.size();
+		m_playerOneDef.m_vbo = m_playerOneDef.m_model->m_vertexBuffer;
+		m_playerOneDef.m_ibo = m_playerOneDef.m_model->m_indexBuffer;
+		m_playerOneDef.m_indexCount = ( unsigned int )m_playerOneDef.m_model->m_indexes.size();
 	}
 	else
 	{
 		unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
 		unsigned int indexBufferSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
-		m_vboPlayerOne = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, ( unsigned int )sizeof( Vertex_PCUTBN ) );
-		g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_vboPlayerOne );
+		m_playerOneDef.m_vbo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, ( unsigned int )sizeof( Vertex_PCUTBN ) );
+		g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_playerOneDef.m_vbo );
 		if ( indexBufferSize > 0 )
 		{
-			m_iboPlayerOne = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
-			g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_iboPlayerOne );
-			m_indexCountPlayerOne = ( unsigned int )m_indexes.size();
+			m_playerOneDef.m_ibo = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
+			g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_playerOneDef.m_ibo );
+			m_playerOneDef.m_indexCount = ( unsigned int )m_indexes.size();
 		}
 	}
 
 	// Player Two 
-	if ( m_playerTwoModel )
+	if ( m_playerTwoDef.m_model )
 	{
-		m_vboPlayerTwo = m_playerTwoModel->m_vertexBuffer;
-		m_iboPlayerTwo = m_playerTwoModel->m_indexBuffer;
-		m_indexCountPlayerTwo = ( unsigned int )m_playerTwoModel->m_indexes.size();
+		m_playerTwoDef.m_vbo = m_playerTwoDef.m_model->m_vertexBuffer;
+		m_playerTwoDef.m_ibo = m_playerTwoDef.m_model->m_indexBuffer;
+		m_playerTwoDef.m_indexCount = ( unsigned int )m_playerTwoDef.m_model->m_indexes.size();
 	}
 	else
 	{
-		unsigned int vbSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
-		unsigned int ibSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
-		m_vboPlayerTwo = g_engine->m_render->CreateVertexBuffer( vbSize, ( unsigned int )sizeof( Vertex_PCUTBN ) );
-		g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vbSize, m_vboPlayerTwo );
-		if ( ibSize > 0 )
+		unsigned int vertexBufferSize = ( unsigned int )( m_vertexes.size() * sizeof( Vertex_PCUTBN ) );
+		unsigned int indexBufferSize = ( unsigned int )( m_indexes.size() * sizeof( unsigned int ) );
+		m_playerTwoDef.m_vbo = g_engine->m_render->CreateVertexBuffer( vertexBufferSize, ( unsigned int )sizeof( Vertex_PCUTBN ) );
+		g_engine->m_render->CopyCPUToGPU( m_vertexes.data(), vertexBufferSize, m_playerTwoDef.m_vbo );
+		if ( indexBufferSize > 0 )
 		{
-			m_iboPlayerTwo = g_engine->m_render->CreateIndexBuffer( ibSize );
-			g_engine->m_render->CopyCPUToGPU( m_indexes.data(), ibSize, m_iboPlayerTwo );
-			m_indexCountPlayerTwo = ( unsigned int )m_indexes.size();
+			m_playerTwoDef.m_ibo = g_engine->m_render->CreateIndexBuffer( indexBufferSize );
+			g_engine->m_render->CopyCPUToGPU( m_indexes.data(), indexBufferSize, m_playerTwoDef.m_ibo );
+			m_playerTwoDef.m_indexCount = ( unsigned int )m_indexes.size();
 		}
 	}
 }

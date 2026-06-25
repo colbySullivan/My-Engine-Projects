@@ -9,10 +9,10 @@ ChessPiece::ChessPiece( Game* owner, ChessPieceDefinition const* definition, Vec
 	, m_playernum( playernum )
 	, m_registeredOnBoard( registerOnBoard )
 {
-	if ( playernum == 2 ) // #todo this needs to be handled easier
-	{
-		m_color = Rgba8( 120, 120, 120 );
-	}
+	//if ( playernum == 2 ) // #todo this needs to be handled easier
+	//{
+	//	m_color = Rgba8( 120, 120, 120 );
+	//}
 	m_effectConstant = g_engine->m_render->CreateConstantBuffer( sizeof( EffectConstants ) );
 	if ( m_registeredOnBoard )
 	{
@@ -46,7 +46,7 @@ void ChessPiece::Update()
 //-----------------------------------------------------------------------------------------------
 void ChessPiece::Render() const
 {
-	if ( !m_definition || !m_definition->m_vboPlayerOne || !m_definition->m_vboPlayerTwo )
+	if ( !m_definition || !m_definition->m_playerOneDef.m_vbo|| !m_definition->m_playerTwoDef.m_vbo )
 	{
 		return;
 	}
@@ -57,47 +57,54 @@ void ChessPiece::Render() const
 	g_engine->m_render->BindShader( m_definition->m_shader );
 	BindEffectConstant();
 
-	if ( m_definition->m_iboPlayerOne && m_definition->m_iboPlayerTwo )
+
+	if ( m_definition->m_playerOneDef.m_ibo && m_definition->m_playerTwoDef.m_ibo )
 	{
-		VertexBuffer* playerVbo = m_definition->m_vboPlayerOne;
-		IndexBuffer* playerIbo = m_definition->m_iboPlayerOne;
+		VertexBuffer* playerVbo = m_definition->m_playerOneDef.m_vbo;
+		IndexBuffer* playerIbo = m_definition->m_playerOneDef.m_ibo;
 		if ( m_playernum == 1 )
 		{
-			g_engine->m_render->BindTexture( m_definition->m_texturePlayerOne, 0 );
-			g_engine->m_render->BindTexture( m_definition->m_normalTexturePlayerOne, 1 );
-			g_engine->m_render->BindTexture( m_definition->m_sgaTexturePlayerOne, 2 );
+			g_engine->m_render->BindTexture( m_definition->m_playerOneDef.m_texture, 0 );
+			g_engine->m_render->BindTexture( m_definition->m_playerOneDef.m_normalTexture, 1 );
+			g_engine->m_render->BindTexture( m_definition->m_playerOneDef.m_sgaTexture, 2 );
 			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 0 );
 			g_engine->m_render->BindSampler(SamplerMode::BILINEAR_WRAP, 1);
 			g_engine->m_render->BindSampler(SamplerMode::BILINEAR_WRAP, 2);
 		}
 		else if ( m_playernum == 2 )
 		{
-			g_engine->m_render->BindTexture( m_definition->m_texturePlayerTwo, 0 );
-			g_engine->m_render->BindTexture( m_definition->m_normalTexturePlayerTwo, 1 );
-			g_engine->m_render->BindTexture( m_definition->m_sgaTexturePlayerTwo, 2 );
+			g_engine->m_render->BindTexture( m_definition->m_playerTwoDef.m_texture, 0 );
+			g_engine->m_render->BindTexture( m_definition->m_playerTwoDef.m_normalTexture, 1 );
+			g_engine->m_render->BindTexture( m_definition->m_playerTwoDef.m_sgaTexture, 2 );
 			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 0 );
 			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 1 );
 			g_engine->m_render->BindSampler( SamplerMode::BILINEAR_WRAP, 2 );
 
-			playerVbo = m_definition->m_vboPlayerTwo;
-			playerIbo = m_definition->m_iboPlayerTwo;
+			playerVbo = m_definition->m_playerTwoDef.m_vbo;
+			playerIbo = m_definition->m_playerTwoDef.m_ibo;
 		}
 
-		if ( m_definition->m_playerOneModel || m_definition->m_playerTwoModel )
+		if ( m_definition->m_playerOneDef.m_model || m_definition->m_playerTwoDef.m_model )
 		{
-			Mat44 correction = Mat44::MakeTranslation3D( m_position );
-			correction.AppendXRotation( m_definition->m_modelRotationX );
-			correction.AppendScaleUniform3D( m_definition->m_modelScale );
+			float scale = ( m_playernum == 1 ) ? m_definition->m_playerOneDef.m_modelScale : m_definition->m_playerTwoDef.m_modelScale;
+			Vec3 offset = ( m_playernum == 1 ) ? m_definition->m_playerOneDef.m_modeOffset : m_definition->m_playerTwoDef.m_modeOffset;
+			float xRotate = ( m_playernum == 1 ) ? m_definition->m_playerOneDef.m_modelRotationX : m_definition->m_playerTwoDef.m_modelRotationX;
+			float yRotate = ( m_playernum == 1 ) ? m_definition->m_playerOneDef.m_modelRotationY : m_definition->m_playerTwoDef.m_modelRotationY;
+
+			Mat44 correction = Mat44::MakeTranslation3D( m_position + offset );
+			correction.AppendXRotation( xRotate );
+			correction.AppendYRotation( yRotate );
+			correction.AppendScaleUniform3D( scale );
 			g_engine->m_render->SetModelConstants( correction, m_color );
 		}
 
-		unsigned int indexCount = ( m_playernum == 1 ) ? m_definition->m_indexCountPlayerOne : m_definition->m_indexCountPlayerTwo;
+		unsigned int indexCount = ( m_playernum == 1 ) ? m_definition->m_playerOneDef.m_indexCount : m_definition->m_playerTwoDef.m_indexCount;
 		g_engine->m_render->DrawIndexBuffer( playerVbo, playerIbo, indexCount );
 	}
 	else
 	{
-		g_engine->m_render->DrawVertexBuffer( m_definition->m_vboPlayerOne, ( unsigned int )m_definition->m_vertexes.size() );
-		g_engine->m_render->DrawVertexBuffer( m_definition->m_vboPlayerTwo, ( unsigned int )m_definition->m_vertexes.size() );
+		g_engine->m_render->DrawVertexBuffer( m_definition->m_playerOneDef.m_vbo, ( unsigned int )m_definition->m_vertexes.size() );
+		g_engine->m_render->DrawVertexBuffer( m_definition->m_playerTwoDef.m_vbo, ( unsigned int )m_definition->m_vertexes.size() );
 	}
 	g_engine->m_render->BindShader( nullptr );
 }

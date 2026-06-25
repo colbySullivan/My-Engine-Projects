@@ -71,7 +71,7 @@ void OBJLoader::Load( std::string const& filepath, Model& model )
 				}
 
 				// Insure vt line was only 2 floats (uv)
-				if ( uvFloats.size() == 3 )
+				if ( uvFloats.size() > 0 )
 				{
 					// Reflect V across the middle
 					uvs.push_back( Vec2( uvFloats[0], 1.0f - uvFloats[1] ) );
@@ -93,7 +93,7 @@ void OBJLoader::Load( std::string const& filepath, Model& model )
 				}
 
 				// Insure v line was only 3 floats (xyz)
-				if ( normalFloats.size() == 3 )
+				if ( normalFloats.size() > 0 )
 				{
 					normals.push_back( Vec3( normalFloats[0], normalFloats[1], normalFloats[2] ) );
 				}

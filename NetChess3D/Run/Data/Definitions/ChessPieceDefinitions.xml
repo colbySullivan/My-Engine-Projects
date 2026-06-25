@@ -1,10 +1,41 @@
 <Definitions>
-	<ChessPieceDefinition name="King" symbol="K" shader="Data/Shaders/SunlightShader"/>
-	<ChessPieceDefinition name="Queen" symbol="Q" shader="Data/Shaders/SunlightShader"/>
-	<ChessPieceDefinition name="Rook" symbol="R" shader="Data/Shaders/SunlightShader"/>
-	<ChessPieceDefinition name="Knight" symbol="N" shader="Data/Shaders/SunlightShader"/>
-	<ChessPieceDefinition name="Bishop" symbol="B" shader="Data/Shaders/SunlightShader"/>
-	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader" modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/Teemo.obj" textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Textures/teemo_texture.png" modelScale="0.01" modelRotationX="90"/>
+	<ChessPieceDefinition name="King" symbol="K" shader="Data/Shaders/SunlightShader" 
+						  modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/LizardChess/snakeking-3.obj" 
+						  textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Models/LizardChess/snakeking-3.png" 
+						  modelOneScale="0.01" modelTwoScale="0.25" 
+						  modelOneRotationX="90"  modelOneRotationY="180" modelTwoRotationX="90" modelTwoRotationY="180"/>
+	
+	<ChessPieceDefinition name="Bishop" symbol="B" shader="Data/Shaders/SunlightShader" 
+						  modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/LizardChess/Snakewizard.obj" 
+						  textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Models/LizardChess/Snakewizard.png" 
+						  modelOneScale="0.01" modelTwoScale="0.5"
+						  modelOneRotationX="90" modelOneRotationY="180" modelTwoRotationX="90"/>
+	
+	<ChessPieceDefinition name="Rook" symbol="R" shader="Data/Shaders/SunlightShader" 
+						  modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/LizardChess/lizardbomb-3.obj" 
+						  textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Models/LizardChess/lizardbomb-3.png" 
+						  modelOneScale="0.01" modelTwoScale="0.25" 
+						  modelOneRotationX="90" modelOneRotationY="180" modelTwoRotationX="90" modelTwoRotationY="-90"/>
+	
+	<ChessPieceDefinition name="Knight" symbol="N" shader="Data/Shaders/SunlightShader" 
+						  modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/LizardChess/lizardmonitor-1.obj" 
+						  textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Models/LizardChess/lizardmonitor-1.png" 
+						  modelOneScale="0.01" modelTwoScale="0.5" 
+						  modelOneRotationX="90" modelOneRotationY="180" modelTwoRotationX="90" modelTwoOffset=" 0,0,-0.3"/>
+	
+	<ChessPieceDefinition name="Queen" symbol="Q" shader="Data/Shaders/SunlightShader" 
+						  modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/LizardChess/snakegod-0.obj" 
+						  textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Models/LizardChess/snakegod-0.png" 
+						  modelOneScale="0.01" modelTwoScale="0.25" 
+						  modelOneRotationX="90" modelOneRotationY="180" modelTwoRotationX="90" modelTwoRotationY="180"
+						  modelTwoOffset="1.25,0,0"/>
+	
+	<ChessPieceDefinition name="Pawn" symbol="P" shader="Data/Shaders/SunlightShader" 
+						  modelOne="Data/Models/Teemo.obj" modelTwo="Data/Models/LizardChess/Crocsoldier.obj" 
+						  textureOne="Data/Textures/teemo_texture.png" textureTwo="Data/Models/LizardChess/Crocsoldier.png" 
+						  modelOneScale="0.01" modelTwoScale="0.25" 
+						  modelOneRotationX="90" modelOneRotationY="180" modelTwoRotationX="90" modelTwoRotationY="180"/>
+	
 
 	<Textures texturePlayerOne="Data/Textures/Cobblestone_Diffuse.png" normal_texture_PlayerOne="Data/Textures/Cobblestone_Normal.png"  sga_PlayerOne="Data/Textures/Cobblestone_SpecGlossEmit_Test.png" 
 			  texturePlayerTwo="Data/Textures/Bricks_d.png" normal_texture_PlayerTwo="Data/Textures/Bricks_n.png"  sga_PlayerTwo="Data/Textures/Bricks_sge.png" />

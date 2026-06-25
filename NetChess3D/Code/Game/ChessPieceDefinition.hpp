@@ -20,6 +20,22 @@ enum ChessPieceType
 	Count
 };
 
+struct PlayerDefInfo
+{
+	VertexBuffer* m_vbo = nullptr;
+	IndexBuffer* m_ibo = nullptr;
+	Shader* m_shader = nullptr;
+	Texture* m_texture = nullptr;
+	Texture* m_normalTexture = nullptr;
+	Texture* m_sgaTexture = nullptr;
+	Model* m_model = nullptr;
+	unsigned int m_indexCount = 0;
+	float m_modelScale = 1.f;
+	float m_modelRotationX = 0.f;
+	float m_modelRotationY = 0.f;
+	Vec3 m_modeOffset = Vec3::ZERO;
+};
+
 //-----------------------------------------------------------------------------------------------
 class ChessPieceDefinition
 {
@@ -47,23 +63,9 @@ public:
 	char m_symbol;
 	std::string m_shaderPath;
 
-	VertexBuffer* m_vboPlayerOne = nullptr;
-	IndexBuffer* m_iboPlayerOne = nullptr;
-	VertexBuffer* m_vboPlayerTwo = nullptr;
-	IndexBuffer* m_iboPlayerTwo = nullptr;
+	PlayerDefInfo m_playerOneDef;
+	PlayerDefInfo m_playerTwoDef;
 	Shader* m_shader = nullptr;
-	Texture* m_texturePlayerOne = nullptr;
-	Texture* m_texturePlayerTwo = nullptr;
-	Texture* m_normalTexturePlayerOne = nullptr;
-	Texture* m_normalTexturePlayerTwo = nullptr;
-	Texture* m_sgaTexturePlayerOne = nullptr;
-	Texture* m_sgaTexturePlayerTwo = nullptr;
-	Model* m_playerOneModel = nullptr;
-	Model* m_playerTwoModel = nullptr;
-	unsigned int m_indexCountPlayerOne = 0;
-	unsigned int m_indexCountPlayerTwo = 0;
-	float m_modelScale = 1.f;
-	float m_modelRotationX = 0.f;
 	unsigned int  m_indexCount = 0;
 	std::vector<Vertex_PCUTBN> m_vertexes;
 	std::vector<unsigned int> m_indexes;
